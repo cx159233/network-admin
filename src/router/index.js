@@ -1,3 +1,13 @@
+/*
+ * @Author: ranfenghua ranfenghua@cecinvestment.com
+ * @Date: 2025-02-17 17:29:09
+ * @LastEditors: ranfenghua ranfenghua@cecinvestment.com
+ * @LastEditTime: 2025-02-17 17:30:39
+ * @FilePath: /cq-network-admin-view/src/router/index.js
+ * @Description: 
+ * 
+ * Copyright (c) 2025 by ${user.email}, All Rights Reserved. 
+ */
 import Vue from 'vue'
 import Router from 'vue-router'
 import i18n from '@/i18n'
@@ -74,168 +84,11 @@ export const constantRoutes = [
         meta: { title: i18n.t('Router.Home'), icon: 'dashboard', affix: true }
       }
     ]
-  },
-  // {
-  //   path: '/user',
-  //   component: Layout,
-  //   hidden: true,
-  //   redirect: 'noredirect',
-  //   children: [
-  //     {
-  //       path: 'profile',
-  //       component: () => import('@/views/system/user/profile/index'),
-  //       name: 'Profile',
-  //       meta: { title: i18n.t('Router.AccountCenter'), icon: 'user' }
-  //     },
-  //     {
-  //       path: 'preference',
-  //       component: () => import('@/views/system/user/userPreference'),
-  //       name: 'UserPreference',
-  //       meta: { title: i18n.t('Router.UserPreference'), icon: 'user' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/cms/preview',
-  //   component: () => import('@/views/cms/contentcore/preview'),
-  //   hidden: true,
-  //   name: 'ContentCorePreview'
-  // },
-  // {
-  //   path: '/cms/content/editorW',
-  //   component: () => import('@/views/cms/contentcore/contentEditor'),
-  //   hidden: true,
-  //   name: 'CMSContentEditorW',
-  //   meta: { title: i18n.t('CMS.ContentCore.Route.EditContent') }
-  // },
-  // {
-  //   path: '/cms',
-  //   component: Layout,
-  //   hidden: true,
-  //   redirect: '/cms/site',
-  //   children: [
-  //     {
-  //       path: 'site/tabs',
-  //       component: () => import('@/views/cms/contentcore/siteTab'),
-  //       name: 'CMSSiteTab',
-  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditSite'), activeMenu: '/configs/site'}
-  //     },
-  //     {
-  //       path: 'template/editor',
-  //       component: () => import('@/views/cms/contentcore/templateEditor'),
-  //       name: 'CMSTemplateEditor',
-  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditTemplate'), activeMenu: '/configs/template'}
-  //     },
-  //     {
-  //       path: 'file/editor',
-  //       component: () => import('@/views/cms/contentcore/fileEditor'),
-  //       name: 'CMSFileEditor',
-  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditFile'), activeMenu: '/configs/file'}
-  //     },
-  //     {
-  //       path: 'content/editor',
-  //       component: () => import('@/views/cms/contentcore/contentEditor'),
-  //       name: 'CMSContentEditor',
-  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditContent'), activeMenu: '/configs/content'}
-  //     },
-  //     {
-  //       path: 'exmodel/fields',
-  //       component: () => import('@/views/meta/fieldList'),
-  //       name: 'CMSEXModelFields',
-  //       meta: { noCache: true, title: i18n.t('CMS.ExModel.RouteExModelField'), activeMenu: '/configs/exmodel'}
-  //     },
-  //     {
-  //       path: 'block/manual/editor',
-  //       component: () => import('@/views/cms/block/manualBlockEditor'),
-  //       name: 'CMSBlockManualEditor',
-  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditManualBlock'), activeMenu: '/configs/content'}
-  //     },
-  //     {
-  //       path: 'adspace/editor',
-  //       component: () => import('@/views/cms/ad/adSpaceEditor'),
-  //       name: 'CMSAdSpaceEditor',
-  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditAdvSpace'), activeMenu: '/operations/advertisement'}
-  //     },
-  //     {
-  //       path: 'ad/editor',
-  //       component: () => import('@/views/cms/ad/advertisementEditor'),
-  //       name: 'CMSAdvertisementEditor',
-  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditAdv'), activeMenu: '/operations/advertisement'}
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/operations',
-  //   component: Layout,
-  //   hidden: true,
-  //   redirect: '/operations/link',
-  //   children: [
-  //     {
-  //       path: 'link/list',
-  //       component: () => import('@/views/cms/link/link'),
-  //       name: 'CmsLink',
-  //       meta: { noCache: true, title: i18n.t('CMS.FriendLink.RouteLinkList'), activeMenu: '/operations/link'}
-  //     },
-  //     {
-  //       path: 'customform/fields',
-  //       component: () => import('@/views/meta/fieldList'),
-  //       name: 'CmsCustomFields',
-  //       meta: { noCache: true, title: i18n.t('CMS.CustomForm.RouteFieldList'), activeMenu: '/operations/customform'}
-  //     },
-  //     {
-  //       path: 'customform/data',
-  //       component: () => import('@/views/cms/customform/data'),
-  //       name: 'CmsCustomData',
-  //       meta: { noCache: true, title: i18n.t('CMS.CustomForm.RouteData'), activeMenu: '/operations/customform'}
-  //     }
-  //   ]
-  // }
+  }
 ]
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
-  {
-    path: '/system/role-auth',
-    component: Layout,
-    hidden: true,
-    permissions: ['system:role:edit'],
-    children: [
-      {
-        path: 'user/:roleId(\\d+)',
-        component: () => import('@/views/system/role/authUser'),
-        name: 'AuthUser',
-        meta: { title: i18n.t('System.Role.UserSetting'), activeMenu: '/system/role' }
-      }
-    ]
-  },
-  {
-    path: '/system/dict-data',
-    component: Layout,
-    hidden: true,
-    permissions: ['system:dict:view'],
-    children: [
-      {
-        path: 'index/:dictId(\\d+)',
-        component: () => import('@/views/system/dict/data'),
-        name: 'Data',
-        meta: { title: i18n.t('System.Dict.DataList'), activeMenu: '/system/dict' }
-      }
-    ]
-  },
-  {
-    path: '/tool/gen-edit',
-    component: Layout,
-    hidden: true,
-    permissions: ['tool:gen:edit'],
-    children: [
-      {
-        path: 'index/:tableId(\\d+)',
-        component: () => import('@/views/tool/gen/editTable'),
-        name: 'GenEdit',
-        meta: { title: i18n.t('System.GenCode.EditGenConfig'), activeMenu: '/tool/gen' }
-      }
-    ]
-  }
 ]
 
 // 防止连续点击多次路由报错
