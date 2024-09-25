@@ -5,28 +5,16 @@
         <user-info></user-info>
       </el-col>
     </el-row>
-    <el-row :gutter="10">
-      <el-col :span="12">
-        <cms-site-visit-stat></cms-site-visit-stat>
-      </el-col>
-      <el-col :span="12">
-        <cms-site-data-stat></cms-site-data-stat>
-      </el-col>
-    </el-row>
   </div>
 </template>
 
 <script>
 import SysUserInfo from '@/views/cms/dashboard/userInfo'
-import CmsSiteVisitStat from '@/views/cms/dashboard/siteVisitStat'
-import CmsSiteDataStat from '@/views/cms/dashboard/siteDataStat'
 
 export default {
   name: 'Index',
   components: {
-    'user-info': SysUserInfo,
-    'cms-site-visit-stat': CmsSiteVisitStat,
-    'cms-site-data-stat': CmsSiteDataStat,
+    'user-info': SysUserInfo
   },
   data() {
     return {

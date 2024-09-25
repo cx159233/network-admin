@@ -1,7 +1,7 @@
 {
   "name": "cq-network-admin-view",
   "version": "1.0.0",
-  "description": "ChestnutCMS[栗子内容管理系统]",
+  "description": "ChestnutCMS[渝康云管理后台]",
   "author": "",
   "license": "Apache-2.0",
   "scripts": {

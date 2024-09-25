@@ -84,6 +84,85 @@ export const constantRoutes = [
         meta: { title: i18n.t('Router.Home'), icon: 'dashboard', affix: true }
       }
     ]
+  },
+  {
+    path: '/user',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'profile',
+        component: () => import('@/views/system/user/profile/index'),
+        name: 'Profile',
+        meta: { title: i18n.t('Router.AccountCenter'), icon: 'user' }
+      },
+      {
+        path: 'preference',
+        component: () => import('@/views/system/user/userPreference'),
+        name: 'UserPreference',
+        meta: { title: i18n.t('Router.UserPreference'), icon: 'user' }
+      }
+    ]
+  },
+  {
+    path: '/cms/preview',
+    component: () => import('@/views/cms/contentcore/preview'),
+    hidden: true,
+    name: 'ContentCorePreview'
+  },
+  {
+    path: '/cms/content/editorW',
+    component: () => import('@/views/cms/contentcore/contentEditor'),
+    hidden: true,
+    name: 'CMSContentEditorW',
+    meta: { title: i18n.t('CMS.ContentCore.Route.EditContent') }
+  },
+  {
+    path: '/cms',
+    component: Layout,
+    hidden: true,
+    redirect: '/cms/site',
+    children: [
+      {
+        path: 'site/tabs',
+        component: () => import('@/views/cms/contentcore/siteTab'),
+        name: 'CMSSiteTab',
+        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditSite'), activeMenu: '/configs/site'}
+      },
+      {
+        path: 'template/editor',
+        component: () => import('@/views/cms/contentcore/templateEditor'),
+        name: 'CMSTemplateEditor',
+        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditTemplate'), activeMenu: '/configs/template'}
+      },
+      {
+        path: 'file/editor',
+        component: () => import('@/views/cms/contentcore/fileEditor'),
+        name: 'CMSFileEditor',
+        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditFile'), activeMenu: '/configs/file'}
+      },
+      {
+        path: 'content/editor',
+        component: () => import('@/views/cms/contentcore/contentEditor'),
+        name: 'CMSContentEditor',
+        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditContent'), activeMenu: '/configs/content'}
+      }
+    ]
+  },
+  {
+    path: '/operations',
+    component: Layout,
+    hidden: true,
+    redirect: '/operations/link',
+    children: [
+      {
+        path: 'link/list',
+        component: () => import('@/views/cms/link/link'),
+        name: 'CmsLink',
+        meta: { noCache: true, title: i18n.t('CMS.FriendLink.RouteLinkList'), activeMenu: '/operations/link'}
+      }
+    ]
   }
 ]
 

@@ -1,6 +1,6 @@
 export default {
   APP: {
-    TITLE: '栗子内容管理系统'
+    TITLE: '渝康云管理后台'
   },
   Common: {
     Search: '搜索',
