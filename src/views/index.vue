@@ -10,18 +10,14 @@
         <cms-site-visit-stat></cms-site-visit-stat>
       </el-col>
       <el-col :span="12">
-        <shortcut></shortcut>
         <cms-site-data-stat></cms-site-data-stat>
-        <server-info></server-info>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import SysUserInfo from '@/views/system/dashboard/userInfo'
-import SysShortcut from '@/views/system/dashboard/shortcut'
-import ServerInfo from '@/views/system/dashboard/serverInfo'
+import SysUserInfo from '@/views/cms/dashboard/userInfo'
 import CmsSiteVisitStat from '@/views/cms/dashboard/siteVisitStat'
 import CmsSiteDataStat from '@/views/cms/dashboard/siteDataStat'
 
@@ -29,8 +25,6 @@ export default {
   name: 'Index',
   components: {
     'user-info': SysUserInfo,
-    'shortcut': SysShortcut,
-    'server-info': ServerInfo,
     'cms-site-visit-stat': CmsSiteVisitStat,
     'cms-site-data-stat': CmsSiteDataStat,
   },
