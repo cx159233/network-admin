@@ -53,6 +53,7 @@ module.exports = {
   },
   configureWebpack: {
     name: name,
+    devtool:'cheap-module-eval-source-map',
     resolve: {
       alias: {
         '@': resolve('src')

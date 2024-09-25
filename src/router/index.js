@@ -75,121 +75,121 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/user',
-    component: Layout,
-    hidden: true,
-    redirect: 'noredirect',
-    children: [
-      {
-        path: 'profile',
-        component: () => import('@/views/system/user/profile/index'),
-        name: 'Profile',
-        meta: { title: i18n.t('Router.AccountCenter'), icon: 'user' }
-      },
-      {
-        path: 'preference',
-        component: () => import('@/views/system/user/userPreference'),
-        name: 'UserPreference',
-        meta: { title: i18n.t('Router.UserPreference'), icon: 'user' }
-      }
-    ]
-  },
-  {
-    path: '/cms/preview',
-    component: () => import('@/views/cms/contentcore/preview'),
-    hidden: true,
-    name: 'ContentCorePreview'
-  },
-  {
-    path: '/cms/content/editorW',
-    component: () => import('@/views/cms/contentcore/contentEditor'),
-    hidden: true,
-    name: 'CMSContentEditorW',
-    meta: { title: i18n.t('CMS.ContentCore.Route.EditContent') }
-  },
-  {
-    path: '/cms',
-    component: Layout,
-    hidden: true,
-    redirect: '/cms/site',
-    children: [
-      {
-        path: 'site/tabs',
-        component: () => import('@/views/cms/contentcore/siteTab'),
-        name: 'CMSSiteTab',
-        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditSite'), activeMenu: '/configs/site'}
-      },
-      {
-        path: 'template/editor',
-        component: () => import('@/views/cms/contentcore/templateEditor'),
-        name: 'CMSTemplateEditor',
-        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditTemplate'), activeMenu: '/configs/template'}
-      },
-      {
-        path: 'file/editor',
-        component: () => import('@/views/cms/contentcore/fileEditor'),
-        name: 'CMSFileEditor',
-        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditFile'), activeMenu: '/configs/file'}
-      },
-      {
-        path: 'content/editor',
-        component: () => import('@/views/cms/contentcore/contentEditor'),
-        name: 'CMSContentEditor',
-        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditContent'), activeMenu: '/configs/content'}
-      },
-      {
-        path: 'exmodel/fields',
-        component: () => import('@/views/meta/fieldList'),
-        name: 'CMSEXModelFields',
-        meta: { noCache: true, title: i18n.t('CMS.ExModel.RouteExModelField'), activeMenu: '/configs/exmodel'}
-      },
-      {
-        path: 'block/manual/editor',
-        component: () => import('@/views/cms/block/manualBlockEditor'),
-        name: 'CMSBlockManualEditor',
-        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditManualBlock'), activeMenu: '/configs/content'}
-      },
-      {
-        path: 'adspace/editor',
-        component: () => import('@/views/cms/ad/adSpaceEditor'),
-        name: 'CMSAdSpaceEditor',
-        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditAdvSpace'), activeMenu: '/operations/advertisement'}
-      },
-      {
-        path: 'ad/editor',
-        component: () => import('@/views/cms/ad/advertisementEditor'),
-        name: 'CMSAdvertisementEditor',
-        meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditAdv'), activeMenu: '/operations/advertisement'}
-      }
-    ]
-  },
-  {
-    path: '/operations',
-    component: Layout,
-    hidden: true,
-    redirect: '/operations/link',
-    children: [
-      {
-        path: 'link/list',
-        component: () => import('@/views/cms/link/link'),
-        name: 'CmsLink',
-        meta: { noCache: true, title: i18n.t('CMS.FriendLink.RouteLinkList'), activeMenu: '/operations/link'}
-      },
-      {
-        path: 'customform/fields',
-        component: () => import('@/views/meta/fieldList'),
-        name: 'CmsCustomFields',
-        meta: { noCache: true, title: i18n.t('CMS.CustomForm.RouteFieldList'), activeMenu: '/operations/customform'}
-      },
-      {
-        path: 'customform/data',
-        component: () => import('@/views/cms/customform/data'),
-        name: 'CmsCustomData',
-        meta: { noCache: true, title: i18n.t('CMS.CustomForm.RouteData'), activeMenu: '/operations/customform'}
-      }
-    ]
-  }
+  // {
+  //   path: '/user',
+  //   component: Layout,
+  //   hidden: true,
+  //   redirect: 'noredirect',
+  //   children: [
+  //     {
+  //       path: 'profile',
+  //       component: () => import('@/views/system/user/profile/index'),
+  //       name: 'Profile',
+  //       meta: { title: i18n.t('Router.AccountCenter'), icon: 'user' }
+  //     },
+  //     {
+  //       path: 'preference',
+  //       component: () => import('@/views/system/user/userPreference'),
+  //       name: 'UserPreference',
+  //       meta: { title: i18n.t('Router.UserPreference'), icon: 'user' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/cms/preview',
+  //   component: () => import('@/views/cms/contentcore/preview'),
+  //   hidden: true,
+  //   name: 'ContentCorePreview'
+  // },
+  // {
+  //   path: '/cms/content/editorW',
+  //   component: () => import('@/views/cms/contentcore/contentEditor'),
+  //   hidden: true,
+  //   name: 'CMSContentEditorW',
+  //   meta: { title: i18n.t('CMS.ContentCore.Route.EditContent') }
+  // },
+  // {
+  //   path: '/cms',
+  //   component: Layout,
+  //   hidden: true,
+  //   redirect: '/cms/site',
+  //   children: [
+  //     {
+  //       path: 'site/tabs',
+  //       component: () => import('@/views/cms/contentcore/siteTab'),
+  //       name: 'CMSSiteTab',
+  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditSite'), activeMenu: '/configs/site'}
+  //     },
+  //     {
+  //       path: 'template/editor',
+  //       component: () => import('@/views/cms/contentcore/templateEditor'),
+  //       name: 'CMSTemplateEditor',
+  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditTemplate'), activeMenu: '/configs/template'}
+  //     },
+  //     {
+  //       path: 'file/editor',
+  //       component: () => import('@/views/cms/contentcore/fileEditor'),
+  //       name: 'CMSFileEditor',
+  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditFile'), activeMenu: '/configs/file'}
+  //     },
+  //     {
+  //       path: 'content/editor',
+  //       component: () => import('@/views/cms/contentcore/contentEditor'),
+  //       name: 'CMSContentEditor',
+  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditContent'), activeMenu: '/configs/content'}
+  //     },
+  //     {
+  //       path: 'exmodel/fields',
+  //       component: () => import('@/views/meta/fieldList'),
+  //       name: 'CMSEXModelFields',
+  //       meta: { noCache: true, title: i18n.t('CMS.ExModel.RouteExModelField'), activeMenu: '/configs/exmodel'}
+  //     },
+  //     {
+  //       path: 'block/manual/editor',
+  //       component: () => import('@/views/cms/block/manualBlockEditor'),
+  //       name: 'CMSBlockManualEditor',
+  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditManualBlock'), activeMenu: '/configs/content'}
+  //     },
+  //     {
+  //       path: 'adspace/editor',
+  //       component: () => import('@/views/cms/ad/adSpaceEditor'),
+  //       name: 'CMSAdSpaceEditor',
+  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditAdvSpace'), activeMenu: '/operations/advertisement'}
+  //     },
+  //     {
+  //       path: 'ad/editor',
+  //       component: () => import('@/views/cms/ad/advertisementEditor'),
+  //       name: 'CMSAdvertisementEditor',
+  //       meta: { noCache: true, title: i18n.t('CMS.ContentCore.Route.EditAdv'), activeMenu: '/operations/advertisement'}
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/operations',
+  //   component: Layout,
+  //   hidden: true,
+  //   redirect: '/operations/link',
+  //   children: [
+  //     {
+  //       path: 'link/list',
+  //       component: () => import('@/views/cms/link/link'),
+  //       name: 'CmsLink',
+  //       meta: { noCache: true, title: i18n.t('CMS.FriendLink.RouteLinkList'), activeMenu: '/operations/link'}
+  //     },
+  //     {
+  //       path: 'customform/fields',
+  //       component: () => import('@/views/meta/fieldList'),
+  //       name: 'CmsCustomFields',
+  //       meta: { noCache: true, title: i18n.t('CMS.CustomForm.RouteFieldList'), activeMenu: '/operations/customform'}
+  //     },
+  //     {
+  //       path: 'customform/data',
+  //       component: () => import('@/views/cms/customform/data'),
+  //       name: 'CmsCustomData',
+  //       meta: { noCache: true, title: i18n.t('CMS.CustomForm.RouteData'), activeMenu: '/operations/customform'}
+  //     }
+  //   ]
+  // }
 ]
 
 // 动态路由，基于用户权限动态去加载
