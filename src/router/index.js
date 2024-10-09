@@ -53,6 +53,11 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/auth',
+    component: () => import('@/views/auth'),
+    hidden: true
+  },
+  {
     path: '/login',
     component: () => import('@/views/login'),
     hidden: true
@@ -178,7 +183,7 @@ Router.prototype.push = function push(location) {
 
 export default new Router({
   base: process.env.VUE_APP_PATH,
-  mode: 'history', // 去掉url中的#
+  mode: 'hash', // 去掉url中的#
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

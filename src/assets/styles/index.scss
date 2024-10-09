@@ -16,7 +16,9 @@ body {
 label {
   font-weight: 700;
 }
-
+.pagination-container{
+  background: transparent !important;
+}
 html {
   height: 100%;
   box-sizing: border-box;

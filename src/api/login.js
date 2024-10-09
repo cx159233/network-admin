@@ -57,3 +57,11 @@ export function getCodeImg() {
     timeout: 20000
   })
 }
+
+// cookie登录方法
+export function codeLogin() {
+  return request({
+    url: '/gdmercury-api/uaa/userCenter/login',
+    method: 'post'
+  })
+}

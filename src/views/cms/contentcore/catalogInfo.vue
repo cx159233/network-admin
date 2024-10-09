@@ -2,7 +2,7 @@
   <div class="catalog-info-container">
     <el-row :gutter="10" class="mb12 btn-row">
       <el-col :span="1.5">
-        <el-button 
+        <el-button
           plain
           type="success"
           icon="el-icon-edit"
@@ -12,36 +12,18 @@
           @click="handleUpdate">{{ $t("Common.Save") }}</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button 
-          plain
-          type="primary"
-          size="mini"
-          :disabled="!this.catalogId"
-          @click="handlePreview"><svg-icon icon-class="eye-open" class="mr5"></svg-icon>{{ $t('CMS.ContentCore.Preview') }}</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-dropdown class="btn-permi" v-hasPermi="[ $p('Catalog:Publish:{0}', [ catalogId ]) ]">
-          <el-button 
-            plain
-            size="mini" 
+          <el-button
+          v-hasPermi="[ $p('Catalog:Publish:{0}', [ catalogId ]) ]"
+            size="mini"
             type="primary"
             icon="el-icon-s-promotion"
             :disabled="!this.catalogId"
             @click="handlePublish(-1)">
-            {{ $t('CMS.ContentCore.Publish') }}<i class="el-icon-arrow-down el-icon--right"></i>
+            {{ $t('CMS.ContentCore.Publish') }}
           </el-button>
-          <el-dropdown-menu slot="dropdown" :key="'btn-publish2-' + catalogId">
-            <el-dropdown-item 
-              v-for="dict in dict.type.CMSContentStatus" 
-              :key="dict.value" 
-              icon="el-icon-s-promotion" 
-              @click.native="handlePublish(dict.value)"
-            >{{dict.label}}{{ $t('CMS.Catalog.Content') }}</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
       </el-col>
       <el-col :span="1.5">
-        <el-button 
+        <el-button
           plain
           type="warning"
           :icon="catalogVisible?'el-icon-circle-close':'el-icon-circle-check'"
@@ -51,7 +33,7 @@
           @click="handleChangeVisible">{{ catalogVisible ? $t("Common.Hide") : $t("Common.Show") }}</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button 
+        <el-button
           type="primary"
           icon="el-icon-rank"
           size="mini"
@@ -75,8 +57,8 @@
             <el-button size="mini" type="text" @click="handleSortCatalogCancel">{{ $t('Common.Cancel') }}</el-button>
             <el-button type="primary" size="mini" @click="handleSortCatalog">{{ $t('Common.Confirm') }}</el-button>
           </div>
-          <el-button 
-            slot="reference" 
+          <el-button
+            slot="reference"
             size="mini"
             plain
             type="primary"
@@ -86,8 +68,8 @@
       </el-col>
       <el-col :span="1.5">
         <el-popconfirm :title="$t('CMS.Catalog.DeleteTip')" @confirm="handleDelete" class="btn-permi" v-hasPermi="[ $p('Catalog:Delete:{0}', [ catalogId ]) ]">
-          <el-button 
-            type="danger" 
+          <el-button
+            type="danger"
             icon="el-icon-delete"
             size="mini"
             plain
@@ -96,7 +78,7 @@
         </el-popconfirm>
       </el-col>
     </el-row>
-    <el-form 
+    <el-form
       ref="form_info"
       v-loading="loading"
       :model="form_info"
@@ -121,7 +103,7 @@
         </el-form-item>
         <el-form-item :label="$t('CMS.Catalog.CatalogType')" prop="catalogType">
           <el-select v-model="form_info.catalogType" :placeholder="$t('CMS.Catalog.CatalogType')">
-            <el-option 
+            <el-option
               v-for="ct in catalogTypeOptions"
               :key="ct.id"
               :label="ct.name"
@@ -169,116 +151,20 @@
           <cms-logo-view v-model="form_info.logo" :src="form_info.logoSrc" :height="150"></cms-logo-view>
         </el-form-item>
       </el-card>
-      <el-card shadow="hover">
-        <div slot="header" class="clearfix">
-          <span>{{ $t('CMS.Catalog.PublishPipeConf') }}</span>
-        </div>
-        <el-tabs v-model="publishPipeActiveName">
-          <el-tab-pane 
-            v-for="pp in this.form_info.publishPipeDatas"
-            :key="pp.pipeCode"
-            :command="pp"
-            :name="pp.pipeCode"
-            :label="pp.pipeName">
-            <el-divider content-position="left">{{ $t('CMS.Catalog.TemplateConfig') }}</el-divider>
-            <el-form-item :label="$t('CMS.Catalog.IndexTemplate')" prop="indexTemplate">
-              <el-input v-model="pp.props.indexTemplate">
-                <el-button 
-                  slot="append"
-                  type="primary"
-                  @click="handleSelectTemplate('indexTemplate')"
-                >{{ $t("Common.Select") }}</el-button>
-              </el-input>
-            </el-form-item>
-            <el-form-item :label="$t('CMS.Catalog.ListTemplate')" prop="listTemplate">
-              <el-input class="mr5" v-model="pp.props.listTemplate">
-                <el-button 
-                  slot="append"
-                  type="primary"
-                  @click="handleSelectTemplate('listTemplate')"
-                >{{ $t("Common.Select") }}</el-button>
-              </el-input>
-              <el-button 
-                plain 
-                icon="el-icon-bottom-right" 
-                type="primary" 
-                @click="handleApplyToChildren('listTemplate')">{{ $t('CMS.Catalog.ApplyToChildren') }}</el-button>
-            </el-form-item>
-            <el-form-item 
-              v-for="ct of contentTypes" 
-              :key="ct.id" 
-              :command="ct"
-              :label="ct.name + $t('CMS.Catalog.DetailTemplate')"
-              :prop="`detailTemplate_${ct.id}`">
-              <el-input class="mr5" v-model="pp.props[`detailTemplate_${ct.id}`]">
-                <el-button 
-                  slot="append"
-                  type="primary"
-                  @click="handleSelectTemplate(`detailTemplate_${ct.id}`)"
-                >{{ $t("Common.Select") }}</el-button>
-              </el-input>
-              <el-button 
-                icon="el-icon-bottom-right" 
-                type="primary" 
-                plain 
-                @click="handleApplyToChildren(`detailTemplate_${ct.id}`)"
-              >{{ $t('CMS.Catalog.ApplyToChildren') }}</el-button>
-            </el-form-item>
-            <el-form-item :label="$t('CMS.Catalog.ContentExTemplate')" prop="contentExTemplate">
-              <el-input class="mr5" v-model="pp.props.contentExTemplate">
-                <el-button 
-                  slot="append"
-                  type="primary"
-                  @click="handleSelectTemplate('contentExTemplate')"
-                >{{ $t("Common.Select") }}</el-button>
-              </el-input>
-              <el-button 
-                plain 
-                icon="el-icon-bottom-right" 
-                type="primary" 
-                @click="handleApplyToChildren('contentExTemplate')">{{ $t('CMS.Catalog.ApplyToChildren') }}</el-button>
-            </el-form-item>
-            <el-divider content-position="left">{{ $t('CMS.Catalog.OtherConfig') }}</el-divider>
-            <el-form-item :label="$t('CMS.Site.UEditorCss')">
-              <el-input v-model="pp.props.ueditorCss">
-                <el-button 
-                  slot="append"
-                  type="primary"
-                  @click="handleSelectFile()"
-                >{{ $t("Common.Select") }}</el-button>
-              </el-input>
-            </el-form-item>
-          </el-tab-pane>
-        </el-tabs>
-      </el-card>
-      <el-card shadow="hover">
-        <div slot="header" class="clearfix">
-          <span>{{ $t('CMS.ContentCore.SEOConfig') }}</span>
-        </div>
-        <el-form-item :label="$t('CMS.ContentCore.SEOTitle')" prop="seoTitle">
-          <el-input v-model="form_info.seoTitle" />
-        </el-form-item>
-        <el-form-item :label="$t('CMS.ContentCore.SEOKeyword')" prop="seoKeywords">
-          <el-input v-model="form_info.seoKeywords" />
-        </el-form-item>
-        <el-form-item :label="$t('CMS.ContentCore.SEODescription')" prop="seoDescription">
-          <el-input v-model="form_info.seoDescription" type="textarea" :maxlength="100" />
-        </el-form-item>
-      </el-card>
       <el-card v-if="showEXModel" shadow="hover">
         <div slot="header" class="clearfix">
           <span>{{ $t('CMS.Catalog.ExModelProps') }}</span>
         </div>
-        
-        <cms-exmodel-editor 
+
+        <cms-exmodel-editor
           ref="EXModelEditor"
-          :xmodel="form_info.configProps.CatalogExtendModel" 
+          :xmodel="form_info.configProps.CatalogExtendModel"
           type="catalog"
           :id="form_info.catalogId">
         </cms-exmodel-editor>
       </el-card>
     </el-form>
-    <el-dialog 
+    <el-dialog
       :title="$t('CMS.Catalog.PublishDialogTitle')"
       :visible.sync="publishDialogVisible"
       width="500px"
@@ -294,8 +180,8 @@
       </span>
     </el-dialog>
     <!-- 模板选择组件 -->
-    <cms-template-selector 
-      :open="openTemplateSelector" 
+    <cms-template-selector
+      :open="openTemplateSelector"
       :publishPipeCode="publishPipeActiveName"
       @ok="handleTemplateSelected"
       @cancel="handleTemplateSelectorCancel" />
@@ -341,7 +227,7 @@ export default {
   dicts: ['CMSStaticSuffix', 'CMSContentStatus'],
   props: {
     cid: {
-      type: String, 
+      type: String,
       default: undefined,
       required: false,
     },
@@ -490,7 +376,7 @@ export default {
         this.progressType = "Publish";
         this.openProgress = true;
         this.$cache.local.set('publish_flag', "true")
-      }); 
+      });
     },
     handleDelete () {
       if (!this.catalogId) {
@@ -503,7 +389,7 @@ export default {
           this.progressTitle = this.$t('CMS.Catalog.DeleteProgressTitle');
           this.progressType = "Delete";
           this.openProgress = true;
-          
+
           console.log("parentId", this.form_info.parentId)
           this.$cache.local.set("LastSelectedCatalogId", this.form_info.parentId);
         }
@@ -518,7 +404,7 @@ export default {
     handleCloseProgress() {
       if (this.progressType == 'Delete' || this.progressType == 'Move') {
           this.resetForm("form_info");
-          this.$emit("remove", this.catalogId); 
+          this.$emit("remove", this.catalogId);
       }
     },
     handleSelectTemplate (propKey) {
@@ -537,7 +423,7 @@ export default {
       this.openTemplateSelector = false;
     },
     handleApplyToChildren (propKey) {
-      const data = { 
+      const data = {
         catalogId: this.catalogId,
         publishPipeCode: this.publishPipeActiveName,
         publishPipePropKeys: [ propKey ]
@@ -600,7 +486,7 @@ export default {
           this.$modal.msgSuccess(response.msg);
           this.showSortPop = false;
           this.sortValue = 0;
-          this.$emit("update"); 
+          this.$emit("update");
       });
     },
     handleSortCatalogCancel() {

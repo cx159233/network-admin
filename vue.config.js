@@ -40,7 +40,17 @@ module.exports = {
         // pathRewrite: {
         //   ['^' + process.env.VUE_APP_BASE_API]: ''
         // }
-      }
+      },
+      '/gdmercury-api': {
+        target: 'http://10.128.20.178/gdmercury-api', // 江苏研发环境
+        // target:'http://10.32.4.94:8080', // 辉哥地址
+        // target: 'http://10.229.1.8/gdmercury-api', // 重庆环境
+
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_BASE_API]: "",
+        },
+      },
     },
     disableHostCheck: true
   },

@@ -49,21 +49,15 @@
         <el-table-column :label="$t('Common.Operation')" align="center" width="310" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <span class="btn-cell-wrap">
-              <el-button 
-                type="text"
-                size="small"
-                @click="handlePreview(scope.row)"><svg-icon icon-class="eye-open" class="mr2"></svg-icon>{{ $t('CMS.ContentCore.Preview') }}</el-button>
-            </span>
-            <span class="btn-cell-wrap">
-              <el-button 
+              <el-button
                 type="text"
                 icon="el-icon-s-promotion"
                 size="small"
                 v-hasPermi="[ $p('Site:Publish:{0}', [ scope.row.siteId ]) ]"
-                @click="handlePublish(scope.row)">{{ $t('CMS.Site.PublishHome') }}</el-button>
+                @click="handlePublish(scope.row)">{{ $t('CMS.Site.PublishAll') }}</el-button>
             </span>
             <span class="btn-cell-wrap">
-              <el-button 
+              <el-button
                 type="text"
                 icon="el-icon-edit"
                 size="small"
@@ -71,7 +65,7 @@
                 @click="handleEdit(scope.row)">{{ $t("Common.Edit") }}</el-button>
             </span>
             <span class="btn-cell-wrap">
-              <el-button 
+              <el-button
                 type="text"
                 icon="el-icon-delete"
                 size="small"
@@ -81,7 +75,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <pagination 
+      <pagination
         v-show="siteTotal>0"
         :total="siteTotal"
         :page.sync="queryParams.pageNum"
@@ -89,12 +83,12 @@
         @pagination="loadSiteList" />
     </el-row>
     <!-- 添加站点对话框 -->
-    <el-dialog 
+    <el-dialog
       :title="$t('CMS.Site.Dialog.AddTitle')"
       :visible.sync="open"
       width="600px"
       append-to-body>
-      <el-form 
+      <el-form
         ref="form"
         :model="form"
         :rules="rules"

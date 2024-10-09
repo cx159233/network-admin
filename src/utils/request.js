@@ -31,8 +31,12 @@ service.interceptors.request.use(config => {
     config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     // CMS当前站点
     if (cache.local.get('CurrentSite')) {
-      config.headers['CurrentSite'] = cache.local.get('CurrentSite'); 
+      config.headers['CurrentSite'] = cache.local.get('CurrentSite');
     }
+  }
+  //去掉url中的gdmercury-api
+  if(config.url.includes('/gdmercury-api')){
+    config.baseURL=''
   }
   // 语言环境
   config.headers['Accept-Language'] = i18n.locale;
@@ -85,7 +89,7 @@ service.interceptors.response.use(res => {
     if (code === 401) {
       if (!isRelogin.show) {
           isRelogin.show = true;
-          MessageBox.confirm(i18n.t('Common.SessionExpired'), i18n.t('Common.SystemTip'), 
+          MessageBox.confirm(i18n.t('Common.SessionExpired'), i18n.t('Common.SystemTip'),
               { confirmButtonText: i18n.t('Common.Relogin'), cancelButtonText: i18n.t('Common.Cancel'), type: 'warning' }).then(() => {
             isRelogin.show = false;
             store.dispatch('LogOut').then(() => {

@@ -68,15 +68,8 @@
           style="text-align: right"
           class="el-form-search"
         >
-          <el-form-item prop="name">
-            <el-input v-model="input" placeholder="请输入应用名称"></el-input>
-          </el-form-item>
-
           <el-form-item prop="name1">
-            <el-select
-              v-model="queryParams.value"
-              placeholder="请选择应用覆盖范围"
-            >
+            <el-select v-model="queryParams.value" placeholder="请选择开放范围">
               <el-option
                 v-for="item in resourceTypes"
                 :key="item.id"
@@ -87,7 +80,7 @@
             </el-select>
           </el-form-item>
           <el-form-item prop="name2">
-            <el-select v-model="queryParams.value" placeholder="请选择面向对象">
+            <el-select v-model="queryParams.value" placeholder="请选择状态">
               <el-option
                 v-for="item in resourceTypes"
                 :key="item.id"
@@ -98,15 +91,30 @@
             </el-select>
           </el-form-item>
           <el-form-item prop="name3">
-            <el-select v-model="queryParams.value" placeholder="请选择状态">
-              <el-option
-                v-for="item in resourceTypes"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
+            <el-button-group>
+              <el-button
+                type="primary"
+                icon="el-icon-search"
+                @click="handleQuery"
+                >{{ $t("Common.Search") }}</el-button
               >
-              </el-option>
-            </el-select>
+              <el-button icon="el-icon-refresh" @click="resetQuery">{{
+                $t("Common.Reset")
+              }}</el-button>
+            </el-button-group>
+          </el-form-item>
+          <el-form-item prop="name4">
+            <el-button-group>
+              <el-button
+                type="primary"
+                icon="el-icon-search"
+                @click="handleQuery"
+                >{{ $t("Common.Search") }}</el-button
+              >
+              <el-button icon="el-icon-refresh" @click="resetQuery">{{
+                $t("Common.Reset")
+              }}</el-button>
+            </el-button-group>
           </el-form-item>
         </el-form>
       </el-col>
@@ -121,12 +129,12 @@
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column
-        label="应用名称"
+        label="能力组件名称"
         prop="resourceId"
         align="center"
         width="180"
       />
-      <el-table-column label="应用ID" prop="resourceTypeName" width="80" />
+      <el-table-column label="能力组件ID" prop="resourceTypeName" width="80" />
       <el-table-column
         label="面向对象"
         prop="storageType"
@@ -134,7 +142,7 @@
         width="120"
       />
       <el-table-column
-        label="应用覆盖范围"
+        label="能力组件覆盖范围"
         prop="fileSizeName"
         align="center"
       />
@@ -147,7 +155,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="应用服务商"
+        label="能力组件服务商"
         prop="storageType"
         align="center"
         width="120"
@@ -257,13 +265,13 @@
       <p class="fz-16 mt--8">基本信息</p>
       <div class="gird">
         <div class="content">
-          <span>应用名称</span><span>{{ "--" }}</span>
+          <span>能力组件名称</span><span>{{ "--" }}</span>
         </div>
         <div class="content">
           <span>上传LOGO</span><span>{{ "--" }}</span>
         </div>
         <div class="content">
-          <span>应用描述</span><span>{{ "--" }}</span>
+          <span>能力组件描述</span><span>{{ "--" }}</span>
         </div>
         <div class="content">
           <span>系统地址</span><span>{{ "--" }}</span>
@@ -294,13 +302,13 @@
           <span>面向对象</span><span>{{ "--" }}</span>
         </div>
         <div class="content">
-          <span>应用架构</span><span>{{ "--" }}</span>
+          <span>能力组件架构</span><span>{{ "--" }}</span>
         </div>
         <div class="content">
           <span>部署云服务商</span><span>{{ "--" }}</span>
         </div>
         <div class="content">
-          <span>应用覆盖范围</span><span>{{ "--" }}</span>
+          <span>能力组件覆盖范围</span><span>{{ "--" }}</span>
         </div>
       </div>
     </el-dialog>
@@ -474,7 +482,7 @@ export default {
       const resourceId = row.resourceId || this.ids;
       getResourceDetail(resourceId).then((response) => {
         this.detail = response.data;
-        this.title = "数字应用详情";
+        this.title = "详情";
         this.detailDialog = true;
       });
     },

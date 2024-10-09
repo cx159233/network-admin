@@ -71,7 +71,7 @@ export const getRouters = () => {
                     "name": "CmsContentcoreComponent",
                     "path": "component",
                     "hidden": false,
-                    "component": "cms/contentcore/component",
+                    "component": "cms/contentcore/component-list",
                     "meta": {
                         "title": "能力组件管理",
                         "icon": "list",

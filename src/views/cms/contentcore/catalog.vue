@@ -3,9 +3,9 @@
     <el-row :gutter="20">
       <!--栏目数据-->
       <el-col :span="4" :xs="24">
-        <cms-catalog-tree 
+        <cms-catalog-tree
           ref="catalogTree"
-          :new-btn="true"    
+          :new-btn="true"
           @node-click="handleTreeNodeClick">
         </cms-catalog-tree>
       </el-col>
@@ -13,15 +13,12 @@
       <el-col :span="20" :xs="24">
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
           <el-tab-pane :label="$t('CMS.Catalog.Tab.Basic')" name="basicInfo">
-            <cms-catalog-info 
-              v-if="this.activeName=='basicInfo'" 
+            <cms-catalog-info
+              v-if="this.activeName=='basicInfo'"
               :cid="selectedCatalogId"
               @update="handleCatalogUpdate"
               @remove="handleCatalogDelete"
             ></cms-catalog-info>
-          </el-tab-pane>
-          <el-tab-pane :label="$t('CMS.Catalog.Tab.Extend')" name="extend" :disabled="!selectedCatalog">
-            <cms-catalog-extend v-if="this.activeName=='extend'" :cid="selectedCatalogId"></cms-catalog-extend>
           </el-tab-pane>
         </el-tabs>
       </el-col>
