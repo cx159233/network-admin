@@ -54,7 +54,7 @@
               size="mini"
               :disabled="multiple"
               @click="handleSold"
-              >下架</el-button
+              >下线</el-button
             >
           </el-col>
         </el-row>
@@ -68,42 +68,35 @@
           style="text-align: right"
           class="el-form-search"
         >
+          <el-form-item prop="name">
+            <el-input
+              v-model="queryParams.name"
+              placeholder="请输入能力组件名称"
+            ></el-input>
+          </el-form-item>
           <el-form-item prop="name1">
-            <el-select v-model="queryParams.value" placeholder="请选择开放范围">
+            <el-select v-model="cover" multiple placeholder="开放范围">
               <el-option
-                v-for="item in resourceTypes"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
+                v-for="item in dict.type.AppScope"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
               >
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item prop="name2">
-            <el-select v-model="queryParams.value" placeholder="请选择状态">
+          <el-form-item prop="status">
+            <el-select v-model="queryParams.status" placeholder="请选择状态">
               <el-option
-                v-for="item in resourceTypes"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
+                v-for="item in dict.type.STATUS"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
               >
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item prop="name3">
-            <el-button-group>
-              <el-button
-                type="primary"
-                icon="el-icon-search"
-                @click="handleQuery"
-                >{{ $t("Common.Search") }}</el-button
-              >
-              <el-button icon="el-icon-refresh" @click="resetQuery">{{
-                $t("Common.Reset")
-              }}</el-button>
-            </el-button-group>
-          </el-form-item>
-          <el-form-item prop="name4">
+          <el-form-item>
             <el-button-group>
               <el-button
                 type="primary"
@@ -130,45 +123,33 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column
         label="能力组件名称"
-        prop="resourceId"
+        prop="name"
         align="center"
         width="180"
       />
-      <el-table-column label="能力组件ID" prop="resourceTypeName" width="80" />
-      <el-table-column
-        label="面向对象"
-        prop="storageType"
-        align="center"
-        width="120"
-      />
-      <el-table-column
-        label="能力组件覆盖范围"
-        prop="fileSizeName"
-        align="center"
-      />
+      <el-table-column label="能力组件ID" prop="componentId" width="80" />
+      <el-table-column label="组件描述" prop="description" align="center" />
       <el-table-column label="状态" align="center" width="110">
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.CMSContentStatus"
-            :value="scope.row.status"
-          />
+          <dict-tag :options="dict.type.STATUS" :value="scope.row.status" />
         </template>
       </el-table-column>
       <el-table-column
-        label="能力组件服务商"
-        prop="storageType"
+        label="组件服务商"
+        prop="serviceProviderName"
         align="center"
         width="120"
       />
-      <el-table-column
-        label="合作企业"
-        prop="storageType"
-        align="center"
-        width="120"
-      />
+
       <el-table-column
         label="云服务商"
-        prop="storageType"
+        prop="deployServiceProvider"
+        align="center"
+        width="120"
+      />
+      <el-table-column
+        label="开放范围"
+        prop="cover"
         align="center"
         width="120"
       />
@@ -213,9 +194,12 @@
     />
 
     <!-- 添加或修改资源对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item :label="$t('CMS.Resource.UploadResource')">
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="能力组件名称" prop="name">
+          <el-input v-model="form.name" />
+        </el-form-item>
+        <el-form-item label="上传LOGO">
           <el-upload
             ref="upload"
             drag
@@ -225,25 +209,85 @@
             :file-list="upload.fileList"
             :on-progress="handleFileUploadProgress"
             :on-success="handleFileSuccess"
-            :auto-upload="false"
             :before-upload="handleBeforeUpload"
             :on-change="handleUploadChange"
             :limit="1"
           >
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">
-              {{ $t("CMS.Resource.UploadTip1") }}
+              建议上传图片尺寸为640*640，大小不超过1M支持jpg、jpeg、png、bmp图片格式
             </div>
             <div class="el-upload__tip" slot="tip">
               {{ $t("CMS.Resource.UploadTip2", [upload.accept, fileSizeName]) }}
             </div>
           </el-upload>
         </el-form-item>
-        <el-form-item :label="$t('CMS.Resource.Name')" prop="name">
-          <el-input v-model="form.name" />
+        <el-form-item label="能力组件描述" prop="description">
+          <el-input v-model="form.description" type="textarea" />
         </el-form-item>
-        <el-form-item :label="$t('Common.Remark')" prop="remark">
-          <el-input v-model="form.remark" type="textarea" />
+
+        <el-form-item label="系统地址" prop="address">
+          <el-input v-model="form.address" />
+        </el-form-item>
+        <el-form-item label="显示顺序" prop="showOrder">
+          <el-input-number v-model="form.showOrder" :min="1" />
+        </el-form-item>
+        <p>联系信息</p>
+        <el-form-item label="服务商名称" prop="serviceProviderName">
+          <el-input v-model="form.serviceProviderName" />
+        </el-form-item>
+        <el-form-item label="合作伙伴名称" prop="partnerName">
+          <el-input
+            v-model="form.partnerName"
+            placeholder="请输入合作伙伴全称，多个合作伙伴请通过；分隔"
+          />
+        </el-form-item>
+        <el-form-item label="联系方式1" prop="lxr1">
+          <div class="flex">
+            <el-input
+              v-model="form.contactName1"
+              placeholder="请输入联系人姓名"
+            />
+            <span class="pl-4"> - </span>
+            <el-input
+              v-model="form.contactPhone1"
+              placeholder="请输入联系人手机号"
+            />
+          </div>
+        </el-form-item>
+        <el-form-item label="联系方式2">
+          <div class="flex">
+            <el-input
+              v-model="form.contactName2"
+              placeholder="请输入联系人姓名"
+            />
+            <span class="pl-4"> - </span>
+            <el-input
+              v-model="form.contactPhone2"
+              placeholder="请输入联系人手机号"
+            />
+          </div>
+        </el-form-item>
+        <p>分类标签</p>
+        <el-form-item label="开放范围" prop="cover">
+          <el-radio-group v-model="form.cover">
+            <el-radio
+              v-for="(item, index) in dict.type.OpenRange"
+              :label="item.value"
+              :key="index"
+              >{{ item.label }}</el-radio
+            >
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="部署云服务商" prop="deployServiceProvider">
+          <el-radio-group v-model="form.deployServiceProvider">
+            <el-radio
+              v-for="(item, index) in dict.type.CloudProvider"
+              :label="item.value"
+              :key="index"
+              >{{ item.label }}</el-radio
+            >
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -259,75 +303,73 @@
     <el-dialog
       :title="title"
       :visible.sync="detailDialog"
-      width="500px"
+      width="800px"
       append-to-body
     >
       <p class="fz-16 mt--8">基本信息</p>
       <div class="gird">
         <div class="content">
-          <span>能力组件名称</span><span>{{ "--" }}</span>
+          <span>能力组件名称</span><span>{{ detail.name || "--" }}</span>
         </div>
         <div class="content">
-          <span>上传LOGO</span><span>{{ "--" }}</span>
+          <span>上传LOGO</span><span>{{ detail.logo || "--" }}</span>
         </div>
         <div class="content">
-          <span>能力组件描述</span><span>{{ "--" }}</span>
-        </div>
-        <div class="content">
-          <span>系统地址</span><span>{{ "--" }}</span>
-        </div>
-        <div class="content">
-          <span>显示顺序</span><span>{{ "--" }}</span>
+          <span>显示顺序</span><span>{{ detail.showOrder || "--" }}</span>
         </div>
       </div>
-
+      <div class="content pt-24">
+        <span>能力组件描述</span><span>{{ detail.description || "--" }}</span>
+      </div>
       <p class="pt-24 fz-16">联系信息</p>
       <div class="gird">
         <div class="content">
-          <span>服务商名称</span><span>{{ "--" }}</span>
+          <span>服务商名称</span
+          ><span>{{ detail.serviceProviderName || "--" }}</span>
         </div>
         <div class="content">
-          <span>合作伙伴名称</span><span>{{ "--" }}</span>
+          <span>联系方式1</span
+          ><span
+            >{{ detail.contactName1 || "--" }}
+            {{ detail.contactPhone1 || "--" }}</span
+          >
         </div>
         <div class="content">
-          <span>联系方式1</span><span>{{ "--" }}</span>
-        </div>
-        <div class="content">
-          <span>联系方式2</span><span>{{ "--" }}</span>
+          <span>联系方式2</span
+          ><span
+            >{{ detail.contactName2 || "--" }}
+            {{ detail.contactPhone2 || "--" }}</span
+          >
         </div>
       </div>
       <p class="pt-24 fz-16">分类标签</p>
       <div class="gird">
         <div class="content">
-          <span>面向对象</span><span>{{ "--" }}</span>
+          <span>开放范围</span><span>{{ detail.cover || "--" }}</span>
         </div>
         <div class="content">
-          <span>能力组件架构</span><span>{{ "--" }}</span>
-        </div>
-        <div class="content">
-          <span>部署云服务商</span><span>{{ "--" }}</span>
-        </div>
-        <div class="content">
-          <span>能力组件覆盖范围</span><span>{{ "--" }}</span>
+          <span>部署云服务商</span
+          ><span>{{ detail.deployServiceProvider || "--" }}</span>
         </div>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getFileSvgIconClass } from "@/utils/chestnut";
-import { getToken } from "@/utils/auth";
+// import { getToken } from "@/utils/auth";
 import {
-  getResourceTypes,
-  getResrouceList,
-  getResourceDetail,
-  delResource,
-} from "@/api/contentcore/resource";
-import { getConfigKey } from "@/api/system/config";
+  createComponent,
+  getCmsPutComponent,
+  getComponentDetail,
+  getComponentList,
+  deleteComponent,
+  publishComponent,
+  putComponent,
+} from "@/api/admin/index";
 
 export default {
   name: "CmsContentcoreResource",
-  dicts: ["CMSContentStatus", "CMSContentAttribute"],
+  dicts: ["OpenRange", "CloudProvider", "STATUS"],
   data() {
     return {
       detailDialog: false,
@@ -348,26 +390,98 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
-      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 15,
         resourceType: undefined,
         name: undefined,
-        beginTime: undefined,
-        endTime: undefined,
       },
       resourceTypes: [],
       // 表单参数
-      form: {},
+      form: {
+        name: "",
+        showOrder: 0,
+        logo: "",
+        description: "",
+        address: "",
+        serviceProviderName: "",
+        partnerName: "",
+        contactName1: "",
+        contactPhone1: "",
+        contactName2: "",
+        contactPhone2: "",
+        architecture: "",
+        deployServiceProvider: "",
+        cover: undefined,
+        status: undefined,
+      },
       // 表单校验
+      checkList: [],
       rules: {
         name: [
           {
             required: true,
-            message: this.$t("CMS.Resource.RuleTips.Name"),
-            trigger: "blur",
+            message: "请输入能力组件名称",
+            trigger: ["blur", "change"],
+          },
+        ],
+        description: [
+          {
+            required: true,
+            message: "请输入能力组件描述",
+            trigger: ["blur", "change"],
+          },
+        ],
+        showOrder: [
+          {
+            required: true,
+            message: "请输入显示顺序",
+            trigger: ["blur", "change"],
+          },
+        ],
+        address: [
+          {
+            required: true,
+            message: "请输入服务商名称",
+            trigger: ["blur", "change"],
+          },
+        ],
+        serviceProviderName: [
+          {
+            required: true,
+            message: "请输入服务商名称",
+            trigger: ["blur", "change"],
+          },
+        ],
+        lxr1: [
+          {
+            required: true,
+            trigger: ["blur", "change"],
+            //方法
+            validator: (rule, value, callback) => {
+              if (!this.form.contactName1) {
+                callback(new Error("请输入联系人姓名"));
+              } else if (!this.form.contactPhone1) {
+                callback(new Error("请输入联系人手机号"));
+              } else {
+                callback();
+              }
+            },
+          },
+        ],
+        cover: [
+          {
+            required: true,
+            message: "请选择组件开放范围范围",
+            trigger: ["blur", "change"],
+          },
+        ],
+        deployServiceProvider: [
+          {
+            required: true,
+            message: "请选择部署云服务商",
+            trigger: ["blur", "change"],
           },
         ],
       },
@@ -375,11 +489,11 @@ export default {
       upload: {
         // 是否禁用上传
         isUploading: false,
-        accept: "",
-        acceptSize: 0,
+        accept: "image/png, image/jpeg,image/jpg,image/bmp",
+        acceptSize: 1 * 1024 * 1024,
         // 设置上传的请求头部
         headers: {
-          Authorization: "Bearer " + getToken(),
+          // Authorization: "Bearer " + getToken(),
           CurrentSite: this.$cache.local.get("CurrentSite"),
         },
         // 上传的地址
@@ -388,48 +502,30 @@ export default {
         fileList: [],
         data: {},
       },
+      cover: undefined,
     };
   },
   computed: {
     fileSizeName() {
-      if (this.upload.acceptSize > 0) {
-        return this.upload.acceptSize / 1024 / 1024 + " MB";
-      } else {
-        return "∞";
-      }
+      return this.upload.acceptSize / 1024 / 1024 + " MB";
     },
   },
   created() {
-    getConfigKey("ResourceUploadAcceptSize").then((res) => {
-      this.upload.acceptSize = parseInt(res.data);
-    });
-    this.loadResourceTypes();
     this.getList();
   },
   methods: {
-    loadResourceTypes() {
-      getResourceTypes().then((response) => {
-        this.resourceTypes = response.data;
-        this.resourceTypes.forEach((item) => {
-          this.upload.accept += "." + item.accepts.replaceAll(",", ",.");
-        });
-      });
-    },
     /** 查询资源列表 */
     getList() {
       this.loading = true;
-      if (this.dateRange && this.dateRange.length == 2) {
-        this.queryParams.beginTime = this.dateRange[0];
-        this.queryParams.endTime = this.dateRange[1];
-      }
-      getResrouceList(this.queryParams).then((response) => {
-        this.resourceList = response.data.rows;
-        this.resourceList.forEach(
-          (r) => (r.iconClass = getFileSvgIconClass(r.name))
-        );
-        this.total = parseInt(response.data.total);
-        this.loading = false;
-      });
+      getComponentList(this.queryParams)
+        .then((response) => {
+          this.resourceList = response.data.rows;
+          this.total = parseInt(response.data.total);
+          this.loading = false;
+        })
+        .catch((error) => {
+          this.loading = false;
+        });
     },
     // 取消按钮
     cancel() {
@@ -440,8 +536,22 @@ export default {
     reset() {
       this.form = {
         name: "",
-        remark: "",
+        showOrder: 0,
+        logo: "",
+        description: "",
+        address: "",
+        serviceProviderName: "",
+        partnerName: "",
+        contactName1: "",
+        contactPhone1: "",
+        contactName2: "",
+        contactPhone2: "",
+        architecture: "",
+        deployServiceProvider: "",
+        cover: undefined,
+        status: undefined,
       };
+      this.upload.fileList = [];
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -453,12 +563,11 @@ export default {
     resetQuery() {
       this.resetForm("queryForm");
       this.queryParams.resourceType = undefined;
-      this.dateRange = [];
       this.handleQuery();
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.resourceId);
+      this.ids = selection.map((item) => item.componentId);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -466,23 +575,23 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = this.$t("CMS.Resource.AddDialogTitle");
+      this.title = "新增";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const resourceId = row.resourceId || this.ids;
-      getResourceDetail(resourceId).then((response) => {
+      const componentId = row.componentId || this.ids;
+      getComponentDetail(componentId).then((response) => {
         this.form = response.data;
-        this.title = this.$t("CMS.Resource.EditDialogTitle");
+        this.title = "编辑";
         this.open = true;
       });
     },
     handleDetail(row) {
-      const resourceId = row.resourceId || this.ids;
-      getResourceDetail(resourceId).then((response) => {
+      const componentId = row.componentId || this.ids;
+      getComponentDetail(componentId).then((response) => {
         this.detail = response.data;
-        this.title = "详情";
+        this.title = "数字能力组件详情";
         this.detailDialog = true;
       });
     },
@@ -492,40 +601,45 @@ export default {
     handleFileSuccess(response, file, fileList) {
       this.upload.isUploading = false;
       this.$modal.msgSuccess(response.msg);
-      if (response.code == 200) {
-        this.open = false;
-        this.getList();
-      }
-      this.$refs.upload.clearFiles();
-      this.resetForm("form");
     },
     handleUploadChange(file) {
-      file.name = file.name.toLowerCase();
-      // if (!file.name.endsWith(".png") && !file.name.endsWith(".jpg")) {
-      //   this.$modal.msgError(this.$t('CMS.Resource.FileTypeErrMsg'));
-      //   this.upload.fileList = [];
-      //   return;
-      // }
-      this.form.name = file.name;
+      console.log(file);
+      // this.form.name = file.name;
     },
     handleBeforeUpload(file) {
       return true;
     },
     /** 提交按钮 */
     submitForm: function () {
-      this.$refs["form"].validate((valid) => {
+      this.$refs["form"].validate(async (valid) => {
         if (valid) {
-          this.$refs.upload.submit();
+          let res = null;
+          this.upload.isUploading = true;
+          const form = {
+            ...this.form,
+            status: 0,
+          };
+          if (this.title === "新增") {
+            res = await createComponent(form);
+          } else {
+            res = await getCmsPutComponent(form);
+          }
+          if (res.code === 200) {
+            this.$modal.msgSuccess(res.msg);
+            this.open = false;
+            this.getList();
+          }
+          this.upload.isUploading = false;
         }
       });
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const resourceIds = row.resourceId || this.ids;
+      const componentIds = row.componentId ? [row.componentId] : this.ids;
       this.$modal
         .confirm(this.$t("Common.ConfirmDelete"))
         .then(function () {
-          return delResource(resourceIds);
+          return deleteComponent(componentIds);
         })
         .then(() => {
           this.getList();
@@ -535,29 +649,29 @@ export default {
     },
     /** 下架 */
     handleSold(row) {
-      const resourceIds = row.resourceId || this.ids;
+      const componentIds = row.componentId || this.ids;
       this.$modal
-        .confirm(this.$t("Common.ConfirmDelete"))
+        .confirm("是否下线")
         .then(function () {
-          return delResource(resourceIds);
+          return putComponent(componentIds);
         })
         .then(() => {
           this.getList();
-          this.$modal.msgSuccess(this.$t("Common.DeleteSuccess"));
+          this.$modal.msgSuccess("下线成功");
         })
         .catch(function () {});
     },
     /** 发布 */
     handlePublish(row) {
-      const resourceIds = row.resourceId || this.ids;
+      const componentIds = row.componentId || this.ids;
       this.$modal
-        .confirm(this.$t("Common.ConfirmDelete"))
+        .confirm("确认发布")
         .then(function () {
-          return delResource(resourceIds);
+          return publishComponent(componentIds);
         })
         .then(() => {
           this.getList();
-          this.$modal.msgSuccess(this.$t("Common.DeleteSuccess"));
+          this.$modal.msgSuccess("发布成功");
         })
         .catch(function () {});
     },
@@ -581,6 +695,12 @@ export default {
   grid-template-columns: repeat(2, 50%);
   grid-gap: 24px;
 }
+.flex {
+  display: flex;
+}
+.pl-4 {
+  padding: 0 4px;
+}
 .content {
   display: flex;
   padding-left: 24px;
@@ -590,6 +710,7 @@ export default {
   > span:nth-child(2) {
     padding-left: 8px;
     color: rgba(0, 0, 0, 0.65);
+    flex: 1;
   }
 }
 </style>

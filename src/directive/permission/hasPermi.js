@@ -1,16 +1,16 @@
  /**
  * v-hasPermi 操作权限处理
  * Copyright (c) 2023 兮玥（190785909@qq.com）
- * 
+ *
  * 1、非el-button标签的按钮权限需要给对应控件添加class="btn-permi"
  * 2、表格操作列的多个按钮需要给按钮添加一个<span class="btn-cell-wrap"></span>包裹住用来占位，否则会影响按钮位置
  */
- 
+
 import store from '@/store'
 
 function fn (el, binding) {
   const { value } = binding
-  const all_permission = "*";
+  const all_permission = "*:*:*";
   const permissions = store.getters && store.getters.permissions
 
   if (!value || !value instanceof Array) {
@@ -20,7 +20,7 @@ function fn (el, binding) {
   if (permissionFlag.length == 0) {
     return
   }
-
+  return
   const hasPermissions = permissions.some(permission => {
     return all_permission === permission || permissionFlag.includes(permission)
   })

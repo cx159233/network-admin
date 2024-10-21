@@ -30,7 +30,6 @@ import CMSCatalogTree from "@/views/cms/contentcore/catalogTree";
 import CMSContentList from "@/views/cms/contentcore/contentList";
 import CMSPageWidget from "@/views/cms/contentcore/pageWidget";
 import CMSContentRecycleList from "@/views/cms/contentcore/contentRecycleList";
-import { getDicts } from "@/api/system/dict/data";
 export default {
   name: "CmsContentcoreContent",
   components: {
@@ -44,14 +43,9 @@ export default {
       loading: false,
       activeName: this.$route.params.tab || "contentList",
       selectedCatalogId: "",
-      configStatusArr: [],
     };
   },
-  async created() {
-    await getDicts("sys_normal_disable").then((response) => {
-      this.configStatusArr = response.data;
-    });
-  },
+  async created() {},
   methods: {
     handleTabClick(tab, event) {},
     handleTreeNodeClick(data) {

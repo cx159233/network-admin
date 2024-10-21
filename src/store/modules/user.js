@@ -1,4 +1,5 @@
-import { login, logout, getInfo } from '@/api/login'
+import { login, logout } from '@/api/login'
+import {getInfo,getRolesAndPermission} from '@/api/admin'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
@@ -7,12 +8,16 @@ const user = {
     name: '',
     avatar: '',
     roles: [],
-    permissions: []
+    permissions: [],
+    userInfo:{}
   },
 
   mutations: {
     SET_TOKEN: (state, token) => {
       state.token = token
+    },
+    SET_USERINFO: (state, userInfo) => {
+      state.userInfo = userInfo
     },
     SET_NAME: (state, name) => {
       state.name = name
@@ -49,19 +54,24 @@ const user = {
     // 获取用户信息
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getInfo().then(res => {
-          const user = res.data.user
-          const avatar = (user.avatarSrc == "" || user.avatarSrc == null) ? require("@/assets/images/profile.jpg") : process.env.VUE_APP_BASE_API + user.avatarSrc;
-          if (res.data.roles && res.data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', res.data.roles)
+        getInfo().then(async(res) => {
+          const user = res.user
+          let imageUrl = ''
+          if(user?.accountList&&user?.accountList[0]){
+            imageUrl=user?.accountList[0]?.avatar||''
+          }
+          commit('SET_USERINFO', res.user)
+          if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+            commit('SET_ROLES', res.roles)
           } else {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
-          if (res.data.permissions && res.data.permissions.length > 0) {
-            commit('SET_PERMISSIONS', res.data.permissions)
+          const response = await getRolesAndPermission()
+          if (response.permissions && response.permissions.length > 0) {
+            commit('SET_PERMISSIONS', response.permissions)
           }
           commit('SET_NAME', user.userName)
-          commit('SET_AVATAR', avatar)
+          commit('SET_AVATAR', imageUrl)
           resolve(res)
         }).catch(error => {
           reject(error)

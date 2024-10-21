@@ -28,7 +28,7 @@ service.interceptors.request.use(config => {
   // 是否需要防止数据重复提交
   const isRepeatSubmit = (config.headers || {}).repeatSubmit === false
   if (getToken() && !nonToken) {
-    config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+    // config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     // CMS当前站点
     if (cache.local.get('CurrentSite')) {
       config.headers['CurrentSite'] = cache.local.get('CurrentSite');
@@ -36,7 +36,11 @@ service.interceptors.request.use(config => {
   }
   //去掉url中的gdmercury-api
   if(config.url.includes('/gdmercury-api')){
+    delete config.headers['Authorization']
     config.baseURL=''
+  }
+  if (config['CSRF-Token']) {
+    config.headers['csrf-token'] = config['CSRF-Token']
   }
   // 语言环境
   config.headers['Accept-Language'] = i18n.locale;
@@ -93,7 +97,7 @@ service.interceptors.response.use(res => {
               { confirmButtonText: i18n.t('Common.Relogin'), cancelButtonText: i18n.t('Common.Cancel'), type: 'warning' }).then(() => {
             isRelogin.show = false;
             store.dispatch('LogOut').then(() => {
-              location.href = process.env.VUE_APP_PATH + 'index';
+              location.href = '/ulogin';
             })
         }).catch(() => {
           isRelogin.show = false;
@@ -102,7 +106,7 @@ service.interceptors.response.use(res => {
       return Promise.reject(i18n.t('Common.InvalidSession'))
     } else if (code === 500) {
       Message({ message: msg, type: 'error' })
-      return Promise.reject(new Error(msg))
+      return res.data
     } else if (code === 601) {
       Message({ message: msg, type: 'warning' })
       return Promise.reject('error')

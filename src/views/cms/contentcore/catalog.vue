@@ -6,7 +6,8 @@
         <cms-catalog-tree
           ref="catalogTree"
           :new-btn="true"
-          @node-click="handleTreeNodeClick">
+          @node-click="handleTreeNodeClick"
+        >
         </cms-catalog-tree>
       </el-col>
       <!--栏目数据-->
@@ -14,7 +15,7 @@
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
           <el-tab-pane :label="$t('CMS.Catalog.Tab.Basic')" name="basicInfo">
             <cms-catalog-info
-              v-if="this.activeName=='basicInfo'"
+              v-if="this.activeName == 'basicInfo'"
               :cid="selectedCatalogId"
               @update="handleCatalogUpdate"
               @remove="handleCatalogDelete"
@@ -26,36 +27,35 @@
   </div>
 </template>
 <script>
-import CMSCatalogTree from '@/views/cms/contentcore/catalogTree';
-import CMSCatalogInfo from '@/views/cms/contentcore/catalogInfo';
-import CMSCatalogExtend from '@/views/cms/contentcore/catalogExtend';
+import CMSCatalogTree from "@/views/cms/contentcore/catalogTree";
+import CMSCatalogInfo from "@/views/cms/contentcore/catalogInfo";
+import CMSCatalogExtend from "@/views/cms/contentcore/catalogExtend";
 
 export default {
   name: "CmsContentcoreCatalog",
   components: {
-    'cms-catalog-tree': CMSCatalogTree,
-    'cms-catalog-info': CMSCatalogInfo,
-    'cms-catalog-extend': CMSCatalogExtend
+    "cms-catalog-tree": CMSCatalogTree,
+    "cms-catalog-info": CMSCatalogInfo,
+    "cms-catalog-extend": CMSCatalogExtend,
   },
-  data () {
+  data() {
     return {
-      activeName: 'basicInfo',
-      selectedCatalogId: undefined
+      activeName: "basicInfo",
+      selectedCatalogId: undefined,
     };
   },
   watch: {
     filterCatalogName(val) {
       this.$refs.tree.filter(val);
-    }
+    },
   },
   computed: {
     selectedCatalog() {
-      return this.selectedCatalogId && this.selectedCatalogId.length > 0
-    }
+      return this.selectedCatalogId && this.selectedCatalogId.length > 0;
+    },
   },
   methods: {
-    handleTabClick (tab, event) {
-    },
+    handleTabClick(tab, event) {},
     handleCatalogUpdate() {
       this.$refs.catalogTree.loadCatalogTreeData();
     },
@@ -64,8 +64,8 @@ export default {
     },
     handleTreeNodeClick(data) {
       this.selectedCatalogId = data && data != null ? data.id : "";
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
