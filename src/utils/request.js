@@ -96,9 +96,10 @@ service.interceptors.response.use(res => {
           MessageBox.confirm(i18n.t('Common.SessionExpired'), i18n.t('Common.SystemTip'),
               { confirmButtonText: i18n.t('Common.Relogin'), cancelButtonText: i18n.t('Common.Cancel'), type: 'warning' }).then(() => {
             isRelogin.show = false;
-            store.dispatch('LogOut').then(() => {
-              location.href = '/ulogin';
-            })
+            window.location.href =window.CONFIG.ssoLoginUrl
+            // store.dispatch('LogOut').then(() => {
+            //   location.href = window.CONFIG.ssoLoginUrl;
+            // })
         }).catch(() => {
           isRelogin.show = false;
         });

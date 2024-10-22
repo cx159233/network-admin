@@ -145,14 +145,18 @@
       <el-table-column label="应用ID" prop="id" width="80" />
       <el-table-column
         label="面向对象"
-        prop="target"
+        prop="targetView"
         align="center"
         width="120"
       />
-      <el-table-column label="应用覆盖范围" prop="cover" align="center" />
+      <el-table-column label="应用覆盖范围" align="center">
+        <template slot-scope="scope">
+          <span>{{ dealCover(scope.row.cover) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" width="110">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.STATUS" :value="scope.row.status" />
+          <dict-tag :options="statusColumn" :value="scope.row.status" />
         </template>
       </el-table-column>
       <el-table-column
@@ -169,7 +173,7 @@
       />
       <el-table-column
         label="云服务商"
-        prop="deployServiceProvider"
+        prop="deployServiceProviderView"
         align="center"
         width="120"
       />
@@ -293,7 +297,7 @@
           <el-checkbox-group v-model="form.target">
             <el-checkbox
               v-for="(item, index) in dict.type.Client"
-              :label="item.value"
+              :label="`${item.value}`"
               :key="index"
               >{{ item.label }}</el-checkbox
             >
@@ -303,7 +307,7 @@
           <el-radio-group v-model="form.architecture">
             <el-radio
               v-for="(item, index) in dict.type.SoftwareArchitecture"
-              :label="item.value"
+              :label="`${item.value}`"
               :key="index"
               >{{ item.label }}</el-radio
             >
@@ -313,7 +317,7 @@
           <el-radio-group v-model="form.deployServiceProvider">
             <el-radio
               v-for="(item, index) in dict.type.CloudProvider"
-              :label="item.value"
+              :label="`${item.value}`"
               :key="index"
               >{{ item.label }}</el-radio
             >
@@ -321,13 +325,13 @@
         </el-form-item>
         <el-form-item
           :label="`${index.slice(0, 2)}应用覆盖范围`"
-          v-for="(item, index) in COVER"
+          v-for="(item1, index) in COVER"
           :key="index"
         >
           <el-checkbox-group v-model="coverForm[index]">
             <el-checkbox
-              v-for="(item, index) in item"
-              :label="item.value"
+              v-for="(item, index) in item1"
+              :label="`${item.value}`"
               :key="index"
               >{{ item.label }}</el-checkbox
             >
@@ -499,13 +503,13 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        address: [
-          {
-            required: true,
-            message: "请输入服务商名称",
-            trigger: ["blur", "change"],
-          },
-        ],
+        // address: [
+        //   {
+        //     required: true,
+        //     message: "请输入服务商名称",
+        //     trigger: ["blur", "change"],
+        //   },
+        // ],
         serviceProviderName: [
           {
             required: true,
@@ -513,13 +517,13 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        partnerName: [
-          {
-            required: true,
-            message: "请输入合作伙伴名称",
-            trigger: ["blur", "change"],
-          },
-        ],
+        // partnerName: [
+        //   {
+        //     required: true,
+        //     message: "请输入合作伙伴名称",
+        //     trigger: ["blur", "change"],
+        //   },
+        // ],
         lxr1: [
           {
             required: true,
@@ -553,7 +557,7 @@ export default {
         target: [
           {
             required: true,
-            message: "请输入服务商名称",
+            message: "请选择面向对象",
             trigger: ["blur", "change"],
           },
         ],
@@ -579,6 +583,7 @@ export default {
       target: [],
       COVER: {},
       coverForm: {},
+      statusColumn: [],
     };
   },
   computed: {
@@ -586,11 +591,35 @@ export default {
       return this.upload.acceptSize / 1024 / 1024 + " MB";
     },
   },
+  watch: {
+    "dict.type.STATUS": {
+      handler(val) {
+        let arr = [];
+        val.forEach((i) => {
+          arr.push({
+            label: i.label,
+            value: i.raw.dictValue,
+            raw: {
+              listClass:
+                i.raw.dictValue === "0"
+                  ? "default"
+                  : i.raw.dictValue === "10"
+                  ? "success"
+                  : "danger",
+            },
+          });
+        });
+        this.statusColumn = arr;
+      },
+      deep: true,
+    },
+  },
   created() {
     this.getList();
   },
   async mounted() {
     let obj = {};
+    let obj1 = [];
     const res = await getDicts("Client");
     if (res.code === 200) {
       this.dict.type.Client = res?.rows?.map((i) => ({
@@ -599,13 +628,14 @@ export default {
         value: i.dictCode,
       }));
     }
+
     await Promise.all(
       this.dict.type.Client.map(async (i) => {
+        obj[i.dictLabel] = [];
         const response = await getDicts(i.dictValue);
-        this.$set(this.coverForm, i.dictLabel, []);
         if (response.code === 200) {
           if (response?.rows?.length > 0) {
-            obj[i.dictLabel] = response?.rows.map((j) => ({
+            obj1[i.dictLabel] = response?.rows.map((j) => ({
               ...j,
               label: j.dictLabel,
               value: j.dictCode,
@@ -614,9 +644,20 @@ export default {
         }
       })
     );
-    this.COVER = obj;
+    this.coverForm = obj;
+    Object.keys(obj).forEach((i) => {
+      this.COVER[i] = obj1[i];
+    });
   },
   methods: {
+    dealCover(arr) {
+      let data = [];
+      if (!arr || arr.length < 1) return "--";
+      arr.forEach((i) => {
+        data.push(i.value);
+      });
+      return data.join(";");
+    },
     /** 查询资源列表 */
     getList() {
       this.loading = true;
@@ -655,6 +696,11 @@ export default {
         cover: [],
         status: undefined,
       };
+      Object.keys(this.coverForm).forEach((i) => {
+        if (this.coverForm[i]?.length > 0) {
+          this.coverForm[i] = [];
+        }
+      });
       this.upload.fileList = [];
       this.resetForm("form");
     },
@@ -691,8 +737,12 @@ export default {
         this.form = response.data;
         this.form.target = this.form.target.split(";");
         this.form.cover?.forEach((i) => {
-          const { type, key, typeValue } = i || {};
-          this.coverForm[typeValue] = key?.split(";");
+          const { key, typeValue } = i || {};
+          if (this.coverForm[typeValue]) {
+            this.coverForm[typeValue].push(key);
+          } else {
+            this.coverForm[typeValue] = [key];
+          }
         });
         this.title = "编辑";
         this.open = true;
@@ -729,7 +779,7 @@ export default {
           const target = this.form.target.join(";");
           const cover = [];
           Object.keys(this.coverForm).forEach((i) => {
-            if (this.coverForm[i].length > 0) {
+            if (this.coverForm[i]?.length > 0) {
               cover.push(...this.coverForm[i]);
             }
           });
@@ -737,7 +787,7 @@ export default {
             ...this.form,
             target,
             cover: cover.join(";"),
-            status: 0,
+            status: "0",
           };
           if (this.title === "新增") {
             res = await createApplication(form);
@@ -748,6 +798,7 @@ export default {
             this.$modal.msgSuccess(res.msg);
             this.open = false;
             this.getList();
+            this.reset();
           }
           this.upload.isUploading = false;
         }

@@ -272,10 +272,7 @@
         width="110"
       >
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.CMSContentStatus"
-            :value="scope.row.status"
-          />
+          <dict-tag :options="statusColumn" :value="scope.row.status" />
         </template>
       </el-table-column>
       <el-table-column
@@ -544,6 +541,7 @@ export default {
       isCopy: false,
       openContentSortDialog: false, // 内容选择弹窗
       openEditorW: true,
+      statusColumn: [],
     };
   },
   watch: {
@@ -552,6 +550,27 @@ export default {
     },
     catalogId(newVal) {
       this.loadContentList();
+    },
+    "dict.type.CMSContentStatus": {
+      handler(val) {
+        let arr = [];
+        val.forEach((i) => {
+          arr.push({
+            label: i.label,
+            value: i.raw.dictValue,
+            raw: {
+              listClass:
+                i.raw.dictValue === "30"
+                  ? "success"
+                  : i.raw.dictValue === "40"
+                  ? "danger"
+                  : "default",
+            },
+          });
+        });
+        this.statusColumn = arr;
+      },
+      deep: true,
     },
   },
   created() {

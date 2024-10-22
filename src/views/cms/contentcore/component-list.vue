@@ -77,7 +77,7 @@
           <el-form-item prop="name1">
             <el-select v-model="cover" multiple placeholder="开放范围">
               <el-option
-                v-for="item in dict.type.AppScope"
+                v-for="item in dict.type.OpenRange"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -131,7 +131,7 @@
       <el-table-column label="组件描述" prop="description" align="center" />
       <el-table-column label="状态" align="center" width="110">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.STATUS" :value="scope.row.status" />
+          <dict-tag :options="statusColumn" :value="scope.row.status" />
         </template>
       </el-table-column>
       <el-table-column
@@ -143,16 +143,15 @@
 
       <el-table-column
         label="云服务商"
-        prop="deployServiceProvider"
+        prop="deployServiceProviderView"
         align="center"
         width="120"
       />
-      <el-table-column
-        label="开放范围"
-        prop="cover"
-        align="center"
-        width="120"
-      />
+      <el-table-column label="开放范围" align="center" width="110">
+        <template slot-scope="scope">
+          <span>{{ dealCover(scope.row.cover) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         :label="$t('Common.Operation')"
         align="center"
@@ -440,20 +439,20 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        address: [
-          {
-            required: true,
-            message: "请输入服务商名称",
-            trigger: ["blur", "change"],
-          },
-        ],
-        serviceProviderName: [
-          {
-            required: true,
-            message: "请输入服务商名称",
-            trigger: ["blur", "change"],
-          },
-        ],
+        // address: [
+        //   {
+        //     required: true,
+        //     message: "请输入服务商名称",
+        //     trigger: ["blur", "change"],
+        //   },
+        // ],
+        // serviceProviderName: [
+        //   {
+        //     required: true,
+        //     message: "请输入服务商名称",
+        //     trigger: ["blur", "change"],
+        //   },
+        // ],
         lxr1: [
           {
             required: true,
@@ -503,7 +502,31 @@ export default {
         data: {},
       },
       cover: undefined,
+      statusColumn: [],
     };
+  },
+  watch: {
+    "dict.type.STATUS": {
+      handler(val) {
+        let arr = [];
+        val.forEach((i) => {
+          arr.push({
+            label: i.label,
+            value: i.raw.dictValue,
+            raw: {
+              listClass:
+                i.raw.dictValue === "0"
+                  ? "default"
+                  : i.raw.dictValue === "10"
+                  ? "success"
+                  : "danger",
+            },
+          });
+        });
+        this.statusColumn = arr;
+      },
+      deep: true,
+    },
   },
   computed: {
     fileSizeName() {
@@ -514,6 +537,15 @@ export default {
     this.getList();
   },
   methods: {
+    dealCover(cover) {
+      let str = "--";
+      this.dict.type.OpenRange.forEach((i) => {
+        if (`${i.value}` == cover) {
+          str = i.label;
+        }
+      });
+      return str;
+    },
     /** 查询资源列表 */
     getList() {
       this.loading = true;
