@@ -48,12 +48,12 @@
                 >{{ $t("CMS.ContentCore.Publish") }}</el-button
               >
             </el-col>
-            <el-col :span="1.5">
+            <!-- <el-col :span="1.5">
               <el-button plain type="primary" size="mini" @click="handlePreview"
                 ><svg-icon icon-class="eye-open" class="mr5"></svg-icon
                 >{{ $t("CMS.ContentCore.Preview") }}</el-button
               >
-            </el-col>
+            </el-col> -->
             <el-col :span="1.5">
               <el-button
                 plain

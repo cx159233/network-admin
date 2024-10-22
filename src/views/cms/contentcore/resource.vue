@@ -81,7 +81,7 @@
               placeholder="请选择应用覆盖范围"
             >
               <el-option
-                v-for="item in dict.type.AppScope"
+                v-for="item in coverList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -103,9 +103,9 @@
           <el-form-item prop="status">
             <el-select v-model="queryParams.status" placeholder="请选择状态">
               <el-option
-                v-for="item in dict.type.STATUS"
+                v-for="item in statusColumn"
                 :key="item.value"
-                :label="item.label"
+                :label="`${item.label}`"
                 :value="item.value"
               >
               </el-option>
@@ -400,18 +400,19 @@
       <p class="pt-24 fz-16">分类标签</p>
       <div class="gird">
         <div class="content">
-          <span>面向对象</span><span>{{ detail.target || "--" }}</span>
+          <span>面向对象</span><span>{{ detail.targetView || "--" }}</span>
         </div>
         <div class="content">
-          <span>应用架构</span><span>{{ detail.architecture || "--" }}</span>
+          <span>应用架构</span
+          ><span>{{ detail.architectureView || "--" }}</span>
         </div>
         <div class="content">
           <span>部署云服务商</span
-          ><span>{{ detail.deployServiceProvider || "--" }}</span>
+          ><span>{{ detail.deployServiceProviderView || "--" }}</span>
         </div>
-        <div class="content">
-          <span>应用覆盖范围</span><span>{{ detail.cover || "--" }}</span>
-        </div>
+      </div>
+      <div class="content pt-24">
+        <span>应用覆盖范围</span><span>{{ dealCover(detail.cover) }}</span>
       </div>
     </el-dialog>
   </div>
@@ -431,7 +432,7 @@ import {
 
 export default {
   name: "CmsContentcoreResource",
-  dicts: ["STATUS", "CloudProvider", "SoftwareArchitecture"],
+  dicts: ["STATUS", "CloudProvider", "SoftwareArchitecture", "AppScope"],
   data() {
     return {
       detailDialog: false,
@@ -584,6 +585,7 @@ export default {
       COVER: {},
       coverForm: {},
       statusColumn: [],
+      coverList: [],
     };
   },
   computed: {
@@ -620,6 +622,8 @@ export default {
   async mounted() {
     let obj = {};
     let obj1 = [];
+    let arr = [];
+    let arr2 = {};
     const res = await getDicts("Client");
     if (res.code === 200) {
       this.dict.type.Client = res?.rows?.map((i) => ({
@@ -635,6 +639,7 @@ export default {
         const response = await getDicts(i.dictValue);
         if (response.code === 200) {
           if (response?.rows?.length > 0) {
+            arr.push(...response?.rows);
             obj1[i.dictLabel] = response?.rows.map((j) => ({
               ...j,
               label: j.dictLabel,
@@ -647,6 +652,19 @@ export default {
     this.coverForm = obj;
     Object.keys(obj).forEach((i) => {
       this.COVER[i] = obj1[i];
+    });
+    arr.forEach((i) => {
+      if (arr2[i.dictLabel]) {
+        arr2[i.dictLabel].push(i.dictCode);
+      } else {
+        arr2[i.dictLabel] = [i.dictCode];
+      }
+    });
+    Object.keys(arr2).forEach((i) => {
+      this.coverList.push({
+        label: i,
+        value: arr2[i].join(";"),
+      });
     });
   },
   methods: {
@@ -714,6 +732,8 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
+      this.target = [];
+      this.cover = [];
       this.queryParams.resourceType = undefined;
       this.handleQuery();
     },
@@ -752,7 +772,7 @@ export default {
       const applicationId = row.applicationId || this.ids;
       getApplicationDetail(applicationId).then((response) => {
         this.detail = response.data;
-        this.title = "数字应用详情";
+        this.title = `${this.detail.name}详情`;
         this.detailDialog = true;
       });
     },

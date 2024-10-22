@@ -88,7 +88,7 @@
           <el-form-item prop="status">
             <el-select v-model="queryParams.status" placeholder="请选择状态">
               <el-option
-                v-for="item in dict.type.STATUS"
+                v-for="item in statusColumn"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -272,7 +272,7 @@
           <el-radio-group v-model="form.cover">
             <el-radio
               v-for="(item, index) in dict.type.OpenRange"
-              :label="item.value"
+              :label="`${item.value}`"
               :key="index"
               >{{ item.label }}</el-radio
             >
@@ -282,7 +282,7 @@
           <el-radio-group v-model="form.deployServiceProvider">
             <el-radio
               v-for="(item, index) in dict.type.CloudProvider"
-              :label="item.value"
+              :label="`${item.value}`"
               :key="index"
               >{{ item.label }}</el-radio
             >
@@ -344,11 +344,11 @@
       <p class="pt-24 fz-16">分类标签</p>
       <div class="gird">
         <div class="content">
-          <span>开放范围</span><span>{{ detail.cover || "--" }}</span>
+          <span>开放范围</span><span>{{ dealCover(detail.cover) }}</span>
         </div>
         <div class="content">
           <span>部署云服务商</span
-          ><span>{{ detail.deployServiceProvider || "--" }}</span>
+          ><span>{{ detail.deployServiceProviderView || "--" }}</span>
         </div>
       </div>
     </el-dialog>
@@ -453,22 +453,22 @@ export default {
         //     trigger: ["blur", "change"],
         //   },
         // ],
-        lxr1: [
-          {
-            required: true,
-            trigger: ["blur", "change"],
-            //方法
-            validator: (rule, value, callback) => {
-              if (!this.form.contactName1) {
-                callback(new Error("请输入联系人姓名"));
-              } else if (!this.form.contactPhone1) {
-                callback(new Error("请输入联系人手机号"));
-              } else {
-                callback();
-              }
-            },
-          },
-        ],
+        // lxr1: [
+        //   {
+        //     required: true,
+        //     trigger: ["blur", "change"],
+        //     //方法
+        //     validator: (rule, value, callback) => {
+        //       if (!this.form.contactName1) {
+        //         callback(new Error("请输入联系人姓名"));
+        //       } else if (!this.form.contactPhone1) {
+        //         callback(new Error("请输入联系人手机号"));
+        //       } else {
+        //         callback();
+        //       }
+        //     },
+        //   },
+        // ],
         cover: [
           {
             required: true,
@@ -588,7 +588,9 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      this.queryParams.cover = this.cover?.join(";");
       this.queryParams.pageNum = 1;
+
       this.getList();
     },
     /** 重置按钮操作 */
@@ -623,7 +625,7 @@ export default {
       const componentId = row.componentId || this.ids;
       getComponentDetail(componentId).then((response) => {
         this.detail = response.data;
-        this.title = "数字能力组件详情";
+        this.title = `${this.detail.name}详情`;
         this.detailDialog = true;
       });
     },
