@@ -949,7 +949,7 @@ export default {
         }
       } else if (this.catalogSelectorFor === "linkflag") {
         if (catalogs && catalogs.length > 0) {
-          this.form.redirectUrl = catalogs[0].props.internalUrl;
+          this.form.redirectUrl = catalogs[0].props.src;
         }
       }
       this.openCatalogSelector = false;
@@ -968,7 +968,7 @@ export default {
     },
     handleContentSelectorOk(contents) {
       if (contents && contents.length > 0) {
-        this.form.redirectUrl = contents[0].internalUrl;
+        this.form.redirectUrl = contents[0].src;
         if (!this.form.logo || this.form.logo.length == 0) {
           this.form.logo = contents[0].logo;
           this.form.logoSrc = contents[0].logoSrc;

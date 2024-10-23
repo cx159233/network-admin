@@ -1,24 +1,42 @@
 <template>
-  <div class="logo-viewer" :style="{'width':imgWidth,'height':imgHeight}">
-    <div class="picture"
-         v-show="showImage">
-      <el-image :src="imageSrc"  
-                :style="{'width':imgWidth,'height':imgHeight}"
-                @click="handleEdit"
-                fit="scale-down">
+  <div class="logo-viewer" :style="{ width: imgWidth, height: imgHeight }">
+    <div class="picture" v-show="showImage">
+      <el-image
+        :src="imageSrc"
+        :style="{ width: imgWidth, height: imgHeight }"
+        @click="handleEdit"
+        fit="scale-down"
+      >
       </el-image>
-      <el-image-viewer v-if="showImageViewer" 
-                       :on-close="handleImageViewerClose"
-                       :url-list="imageViewerList">
+      <el-image-viewer
+        v-if="showImageViewer"
+        :on-close="handleImageViewerClose"
+        :url-list="imageViewerList"
+      >
       </el-image-viewer>
       <div class="toolbar">
-         <el-tooltip class="item" effect="dark" :content="$t('Common.View')" placement="top">
+        <el-tooltip
+          class="item"
+          effect="dark"
+          :content="$t('Common.View')"
+          placement="top"
+        >
           <i class="el-icon-search" @click="handleView" />
-         </el-tooltip>
-        <el-tooltip class="item" effect="dark" :content="$t('Common.Edit')" placement="top">
+        </el-tooltip>
+        <el-tooltip
+          class="item"
+          effect="dark"
+          :content="$t('Common.Edit')"
+          placement="top"
+        >
           <i class="el-icon-edit" @click="handleEdit" />
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" :content="$t('Common.Remove')" placement="top">
+        <el-tooltip
+          class="item"
+          effect="dark"
+          :content="$t('Common.Remove')"
+          placement="top"
+        >
           <i class="el-icon-delete" @click="handleRemove" />
         </el-tooltip>
         <!-- <el-tooltip class="item" effect="dark" :content="$t('CMS.Resource.Cut')" placement="top">
@@ -26,30 +44,35 @@
         </el-tooltip> -->
       </div>
     </div>
-    <div v-show="showText" class="no-picture" :style="{'width':noWidth,'height':noHeight,'font-size':svgSize}">
+    <div
+      v-show="showText"
+      class="no-picture"
+      :style="{ width: noWidth, height: noHeight, 'font-size': svgSize }"
+    >
       <svg-icon icon-class="upload" @click="handleEdit"></svg-icon>
     </div>
-    <cms-resource-dialog 
+    <cms-resource-dialog
       :open.sync="openResourceDialog"
       rtype="image"
-      :upload-limit="1" 
-      @ok="handleResourceDialogOk">
+      :upload-limit="1"
+      @ok="handleResourceDialogOk"
+    >
     </cms-resource-dialog>
   </div>
 </template>
 <script>
 import CMSResourceDialog from "@/views/cms/contentcore/resourceDialog";
-import ElImageViewer from "element-ui/packages/image/src/image-viewer"
+import ElImageViewer from "element-ui/packages/image/src/image-viewer";
 
 export default {
   name: "CMSLogoView",
   components: {
     "cms-resource-dialog": CMSResourceDialog,
-    "el-image-viewer": ElImageViewer
+    "el-image-viewer": ElImageViewer,
   },
   model: {
-    prop: 'path',
-    event: 'change'
+    prop: "path",
+    event: "change",
   },
   props: {
     path: {
@@ -71,30 +94,38 @@ export default {
       type: Number,
       default: 150,
       required: false,
-    }
+    },
   },
   computed: {
-    imgWidth () {
-      return this.width + 'px';
+    imgWidth() {
+      return this.width + "px";
     },
-    imgHeight () {
-      return this.height + 'px';
+    imgHeight() {
+      return this.height + "px";
     },
-    noWidth () {
-      return (this.width - 3) + 'px';
+    noWidth() {
+      return this.width - 3 + "px";
     },
-    noHeight () {
-      return (this.height - 3) + 'px';
+    noHeight() {
+      return this.height - 3 + "px";
     },
-    svgSize () {
-      return (this.height - 5) + 'px';
+    svgSize() {
+      return this.height - 5 + "px";
     },
-    showImage () {
-      return this.imagePath != undefined && this.imagePath != null && this.imagePath.length > 0;
+    showImage() {
+      return (
+        this.imagePath != undefined &&
+        this.imagePath != null &&
+        this.imagePath.length > 0
+      );
     },
     showText() {
-      return this.imagePath == undefined || this.imagePath == null || this.imagePath.length == 0;
-    }
+      return (
+        this.imagePath == undefined ||
+        this.imagePath == null ||
+        this.imagePath.length == 0
+      );
+    },
   },
   watch: {
     path(newVal) {
@@ -108,45 +139,46 @@ export default {
     },
     imageSrc(newVal) {
       if (newVal && newVal.length > 0) {
-        this.imageViewerList = [ newVal ];
+        this.imageViewerList = [newVal];
+        this.$emit("changeSrc", newVal);
       } else {
         this.imageViewerList.splice(0);
       }
-    }
+    },
   },
-  data () {
+  data() {
     return {
       imagePath: this.path,
       imageSrc: this.src,
       openResourceDialog: false,
       showImageViewer: false,
-      imageViewerList: []
+      imageViewerList: [],
     };
   },
   methods: {
-    handleResourceDialogOk (results) {
+    handleResourceDialogOk(results) {
       if (results && results.length > 0) {
         const r = results[0];
         this.imagePath = r.path;
         this.imageSrc = r.src;
       }
     },
-    handleView () {
+    handleView() {
       this.showImageViewer = true;
     },
     handleImageViewerClose() {
       this.showImageViewer = false;
     },
-    handleEdit () {
+    handleEdit() {
       this.openResourceDialog = true;
     },
-    handleRemove () {
+    handleRemove() {
       this.imagePath = "";
-    }, 
-    handleCut () {
+    },
+    handleCut() {
       this.$modal.alert("没整呢~");
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
@@ -164,7 +196,7 @@ export default {
   opacity: 80;
 }
 .logo-viewer .el-image {
-  background-color: #E7E7E7;
+  background-color: #e7e7e7;
 }
 .logo-viewer .toolbar {
   position: absolute;
@@ -174,8 +206,8 @@ export default {
   top: 120px;
   z-index: 100;
   color: #eee;
-  background-color: rgba(0,0,0,.5);
-  transition: opacity .3s;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: opacity 0.3s;
   opacity: 0;
 }
 .logo-viewer .toolbar i {
@@ -184,7 +216,7 @@ export default {
   cursor: pointer;
 }
 .logo-viewer .toolbar i:hover {
-  color: #409EFF;
+  color: #409eff;
 }
 .logo-viewer .no-picture {
   border: 3px dashed #a7a7a7;
@@ -193,6 +225,6 @@ export default {
   cursor: pointer;
 }
 .logo-viewer .no-picture:hover {
-  color: #409EFF;
+  color: #409eff;
 }
 </style>

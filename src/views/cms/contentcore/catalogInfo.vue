@@ -204,6 +204,7 @@
             v-model="form_info.logo"
             :src="form_info.logoSrc"
             :height="150"
+            @changeSrc="handleLogoChange"
           ></cms-logo-view>
         </el-form-item>
       </el-card>
@@ -404,6 +405,9 @@ export default {
     },
   },
   methods: {
+    handleLogoChange(val) {
+      this.form_info.logoSrc = val;
+    },
     loadContentTypes() {
       catalogApi.getContentTypes().then((response) => {
         this.contentTypes = response.data;

@@ -320,7 +320,7 @@ export default {
       if (isSuccess) {
         this.uploadedCount++;
         this.results.push({
-          path: result.internalUrl,
+          path: result.src,
           name: result.name,
           src: result.src,
           width: result.width,
@@ -371,7 +371,7 @@ export default {
         this.resourceList.forEach((item) => {
           if (item.selected) {
             this.results.push({
-              path: item.internalUrl,
+              path: item.src,
               name: item.name,
               src: item.src,
               width: item.width,
