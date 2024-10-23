@@ -26,7 +26,7 @@ export default {
         UEDITOR_HOME_URL:
           process.env.VUE_APP_PATH === "/"
             ? "/UEditorPlus"
-            : process.env.VUE_APP_PATH + "/static/UEditorPlus/",
+            : process.env.VUE_APP_PATH + "/UEditorPlus/",
       },
     };
   },
@@ -104,6 +104,9 @@ export default {
         ...this.config,
       };
     },
+  },
+  created() {
+    console.log(">>", rocess.env.VUE_APP_PATH);
   },
   methods: {
     // 添加自定义按钮（自定义按钮，自定义弹窗等操作从 2.2.0 版本开始不再考虑直接集成，这会使得组件和 UEditor 过度耦合，但为了兼容一些老版用户的写法，这个方法依然保留）

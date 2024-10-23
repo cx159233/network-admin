@@ -24,15 +24,7 @@
             </div>
             <div class="user-info-detail">
               <i class="el-icon-time">
-                {{ $t("Home.LastLoginTime")
-                }}<span>{{ userInfo.lastLoginTime }}</span></i
-              >
-              <i class="el-icon-map-location">
-                {{ $t("Home.LastLoginIP")
-                }}<span
-                  >{{ userInfo.lastLoginIp }} [
-                  {{ userInfo.lastLoginAddr }} ]</span
-                ></i
+                企业名称<span>{{ userInfo.deptName }}</span></i
               >
             </div>
           </el-col>
@@ -42,7 +34,6 @@
   </div>
 </template>
 <script>
-import { getHomeUserInfo } from "@/api/system/user";
 import store from "@/store";
 export default {
   name: "UserInfoDashboard",
@@ -54,6 +45,19 @@ export default {
   },
   created() {},
   methods: {},
+  watch: {
+    "$store.getters.userInfo": {
+      handler(val) {
+        this.userInfo = val;
+      },
+      deep: true,
+    },
+    "$store.getters.avatar": {
+      handler(val) {
+        this.avatar = val;
+      },
+    },
+  },
 };
 </script>
 <style>
