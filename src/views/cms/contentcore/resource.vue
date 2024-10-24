@@ -227,7 +227,6 @@
           <el-upload
             ref="upload"
             drag
-            :data="form"
             :action="upload.url"
             :headers="upload.headers"
             :file-list="upload.fileList"
@@ -360,7 +359,9 @@
           <span>应用名称</span><span>{{ detail.name || "--" }}</span>
         </div>
         <div class="content">
-          <span>上传LOGO</span><span>{{ detail.logo || "--" }}</span>
+          <span>LOGO</span>
+          <img :src="detail.logo" v-if="detail.logo" class="img" />
+          <span v-else>--</span>
         </div>
 
         <div class="content">
@@ -575,7 +576,7 @@ export default {
           CurrentSite: this.$cache.local.get("CurrentSite"),
         },
         // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/cms/resource",
+        url: process.env.VUE_APP_BASE_API + "/cms/resource/upload",
         // 上传的文件列表
         fileList: [],
         data: {},
@@ -764,6 +765,15 @@ export default {
             this.coverForm[typeValue] = [key];
           }
         });
+        if (this.form.logo) {
+          this.upload.fileList = [
+            {
+              name: this.form.logo,
+              url: this.form.logo,
+            },
+          ];
+        }
+
         this.title = "编辑";
         this.open = true;
       });
@@ -780,6 +790,8 @@ export default {
       this.upload.isUploading = true;
     },
     handleFileSuccess(response, file, fileList) {
+      this.form.logo = file?.response?.data?.src;
+      this.upload.fileList = fileList;
       this.upload.isUploading = false;
       this.$modal.msgSuccess(response.msg);
     },
@@ -891,6 +903,10 @@ export default {
 }
 .pl-4 {
   padding: 0 4px;
+}
+.img {
+  width: 40px;
+  height: 40px;
 }
 .content {
   display: flex;

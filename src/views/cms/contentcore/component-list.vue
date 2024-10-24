@@ -311,7 +311,9 @@
           <span>能力组件名称</span><span>{{ detail.name || "--" }}</span>
         </div>
         <div class="content">
-          <span>上传LOGO</span><span>{{ detail.logo || "--" }}</span>
+          <span>LOGO</span>
+          <img :src="detail.logo" v-if="detail.logo" class="img" />
+          <span v-else>--</span>
         </div>
         <div class="content">
           <span>显示顺序</span><span>{{ detail.showOrder || "--" }}</span>
@@ -496,7 +498,7 @@ export default {
           CurrentSite: this.$cache.local.get("CurrentSite"),
         },
         // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/cms/resource",
+        url: process.env.VUE_APP_BASE_API + "/cms/resource/upload",
         // 上传的文件列表
         fileList: [],
         data: {},
@@ -633,6 +635,8 @@ export default {
       this.upload.isUploading = true;
     },
     handleFileSuccess(response, file, fileList) {
+      this.form.logo = file?.response?.data?.src;
+      this.upload.fileList = fileList;
       this.upload.isUploading = false;
       this.$modal.msgSuccess(response.msg);
     },
