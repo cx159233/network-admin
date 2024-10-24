@@ -724,6 +724,10 @@ export default {
   padding-top: 24px;
   padding-bottom: 12px;
 }
+.img {
+  width: 40px;
+  height: 40px;
+}
 .fz-16 {
   font-size: 16px;
   font-weight: 500;
