@@ -19,9 +19,14 @@ export function getConfig(configId) {
 
 // 根据参数键名查询参数值
 export function getConfigKey(configKey) {
-  return request({
-    url: '/system/config/configKey/' + configKey,
-    method: 'get'
+  // return request({
+  //   url: '/system/config/configKey/' + configKey,
+  //   method: 'get'
+  // })
+  return Promise.resolve({
+    code:200,
+    data: 50 * 1000 * 1000,
+    msg: 'success'
   })
 }
 

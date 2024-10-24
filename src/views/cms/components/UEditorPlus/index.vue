@@ -688,7 +688,9 @@ export default {
             html +=
               '<p><a href="' +
               r.src +
-              '" iurl="' +
+              '" download="' +
+              r.name +
+              '" + iurl="' +
               r.path +
               '" target="_blank" class="art-body-' +
               r.resourceType +
