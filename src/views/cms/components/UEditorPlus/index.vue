@@ -692,7 +692,7 @@ export default {
               r.name +
               '" + iurl="' +
               r.path +
-              '" target="_blank" class="art-body-' +
+              '" target="_blank" class="blue art-body-' +
               r.resourceType +
               '">' +
               r.name +
