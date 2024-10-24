@@ -406,6 +406,7 @@ export default {
   },
   methods: {
     handleLogoChange(val) {
+      this.form_info.logo = val;
       this.form_info.logoSrc = val;
     },
     loadContentTypes() {
