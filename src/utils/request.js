@@ -107,7 +107,7 @@ service.interceptors.response.use(res => {
       return Promise.reject(i18n.t('Common.InvalidSession'))
     } else if (code === 500) {
       Message({ message: msg, type: 'error' })
-      return res.data
+      return Promise.reject('error')
     } else if (code === 601) {
       Message({ message: msg, type: 'warning' })
       return Promise.reject('error')

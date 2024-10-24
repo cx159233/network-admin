@@ -25,7 +25,7 @@ export function getConfigKey(configKey) {
   // })
   return Promise.resolve({
     code:200,
-    data: 50 * 1000 * 1000,
+    data: 50 * 1024 * 1024,
     msg: 'success'
   })
 }
