@@ -393,11 +393,11 @@
                 >{{ $t("CMS.Content.Offline") }}</el-dropdown-item
               >
               <!-- <el-dropdown-item icon="el-icon-document" @click.native="handleArchive(scope.row)">{{ $t('CMS.Content.Archive') }}</el-dropdown-item> -->
-              <el-dropdown-item
+              <!-- <el-dropdown-item
                 icon="el-icon-search"
                 @click.native="handleCreateIndex(scope.row)"
                 >{{ $t("CMS.Content.GenIndex") }}</el-dropdown-item
-              >
+              > -->
             </el-dropdown-menu>
           </el-dropdown>
         </template>
