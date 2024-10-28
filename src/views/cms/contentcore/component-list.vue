@@ -127,7 +127,7 @@
         align="center"
         width="180"
       />
-      <el-table-column label="能力组件ID" prop="componentId" width="80" />
+      <el-table-column label="能力组件ID" prop="componentId" width="120" />
       <el-table-column label="组件描述" prop="description" align="center" />
       <el-table-column label="状态" align="center" width="110">
         <template slot-scope="scope">
