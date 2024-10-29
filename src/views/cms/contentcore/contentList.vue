@@ -152,7 +152,7 @@
                 v-for="dict in dict.type.CMSContentStatus"
                 :key="dict.value"
                 :label="dict.label"
-                :value="dict.value"
+                :value="dict.raw.dictValue"
               />
             </el-select>
           </el-form-item>
