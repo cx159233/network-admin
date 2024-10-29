@@ -229,9 +229,9 @@
           />
         </el-form-item>
 
-        <el-form-item label="系统地址" prop="address">
+        <!-- <el-form-item label="系统地址" prop="address">
           <el-input v-model="form.address" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="显示顺序" prop="showOrder">
           <el-input-number v-model="form.showOrder" :min="0" />
         </el-form-item>
