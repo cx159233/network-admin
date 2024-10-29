@@ -38,8 +38,8 @@
           <el-col :span="1.5">
             <el-button
               plain
-              type="danger"
-              icon="el-icon-delete"
+              type="success"
+              icon="el-icon-s-promotion"
               size="mini"
               :disabled="multiple"
               @click="handlePublish"
@@ -49,8 +49,8 @@
           <el-col :span="1.5">
             <el-button
               plain
-              type="danger"
-              icon="el-icon-delete"
+              type="warning"
+              icon="el-icon-download"
               size="mini"
               :disabled="multiple"
               @click="handleSold"
@@ -142,7 +142,7 @@
         align="center"
         width="180"
       />
-      <el-table-column label="应用ID" prop="id" width="80" />
+      <el-table-column label="应用ID" prop="siteId" width="80" />
       <el-table-column
         label="面向对象"
         prop="targetView"
@@ -221,7 +221,7 @@
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="应用名称" prop="name">
-          <el-input v-model="form.name" />
+          <el-input v-model="form.name" maxlength="20" />
         </el-form-item>
         <el-form-item label="上传LOGO">
           <el-upload
@@ -246,18 +246,22 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="应用描述" prop="description">
-          <el-input v-model="form.description" type="textarea" />
+          <el-input
+            v-model="form.description"
+            type="textarea"
+            maxlength="1000"
+          />
         </el-form-item>
 
         <el-form-item label="系统地址" prop="address">
           <el-input v-model="form.address" />
         </el-form-item>
         <el-form-item label="显示顺序" prop="showOrder">
-          <el-input-number v-model="form.showOrder" :min="1" />
+          <el-input-number v-model="form.showOrder" :min="0" />
         </el-form-item>
         <p>联系信息</p>
         <el-form-item label="服务商名称" prop="serviceProviderName">
-          <el-input v-model="form.serviceProviderName" />
+          <el-input v-model="form.serviceProviderName" maxlength="20" />
         </el-form-item>
         <el-form-item label="合作伙伴名称" prop="partnerName">
           <el-input
@@ -270,11 +274,13 @@
             <el-input
               v-model="form.contactName1"
               placeholder="请输入联系人姓名"
+              maxlength="20"
             />
             <span class="pl-4"> - </span>
             <el-input
               v-model="form.contactPhone1"
               placeholder="请输入联系人手机号"
+              maxlength="20"
             />
           </div>
         </el-form-item>
@@ -283,11 +289,13 @@
             <el-input
               v-model="form.contactName2"
               placeholder="请输入联系人姓名"
+              maxlength="20"
             />
             <span class="pl-4"> - </span>
             <el-input
               v-model="form.contactPhone2"
               placeholder="请输入联系人手机号"
+              maxlength="20"
             />
           </div>
         </el-form-item>
@@ -505,13 +513,24 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        // address: [
-        //   {
-        //     required: true,
-        //     message: "请输入服务商名称",
-        //     trigger: ["blur", "change"],
-        //   },
-        // ],
+        address: [
+          {
+            message: "请输入服务商名称",
+            trigger: ["blur", "change"],
+            validator: (rule, value, callback) => {
+              if (!value) {
+                callback();
+              } else if (
+                !value.includes("http://") &&
+                !value.includes("https://")
+              ) {
+                callback(new Error("请输入有效URL格式：http://或https://开头"));
+              } else {
+                callback();
+              }
+            },
+          },
+        ],
         serviceProviderName: [
           {
             required: true,
@@ -854,7 +873,7 @@ export default {
     handleSold(row) {
       const applicationIds = row.applicationId || this.ids;
       this.$modal
-        .confirm("是否下线")
+        .confirm("下线后门户网站不可见，确认要下线吗？")
         .then(function () {
           return putApplication(applicationIds);
         })
@@ -868,7 +887,7 @@ export default {
     handlePublish(row) {
       const applicationIds = row.applicationId || this.ids;
       this.$modal
-        .confirm("确认发布")
+        .confirm("发布后门户网站可见，确认要发布吗？")
         .then(function () {
           return publishApplication(applicationIds);
         })
