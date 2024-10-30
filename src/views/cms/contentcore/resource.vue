@@ -142,7 +142,7 @@
         align="center"
         width="180"
       />
-      <el-table-column label="应用ID" prop="siteId" width="80" />
+      <el-table-column label="应用ID" prop="applicationId" width="80" />
       <el-table-column
         label="面向对象"
         prop="targetView"
