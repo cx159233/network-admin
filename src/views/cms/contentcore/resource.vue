@@ -330,20 +330,21 @@
             >
           </el-radio-group>
         </el-form-item>
-        <el-form-item
-          :label="`${index.slice(0, 2)}应用覆盖范围`"
-          v-for="(item1, index) in COVER"
-          :key="index"
-        >
-          <el-checkbox-group v-model="coverForm[index]">
-            <el-checkbox
-              v-for="(item, index) in item1"
-              :label="`${item.value}`"
-              :key="index"
-              >{{ item.label }}</el-checkbox
-            >
-          </el-checkbox-group>
-        </el-form-item>
+        <div v-for="(item1, index) in COVER" :key="index">
+          <el-form-item
+            :label="`${index.slice(0, 2)}应用覆盖范围`"
+            v-show="judgeShow(index)"
+          >
+            <el-checkbox-group v-model="coverForm[index]">
+              <el-checkbox
+                v-for="(item, index) in item1"
+                :label="`${item.value}`"
+                :key="index"
+                >{{ item.label }}</el-checkbox
+              >
+            </el-checkbox-group>
+          </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -688,6 +689,12 @@ export default {
     });
   },
   methods: {
+    judgeShow(name) {
+      let arr = this.dict.type.Client.filter((i) =>
+        this.form.target.includes(String(i.value))
+      );
+      return arr.filter((i) => i.label === name).length;
+    },
     dealCover(arr) {
       let data = [];
       if (!arr || arr.length < 1) return "--";
@@ -830,7 +837,7 @@ export default {
           const target = this.form.target.join(";");
           const cover = [];
           Object.keys(this.coverForm).forEach((i) => {
-            if (this.coverForm[i]?.length > 0) {
+            if (this.coverForm[i]?.length > 0 && this.judgeShow(i)) {
               cover.push(...this.coverForm[i]);
             }
           });

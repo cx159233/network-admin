@@ -598,7 +598,12 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.cover = this.cover?.join(";");
+      if (this.cover) {
+        this.queryParams.cover = this.cover
+          .filter((i) => i.label !== "不限")
+          .join(";");
+      }
+
       this.queryParams.pageNum = 1;
 
       this.getList();
