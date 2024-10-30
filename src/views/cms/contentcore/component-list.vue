@@ -610,11 +610,13 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       if (this.cover) {
+        let arr = this.dict.type.OpenRange.filter(
+          (i) => i.label === "不限"
+        ).map((i) => i.value);
         this.queryParams.cover = this.cover
-          .filter((i) => i.label !== "不限")
+          .filter((i) => !arr.includes(i))
           .join(";");
       }
-
       this.queryParams.pageNum = 1;
 
       this.getList();
