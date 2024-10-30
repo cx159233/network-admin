@@ -72,10 +72,16 @@
             <el-input
               v-model="queryParams.name"
               placeholder="请输入能力组件名称"
+              clearable
             ></el-input>
           </el-form-item>
           <el-form-item prop="name1">
-            <el-select v-model="cover" multiple placeholder="开放范围">
+            <el-select
+              v-model="cover"
+              multiple
+              placeholder="开放范围"
+              clearable
+            >
               <el-option
                 v-for="item in dict.type.OpenRange"
                 :key="item.value"
@@ -86,7 +92,11 @@
             </el-select>
           </el-form-item>
           <el-form-item prop="status">
-            <el-select v-model="queryParams.status" placeholder="请选择状态">
+            <el-select
+              v-model="queryParams.status"
+              placeholder="请选择状态"
+              clearable
+            >
               <el-option
                 v-for="item in statusColumn"
                 :key="item.value"
@@ -226,6 +236,7 @@
             v-model="form.description"
             type="textarea"
             maxlength="1000"
+            :autosize="{ minRows: 4, maxRows: 4 }"
           />
         </el-form-item>
 
@@ -319,7 +330,7 @@
           <span>能力组件名称</span><span>{{ detail.name || "--" }}</span>
         </div>
         <div class="content">
-          <span>LOGO</span>
+          <span class="pr-16">LOGO</span>
           <img :src="detail.logo" v-if="detail.logo" class="img" />
           <span v-else>--</span>
         </div>
@@ -732,6 +743,9 @@ export default {
 <style lang="scss" scoped>
 .mt--8 {
   margin-top: -8px;
+}
+.pr-16 {
+  padding-right: 16px;
 }
 .pt-24 {
   padding-top: 24px;

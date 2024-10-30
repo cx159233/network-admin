@@ -2,8 +2,8 @@
   <div class="app-container">
     <el-row :gutter="24" class="mb12">
       <el-col :span="8">
-        <el-row :gutter="10">
-          <el-col :span="1.5">
+        <el-row :gutter="10" class="mt--8">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="primary"
@@ -13,7 +13,7 @@
               >{{ $t("Common.Add") }}</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="success"
@@ -24,7 +24,7 @@
               >{{ $t("Common.Edit") }}</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="danger"
@@ -35,7 +35,7 @@
               >{{ $t("Common.Delete") }}</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="success"
@@ -46,7 +46,7 @@
               >发布</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="warning"
@@ -66,16 +66,18 @@
           :inline="true"
           size="mini"
           style="text-align: right"
-          class="el-form-search"
+          class="el-form-search mt--8"
         >
-          <el-form-item prop="name">
+          <el-form-item prop="name" class="mt-8">
             <el-input
               v-model="queryParams.name"
               placeholder="请输入应用名称"
+              clearable
             ></el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item class="mt-8">
             <el-select
+              clearable
               v-model="cover"
               multiple
               placeholder="请选择应用覆盖范围"
@@ -89,8 +91,13 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item prop="target">
-            <el-select v-model="target" placeholder="请选择面向对象" multiple>
+          <el-form-item prop="target" class="mt-8">
+            <el-select
+              v-model="target"
+              placeholder="请选择面向对象"
+              multiple
+              clearable
+            >
               <el-option
                 v-for="item in dict.type.Client"
                 :key="item.value"
@@ -100,8 +107,12 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item prop="status">
-            <el-select v-model="queryParams.status" placeholder="请选择状态">
+          <el-form-item prop="status" class="mt-8">
+            <el-select
+              v-model="queryParams.status"
+              placeholder="请选择状态"
+              clearable
+            >
               <el-option
                 v-for="item in statusColumn"
                 :key="item.value"
@@ -111,7 +122,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item>
+          <el-form-item class="mt-8">
             <el-button-group>
               <el-button
                 type="primary"
@@ -220,6 +231,7 @@
     <!-- 添加或修改资源对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <p class="fz-16 mt--8">基本信息</p>
         <el-form-item label="应用名称" prop="name">
           <el-input v-model="form.name" maxlength="20" />
         </el-form-item>
@@ -250,6 +262,7 @@
             v-model="form.description"
             type="textarea"
             maxlength="1000"
+            :autosize="{ minRows: 4, maxRows: 4 }"
           />
         </el-form-item>
 
@@ -368,7 +381,7 @@
           <span>应用名称</span><span>{{ detail.name || "--" }}</span>
         </div>
         <div class="content">
-          <span>LOGO</span>
+          <span class="pr-16">LOGO</span>
           <img :src="detail.logo" v-if="detail.logo" class="img" />
           <span v-else>--</span>
         </div>
@@ -910,6 +923,12 @@ export default {
 <style lang="scss" scoped>
 .mt--8 {
   margin-top: -8px;
+}
+.mt-8 {
+  margin-top: 8px;
+}
+.pr-16 {
+  padding-right: 16px;
 }
 .pt-24 {
   padding-top: 24px;
