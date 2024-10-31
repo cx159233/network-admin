@@ -272,7 +272,7 @@
         <el-form-item label="显示顺序" prop="showOrder">
           <el-input-number v-model="form.showOrder" :min="0" />
         </el-form-item>
-        <p>联系信息</p>
+        <p class="fz-16">联系信息</p>
         <el-form-item label="服务商名称" prop="serviceProviderName">
           <el-input v-model="form.serviceProviderName" maxlength="20" />
         </el-form-item>
@@ -312,7 +312,7 @@
             />
           </div>
         </el-form-item>
-        <p>分类标签</p>
+        <p lass="fz-16">分类标签</p>
         <el-form-item label="面向对象" prop="target">
           <el-checkbox-group v-model="form.target">
             <el-checkbox

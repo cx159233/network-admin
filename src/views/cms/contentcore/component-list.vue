@@ -205,6 +205,7 @@
     <!-- 添加或修改资源对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <p class="fz-16 mt--8">基本信息</p>
         <el-form-item label="能力组件名称" prop="name">
           <el-input v-model="form.name" maxlength="20" />
         </el-form-item>
@@ -246,7 +247,7 @@
         <el-form-item label="显示顺序" prop="showOrder">
           <el-input-number v-model="form.showOrder" :min="0" />
         </el-form-item>
-        <p>联系信息</p>
+        <p class="fz-16">联系信息</p>
         <el-form-item label="服务商名称" prop="serviceProviderName">
           <el-input v-model="form.serviceProviderName" maxlength="20" />
         </el-form-item>
@@ -286,7 +287,7 @@
             />
           </div>
         </el-form-item>
-        <p>分类标签</p>
+        <p class="fz-16">分类标签</p>
         <el-form-item label="开放范围" prop="cover">
           <el-radio-group v-model="form.cover">
             <el-radio
