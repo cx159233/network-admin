@@ -2,8 +2,8 @@
   <div class="app-container">
     <el-row :gutter="24" class="mb12">
       <el-col :span="8">
-        <el-row :gutter="10">
-          <el-col :span="1.5">
+        <el-row :gutter="10" class="mt--8">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="primary"
@@ -13,7 +13,7 @@
               >{{ $t("Common.Add") }}</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="success"
@@ -24,7 +24,7 @@
               >{{ $t("Common.Edit") }}</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="danger"
@@ -35,7 +35,7 @@
               >{{ $t("Common.Delete") }}</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="success"
@@ -46,7 +46,7 @@
               >发布</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" class="mt-8">
             <el-button
               plain
               type="warning"
@@ -66,16 +66,16 @@
           :inline="true"
           size="mini"
           style="text-align: right"
-          class="el-form-search"
+          class="el-form-search mt--8"
         >
-          <el-form-item prop="name">
+          <el-form-item prop="name" class="mt-8">
             <el-input
               v-model="queryParams.name"
               placeholder="请输入能力组件名称"
               clearable
             ></el-input>
           </el-form-item>
-          <el-form-item prop="name1">
+          <el-form-item prop="name1" class="mt-8">
             <el-select
               v-model="cover"
               multiple
@@ -91,7 +91,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item prop="status">
+          <el-form-item prop="status" class="mt-8">
             <el-select
               v-model="queryParams.status"
               placeholder="请选择状态"
@@ -106,7 +106,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item>
+          <el-form-item class="mt-8">
             <el-button-group>
               <el-button
                 type="primary"
@@ -784,5 +784,11 @@ export default {
     color: rgba(0, 0, 0, 0.65);
     flex: 1;
   }
+}
+.mt--8 {
+  margin-top: -8px;
+}
+.mt-8 {
+  margin-top: 8px;
 }
 </style>
