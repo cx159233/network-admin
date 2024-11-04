@@ -299,14 +299,14 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="部署云服务商" prop="deployServiceProvider">
-          <el-radio-group v-model="form.deployServiceProvider">
-            <el-radio
+          <el-checkbox-group v-model="form.deployServiceProvider">
+            <el-checkbox
               v-for="(item, index) in dict.type.CloudProvider"
               :label="`${item.value}`"
               :key="index"
-              >{{ item.label }}</el-radio
+              >{{ item.label }}</el-checkbox
             >
-          </el-radio-group>
+          </el-checkbox-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -433,7 +433,7 @@ export default {
         contactName2: "",
         contactPhone2: "",
         architecture: "",
-        deployServiceProvider: "",
+        deployServiceProvider: [],
         cover: undefined,
         status: undefined,
       },
@@ -601,7 +601,7 @@ export default {
         contactName2: "",
         contactPhone2: "",
         architecture: "",
-        deployServiceProvider: "",
+        deployServiceProvider: [],
         cover: undefined,
         status: undefined,
       };
@@ -646,6 +646,8 @@ export default {
       const componentId = row.componentId || this.ids;
       getComponentDetail(componentId).then((response) => {
         this.form = response.data;
+        this.form.deployServiceProvider =
+          this.form.deployServiceProvider.split(";");
         this.title = "编辑";
         this.open = true;
       });
@@ -680,9 +682,12 @@ export default {
         if (valid) {
           let res = null;
           this.upload.isUploading = true;
+          const deployServiceProvider =
+            this.form.deployServiceProvider.join(";");
           const form = {
             ...this.form,
             status: 0,
+            deployServiceProvider,
           };
           if (this.title === "新增") {
             res = await createComponent(form);

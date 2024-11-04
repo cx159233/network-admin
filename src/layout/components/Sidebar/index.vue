@@ -75,12 +75,17 @@ export default {
 ::v-deep .nest-menu {
   background: #1890ff !important;
   //蓝色
-  .is-active {
-    background: transparent !important;
-    color: white !important;
-  }
-  .el-menu-item:hover {
-    color: white !important;
-  }
+}
+::v-deep .is-active {
+  background: #1890ff !important;
+  color: white !important;
+}
+::v-deep .el-submenu__title:hover {
+  background: #1890ff !important;
+  color: white !important;
+}
+::v-deep .el-menu-item:hover {
+  background: #1890ff !important;
+  color: white !important;
 }
 </style>
