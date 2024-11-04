@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="矩形_4592" data-name="矩形 4592" width="16" height="16" transform="translate(-0.002 0.002)" fill="#1d2035"/>
+    </clipPath>
+    <clipPath id="clip-path-2">
+      <rect id="矩形_4591" data-name="矩形 4591" width="16" height="16" transform="translate(-0.004 0.002)" fill="#1d2035"/>
+    </clipPath>
+  </defs>
+  <g id="审计日志" transform="translate(-10576.998 -1479.764)">
+    <g id="组_18974" data-name="组 18974" transform="translate(10577 1479.762)" opacity="0">
+      <g id="组_18973" data-name="组 18973" transform="translate(0 0)">
+        <g id="组_18972" data-name="组 18972" clip-path="url(#clip-path)">
+          <g id="组_18971" data-name="组 18971" transform="translate(0.002 0)">
+            <g id="组_18970" data-name="组 18970" clip-path="url(#clip-path-2)">
+              <rect id="矩形_4590" data-name="矩形 4590" width="15.983" height="15.966" transform="translate(-0.002 0.01)" fill="#1d2035"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <path id="路径_46905" data-name="路径 46905" d="M12.231,55.762H1.833a.457.457,0,0,0-.457.457V68.25a.457.457,0,0,0,.457.457H8.214a3.795,3.795,0,0,1,4.474-5.8V56.219a.457.457,0,0,0-.457-.457M3.359,58.278H5.945a.518.518,0,0,1,0,1.035H3.359a.518.518,0,1,1,0-1.035m3.62,6.868H3.359a.517.517,0,1,1,0-1.034h3.62a.517.517,0,0,1,0,1.034m2.5-2.9H3.359a.5.5,0,0,1-.518-.518.558.558,0,0,1,.518-.518H9.478a.558.558,0,0,1,.518.518.457.457,0,0,1-.518.518" transform="translate(10577.196 1425.143)"/>
+    <path id="路径_46906" data-name="路径 46906" d="M9.993,64.122a.953.953,0,1,0,.678.28.952.952,0,0,0-.678-.28" transform="translate(10578.289 1426.334)"/>
+    <path id="路径_46907" data-name="路径 46907" d="M10.387,62.429a3.047,3.047,0,1,0,2.987,3.046,3.026,3.026,0,0,0-2.987-3.046m-.16,4.554A1.668,1.668,0,1,1,11.4,66.5a1.668,1.668,0,0,1-1.178.488m1.441.312-.36-.36.54-.54.359.361Z" transform="translate(10578.055 1426.093)"/>
+  </g>
+</svg>

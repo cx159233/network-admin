@@ -18,9 +18,7 @@
           <el-col :span="22">
             <div class="user-info-header">
               {{ $t("Home.Welcome")
-              }}<router-link to="/user/profile">{{
-                userInfo.userName
-              }}</router-link>
+              }}<span class="blue">{{ userInfo.userName }}</span>
             </div>
             <div class="user-info-detail">
               <i class="el-icon-time">
@@ -96,6 +94,10 @@ export default {
 }
 .home-user-info-container .user-info-detail i span {
   color: #909399;
+  padding-left: 5px;
+}
+.blue {
+  color: #409eff;
   padding-left: 5px;
 }
 </style>

@@ -1,0 +1,33 @@
+<svg id="资源管理" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="15.998" viewBox="0 0 16 15.998">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="矩形_4151" data-name="矩形 4151" width="16" height="15.998" fill="#1d2035"/>
+    </clipPath>
+    <clipPath id="clip-path-4">
+      <rect id="矩形_4149" data-name="矩形 4149" width="12.837" height="13.712" fill="#1d2035"/>
+    </clipPath>
+  </defs>
+  <g id="组_17708" data-name="组 17708" clip-path="url(#clip-path)">
+    <g id="组_17703" data-name="组 17703">
+      <g id="组_17702" data-name="组 17702" clip-path="url(#clip-path)">
+        <g id="组_17701" data-name="组 17701" opacity="0">
+          <g id="组_17700" data-name="组 17700">
+            <g id="组_17699" data-name="组 17699" clip-path="url(#clip-path)">
+              <rect id="矩形_4146" data-name="矩形 4146" width="15.983" height="15.968" transform="translate(0.002 0.01)" fill="#1d2035"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g id="组_17705" data-name="组 17705" transform="translate(1.583 1.143)">
+      <g id="组_17704" data-name="组 17704" clip-path="url(#clip-path-4)">
+        <path id="路径_46655" data-name="路径 46655" d="M1.436,4.864,7.375,8.237v6.457a.6.6,0,0,1-.128-.057L2.3,11.831a1.54,1.54,0,0,1-.91-1.586v-4.9a2.044,2.044,0,0,1,.05-.478M4.517,2.555,10.5,5.96,7.8,7.482,1.848,4.117A1.466,1.466,0,0,1,2.2,3.87ZM7.8,1a2.338,2.338,0,0,1,1.152.341l4.458,2.528a1.549,1.549,0,0,1,.347.246L11.385,5.462l-6.014-3.4L6.654,1.34A2.341,2.341,0,0,1,7.8,1" transform="translate(-1.385 -1)"/>
+      </g>
+    </g>
+    <g id="组_17707" data-name="组 17707">
+      <g id="组_17706" data-name="组 17706" clip-path="url(#clip-path)">
+        <path id="路径_46656" data-name="路径 46656" d="M13.316,4.383a2.052,2.052,0,0,1,.05.477v4.9a1.535,1.535,0,0,1-.911,1.586L7.5,14.154a.557.557,0,0,1-.126.057V7.755ZM12.158,8.122a.429.429,0,0,0-.58-.169L8.725,9.513a.428.428,0,0,0,.41.751L11.987,8.7a.428.428,0,0,0,.17-.582" transform="translate(1.053 0.625)"/>
+      </g>
+    </g>
+  </g>
+</svg>

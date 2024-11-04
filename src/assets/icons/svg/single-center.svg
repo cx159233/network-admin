@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #1890ff;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <title>个人中心</title>
+  <g id="图层_2" data-name="图层 2">
+    <g id="图层_1-2" data-name="图层 1">
+      <g id="个人中心">
+        <g id="组_178" data-name="组 178">
+          <g>
+            <path class="cls-1" d="M9,0A4.15,4.15,0,1,1,4.85,4.15h0A4.18,4.18,0,0,1,9,0Z"/>
+            <path class="cls-1" d="M15.81,18H2.19a.7.7,0,0,1-.7-.7h0a7.51,7.51,0,0,1,15,0,.7.7,0,0,1-.7.7Z"/>
+          </g>
+          <rect id="矩形_118" data-name="矩形 118" class="cls-2" width="18" height="18"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -179,7 +179,7 @@
             maxlength="100"
           />
         </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.StaticFlag')" prop="staticFlag">
+        <!-- <el-form-item :label="$t('CMS.Catalog.StaticFlag')" prop="staticFlag">
           <el-switch
             v-model="form_info.staticFlag"
             :active-text="$t('Common.Yes')"
@@ -188,8 +188,8 @@
             inactive-value="N"
           >
           </el-switch>
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.TagIgnore')" prop="tagIgnore">
+        </el-form-item> -->
+        <!-- <el-form-item :label="$t('CMS.Catalog.TagIgnore')" prop="tagIgnore">
           <el-switch
             v-model="form_info.tagIgnore"
             :active-text="$t('Common.Yes')"
@@ -198,7 +198,7 @@
             inactive-value="N"
           >
           </el-switch>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item :label="$t('CMS.Catalog.Logo')" prop="logo">
           <cms-logo-view
             v-model="form_info.logo"

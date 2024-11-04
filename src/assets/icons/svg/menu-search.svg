@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="矩形_4588" data-name="矩形 4588" width="16" height="16" transform="translate(0 0)" fill="#1d2035"/>
+    </clipPath>
+  </defs>
+  <g id="一体化搜索" transform="translate(-10577.002 -1443.219)">
+    <g id="组_18969" data-name="组 18969" transform="translate(10577.002 1443.219)" opacity="0">
+      <g id="组_18968" data-name="组 18968" transform="translate(0 0)">
+        <g id="组_18967" data-name="组 18967" clip-path="url(#clip-path)">
+          <rect id="矩形_4587" data-name="矩形 4587" width="16" height="16" transform="translate(0 0)" fill="#1d2035"/>
+        </g>
+      </g>
+    </g>
+    <path id="路径_46904" data-name="路径 46904" d="M12.134,21.923a6.076,6.076,0,1,0-.759,7.674,6.077,6.077,0,0,0,.759-7.674M9.727,27.061a3.174,3.174,0,1,1-.392-4.007,3.172,3.172,0,0,1,.392,4.007" transform="translate(10577.109 1425.109)" />
+    <rect id="矩形_4589" data-name="矩形 4589" width="2.785" height="1.857" transform="translate(10588.129 1456.31) rotate(-45)" />
+  </g>
+</svg>
