@@ -54,7 +54,7 @@
                 >{{ $t("CMS.ContentCore.Preview") }}</el-button
               >
             </el-col> -->
-            <el-col :span="1.5">
+            <!-- <el-col :span="1.5">
               <el-button
                 plain
                 type="warning"
@@ -135,7 +135,7 @@
                   }}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
               </el-popover>
-            </el-col>
+            </el-col> -->
             <el-col :span="1.5">
               <el-button
                 plain
@@ -373,7 +373,7 @@
                   <el-form-item :label="$t('CMS.Content.Author')" prop="author">
                     <el-input v-model="form.author" />
                   </el-form-item>
-                  <el-form-item :label="$t('CMS.Content.Editor')" prop="editor">
+                  <!-- <el-form-item :label="$t('CMS.Content.Editor')" prop="editor">
                     <el-input v-model="form.editor" />
                   </el-form-item>
                   <el-form-item
@@ -398,7 +398,7 @@
                         >{{ dict.label }}</el-checkbox
                       >
                     </el-checkbox-group>
-                  </el-form-item>
+                  </el-form-item> -->
                   <el-form-item
                     :label="$t('CMS.Content.Summary')"
                     prop="summary"
@@ -411,7 +411,7 @@
                       show-word-limit
                     />
                   </el-form-item>
-                  <el-form-item :label="$t('CMS.Content.Tags')" prop="tags">
+                  <!-- <el-form-item :label="$t('CMS.Content.Tags')" prop="tags">
                     <cms-tag-editor
                       v-model="form.tags"
                       :select="true"
@@ -422,7 +422,7 @@
                     prop="keywords"
                   >
                     <cms-tag-editor v-model="form.keywords"></cms-tag-editor>
-                  </el-form-item>
+                  </el-form-item> -->
                   <el-form-item :label="$t('CMS.Content.Source')" prop="source">
                     <el-input v-model="form.source" />
                   </el-form-item>
@@ -458,7 +458,7 @@
                       style="width: 195px"
                     />
                   </el-form-item>
-                  <el-form-item :label="$t('CMS.Content.StaticPath')">
+                  <!-- <el-form-item :label="$t('CMS.Content.StaticPath')">
                     <el-input v-model="form.staticPath" />
                   </el-form-item>
                   <el-form-item :label="$t('CMS.Content.Template')">
@@ -466,8 +466,8 @@
                       v-model="showTemplate"
                       @change="handleShowTemplateChange"
                     />
-                  </el-form-item>
-                  <el-form-item
+                  </el-form-item> -->
+                  <!-- <el-form-item
                     v-show="showTemplate"
                     v-for="pp in publishPipeProps"
                     :label="pp.pipeName"
@@ -481,9 +481,9 @@
                         @click="handleSelectTemplate(pp)"
                       ></el-button>
                     </el-input>
-                  </el-form-item>
+                  </el-form-item> -->
                 </el-tab-pane>
-                <el-tab-pane
+                <!-- <el-tab-pane
                   :label="$t('CMS.Content.ExtendConfig')"
                   name="extend"
                 >
@@ -525,7 +525,7 @@
                       ></el-button>
                     </el-input>
                   </el-form-item>
-                </el-tab-pane>
+                </el-tab-pane> -->
               </el-tabs>
             </el-card>
           </div>
@@ -860,9 +860,16 @@ export default {
       this.doToPublishContent();
     },
     doToPublishContent() {
-      toPublishContent([this.form.contentId]).then((response) => {
-        this.$modal.msgSuccess(this.$t("CMS.ContentCore.ToPublishSuccess"));
-      });
+      const _this = this;
+      this.$modal
+        .confirm("待发布后将在门户网站上隐藏，是否确认待发布？")
+        .then(function () {
+          toPublishContent([_this.form.contentId]).then((response) => {
+            _this.$modal.msgSuccess(
+              _this.$t("CMS.ContentCore.ToPublishSuccess")
+            );
+          });
+        });
     },
     handlePublish() {
       if (!this.isUpdateOperate || this.isFormChanged()) {
@@ -873,10 +880,15 @@ export default {
       this.doPublishContent();
     },
     doPublishContent() {
-      publishContent([this.form.contentId]).then((response) => {
-        this.$modal.msgSuccess(this.$t("CMS.ContentCore.PublishSuccess"));
-        this.$cache.local.set("publish_flag", "true");
-      });
+      const _this = this;
+      this.$modal
+        .confirm("发布后将在门户网站上显示，是否确认发布？")
+        .then(function () {
+          publishContent([_this.form.contentId]).then((response) => {
+            _this.$modal.msgSuccess(_this.$t("CMS.ContentCore.PublishSuccess"));
+            _this.$cache.local.set("publish_flag", "true");
+          });
+        });
     },
     handleProgressClose(result) {
       if (result.status == "SUCCESS") {

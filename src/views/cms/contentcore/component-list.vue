@@ -314,7 +314,7 @@
           type="primary"
           :loading="upload.isUploading"
           @click="submitForm"
-          >{{ $t("Common.Confirm") }}</el-button
+          >保存草稿</el-button
         >
         <el-button @click="cancel">{{ $t("Common.Cancel") }}</el-button>
       </div>
@@ -498,13 +498,13 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        deployServiceProvider: [
-          {
-            required: true,
-            message: "请选择部署云服务商",
-            trigger: ["blur", "change"],
-          },
-        ],
+        // deployServiceProvider: [
+        //   {
+        //     required: true,
+        //     message: "请选择部署云服务商",
+        //     trigger: ["blur", "change"],
+        //   },
+        // ],
       },
       // 上传参数
       upload: {
@@ -690,7 +690,7 @@ export default {
             res = await getCmsPutComponent(form);
           }
           if (res.code === 200) {
-            this.$modal.msgSuccess(res.msg);
+            this.$modal.msgSuccess("保存草稿成功");
             this.open = false;
             this.getList();
           }

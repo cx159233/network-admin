@@ -2,39 +2,14 @@
   <div class="cms-content-list">
     <el-row :gutter="10" class="mb12">
       <el-col :span="1.5">
-        <el-popover
-          v-model="addPopoverVisible"
-          class="btn-permi"
-          placement="bottom-start"
-          :width="400"
-          trigger="click"
-          v-hasPermi="[$p('Catalog:AddContent:{0}', [catalogId])]"
-        >
-          <el-row style="margin-bottom: 20px; text-align: right">
-            <el-radio-group v-model="addContentType">
-              <el-radio-button
-                v-for="ct in contentTypeOptions"
-                :key="ct.id"
-                :label="ct.id"
-                >{{ ct.name }}</el-radio-button
-              >
-            </el-radio-group>
-          </el-row>
-          <el-row style="text-align: right">
-            <el-button plain type="primary" size="small" @click="handleAdd">{{
-              $t("Common.Confirm")
-            }}</el-button>
-          </el-row>
-          <el-button
-            type="primary"
-            slot="reference"
-            icon="el-icon-plus"
-            size="mini"
-            plain
-            >{{ $t("Common.Add")
-            }}<i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-        </el-popover>
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          size="mini"
+          plain
+          @click="handleAdd"
+          >{{ $t("Common.Add") }}
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -348,14 +323,14 @@
                 ]"
                 >{{ $t("Common.Delete") }}</el-dropdown-item
               >
-              <el-dropdown-item
+              <!-- <el-dropdown-item
                 icon="el-icon-sort"
                 @click.native="handleSort(scope.row)"
                 v-hasPermi="[
                   $p('Catalog:EditContent:{0}', [scope.row.catalogId]),
                 ]"
                 >{{ $t("Common.Sort") }}</el-dropdown-item
-              >
+              > -->
               <el-dropdown-item
                 v-show="scope.row.topFlag <= 0"
                 icon="el-icon-top"
@@ -676,7 +651,7 @@ export default {
         ? [row.contentId]
         : this.selectedRows.map((row) => row.contentId);
       this.$modal
-        .confirm(this.$t("Common.ConfirmDelete"))
+        .confirm("删除后门户网站不可见，是否确认删除？")
         .then(function () {
           return delContent(contentIds);
         })
@@ -694,6 +669,14 @@ export default {
         this.$modal.msgWarning(this.$t("CMS.Content.SelectRowFirst"));
         return;
       }
+      const _this = this;
+      this.$modal
+        .confirm("发布后将在门户网站上显示，是否确认发布？")
+        .then(function () {
+          _this.updateArticle(contentIds);
+        });
+    },
+    updateArticle(contentIds) {
       console.log(contentIds);
       this.$modal.loading("Loading...");
       publishContent(contentIds)
@@ -846,22 +829,34 @@ export default {
       });
     },
     handleOffline(row) {
-      const contentIds = row.contentId
-        ? [row.contentId]
-        : this.selectedRows.map((item) => item.contentId);
-      offlineContent(contentIds).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
-        this.loadContentList();
-      });
+      const _this = this;
+      this.$modal
+        .confirm("下线后将在门户网站上隐藏，是否确认下线？")
+        .then(function () {
+          const contentIds = row.contentId
+            ? [row.contentId]
+            : _this.selectedRows.map((item) => item.contentId);
+          offlineContent(contentIds).then((response) => {
+            _this.$modal.msgSuccess(_this.$t("Common.OpSuccess"));
+            _this.loadContentList();
+          });
+        });
     },
     handleToPublish(row) {
-      const contentIds = row.contentId
-        ? [row.contentId]
-        : this.selectedRows.map((item) => item.contentId);
-      toPublishContent(contentIds).then((response) => {
-        this.$modal.msgSuccess(this.$t("CMS.ContentCore.ToPublishSuccess"));
-        this.loadContentList();
-      });
+      const _this = this;
+      this.$modal
+        .confirm("待发布后将在门户网站上隐藏，是否确认待发布？")
+        .then(function () {
+          const contentIds = row.contentId
+            ? [row.contentId]
+            : _this.selectedRows.map((item) => item.contentId);
+          toPublishContent(contentIds).then((response) => {
+            _this.$modal.msgSuccess(
+              _this.$t("CMS.ContentCore.ToPublishSuccess")
+            );
+            _this.loadContentList();
+          });
+        });
     },
     handleArchive(row) {
       const contentIds = row.contentId

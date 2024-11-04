@@ -360,14 +360,14 @@ export default {
             trigger: "blur",
           },
         ],
-        alias: [
-          {
-            required: true,
-            // pattern: "^[A-Za-z0-9_]+$",
-            message: this.$t("CMS.Catalog.RuleTips.Alias"),
-            trigger: "blur",
-          },
-        ],
+        // alias: [
+        //   {
+        //     required: true,
+        //     // pattern: "^[A-Za-z0-9_]+$",
+        //     message: this.$t("CMS.Catalog.RuleTips.Alias"),
+        //     trigger: "blur",
+        //   },
+        // ],
         path: [
           {
             required: true,
@@ -448,12 +448,24 @@ export default {
       });
     },
     handleChangeVisible() {
-      const visible = this.form_info.visibleFlag == "Y" ? "N" : "Y";
-      catalogApi
-        .changeVisible(this.form_info.catalogId, visible)
-        .then((response) => {
-          this.$modal.msgSuccess(response.msg);
-          this.form_info.visibleFlag = visible;
+      this.$modal
+        .confirm(
+          this.catalogVisible
+            ? "是否在门户网站上隐藏？"
+            : "是否在门户网站上显示？"
+        )
+        .then(() => {
+          const visible = this.form_info.visibleFlag == "Y" ? "N" : "Y";
+          catalogApi
+            .changeVisible(this.form_info.catalogId, visible)
+            .then((response) => {
+              this.$modal.msgSuccess(
+                this.catalogVisible
+                  ? "已设置为在门户网站上隐藏"
+                  : "已设置为在门户网站上显示"
+              );
+              this.form_info.visibleFlag = visible;
+            });
         });
     },
     handlePreview() {

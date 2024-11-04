@@ -334,14 +334,14 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="部署云服务商" prop="deployServiceProvider">
-          <el-radio-group v-model="form.deployServiceProvider">
-            <el-radio
+          <el-checkbox-group v-model="form.deployServiceProvider">
+            <el-checkbox
               v-for="(item, index) in dict.type.CloudProvider"
               :label="`${item.value}`"
               :key="index"
-              >{{ item.label }}</el-radio
+              >{{ item.label }}</el-checkbox
             >
-          </el-radio-group>
+          </el-checkbox-group>
         </el-form-item>
         <div v-for="(item1, index) in COVER" :key="index">
           <el-form-item
@@ -364,7 +364,7 @@
           type="primary"
           :loading="upload.isUploading"
           @click="submitForm"
-          >{{ $t("Common.Confirm") }}</el-button
+          >保存草稿</el-button
         >
         <el-button @click="cancel">{{ $t("Common.Cancel") }}</el-button>
       </div>
@@ -499,7 +499,7 @@ export default {
         contactPhone2: "",
         target: [],
         architecture: "",
-        deployServiceProvider: "",
+        deployServiceProvider: [],
         cover: [],
         status: undefined,
       },
@@ -750,7 +750,7 @@ export default {
         contactPhone2: "",
         target: [],
         architecture: "",
-        deployServiceProvider: "",
+        deployServiceProvider: [],
         cover: [],
         status: undefined,
       };
@@ -796,6 +796,8 @@ export default {
       getApplicationDetail(applicationId).then((response) => {
         this.form = response.data;
         this.form.target = this.form.target.split(";");
+        this.form.deployServiceProvider =
+          this.form.deployServiceProvider.split(";");
         this.form.cover?.forEach((i) => {
           const { key, typeValue } = i || {};
           if (this.coverForm[typeValue]) {
@@ -848,6 +850,8 @@ export default {
           let res = null;
           this.upload.isUploading = true;
           const target = this.form.target.join(";");
+          const deployServiceProvider =
+            this.form.deployServiceProvider.join(";");
           const cover = [];
           Object.keys(this.coverForm).forEach((i) => {
             if (this.coverForm[i]?.length > 0 && this.judgeShow(i)) {
@@ -859,6 +863,7 @@ export default {
             target,
             cover: cover.join(";"),
             status: "0",
+            deployServiceProvider,
           };
           if (this.title === "新增") {
             res = await createApplication(form);
@@ -866,7 +871,7 @@ export default {
             res = await getCmsPutApplication(form);
           }
           if (res.code === 200) {
-            this.$modal.msgSuccess(res.msg);
+            this.$modal.msgSuccess("保存草稿成功");
             this.open = false;
             this.getList();
             this.reset();
