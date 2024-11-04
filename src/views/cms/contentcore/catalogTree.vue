@@ -269,7 +269,7 @@ export default {
         alias: [
           {
             required: true,
-            pattern: "^[A-Za-z0-9_]+$",
+            // pattern: "^[A-Za-z0-9_]+$",
             message: this.$t("CMS.Catalog.RuleTips.Alias"),
             trigger: "blur",
           },
