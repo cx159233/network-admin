@@ -137,7 +137,7 @@
         <el-form-item :label="$t('CMS.Catalog.Path')" prop="path">
           <el-input v-model="form_info.path" />
         </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.CatalogType')" prop="catalogType">
+        <!-- <el-form-item :label="$t('CMS.Catalog.CatalogType')" prop="catalogType">
           <el-select
             v-model="form_info.catalogType"
             :placeholder="$t('CMS.Catalog.CatalogType')"
@@ -149,8 +149,8 @@
               :value="ct.id"
             />
           </el-select>
-        </el-form-item>
-        <el-form-item
+        </el-form-item> -->
+        <!-- <el-form-item
           :label="$t('CMS.Catalog.RedirectUrl')"
           v-if="form_info.catalogType === 'link'"
           prop="redirectUrl"
@@ -171,7 +171,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item :label="$t('CMS.Catalog.Desc')" prop="description">
           <el-input
             v-model="form_info.description"
@@ -376,13 +376,13 @@ export default {
             trigger: "blur",
           },
         ],
-        catalogType: [
-          {
-            required: true,
-            message: this.$t("CMS.Catalog.RuleTips.CatalogType"),
-            trigger: "blur",
-          },
-        ],
+        // catalogType: [
+        //   {
+        //     required: true,
+        //     message: this.$t("CMS.Catalog.RuleTips.CatalogType"),
+        //     trigger: "blur",
+        //   },
+        // ],
       },
       openFileSelector: false,
     };
