@@ -106,7 +106,7 @@
         <el-form-item :label="$t('CMS.Catalog.Path')" prop="path">
           <el-input v-model="form.path" />
         </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.CatalogType')" prop="catalogType">
+        <!-- <el-form-item :label="$t('CMS.Catalog.CatalogType')" prop="catalogType">
           <el-select v-model="form.catalogType">
             <el-option
               v-for="ct in catalogTypeOptions"
@@ -115,7 +115,7 @@
               :value="ct.id"
             />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handleAddSave">{{
@@ -282,13 +282,13 @@ export default {
             trigger: "blur",
           },
         ],
-        catalogType: [
-          {
-            required: true,
-            message: this.$t("CMS.Catalog.RuleTips.CatalogType"),
-            trigger: "blur",
-          },
-        ],
+        // catalogType: [
+        //   {
+        //     required: true,
+        //     message: this.$t("CMS.Catalog.RuleTips.CatalogType"),
+        //     trigger: "blur",
+        //   },
+        // ],
       },
       openBatchAdd: false,
       formBatch: {},
