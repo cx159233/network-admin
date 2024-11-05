@@ -270,7 +270,7 @@ export default {
           {
             required: true,
             // pattern: "^[A-Za-z0-9_]+$",
-            message: this.$t("CMS.Catalog.RuleTips.Alias"),
+            message: "请输入栏目别名",
             trigger: "blur",
           },
         ],
