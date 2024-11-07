@@ -230,7 +230,7 @@
 
     <!-- 添加或修改资源对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="130px">
         <p class="fz-16 mt--8">基本信息</p>
         <el-form-item label="应用名称" prop="name">
           <el-input v-model="form.name" maxlength="20" />
