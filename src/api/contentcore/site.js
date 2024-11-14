@@ -74,6 +74,13 @@ export function publishSite(data) {
     data: data // { siteId:long, publishIndex:boolean, contentStatus:int }
   })
 }
+export function publishUnSite(data) {
+  return request({
+    url: '/cms/site/unpublish',
+    method: 'post',
+    data: data // { siteId:long, publishIndex:boolean, contentStatus:int }
+  })
+}
 
 // 导出站点主题
 export function exportSiteTheme(data) {
