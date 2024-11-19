@@ -1027,7 +1027,7 @@ export default {
       },
       AddCatalog: "添加栏目",
       BatchAddCatalog: "批量添加栏目",
-      BatchAddTip: "每行一个栏目，依次使用2个空格表示下级栏目。",
+      BatchAddTip: "每行一个栏目",
       CatalogTree: "栏目树",
       CatalogNamePlaceholder: "输入栏目名称",
       ParentCatalog: "上级栏目",

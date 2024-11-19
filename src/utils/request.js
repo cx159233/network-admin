@@ -74,6 +74,10 @@ service.interceptors.request.use(config => {
       }
     }
   }
+  if(config.method === 'put' || config.method === 'delete'){
+    config.headers['change-method'] = config.method
+    config.method = 'post'
+  }
   return config
 }, error => {
     console.log(error)

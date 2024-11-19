@@ -1027,7 +1027,7 @@ export default {
       },
       AddCatalog: "添加欄目",
       BatchAddCatalog: "批量添加欄目",
-      BatchAddTip: "每行一個欄目，依次使用2個空格表示下級欄目。",
+      BatchAddTip: "每行一個欄目",
       CatalogTree: "欄目樹",
       CatalogNamePlaceholder: "輸入欄目名稱",
       ParentCatalog: "上級欄目",
