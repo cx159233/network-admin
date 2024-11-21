@@ -1,6 +1,6 @@
 export default {
   APP: {
-    TITLE: '渝康云管理后台'
+    TITLE: '云网管理中枢管理后台'
   },
   Common: {
     Search: '搜索',
