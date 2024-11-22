@@ -176,7 +176,7 @@
           <el-input
             v-model="form_info.description"
             type="textarea"
-            maxlength="100"
+            maxlength="500"
           />
         </el-form-item>
         <!-- <el-form-item :label="$t('CMS.Catalog.StaticFlag')" prop="staticFlag">
