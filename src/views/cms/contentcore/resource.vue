@@ -324,14 +324,17 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="应用架构">
-          <el-radio-group v-model="form.architecture">
-            <el-radio
+          <el-checkbox-group
+            v-model="form.architecture"
+            @change="handleArchitectureChange"
+          >
+            <el-checkbox
               v-for="(item, index) in dict.type.SoftwareArchitecture"
               :label="`${item.value}`"
               :key="index"
-              >{{ item.label }}</el-radio
+              >{{ item.label }}</el-checkbox
             >
-          </el-radio-group>
+          </el-checkbox-group>
         </el-form-item>
         <el-form-item label="部署云服务商" prop="deployServiceProvider">
           <el-checkbox-group v-model="form.deployServiceProvider">
@@ -498,7 +501,7 @@ export default {
         contactName2: "",
         contactPhone2: "",
         target: [],
-        architecture: "",
+        architecture: [],
         deployServiceProvider: [],
         cover: [],
         status: undefined,
@@ -702,6 +705,9 @@ export default {
     });
   },
   methods: {
+    handleArchitectureChange(value) {
+      this.form.architecture = [value.pop()];
+    },
     judgeShow(name) {
       let arr = this.dict.type.Client.filter((i) =>
         this.form.target.includes(String(i.value))
@@ -749,7 +755,7 @@ export default {
         contactName2: "",
         contactPhone2: "",
         target: [],
-        architecture: "",
+        architecture: [],
         deployServiceProvider: [],
         cover: [],
         status: undefined,
@@ -798,6 +804,7 @@ export default {
         this.form.target = this.form.target.split(";");
         this.form.deployServiceProvider =
           this.form.deployServiceProvider.split(";");
+        this.form.architecture = this.form.architecture.split(";");
         this.form.cover?.forEach((i) => {
           const { key, typeValue } = i || {};
           if (this.coverForm[typeValue]) {
@@ -852,6 +859,7 @@ export default {
           const target = this.form.target.join(";");
           const deployServiceProvider =
             this.form.deployServiceProvider.join(";");
+          const architecture = this.form.architecture.join(";");
           const cover = [];
           Object.keys(this.coverForm).forEach((i) => {
             if (this.coverForm[i]?.length > 0 && this.judgeShow(i)) {
@@ -864,6 +872,7 @@ export default {
             cover: cover.join(";"),
             status: "0",
             deployServiceProvider,
+            architecture,
           };
           if (this.title === "新增") {
             res = await createApplication(form);
