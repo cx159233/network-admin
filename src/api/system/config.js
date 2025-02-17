@@ -1,3 +1,13 @@
+/*
+ * @Author: ranfenghua ranfenghua@cecinvestment.com
+ * @Date: 2024-10-24 15:42:30
+ * @LastEditors: ranfenghua ranfenghua@cecinvestment.com
+ * @LastEditTime: 2025-02-17 11:33:21
+ * @FilePath: /cq-network-admin-view/src/api/system/config.js
+ * @Description: 
+ * 
+ * Copyright (c) 2025 by ${user.email}, All Rights Reserved. 
+ */
 import request from '@/utils/request'
 
 // 查询参数列表
@@ -25,7 +35,7 @@ export function getConfigKey(configKey) {
   // })
   return Promise.resolve({
     code:200,
-    data: 50 * 1024 * 1024,
+    data: 1024 * 1024 * 1024,
     msg: 'success'
   })
 }
