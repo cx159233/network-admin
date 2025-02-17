@@ -2,7 +2,7 @@
  * @Author: ranfenghua ranfenghua@cecinvestment.com
  * @Date: 2024-10-24 15:42:30
  * @LastEditors: ranfenghua ranfenghua@cecinvestment.com
- * @LastEditTime: 2025-02-17 11:33:21
+ * @LastEditTime: 2025-02-17 14:22:55
  * @FilePath: /cq-network-admin-view/src/api/system/config.js
  * @Description: 
  * 
@@ -35,7 +35,7 @@ export function getConfigKey(configKey) {
   // })
   return Promise.resolve({
     code:200,
-    data: 1024 * 1024 * 1024,
+    data: 200 * 1024 * 1024,
     msg: 'success'
   })
 }
