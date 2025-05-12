@@ -4,9 +4,9 @@
  * @LastEditors: ranfenghua ranfenghua@cecinvestment.com
  * @LastEditTime: 2025-02-17 14:22:55
  * @FilePath: /cq-network-admin-view/src/api/system/config.js
- * @Description: 
- * 
- * Copyright (c) 2025 by ${user.email}, All Rights Reserved. 
+ * @Description:
+ *
+ * Copyright (c) 2025 by ${user.email}, All Rights Reserved.
  */
 import request from '@/utils/request'
 
@@ -35,7 +35,7 @@ export function getConfigKey(configKey) {
   // })
   return Promise.resolve({
     code:200,
-    data: 200 * 1024 * 1024,
+    data: 500 * 1024 * 1024,
     msg: 'success'
   })
 }
