@@ -1,0 +1,23 @@
+<svg id="监控视图" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="15.998" viewBox="0 0 16 15.998">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="矩形_4177" data-name="矩形 4177" width="16" height="15.998" fill="#1d2035"/>
+    </clipPath>
+  </defs>
+  <g id="组_17752" data-name="组 17752" clip-path="url(#clip-path)">
+    <g id="组_17751" data-name="组 17751">
+      <g id="组_17750" data-name="组 17750" clip-path="url(#clip-path)">
+        <g id="组_17749" data-name="组 17749" opacity="0">
+          <g id="组_17748" data-name="组 17748">
+            <g id="组_17747" data-name="组 17747" clip-path="url(#clip-path)">
+              <rect id="矩形_4173" data-name="矩形 4173" width="15.998" height="15.998" transform="translate(0.002)" fill="#1d2035"/>
+              <rect id="矩形_4174" data-name="矩形 4174" width="15.983" height="15.968" transform="translate(0.002 0.01)" fill="#1d2035"/>
+            </g>
+          </g>
+        </g>
+        <path id="路径_46670" data-name="路径 46670" d="M14.372,12.677H1.345A.342.342,0,0,1,1,12.335V11.3a.342.342,0,0,1,.343-.343H14.372a.342.342,0,0,1,.343.343v1.039a.342.342,0,0,1-.343.343" transform="translate(0.143 1.563)" />
+        <path id="路径_46671" data-name="路径 46671" d="M14.372,1.538H1.345A.344.344,0,0,0,1,1.882v9.056a.343.343,0,0,0,.343.342H14.372a.342.342,0,0,0,.343-.342V1.882a.343.343,0,0,0-.343-.344m-1.36,5.929h-2.85L8.853,5.131l-1.97,4.5-1.522-2.5H2.706V6.254H5.855l.9,1.48,2-4.571,1.92,3.428h2.336Z" transform="translate(0.143 0.219)" />
+      </g>
+    </g>
+  </g>
+</svg>

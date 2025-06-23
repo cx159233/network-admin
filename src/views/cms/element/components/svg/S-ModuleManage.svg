@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="15.998" viewBox="0 0 16 15.998">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="矩形_83" data-name="矩形 83" width="16" height="15.998" fill="#1d2035"/>
+    </clipPath>
+    <clipPath id="clip-path-2">
+      <rect id="矩形_82" data-name="矩形 82" width="15.057" height="15.057" fill="#1d2035"/>
+    </clipPath>
+  </defs>
+  <g id="模块管理" transform="translate(-801 -159)">
+    <g id="组_143" data-name="组 143" transform="translate(416.459 -173.709)" opacity="0">
+      <g id="组_142" data-name="组 142" transform="translate(384.541 332.709)">
+        <g id="蒙版组_141" data-name="蒙版组 141" clip-path="url(#clip-path)">
+          <g id="组_140" data-name="组 140" transform="translate(0.472 0.471)">
+            <g id="组_139" data-name="组 139" clip-path="url(#clip-path-2)">
+              <path id="路径_76" data-name="路径 76" d="M399.145,347.307H385.982V334.16h13.163Zm.941-14.088H385.041v15.029h15.045Z" transform="translate(-385.043 -333.21)" fill="#1d2035"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g id="组_187" data-name="组 187" transform="translate(321.957 43.933)">
+      <path id="路径_55" data-name="路径 55" d="M392.987,57.428a.878.878,0,0,1-.436-.116l-2.433-1.4a.874.874,0,0,1-.436-.755V52.343a.873.873,0,0,1,.436-.755l2.433-1.405a.876.876,0,0,1,.872,0l2.433,1.405a.873.873,0,0,1,.436.755v2.809a.874.874,0,0,1-.436.755l-2.433,1.4a.878.878,0,0,1-.436.116" transform="translate(94 66)" />
+      <path id="路径_56" data-name="路径 56" d="M389.348,63.8a.878.878,0,0,1-.436-.116l-2.433-1.4a.874.874,0,0,1-.436-.755V58.715a.873.873,0,0,1,.436-.755l2.433-1.4a.876.876,0,0,1,.872,0l2.433,1.4a.873.873,0,0,1,.436.755v2.809a.874.874,0,0,1-.436.755l-2.433,1.4a.878.878,0,0,1-.436.116" transform="translate(94 66)" />
+      <path id="路径_57" data-name="路径 57" d="M396.739,63.8a.878.878,0,0,1-.436-.116l-2.433-1.4a.874.874,0,0,1-.436-.755V58.715a.873.873,0,0,1,.436-.755l2.433-1.4a.876.876,0,0,1,.872,0l2.433,1.4a.873.873,0,0,1,.436.755v2.809a.874.874,0,0,1-.436.755l-2.433,1.4a.878.878,0,0,1-.436.116" transform="translate(94 66)" />
+    </g>
+  </g>
+</svg>

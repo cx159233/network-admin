@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="矩形_4595" data-name="矩形 4595" width="16" height="16" transform="translate(0 0)" fill="#1d2035"/>
+    </clipPath>
+    <clipPath id="clip-path-2">
+      <rect id="矩形_4594" data-name="矩形 4594" width="16" height="16" transform="translate(-0.002 0)" fill="#1d2035"/>
+    </clipPath>
+    <clipPath id="clip-path-3">
+      <rect id="矩形_4601" data-name="矩形 4601" width="15.572" height="15.57" fill="#1d2035"/>
+    </clipPath>
+  </defs>
+  <g id="系统集成" transform="translate(-10578 -1498.918)">
+    <g id="组_18979" data-name="组 18979" transform="translate(10578 1498.918)" opacity="0">
+      <g id="组_18978" data-name="组 18978" transform="translate(0 0)">
+        <g id="组_18977" data-name="组 18977" clip-path="url(#clip-path)">
+          <g id="组_18976" data-name="组 18976" transform="translate(0.002)">
+            <g id="组_18975" data-name="组 18975" clip-path="url(#clip-path-2)">
+              <rect id="矩形_4593" data-name="矩形 4593" width="15.558" height="15.541" transform="translate(-0.002 0.01)" />
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g id="组_18989" data-name="组 18989" transform="translate(10578 1499.009)">
+      <g id="组_18988" data-name="组 18988" clip-path="url(#clip-path-3)">
+        <g id="组_18987" data-name="组 18987">
+          <g id="组_18986" data-name="组 18986" clip-path="url(#clip-path-3)">
+            <g id="组_18985" data-name="组 18985" opacity="0">
+              <g id="组_18984" data-name="组 18984">
+                <g id="组_18983" data-name="组 18983" clip-path="url(#clip-path-3)">
+                  <rect id="矩形_4598" data-name="矩形 4598" width="15.555" height="15.541" transform="translate(0.002 0.01)" />
+                </g>
+              </g>
+            </g>
+            <path id="路径_46910" data-name="路径 46910" d="M9.125,1.537V4.259a.222.222,0,0,0,.222.222H12.07a.222.222,0,0,0,.157-.379L9.505,1.379a.223.223,0,0,0-.38.158M1.447,14.346h10V9.7h-10A.445.445,0,0,0,1,10.148V13.9a.445.445,0,0,0,.445.445m3.036-2.9h1.16V12.6H4.483Zm-2.32,0h1.16V12.6H2.163ZM12.027,9.7v4.642H13.9a.445.445,0,0,0,.445-.445V10.148A.445.445,0,0,0,13.9,9.7Zm.135-4.645-3.171,0a.445.445,0,0,1-.445-.445V1.445A.445.445,0,0,0,8.1,1H3.187a.445.445,0,0,0-.445.445V8.678a.445.445,0,0,0,.445.445h8.975a.445.445,0,0,0,.445-.445V5.5a.446.446,0,0,0-.446-.445m-.715,2.9H3.9V7.383h7.544Zm0-1.161H3.9V6.221h7.544Z" transform="translate(0.112 0.112)" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
