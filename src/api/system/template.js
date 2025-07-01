@@ -4,11 +4,11 @@
  * @LastEditors: ranfenghua ranfenghua@cecinvestment.com
  * @LastEditTime: 2025-06-20 13:55:03
  * @FilePath: /cq-network-admin-view/src/api/system/template.js
- * @Description: 
- * 
- * Copyright (c) 2025 by ${user.email}, All Rights Reserved. 
+ * @Description:
+ *
+ * Copyright (c) 2025 by ${user.email}, All Rights Reserved.
  */
-import request from "@/utils/request";
+import request from "@/utils/requestCmdb";
 // 删除模板
 export function deleteTemplate(templateId) {
   return request({

@@ -57,7 +57,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "StatIndex",
-  components: { 
+  components: {
     Treeselect,
     'cms-ad-stat': CMSAdvertisementStat,
     'cms-ad-click': CMSAdvertisementClickLog,
@@ -89,7 +89,9 @@ export default {
     getStatType() {
       getStatMenuTreeData().then(response => {
         this.statMenuTree = response.data.treeData;
-        this.currentMenu = response.data.defaultMenu
+        // this.currentMenu = response.data.defaultMenu
+        this.currentMenu = 'BdSiteTimeTrend'
+        console.log("Stat Menu Tree Data: ", this.currentMenu);
       });
     },
     filterNode(value, data) {
@@ -97,6 +99,7 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
     handleNodeClick(data) {
+      // console.log(data)
       this.currentMenu = data.id;
     }
   }

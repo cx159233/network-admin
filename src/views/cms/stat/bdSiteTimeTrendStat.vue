@@ -47,9 +47,10 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              {{ $t('Stat.Site.VisitCount') }}
+              <!-- {{ $t('Stat.Site.VisitCount') }} -->
+              平均访问时长
             </div>
-            {{ sum.visit_count }}
+            {{ sum.avg_visit_time }} {{ $t('Stat.Site.UnitSecond') }}
           </div>
         </div>
       </el-col>
@@ -96,7 +97,7 @@
         </el-radio-group>
       </el-col>
       <el-col :span="1.5">
-        <el-button 
+        <el-button
           type="primary"
           icon="el-icon-search"
           size="small"

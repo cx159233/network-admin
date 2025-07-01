@@ -47,7 +47,8 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              {{ $t('Stat.Site.AvgVisitTime') }}
+              <!-- {{ $t('Stat.Site.AvgVisitTime') }} -->
+              平均访问时长
             </div>
             {{ sum.avgVisitTime }} {{ $t('Stat.Site.UnitSecond') }}
           </div>
@@ -79,7 +80,7 @@
         ></el-date-picker>
       </el-col>
       <el-col :span="1.5">
-        <el-button 
+        <el-button
           type="primary"
           icon="el-icon-search"
           size="small"
@@ -94,24 +95,24 @@
           <line-chart :chart-data="lineChartData" />
         </el-card>
     </el-row>
-    
-    <el-row :gutter="10" class="mb8">
+
+    <!-- <el-row :gutter="10" class="mb8">
       <el-col :span="12">
         <el-card v-loading="loading" shadow="hover">
           <div slot="header" class="clearfix">
             <span>{{ $t('Stat.Site.Top10EntryPage') }}</span>
           </div>
           <el-table v-loading="loadingOther" :data="top10LandingPage" height="405" size="mini">
-            <el-table-column 
+            <el-table-column
               :label="$t('Stat.Site.URL')"
               align="left"
               prop="name" />
-            <el-table-column 
+            <el-table-column
               label="PV"
               align="right"
               width="70"
               prop="pv_count" />
-            <el-table-column 
+            <el-table-column
               :label="$t('Stat.Site.Ratio')"
               align="right"
               width="70"
@@ -129,15 +130,15 @@
             <span>{{ $t('Stat.Site.VisitLocation') }}</span>
           </div>
           <el-table v-loading="loadingDistrict" :data="districtList" height="405" size="mini">
-            <el-table-column 
+            <el-table-column
               :label="$t('Stat.Site.Location')"
               align="center"
               prop="name" />
-            <el-table-column 
+            <el-table-column
               label="PV"
               align="center"
               prop="pv_count" />
-            <el-table-column 
+            <el-table-column
               :label="$t('Stat.Site.Ratio')"
               align="center"
               prop="ratio">
@@ -148,7 +149,7 @@
           </el-table>
         </el-card>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 <style scoped>
@@ -236,20 +237,21 @@ export default {
         this.$modal.msgWarning(this.$t('Stat.Site.NoSite'));
         return;
       }
-      this.loading = true;
-      this.queryParams.startDate = this.dateRange[0];
-      this.queryParams.endDate = this.dateRange[1];
-      baiduTongjiApi.getSiteTrendOverviewDatas(this.queryParams).then(response => {
-          this.lineChartData.xAxisDatas = response.data.xaxisDatas;
-          this.lineChartData.datas = response.data.datas;
-          this.sum = { pv: 0, uv: 0, ip: 0, avgVisitTime: 0 };
-          this.lineChartData.datas.pv_count.forEach(v => this.sum.pv+=v);
-          this.lineChartData.datas.ip_count.forEach(v => this.sum.ip+=v);
-          this.lineChartData.datas.visitor_count.forEach(v => this.sum.uv+=v);
-          this.lineChartData.datas.avg_visit_time.forEach(v => this.sum.avgVisitTime+=v);
-          this.sum.avgVisitTime = Math.round(this.sum.avgVisitTime / this.lineChartData.datas.avg_visit_time.length);
-          this.loading = false;
-      });
+      // this.loading = true;
+      // this.queryParams.startDate = this.dateRange[0];
+      // this.queryParams.endDate = this.dateRange[1];
+      // baiduTongjiApi.getSiteTrendOverviewDatas(this.queryParams).then(response => {
+      //     console.log(response)
+      //     this.lineChartData.xAxisDatas = response.data.xaxisDatas;
+      //     this.lineChartData.datas = response.data.datas;
+      //     this.sum = { pv: 0, uv: 0, ip: 0, avgVisitTime: 0 };
+      //     this.lineChartData.datas.pv_count.forEach(v => this.sum.pv+=v);
+      //     this.lineChartData.datas.ip_count.forEach(v => this.sum.ip+=v);
+      //     this.lineChartData.datas.visitor_count.forEach(v => this.sum.uv+=v);
+      //     this.lineChartData.datas.avg_visit_time.forEach(v => this.sum.avgVisitTime+=v);
+      //     this.sum.avgVisitTime = Math.round(this.sum.avgVisitTime / this.lineChartData.datas.avg_visit_time.length);
+      //     this.loading = false;
+      // });
     },
     loadSiteDistrictOverviewDatas () {
       if (this.siteOptions.length == 0) {
@@ -272,10 +274,10 @@ export default {
       this.loadingOther = true;
       this.queryParams.startDate = this.dateRange[0];
       this.queryParams.endDate = this.dateRange[1];
-      baiduTongjiApi.getSiteOtherOverviewDatas(this.queryParams).then(response => {
-          this.top10LandingPage = response.data.landingPage;
-          this.loadingOther = false;
-      });
+      // baiduTongjiApi.getSiteOtherOverviewDatas(this.queryParams).then(response => {
+      //     this.top10LandingPage = response.data.landingPage;
+      //     this.loadingOther = false;
+      // });
     },
     handleQuery() {
      this.loadSiteTrendOverviewDatas();

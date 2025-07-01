@@ -36,7 +36,8 @@ module.exports = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
         // target: `http://10.128.20.178`,
-        target: `http://10.107.2.244`,
+        // target: `http://10.107.2.244`,
+        target: `http://10.159.5.70/`,
         // target: `http://admin.1000mz.com`,
         changeOrigin: true,
         // pathRewrite: {
@@ -44,7 +45,8 @@ module.exports = {
         // }
       },
       '/gdmercury-api': {
-        target: `http://10.107.2.244`,
+        // target: `http://10.107.2.244`,
+        target: `http://10.159.5.70/`,
         // target: 'http://10.128.23.29',
         // target: 'http://10.128.20.178', // 江苏研发环境
         // target:'http://10.32.4.94:8080', // 辉哥地址
