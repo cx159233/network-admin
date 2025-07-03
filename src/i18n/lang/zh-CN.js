@@ -1121,6 +1121,7 @@ export default {
         PublishDateAsc: '发布时间升序',
         PublishDateDesc: '发布时间降序',
         ViewCountDesc: "浏览量降序",
+        ViewCountAsc: "浏览量升序",
         FavoriteCountDesc: "收藏数降序",
         LikeCountDesc: "点赞数降序",
         CommentCountDesc: "评论数降序"

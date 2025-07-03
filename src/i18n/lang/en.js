@@ -1121,6 +1121,7 @@ export default {
         PublishDateAsc: 'Publish Date ASC',
         PublishDateDesc: 'Publish Date DESC',
         ViewCountDesc: "View Count Desc",
+        ViewCountAsc: "View Count Asc",
         FavoriteCountDesc: "Favorite Count Desc",
         LikeCountDesc: "Like Count Desc",
         CommentCountDesc: "Comment Count Desc"

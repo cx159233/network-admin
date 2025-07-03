@@ -1121,6 +1121,7 @@ export default {
         PublishDateAsc: '發布時間升序',
         PublishDateDesc: '發布時間降序',
         ViewCountDesc: "瀏覽量降序",
+        ViewCountAsc: "瀏覽量升序",
         FavoriteCountDesc: "收藏數降序",
         LikeCountDesc: "點贊數降序",
         CommentCountDesc: "評論數降序"
