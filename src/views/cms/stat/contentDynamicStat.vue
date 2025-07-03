@@ -82,7 +82,7 @@ export default {
     },
     handleQuery () {
       this.queryParams.pageNo = 1;
-      this.loadListData();
+      this.loadContentList();
     },
     resetQuery () {
       this.resetForm("queryForm");
