@@ -1,9 +1,9 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
-    <sidebar v-if="!sidebar.hide" class="sidebar-container" />
-    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
-      <div :class="{'fixed-header':fixedHeader}">
+    <sidebar v-if="!sidebar.hide && showNav === '1'" class="sidebar-container" />
+    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide,'ml-0': showNav !== '1'}" class="main-container">
+      <div :class="{'fixed-header':fixedHeader}" v-if="showNav === '1'">
         <navbar />
         <tags-view v-if="needTagsView" />
       </div>
@@ -31,6 +31,11 @@ export default {
     Settings,
     Sidebar,
     TagsView
+  },
+  data() {
+    return {
+      showNav: this.$route.query.showNav || "1",
+    }
   },
   mixins: [ResizeMixin],
   computed: {
@@ -107,5 +112,8 @@ export default {
 
   .mobile .fixed-header {
     width: 100%;
+  }
+  .ml-0{
+    margin-left: 0 !important;
   }
 </style>
