@@ -44,6 +44,11 @@ import DictData from '@/components/DictData'
 import VideoPlayer from 'vue-video-player';
 import 'video.js/dist/video-js.css';
 import 'vue-video-player/src/custom-theme.css';
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
+
+// 使用Antd插件
+Vue.use(Antd)
 Vue.use(VideoPlayer)
 
 // 全局方法挂载
