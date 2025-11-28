@@ -9,7 +9,7 @@
       <a-col
         span="24"
         class="mpsj"
-      >密评数据</a-col>
+      >完整性校验</a-col>
       <a-col span="6">
         <a-form-model-item label="更新时间">
           <a-range-picker
@@ -26,7 +26,8 @@
             placeholder="请选择摘要类型"
             class="width200"
           >
-            <a-select-option value="ucmp_system">ucmp_system</a-select-option>
+            <a-select-option value="ucmp_system">鉴权信息</a-select-option>
+            <a-select-option value="uuc_manage_log">日志信息</a-select-option>
           </a-select>
         </a-form-model-item>
       </a-col> -->
@@ -81,6 +82,9 @@
       :total="total"
       @change="onChange"
       class="pagination"
+      :page-size-options="pageSizeOptions"
+      show-size-changer
+      @showSizeChange="onShowSizeChange"
     />
   </div>
 </template>
@@ -90,6 +94,7 @@ import axios from 'axios'
 export default {
   data () {
     return {
+      pageSizeOptions: ['10', '20', '30', '40', '50'],
       total: 0,
       api: '/digest-api',
       formItemLayout: {
@@ -138,6 +143,11 @@ export default {
     this.find()
   },
   methods: {
+    onShowSizeChange(_current, pageSize) {
+      this.form.pageSize = pageSize
+      this.form.pageNum = 1
+      this.find()
+    },
     findData () {
       this.form.pageNum = 1
       this.find()

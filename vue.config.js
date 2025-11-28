@@ -54,9 +54,9 @@ module.exports = {
         changeOrigin: true
       },
       '/digest-api': {
-        // target: `http://10.107.2.244`,
+        target: `http://10.107.2.244`,
         // target: `http://10.159.5.70/`,
-        target: 'http://10.32.4.73:8081',
+        // target: 'http://10.32.4.73:8081',
         // target: 'http://10.128.20.178', // 江苏研发环境
         // target:'http://10.32.4.94:8080', // 辉哥地址
         // target: 'http://10.229.1.8/gdmercury-api', // 重庆环境
