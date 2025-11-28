@@ -69,7 +69,7 @@
           style="color: green"
         >SUCCESS</span>
         <span
-          v-else-if="false"
+          v-else-if="text === false"
           style="color: red"
         >ERROR</span>
         <span v-else>--</span>
