@@ -1,6 +1,23 @@
 <template>
   <div v-if="!item.hidden">
-    <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
+    <!-- 分类标题：小字展示 + 渲染子菜单 -->
+    <template v-if="item.meta && item.meta.category">
+      <div class="category-title">
+        {{ item.meta.title }}
+      </div>
+      <sidebar-item
+        v-for="child in item.children"
+        :key="child.path"
+        :is-nest="isNest"
+        :item="child"
+        :base-path="getChildBasePath(child.path)"
+        :category-prefix="item.path"
+        class="nest-menu"
+      />
+    </template>
+
+    <!-- 普通菜单项 -->
+    <template v-else-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path, onlyOneChild.query)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
           <item :icon="onlyOneChild.meta.icon" :title="onlyOneChild.meta.title" />
@@ -8,7 +25,7 @@
       </app-link>
     </template>
 
-    <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
+    <el-submenu v-else ref="subMenu" :index="submenuIndex" popper-append-to-body>
       <template slot="title">
         <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
       </template>
@@ -18,14 +35,26 @@
         :is-nest="true"
         :item="child"
         :base-path="resolvePath(child.path)"
+        :category-prefix="categoryPrefix"
         class="nest-menu"
       />
     </el-submenu>
   </div>
 </template>
 
+<style scoped>
+.category-title {
+  padding: 12px 20px 6px;
+  font-size: 12px;
+  color: #909399;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+</style>
+
 <script>
-import path from 'path'
+import pathModule from 'path'
 import { isExternal } from '@/utils/validate'
 import Item from './Item'
 import AppLink from './Link'
@@ -36,7 +65,6 @@ export default {
   components: { Item, AppLink },
   mixins: [FixiOSBug],
   props: {
-    // route object
     item: {
       type: Object,
       required: true
@@ -48,11 +76,21 @@ export default {
     basePath: {
       type: String,
       default: ''
+    },
+    categoryPrefix: {
+      type: String,
+      default: ''
     }
   },
   data() {
     this.onlyOneChild = null
     return {}
+  },
+  computed: {
+    submenuIndex() {
+      const resolved = this.resolvePath(this.item.path)
+      return this.categoryPrefix ? resolved + '__' + this.categoryPrefix : resolved
+    }
   },
   methods: {
     hasOneShowingChild(children = [], parent) {
@@ -63,18 +101,15 @@ export default {
         if (item.hidden) {
           return false
         } else {
-          // Temp set(will be used if only has one showing child)
           this.onlyOneChild = item
           return true
         }
       })
 
-      // When there is only one child router, the child router is displayed by default
       if (showingChildren.length === 1) {
         return true
       }
 
-      // Show parent if there are no child router to display
       if (showingChildren.length === 0) {
         this.onlyOneChild = { ... parent, path: '', noShowingChildren: true }
         return true
@@ -91,9 +126,14 @@ export default {
       }
       if (routeQuery) {
         let query = JSON.parse(routeQuery);
-        return { path: path.resolve(this.basePath, routePath), query: query }
+        return { path: pathModule.resolve(this.basePath, routePath), query: query }
       }
-      return path.resolve(this.basePath, routePath)
+      return pathModule.resolve(this.basePath, routePath)
+    },
+    // For category items: skip the category's own path and resolve child from parent level
+    getChildBasePath(childPath) {
+      const parentBase = this.resolvePath('..')
+      return pathModule.resolve(parentBase, childPath)
     }
   }
 }

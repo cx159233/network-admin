@@ -87,144 +87,179 @@ const allMenus = [
     path: '/workorder',
     component: 'Layout',
     alwaysShow: true,
-    meta: { title: '工单中心', icon: 'form' },
+    meta: { title: '控制台', icon: 'form' },
     children: [
       {
-        name: 'ServiceDesk',
-        path: 'serviceDesk',
-        component: 'workorder/serviceDesk',
-        meta: { title: '服务台', icon: 'form' }
-      },
-      {
-        name: 'MyBills',
-        path: 'myBills',
+        name: 'OrgUserSection',
+        path: 'orgUser',
         component: 'workorder/layout',
-        meta: { title: '我的单据', icon: 'form' },
+        meta: { title: '机构用户', icon: '', category: true },
         children: [
           {
-            name: 'MyTodo',
-            path: 'myTodo',
-            component: 'workorder/index',
-            meta: { title: '我的待办', icon: 'form' }
+            name: 'ServiceDesk',
+            path: 'serviceDesk',
+            component: 'workorder/serviceDesk',
+            meta: { title: '服务台', icon: 'form' }
           },
           {
-            name: 'MyApproval',
-            path: 'myApproval',
-            component: 'workorder/index',
-            meta: { title: '我已处理', icon: 'form' }
+            name: 'MyBills',
+            path: 'myBills',
+            component: 'workorder/layout',
+            alwaysShow: true,
+            meta: { title: '我的单据', icon: 'form' },
+            children: [
+              {
+                name: 'MyInitiated',
+                path: 'myInitiated',
+                component: 'workorder/index',
+                meta: { title: '我发起的', icon: 'form' }
+              }
+            ]
           },
           {
-            name: 'MyInitiated',
-            path: 'myInitiated',
-            component: 'workorder/index',
-            meta: { title: '我发起的', icon: 'form' }
+            name: 'MyApps',
+            path: 'myApps',
+            component: 'order/myApps',
+            meta: { title: '我的应用', icon: 'app-log' }
           },
           {
-            name: 'AllBills',
-            path: 'allBills',
-            component: 'workorder/index',
-            meta: { title: '所有单据', icon: 'form' }
+            name: 'OrderCenter',
+            path: 'order',
+            component: 'order/layout',
+            redirect: '/workorder/order/myInitiated',
+            alwaysShow: true,
+            meta: { title: '订单中心', icon: 'list' },
+            children: [
+              {
+                name: 'OrderMyInitiated',
+                path: 'myInitiated',
+                component: 'order/myInitiated',
+                meta: { title: '我发起的', icon: 'form' }
+              },
+              {
+                name: 'OrderDetail',
+                path: 'detail',
+                component: 'order/detail',
+                meta: { title: '订单详情' },
+                hidden: true
+              },
+              {
+                name: 'OrderMyInitiatedDetail',
+                path: 'myInitiatedDetail',
+                component: 'order/myInitiatedDetail',
+                meta: { title: '订单详情' },
+                hidden: true
+              }
+            ]
           }
         ]
       },
       {
-        name: 'ProcessConfig',
-        path: 'processConfig',
+        name: 'AdminUserSection',
+        path: 'adminUser',
         component: 'workorder/layout',
-        meta: { title: '流程配置', icon: 'form' }
-      },
-      {
-        name: 'AuditCenter',
-        path: 'auditCenter',
-        component: 'workorder/layout',
-        alwaysShow: true,
-        meta: { title: '审核中心', icon: 'tree' },
+        meta: { title: '管理用户', icon: '', category: true },
         children: [
           {
-            name: 'QualificationAudit',
-            path: 'qualificationAudit',
-            component: 'workorder/orgAudit/qualificationAudit',
-            meta: { title: '机构入驻审核', icon: 'form' }
+            name: 'MyBillsAdmin',
+            path: 'myBills',
+            component: 'workorder/layout',
+            meta: { title: '我的单据', icon: 'form' },
+            children: [
+              {
+                name: 'MyTodo',
+                path: 'myTodo',
+                component: 'workorder/index',
+                meta: { title: '我的待办', icon: 'form' }
+              },
+              {
+                name: 'MyApproval',
+                path: 'myApproval',
+                component: 'workorder/index',
+                meta: { title: '我已处理', icon: 'form' }
+              },
+              {
+                name: 'AllBills',
+                path: 'allBills',
+                component: 'workorder/index',
+                meta: { title: '所有单据', icon: 'form' }
+              }
+            ]
           },
           {
-            name: 'DigitalAppAudit',
-            path: 'digitalAppAudit',
-            component: 'workorder/audit/digitalAppAudit',
-            meta: { title: '数字应用审核', icon: 'form' }
-          }
-        ]
-      },
-      {
-        name: 'MyApps',
-        path: 'myApps',
-        component: 'order/myApps',
-        meta: { title: '我的应用', icon: 'app-log' }
-      },
-      {
-        name: 'OrderCenter',
-        path: 'order',
-        component: 'order/layout',
-        redirect: '/workorder/order/myTodo',
-        alwaysShow: true,
-        meta: { title: '订单中心', icon: 'list' },
-        children: [
-          {
-            name: 'OrderMyTodo',
-            path: 'myTodo',
-            component: 'order/myTodo',
-            meta: { title: '我的待办', icon: 'form' }
+            name: 'ProcessConfig',
+            path: 'processConfig',
+            component: 'workorder/layout',
+            meta: { title: '流程配置', icon: 'form' }
           },
           {
-            name: 'OrderMyProcessed',
-            path: 'myProcessed',
-            component: 'order/myProcessed',
-            meta: { title: '我已处理', icon: 'form' }
+            name: 'AuditCenter',
+            path: 'auditCenter',
+            component: 'workorder/layout',
+            alwaysShow: true,
+            meta: { title: '审核中心', icon: 'tree' },
+            children: [
+              {
+                name: 'QualificationAudit',
+                path: 'qualificationAudit',
+                component: 'workorder/orgAudit/qualificationAudit',
+                meta: { title: '机构入驻审核', icon: 'form' }
+              },
+              {
+                name: 'DigitalAppAudit',
+                path: 'digitalAppAudit',
+                component: 'workorder/audit/digitalAppAudit',
+                meta: { title: '数字应用审核', icon: 'form' }
+              }
+            ]
           },
           {
-            name: 'OrderMyInitiated',
-            path: 'myInitiated',
-            component: 'order/myInitiated',
-            meta: { title: '我已发起', icon: 'form' }
-          },
-          {
-            name: 'OrderList',
-            path: 'list',
-            component: 'order/list',
-            meta: { title: '所有订单', icon: 'list' }
-          },
-          {
-            name: 'ServiceReview',
-            path: 'review',
-            component: 'order/review',
-            meta: { title: '服务评价', icon: 'star' }
-          },
-          {
-            name: 'OrderDetail',
-            path: 'detail',
-            component: 'order/detail',
-            meta: { title: '订单详情' },
-            hidden: true
-          },
-          {
-            name: 'OrderMyTodoDetail',
-            path: 'myTodoDetail',
-            component: 'order/myTodoDetail',
-            meta: { title: '订单详情' },
-            hidden: true
-          },
-          {
-            name: 'OrderMyProcessedDetail',
-            path: 'myProcessedDetail',
-            component: 'order/myProcessedDetail',
-            meta: { title: '订单详情' },
-            hidden: true
-          },
-          {
-            name: 'OrderMyInitiatedDetail',
-            path: 'myInitiatedDetail',
-            component: 'order/myInitiatedDetail',
-            meta: { title: '订单详情' },
-            hidden: true
+            name: 'OrderCenterAdmin',
+            path: 'order',
+            component: 'order/layout',
+            redirect: '/workorder/order/myTodo',
+            alwaysShow: true,
+            meta: { title: '订单中心', icon: 'list' },
+            children: [
+              {
+                name: 'OrderMyTodo',
+                path: 'myTodo',
+                component: 'order/myTodo',
+                meta: { title: '我的待办', icon: 'form' }
+              },
+              {
+                name: 'OrderMyProcessed',
+                path: 'myProcessed',
+                component: 'order/myProcessed',
+                meta: { title: '我已处理', icon: 'form' }
+              },
+              {
+                name: 'OrderList',
+                path: 'list',
+                component: 'order/list',
+                meta: { title: '所有订单', icon: 'list' }
+              },
+              {
+                name: 'ServiceReview',
+                path: 'review',
+                component: 'order/review',
+                meta: { title: '服务评价', icon: 'star' }
+              },
+              {
+                name: 'OrderMyTodoDetail',
+                path: 'myTodoDetail',
+                component: 'order/myTodoDetail',
+                meta: { title: '订单详情' },
+                hidden: true
+              },
+              {
+                name: 'OrderMyProcessedDetail',
+                path: 'myProcessedDetail',
+                component: 'order/myProcessedDetail',
+                meta: { title: '订单详情' },
+                hidden: true
+              }
+            ]
           }
         ]
       }

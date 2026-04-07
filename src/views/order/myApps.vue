@@ -10,6 +10,9 @@
           class="el-form-search"
           :inline="true"
         >
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-plus" @click="openAddDialog">新增应用</el-button>
+          </el-form-item>
           <el-form-item prop="appName">
             <el-input
               v-model="queryParams.appName"
@@ -105,43 +108,66 @@
       @pagination="loadAppList"
     />
 
-    <!-- 评分弹窗 -->
+    <!-- 新增应用弹窗 -->
     <el-dialog
-      :title="ratingDialogTitle"
+      title="新增应用"
       width="600px"
-      :visible.sync="ratingDialogVisible"
+      :visible.sync="addDialogVisible"
       :close-on-click-modal="false"
       append-to-body
     >
-      <div v-if="ratingType === 'platform'">
-        <el-form ref="ratingForm" :model="ratingForm" label-width="80px">
-          <el-form-item label="评分">
-            <el-rate v-model="ratingForm.score" :max="5" show-score />
-          </el-form-item>
-          <el-form-item label="评价描述">
-            <el-input v-model="ratingForm.description" type="textarea" rows="4" placeholder="请输入评价描述" />
-          </el-form-item>
-        </el-form>
-      </div>
-      <div v-else-if="ratingType === 'usage'">
-        <el-table :data="usageRatings" style="width: 100%">
-          <el-table-column prop="user" label="用户" width="120" />
-          <el-table-column prop="score" label="评分" width="80" />
-          <el-table-column prop="description" label="评价内容" />
-          <el-table-column prop="createTime" label="评价时间" width="180" />
-        </el-table>
-      </div>
+      <el-form ref="addForm" :model="addForm" :rules="addRules" label-width="100px">
+        <el-form-item label="应用名称" prop="appName">
+          <el-input v-model="addForm.appName" placeholder="请输入应用名称" />
+        </el-form-item>
+        <el-form-item label="版本" prop="version">
+          <el-input v-model="addForm.version" placeholder="请输入版本号，如 v1.0.0" />
+        </el-form-item>
+        <el-form-item label="厂商" prop="vendor">
+          <el-select v-model="addForm.vendor" placeholder="请选择厂商" style="width: 100%">
+            <el-option label="腾讯科技" value="腾讯科技" />
+            <el-option label="阿里巴巴" value="阿里巴巴" />
+            <el-option label="百度" value="百度" />
+            <el-option label="华为" value="华为" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="分类" prop="category">
+          <el-select v-model="addForm.category" placeholder="请选择分类" style="width: 100%">
+            <el-option label="办公软件" value="办公软件" />
+            <el-option label="企业管理" value="企业管理" />
+            <el-option label="数据分析" value="数据分析" />
+            <el-option label="安全防护" value="安全防护" />
+            <el-option label="云计算" value="云计算" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="云服务商" prop="cloudProvider">
+          <el-select v-model="addForm.cloudProvider" placeholder="请选择云服务商" style="width: 100%">
+            <el-option label="腾讯云" value="腾讯云" />
+            <el-option label="阿里云" value="阿里云" />
+            <el-option label="百度云" value="百度云" />
+            <el-option label="华为云" value="华为云" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="应用描述" prop="description">
+          <el-input v-model="addForm.description" type="textarea" :rows="3" placeholder="请输入应用描述" />
+        </el-form-item>
+      </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button v-if="ratingType === 'platform'" type="primary" @click="handleRatingSubmit">提交</el-button>
-        <el-button @click="ratingDialogVisible = false">关闭</el-button>
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAddSubmit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import Pagination from '@/components/Pagination/index.vue';
+
 export default {
   name: "OrderMyApps",
+  components: {
+    Pagination
+  },
   data() {
     return {
       // 遮罩层
@@ -155,16 +181,23 @@ export default {
         vendor: undefined,
         status: undefined,
       },
-      // 评分弹窗
-      ratingDialogVisible: false,
-      ratingType: '', // platform 或 usage
-      ratingDialogTitle: '',
-      ratingForm: {
-        score: 0,
+      // 新增应用弹窗
+      addDialogVisible: false,
+      addForm: {
+        appName: '',
+        version: '',
+        vendor: '',
+        category: '',
+        cloudProvider: '',
         description: ''
       },
-      usageRatings: [],
-      currentApp: null,
+      addRules: {
+        appName: [{ required: true, message: '请输入应用名称', trigger: 'blur' }],
+        version: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
+        vendor: [{ required: true, message: '请选择厂商', trigger: 'change' }],
+        category: [{ required: true, message: '请选择分类', trigger: 'change' }],
+        cloudProvider: [{ required: true, message: '请选择云服务商', trigger: 'change' }]
+      }
     };
   },
   created() {
@@ -173,7 +206,6 @@ export default {
   methods: {
     loadAppList() {
       this.loading = true;
-      // 模拟数据
       setTimeout(() => {
         this.appList = [
           {
@@ -213,7 +245,7 @@ export default {
             createTime: '2024-01-03 12:00:00'
           }
         ];
-        this.total = 3;
+        this.total = this.appList.length;
         this.loading = false;
       }, 1000);
     },
@@ -226,33 +258,47 @@ export default {
       this.handleQuery();
     },
     goToDetail(row) {
-      // 跳转到应用详情页面
       this.$router.push({ path: '/workorder/myAppsDetail', query: { id: row.id } });
     },
-    openRatingDialog(row, type) {
-      this.currentApp = row;
-      this.ratingType = type;
-      if (type === 'platform') {
-        this.ratingDialogTitle = '平台评价';
-        this.ratingForm.score = row.platformRating || 0;
-        this.ratingForm.description = '';
-      } else {
-        this.ratingDialogTitle = '使用评价列表';
-        // 模拟使用评价数据
-        this.usageRatings = [
-          { user: '用户1', score: 5, description: '非常好用', createTime: '2024-01-01 10:00:00' },
-          { user: '用户2', score: 4, description: '还不错', createTime: '2024-01-02 11:00:00' }
-        ];
-      }
-      this.ratingDialogVisible = true;
+    openAddDialog() {
+      this.addForm = {
+        appName: '',
+        version: '',
+        vendor: '',
+        category: '',
+        cloudProvider: '',
+        description: ''
+      };
+      this.addDialogVisible = true;
+      this.$nextTick(() => {
+        this.$refs.addForm && this.$refs.addForm.clearValidate();
+      });
     },
-    handleRatingSubmit() {
-      // 提交平台评价
-      this.$modal.msgSuccess('评价成功');
-      this.ratingDialogVisible = false;
-      // 模拟更新评分
-      this.currentApp.platformRating = this.ratingForm.score;
-    },
+    handleAddSubmit() {
+      this.$refs.addForm.validate(valid => {
+        if (!valid) return;
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const createTime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        const newApp = {
+          id: Date.now(),
+          appName: this.addForm.appName,
+          version: this.addForm.version,
+          vendor: this.addForm.vendor,
+          category: this.addForm.category,
+          cloudProvider: this.addForm.cloudProvider,
+          platformRating: 0,
+          usageRating: 0,
+          status: 20,
+          createTime: createTime,
+          description: this.addForm.description
+        };
+        this.appList.unshift(newApp);
+        this.total = this.appList.length;
+        this.addDialogVisible = false;
+        this.$modal.msgSuccess('新增成功');
+      });
+    }
   },
 };
 </script>

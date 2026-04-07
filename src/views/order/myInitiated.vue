@@ -109,9 +109,10 @@
       </el-table-column>
       <el-table-column prop="workorderId" label="关联工单" width="120" />
       <el-table-column prop="applyTime" label="申请时间" width="160" />
-      <el-table-column label="操作" width="150" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="goToDetail(scope.row)">详情</el-button>
+          <el-button v-if="scope.row.status === '已完成'" type="text" size="small" @click="openReviewDialog(scope.row)">满意度评价</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -123,6 +124,32 @@
       :limit.sync="queryParams.pageSize"
       @pagination="loadOrderList"
     />
+
+    <!-- 满意度评价弹窗 -->
+    <el-dialog
+      title="服务满意度评价"
+      width="520px"
+      :visible.sync="reviewDialogVisible"
+      :close-on-click-modal="false"
+      append-to-body
+    >
+      <div class="review-order-info">
+        <span class="review-order-no">{{ reviewForm.orderNo }}</span>
+        <span class="review-order-name">{{ reviewForm.serviceName }}</span>
+      </div>
+      <el-form ref="reviewFormRef" :model="reviewForm" :rules="reviewRules" label-width="90px">
+        <el-form-item label="满意度" prop="score">
+          <el-rate v-model="reviewForm.score" show-text :texts="['非常差', '差', '一般', '好', '非常好']" />
+        </el-form-item>
+        <el-form-item label="评价描述" prop="description">
+          <el-input v-model="reviewForm.description" type="textarea" :rows="4" placeholder="请输入您对本次服务的评价" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="reviewDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleReviewSubmit">提 交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -145,6 +172,17 @@ export default {
         org: undefined,
         serviceType: undefined,
         status: undefined
+      },
+      // 满意度评价弹窗
+      reviewDialogVisible: false,
+      reviewForm: {
+        orderNo: '',
+        serviceName: '',
+        score: 0,
+        description: ''
+      },
+      reviewRules: {
+        score: [{ required: true, message: '请选择满意度评分', trigger: 'change', type: 'number', min: 1 }]
       },
       orderList: [
         {
@@ -182,6 +220,18 @@ export default {
           status: '审批中',
           workorderId: 'TK-0236',
           applyTime: '2024-03-05 16:45'
+        },
+        {
+          orderNo: '#ORD-2024-0088',
+          serviceName: '等保二级合规评估',
+          serviceSpec: '含差距分析 + 整改报告',
+          orgName: '北京市海淀区数字经济发展局',
+          applicant: '张三',
+          department: '技术部',
+          serviceType: '安全服务',
+          status: '已完成',
+          workorderId: 'TK-0230',
+          applyTime: '2024-02-20 10:00'
         }
       ]
     };
@@ -232,10 +282,30 @@ export default {
         '审批中': 'warning',
         '审批通过': 'success',
         '已生效': 'success',
+        '已完成': 'success',
         '已驳回': 'danger',
         '已关闭': 'info'
       };
       return colorMap[status] || 'info';
+    },
+    openReviewDialog(row) {
+      this.reviewForm = {
+        orderNo: row.orderNo,
+        serviceName: row.serviceName,
+        score: 0,
+        description: ''
+      };
+      this.reviewDialogVisible = true;
+      this.$nextTick(() => {
+        this.$refs.reviewFormRef && this.$refs.reviewFormRef.clearValidate();
+      });
+    },
+    handleReviewSubmit() {
+      this.$refs.reviewFormRef.validate(valid => {
+        if (!valid) return;
+        this.$modal.msgSuccess('评价提交成功');
+        this.reviewDialogVisible = false;
+      });
     }
   }
 };
@@ -281,5 +351,24 @@ export default {
   font-size: 12px;
   color: #8c8c8c;
   margin-top: 4px;
+}
+
+.review-order-info {
+  padding: 12px 16px;
+  background: #f5f7fa;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.review-order-no {
+  font-size: 12px;
+  color: #909399;
+  margin-right: 12px;
+}
+
+.review-order-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #303133;
 }
 </style>

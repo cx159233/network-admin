@@ -17,7 +17,7 @@
           <span>门户管理</span>
         </el-menu-item>
         <el-menu-item index="workorder">
-          <span>工单中心</span>
+          <span>控制台</span>
         </el-menu-item>
         <el-menu-item index="system">
           <span>系统管理</span>

@@ -311,7 +311,7 @@ export default {
       // API请求获取机构详情
     },
     goBack() {
-      this.$router.push('/workorder/orgAudit/qualificationAudit');
+      this.$router.push('/workorder/auditCenter/qualificationAudit');
     },
     approve() {
       if (!this.auditForm.opinion.trim()) {

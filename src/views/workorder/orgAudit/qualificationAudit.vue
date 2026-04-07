@@ -280,14 +280,14 @@ export default {
     startAudit(org) {
       // 开始审核
       this.$router.push({
-        path: '/workorder/orgAudit/qualificationDetail',
+        path: '/workorder/auditCenter/qualificationDetail',
         query: { orgId: org.id }
       });
     },
     continueAudit(org) {
       // 继续审核
       this.$router.push({
-        path: '/workorder/orgAudit/qualificationDetail',
+        path: '/workorder/auditCenter/qualificationDetail',
         query: { orgId: org.id }
       });
     },
@@ -298,7 +298,7 @@ export default {
     viewDetails(org) {
       // 查看详情
       this.$router.push({
-        path: '/workorder/orgAudit/qualificationDetail',
+        path: '/workorder/auditCenter/qualificationDetail',
         query: { orgId: org.id }
       });
     },

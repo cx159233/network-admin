@@ -164,7 +164,7 @@ export const constantRoutes = [
     path: '/workorder',
     component: Layout,
     redirect: '/workorder/serviceDesk',
-    meta: { title: '工单中心' },
+    meta: { title: '控制台' },
     children: [
       {
         path: 'serviceDesk',
@@ -330,28 +330,28 @@ export const constantRoutes = [
             path: 'detail',
             component: () => import('@/views/order/detail'),
             name: 'OrderDetail',
-            meta: { title: '订单详情' },
+            meta: { title: '订单详情', noCache: true, activeMenu: '/workorder/order/list' },
             hidden: true
           },
           {
             path: 'myTodoDetail',
             component: () => import('@/views/order/myTodoDetail'),
             name: 'OrderMyTodoDetail',
-            meta: { title: '订单详情' },
+            meta: { title: '订单详情', noCache: true, activeMenu: '/workorder/order/myTodo' },
             hidden: true
           },
           {
             path: 'myProcessedDetail',
             component: () => import('@/views/order/myProcessedDetail'),
             name: 'OrderMyProcessedDetail',
-            meta: { title: '订单详情' },
+            meta: { title: '订单详情', noCache: true, activeMenu: '/workorder/order/myProcessed' },
             hidden: true
           },
           {
             path: 'myInitiatedDetail',
             component: () => import('@/views/order/myInitiatedDetail'),
             name: 'OrderMyInitiatedDetail',
-            meta: { title: '订单详情' },
+            meta: { title: '订单详情', noCache: true, activeMenu: '/workorder/order/myInitiated' },
             hidden: true
           }
         ]
