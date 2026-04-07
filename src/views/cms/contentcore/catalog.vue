@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container catalog-container">
+  <div class="cms-content-list catalog-container">
     <el-row :gutter="20">
       <!--栏目数据-->
       <el-col :span="4" :xs="24">
@@ -16,6 +16,7 @@
           <el-tab-pane :label="$t('CMS.Catalog.Tab.Basic')" name="basicInfo">
             <cms-catalog-info
               v-if="this.activeName == 'basicInfo'"
+              :key="selectedCatalogId"
               :cid="selectedCatalogId"
               @update="handleCatalogUpdate"
               @remove="handleCatalogDelete"

@@ -1,61 +1,59 @@
-import request from '@/utils/request'
-
-// 登录方法
+// 登录方法 - Mock 数据，任何人都可以登录
 export function login(username, password, code, uuid) {
-  const data = {
-    username,
-    password,
-    code,
-    uuid
-  }
-  return request({
-    url: '/login',
-    headers: {
-      isToken: false
-    },
-    method: 'post',
-    data: data
+  return new Promise((resolve) => {
+    resolve({
+      code: 200,
+      message: '登录成功',
+      data: 'mock-jwt-token-' + Date.now()
+    })
   })
 }
 
-// 注册方法
+// 注册方法 - Mock 数据
 export function register(data) {
-  return request({
-    url: '/register',
-    headers: {
-      isToken: false
-    },
-    method: 'post',
-    data: data
+  return new Promise((resolve) => {
+    resolve({
+      code: 200,
+      message: '注册成功',
+      data: null
+    })
   })
 }
 
-
-
-// 退出方法
+// 退出方法 - Mock 数据
 export function logout() {
-  return request({
-    url: '/logout',
-    method: 'post'
+  return new Promise((resolve) => {
+    resolve({
+      code: 200,
+      message: '退出成功',
+      data: null
+    })
   })
 }
 
-// 获取验证码
+// 获取验证码 - Mock 数据
 export function getCodeImg() {
-  return request({
-    url: '/captchaImage',
-    headers: {
-      isToken: false
-    },
-    method: 'get',
-    timeout: 20000
+  return new Promise((resolve) => {
+    // 生成一个模拟的 base64 图片数据（1x1 像素的透明 gif）
+    resolve({
+      code: 200,
+      message: '操作成功',
+      data: {
+        captchaEnabled: false, // 关闭验证码
+        img: '', // 不需要图片
+        uuid: 'mock-uuid-' + Date.now()
+      }
+    })
   })
 }
 
-// cookie登录方法
+// cookie登录方法 - Mock 数据
 export function codeLogin() {
-  return request({
-    url: '/gdmercury-api/uaa/userCenter/login',
-    method: 'post'
+  return new Promise((resolve) => {
+    resolve({
+      code: 200,
+      message: '登录成功',
+      data: 'mock-jwt-token-' + Date.now()
+    })
   })
 }

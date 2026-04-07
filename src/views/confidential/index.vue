@@ -19,18 +19,11 @@
           />
         </a-form-model-item>
       </a-col>
-      <!-- <a-col span="6">
-        <a-form-model-item label="摘要类型">
-          <a-select
-            v-model="form.databaseName"
-            placeholder="请选择摘要类型"
-            class="width200"
-          >
-            <a-select-option value="ucmp_system">鉴权信息</a-select-option>
-            <a-select-option value="uuc_manage_log">日志信息</a-select-option>
-          </a-select>
+      <a-col span="6">
+        <a-form-model-item label="摘要">
+          <a-input v-model="form.hmacFuzzy" class="width200" />
         </a-form-model-item>
-      </a-col> -->
+      </a-col>
       <a-col span="6">
         <a-form-model-item class="pl-20">
           <a-button
@@ -90,7 +83,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   data () {
     return {
@@ -104,6 +96,7 @@ export default {
       form: {
         databaseName: 'ucmp_system',
         lastUpdateTime: [null, null],
+        hmacFuzzy: '',
         pageNum: 1,
         pageSize: 10
       },
@@ -181,38 +174,169 @@ export default {
         sourceId: record.sourceId,
         tableName: record.tableName
       }
-      axios.post(this.api + '/hmac/checkHmac', params).then((res) => {
-        if (res.data.code === 200) {
-          this.$message.success(res.data.message)
+      // Mock 校验结果
+      const mockResult = Math.random() > 0.3 // 70% 概率成功
+      setTimeout(() => {
+        if (mockResult) {
+          this.$message.success('校验成功')
           this.dataSource = this.dataSource.map((item) => {
             if (item.sourceId === record.sourceId) {
-              item.result = res.data.data
+              item.result = true
             }
             return item
           })
         } else {
-          this.$message.error(res.data.message)
+          this.$message.error('校验失败，数据可能被篡改')
+          this.dataSource = this.dataSource.map((item) => {
+            if (item.sourceId === record.sourceId) {
+              item.result = false
+            }
+            return item
+          })
         }
-      })
+      }, 300)
     },
     find () {
-      const params = {
-        lastUpdateTimeStart: this.form.lastUpdateTime ? this.formatTime(this.form.lastUpdateTime[0]) : null,
-        lastUpdateTimeEnd: this.form.lastUpdateTime ? this.formatTime(this.form.lastUpdateTime[1]) : null,
-        pageNum: this.form.pageNum,
-        pageSize: this.form.pageSize,
-        databaseName: this.form.databaseName
+      // Mock 数据
+      const mockData = {
+        code: 200,
+        message: '操作成功',
+        data: [
+          {
+            sourceId: '1001',
+            hmac: 'a3f2c1d4e5b6789012345678abcdef',
+            createTime: '2024-01-15 10:30:00',
+            updateTime: '2024-03-20 14:22:00',
+            tableName: 'sys_user',
+            columnName: 'username',
+            result: null
+          },
+          {
+            sourceId: '1002',
+            hmac: 'b4e3d2c5f6a7890123456789bcdef1',
+            createTime: '2024-02-10 09:15:00',
+            updateTime: '2024-03-18 16:45:00',
+            tableName: 'sys_user',
+            columnName: 'email',
+            result: true
+          },
+          {
+            sourceId: '1003',
+            hmac: 'c5f4e3d6a7b8901234567890cdef12',
+            createTime: '2024-02-20 11:20:00',
+            updateTime: '2024-03-15 10:30:00',
+            tableName: 'sys_role',
+            columnName: 'role_name',
+            result: null
+          },
+          {
+            sourceId: '1004',
+            hmac: 'd6a5f4e7b8c9012345678901def123',
+            createTime: '2024-03-01 08:00:00',
+            updateTime: '2024-03-22 09:10:00',
+            tableName: 'sys_menu',
+            columnName: 'menu_name',
+            result: false
+          },
+          {
+            sourceId: '1005',
+            hmac: 'e7b6a5f8c9d012345678902ef1234',
+            createTime: '2024-03-05 14:30:00',
+            updateTime: '2024-03-21 11:25:00',
+            tableName: 'sys_dept',
+            columnName: 'dept_name',
+            result: null
+          },
+          {
+            sourceId: '1006',
+            hmac: 'f8c7b6a9d0e12345678903f12345a',
+            createTime: '2024-03-08 16:00:00',
+            updateTime: '2024-03-19 15:40:00',
+            tableName: 'sys_config',
+            columnName: 'config_key',
+            result: true
+          },
+          {
+            sourceId: '1007',
+            hmac: 'a9d8c7b0e1f2345678904a123456b',
+            createTime: '2024-03-10 10:10:00',
+            updateTime: '2024-03-17 08:50:00',
+            tableName: 'sys_dict',
+            columnName: 'dict_type',
+            result: null
+          },
+          {
+            sourceId: '1008',
+            hmac: 'b0e9d8c1f2a345678905b1234567c',
+            createTime: '2024-03-12 13:45:00',
+            updateTime: '2024-03-16 17:30:00',
+            tableName: 'sys_notice',
+            columnName: 'notice_title',
+            result: null
+          },
+          {
+            sourceId: '1009',
+            hmac: 'c1f0e9d2a3b45678906c12345678d',
+            createTime: '2024-03-14 09:20:00',
+            updateTime: '2024-03-14 12:00:00',
+            tableName: 'sys_oper_log',
+            columnName: 'oper_ip',
+            result: true
+          },
+          {
+            sourceId: '1010',
+            hmac: 'd2a1f0e3b4c5678907d123456789e',
+            createTime: '2024-03-18 11:00:00',
+            updateTime: '2024-03-23 10:15:00',
+            tableName: 'sys_logininfor',
+            columnName: 'ipaddr',
+            result: null
+          }
+        ],
+        pagination: {
+          total: 86
+        }
       }
-      axios.post(this.api + '/hmac/list', params).then((res) => {
-        const { data, pagination } = res.data
-        this.dataSource = data || []
-        this.total = pagination.total
-      })
+
+      // 模拟筛选逻辑
+      let filteredData = [...mockData.data]
+
+      // 按 hmac 模糊筛选
+      if (this.form.hmacFuzzy) {
+        filteredData = filteredData.filter(item =>
+          item.hmac.includes(this.form.hmacFuzzy)
+        )
+      }
+
+      // 按时间范围筛选
+      if (this.form.lastUpdateTime && this.form.lastUpdateTime[0]) {
+        const startTime = new Date(this.form.lastUpdateTime[0]).getTime()
+        filteredData = filteredData.filter(item => {
+          const itemTime = new Date(item.updateTime).getTime()
+          return itemTime >= startTime
+        })
+      }
+      if (this.form.lastUpdateTime && this.form.lastUpdateTime[1]) {
+        const endTime = new Date(this.form.lastUpdateTime[1]).getTime()
+        filteredData = filteredData.filter(item => {
+          const itemTime = new Date(item.updateTime).getTime()
+          return itemTime <= endTime
+        })
+      }
+
+      // 分页
+      const start = (this.form.pageNum - 1) * this.form.pageSize
+      const end = start + this.form.pageSize
+      const pageData = filteredData.slice(start, end)
+
+      this.dataSource = pageData
+      this.total = filteredData.length
     },
     reset () {
       this.form = {
         databaseName: 'ucmp_system',
         lastUpdateTime: [null, null],
+        hmacFuzzy: '',
         pageNum: 1,
         pageSize: 10
       }

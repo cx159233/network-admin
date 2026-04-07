@@ -1,17 +1,17 @@
-import request from '@/utils/request'
-
 // 当前发布任务队列长度
 export function getPublishTaskCount() {
-  return request({
-    url: '/cms/publish/taskCount',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: 0
   })
 }
 
 // 清空发布任务队列
 export function clearPublishTask() {
-  return request({
-    url: '/cms/publish/clear',
-    method: 'delete'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

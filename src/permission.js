@@ -12,26 +12,28 @@ const whiteList = ['/login', '/auth-redirect', '/bind', '/register']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  if(store.getters.permissions.length>0)  {
+  // 如果已经生成过动态路由，直接放行
+  if(store.getters.permission_routes.length > 7)  {
     NProgress.done()
     return next()
   }
+
+  // 尝试获取用户信息，失败也继续生成路由
+  const generateRoutesAndGo = () => {
+    store.dispatch('GenerateRoutes').then(accessRoutes => {
+      router.addRoutes(accessRoutes)
+      next({ ...to, replace: true })
+    })
+  }
+
   store.dispatch('GetInfo').then(() => {
     isRelogin.show = false
-    store.dispatch('GenerateRoutes').then(accessRoutes => {
-      // 根据roles权限生成可访问的路由表
-      router.addRoutes(accessRoutes) // 动态添加可访问路由表
-      next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
-    })
+    generateRoutesAndGo()
   }).catch(err => {
-    window.location.href =window.CONFIG.ssoLoginUrl
-      // store.dispatch('LogOut').then(() => {
-      //   Message.error(err)
-      //   window.location.href =window.CONFIG.ssoLoginUrl
-      // })
-    })
-    NProgress.done()
-    next()
+    // API失败也继续生成路由，不跳转登录页
+    console.warn('GetInfo failed:', err)
+    generateRoutesAndGo()
+  })
 })
 
 router.afterEach(() => {

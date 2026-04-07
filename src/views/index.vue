@@ -5,6 +5,7 @@
         <user-info></user-info>
       </el-col>
     </el-row>
+    <!-- 互认能力开发知识中心和卡片已隐藏
     <div style="margin-top: 16px">
       <div><el-button type="primary">互认能力开发知识中心</el-button></div>
       <div>
@@ -19,6 +20,7 @@
         </el-card>
       </div>
     </div>
+    -->
   </div>
 </template>
 

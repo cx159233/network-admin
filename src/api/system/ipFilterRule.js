@@ -1,40 +1,42 @@
-import request from '@/utils/request'
-
 export function listRule(query) {
-  return request({
-    url: '/sys/iprule',
-    method: 'get',
-    params: query
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      rows: [],
+      total: 0
+    }
   })
 }
 
 export function getRule(ruleId) {
-  return request({
-    url: '/sys/iprule/' + ruleId,
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function addRule(data) {
-  return request({
-    url: '/sys/iprule',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function editRule(data) {
-  return request({
-    url: '/sys/iprule',
-    method: 'put',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function delRule(ids) {
-  return request({
-    url: '/sys/iprule',
-    method: 'delete',
-    data: ids
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

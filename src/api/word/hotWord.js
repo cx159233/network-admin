@@ -1,71 +1,94 @@
-import request from '@/utils/request'
-
 export function getHotWordList(params) {
-  return request({
-    url: '/word/hotword',
-    method: 'get',
-    params: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      rows: [
+        { wordId: 1, word: '热词1', groupId: 1, groupName: '分组1', sort: 1, createTime: '2024-01-01 10:00:00' },
+        { wordId: 2, word: '热词2', groupId: 1, groupName: '分组1', sort: 2, createTime: '2024-01-02 10:00:00' }
+      ],
+      total: 2
+    }
   })
 }
 
 export function addHotWord(data) {
-  return request({
-    url: '/word/hotword',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function editHotWord(data) {
-  return request({
-    url: '/word/hotword',
-    method: 'put',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function deleteHotWord(data) {
-  return request({
-    url: '/word/hotword',
-    method: 'delete',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function getHotWordGroupTreeData() {
-  return request({
-    url: '/word/hotword/group/treedata',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: [
+      {
+        groupId: 1,
+        groupName: '热词分组1',
+        children: [
+          { groupId: 11, groupName: '子分组1' },
+          { groupId: 12, groupName: '子分组2' }
+        ]
+      },
+      {
+        groupId: 2,
+        groupName: '热词分组2',
+        children: []
+      }
+    ]
   })
 }
 
 export function getHotWordGroupOptions() {
-  return request({
-    url: '/word/hotword/group/options',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: [
+      { groupId: 1, groupName: '热词分组1' },
+      { groupId: 2, groupName: '热词分组2' }
+    ]
   })
 }
 
 export function addHotWordGroup(data) {
-  return request({
-    url: '/word/hotword/group',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function editHotWordGroup(data) {
-  return request({
-    url: '/word/hotword/group',
-    method: 'put',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function deleteHotWordGroup(data) {
-  return request({
-    url: '/word/hotword/group',
-    method: 'delete',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

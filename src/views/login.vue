@@ -117,11 +117,7 @@ export default {
   methods: {
     getCode() {
       getCodeImg().then(res => {
-        this.captchaEnabled = res.data.captchaEnabled === undefined ? true : res.data.captchaEnabled;
-        if (this.captchaEnabled) {
-          this.codeUrl = "data:image/gif;base64," + res.data.img;
-          this.loginForm.uuid = res.data.uuid;
-        }
+        this.captchaEnabled = false; // 强制关闭验证码
       });
     },
     getCookie() {

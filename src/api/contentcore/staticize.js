@@ -1,14 +1,15 @@
-import request from '@/utils/request'
-
 export function getTagList() {
-  return request({
-    url: '/cms/staticize/tags',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: []
   })
 }
+
 export function getFunctionList() {
-  return request({
-    url: '/cms/staticize/functions',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: []
   })
 }

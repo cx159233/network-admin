@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(node:*)",
+      "Bash(npm run:*)",
+      "Bash(NODE_OPTIONS=--openssl-legacy-provider npm run:*)",
+      "Read(//f/menhu/cq-network-admin-view/cq-network-admin-view/src/views/order/**)",
+      "Bash(xargs grep:*)",
+      "Bash(xargs ls:*)",
+      "Bash(export NODE_OPTIONS=--openssl-legacy-provider)"
+    ]
+  }
+}

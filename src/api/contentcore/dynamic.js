@@ -1,48 +1,50 @@
-import request from '@/utils/request'
-
 export function getDynamicPageInitDataTypes(query) {
-  return request({
-    url: '/cms/dynamic_page/init_data_types',
-    method: 'get',
-    params: query
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function getDynamicPageList(query) {
-  return request({
-    url: '/cms/dynamic_page/list',
-    method: 'get',
-    params: query
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      rows: [],
+      total: 0
+    }
   })
 }
 
 export function getDynamicPageDetail(pageId) {
-  return request({
-    url: '/cms/dynamic_page/' + pageId,
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function addDynamicPage(data) {
-  return request({
-    url: '/cms/dynamic_page',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function editDynamicPage(data) {
-  return request({
-    url: '/cms/dynamic_page',
-    method: 'put',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function deleteDynamicPages(pageIds) {
-  return request({
-    url: '/cms/dynamic_page',
-    method: 'delete',
-    data: pageIds
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

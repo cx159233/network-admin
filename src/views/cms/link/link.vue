@@ -340,7 +340,7 @@ export default {
         .catch(() => {});
     },
     handleGoBack() {
-      const obj = { path: "/operations/link" };
+      const obj = { path: "/portal/interaction/friendLink" };
       this.$tab.closeOpenPage(obj);
     },
   },

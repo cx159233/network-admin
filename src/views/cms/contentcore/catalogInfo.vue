@@ -342,7 +342,7 @@ export default {
       publishChild: false,
       publishStatus: -1,
       publishPipeActiveName: "", // 当前选中的发布通道Tab
-      catalogId: parseInt(this.cid),
+      catalogId: this.cid,
       showSortPop: false,
       sortValue: 0,
       // 栏目信息表单
@@ -395,10 +395,10 @@ export default {
   watch: {
     cid(newVal) {
       this.catalogId = newVal;
-    },
-    catalogId(newVal) {
-      if (newVal && newVal > 0) {
-        this.loadCatalogInfo();
+      if (newVal && newVal.length > 0) {
+        this.$nextTick(() => {
+          this.loadCatalogInfo();
+        });
       } else {
         this.form_info = { siteId: "" };
       }
@@ -421,13 +421,14 @@ export default {
     },
     loadCatalogInfo() {
       if (!this.catalogId) {
-        // this.$modal.msgError(this.$t('CMS.Catalog.SelectCatalogFirst'));
         return;
       }
       this.loading = true;
+      // 重置表单数据
+      this.form_info = { siteId: "" };
       catalogApi.getCatalogData(this.catalogId).then((response) => {
         this.form_info = response.data;
-        if (this.form_info.publishPipeDatas.length > 0) {
+        if (this.form_info.publishPipeDatas && this.form_info.publishPipeDatas.length > 0) {
           this.publishPipeActiveName =
             this.form_info.publishPipeDatas[0].pipeCode;
         }

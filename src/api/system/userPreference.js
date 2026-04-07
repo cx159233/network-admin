@@ -1,24 +1,23 @@
-import request from '@/utils/request'
-
 export function getUserPreference() {
-  return request({
-    url: '/system/userPreference',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function saveConfig(data) {
-  return request({
-    url: '/system/userPreference',
-    method: 'put',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function saveSingleConfig(data) {
-  return request({
-    url: '/system/userPreference/single',
-    method: 'put',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

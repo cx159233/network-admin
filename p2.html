@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>门户平台 — 服务目录 · 服务评价 · 资质审核</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f4f8;--surface:#fff;--surface2:#f7f8fa;--surface3:#eef0f5;
+  --border:#e3e7ef;--border2:#c8cdd9;
+  --text:#1c2033;--text2:#5c6480;--text3:#9aa0b8;
+  --accent:#3b5bdb;--accent-dim:#eef2ff;--accent-mid:#c5d0fa;
+  --green:#2f9e44;--green-dim:#ebfbee;--green-mid:#b2f2bb;
+  --amber:#e67700;--amber-dim:#fff9db;--amber-mid:#ffec99;
+  --red:#c92a2a;--red-dim:#fff5f5;--red-mid:#ffc9c9;
+  --teal:#0c8599;--teal-dim:#e3fafc;--teal-mid:#99e9f2;
+  --purple:#6741d9;--purple-dim:#f3f0ff;--purple-mid:#d0bfff;
+  --orange:#d9480f;--orange-dim:#fff4e6;--orange-mid:#ffd8a8;
+  --r:8px;--rl:12px;--rxl:16px;
+  --sh:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 4px 16px rgba(0,0,0,.08);--sh-lg:0 8px 32px rgba(0,0,0,.1);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+
+/* Shell */
+.shell{display:flex;min-height:100vh}
+
+/* Sidebar */
+.side{width:228px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.side-logo{padding:18px 20px 16px;border-bottom:1px solid var(--border)}
+.logo-wrap{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;letter-spacing:-.3px}
+.logo-ico{width:28px;height:28px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.logo-sub{font-size:10px;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace;letter-spacing:.5px}
+.nav{padding:10px 10px 0;flex:1}
+.ngl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:4px;margin-top:10px}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r);color:var(--text2);cursor:pointer;font-size:13px;margin-bottom:1px;transition:all .12s}
+.ni:hover{background:var(--surface2);color:var(--text)}
+.ni.on{background:var(--accent-dim);color:var(--accent);font-weight:500}
+.ni svg{width:15px;height:15px;flex-shrink:0;opacity:.65}
+.ni.on svg{opacity:1}
+.nb{margin-left:auto;font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;font-family:'DM Mono',monospace}
+.nb.red{background:var(--red);color:#fff}
+.nb.amber{background:var(--amber);color:#fff}
+.nb.blue{background:var(--accent);color:#fff}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* Page switcher */
+.demo-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:10px}
+.ps{display:flex;gap:5px;padding:3px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);width:fit-content}
+.psb{padding:6px 16px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .12s;font-family:'DM Sans',sans-serif}
+.psb.on{background:var(--accent);color:#fff;box-shadow:0 1px 4px rgba(59,91,219,.3)}
+
+/* Page header */
+.ph{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh)}
+.ph-title{font-size:16px;font-weight:600}
+.ph-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.ph-sp{flex:1}
+
+/* Content */
+.content{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:18px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .12s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#3451c5}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+.btn-success{background:var(--green-dim);color:var(--green);border:1px solid var(--green-mid)}.btn-success:hover{background:var(--green-mid)}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid var(--red-mid)}
+.btn-warn{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-xs{padding:3px 9px;font-size:11px}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--sh)}
+.card-hd{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.cht{font-size:13px;font-weight:600;flex:1}
+.chs{font-size:11px;color:var(--text3)}
+.card-bd{padding:18px}
+
+/* Tags */
+.tt{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
+.tt.cloud{background:var(--accent-dim);color:var(--accent)}
+.tt.security{background:var(--amber-dim);color:var(--amber)}
+.tt.custom{background:var(--teal-dim);color:var(--teal)}
+.tt.info{background:var(--surface2);color:var(--text3)}
+.tt.app{background:var(--purple-dim);color:var(--purple)}
+.tt.new{background:var(--green-dim);color:var(--green)}
+.tt.hot{background:var(--red-dim);color:var(--red)}
+.tt.gov{background:#e3f2fd;color:#1565c0}
+.tt.soe{background:var(--amber-dim);color:var(--amber)}
+.tt.ent{background:var(--purple-dim);color:var(--purple)}
+
+/* Status */
+.sb{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.sb::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.sb.pending{background:var(--amber-dim);color:var(--amber)}.sb.pending::before{background:var(--amber);animation:blink 1.5s infinite}
+.sb.reviewing{background:var(--accent-dim);color:var(--accent)}.sb.reviewing::before{background:var(--accent);animation:blink 1.5s infinite}
+.sb.approved{background:var(--green-dim);color:var(--green)}.sb.approved::before{background:var(--green)}
+.sb.rejected{background:var(--red-dim);color:var(--red)}.sb.rejected::before{background:var(--red)}
+.sb.online{background:var(--green-dim);color:var(--green)}.sb.online::before{background:var(--green)}
+.sb.offline{background:var(--surface3);color:var(--text3)}.sb.offline::before{background:var(--text3)}
+.sb.draft{background:var(--surface3);color:var(--text3)}.sb.draft::before{background:var(--text3)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* Filter bar */
+.fbar{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh);flex-wrap:wrap}
+.fsearch{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:6px 11px;flex:1;min-width:200px;max-width:280px}
+.fsearch input{border:none;outline:none;background:transparent;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:100%}
+.fsearch input::placeholder{color:var(--text3)}
+.fsel{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:6px 11px;color:var(--text2);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;outline:none}
+.fsp{flex:1}
+
+/* Table */
+.tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh)}
+table{width:100%;border-collapse:collapse}
+thead th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);background:var(--surface2)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f5f7ff}
+tbody td{padding:12px 16px;vertical-align:middle}
+.tn{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.ts{font-size:11px;color:var(--text3)}
+.tm{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
+
+/* Tabs */
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 16px}
+.tab{padding:10px 16px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tcnt{font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;font-family:'DM Mono',monospace}
+.tab.on .tcnt{background:var(--accent-dim);color:var(--accent)}
+.tab:not(.on) .tcnt{background:var(--surface2);color:var(--text3)}
+
+/* Stats */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc.blue::after{background:var(--accent)}.sc.green::after{background:var(--green)}.sc.amber::after{background:var(--amber)}.sc.teal::after{background:var(--teal)}.sc.red::after{background:var(--red)}.sc.purple::after{background:var(--purple)}
+.sc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sc-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.sc-ico.blue{background:var(--accent-dim)}.sc-ico.green{background:var(--green-dim)}.sc-ico.amber{background:var(--amber-dim)}.sc-ico.teal{background:var(--teal-dim)}.sc-ico.red{background:var(--red-dim)}.sc-ico.purple{background:var(--purple-dim)}
+.sc-val{font-size:28px;font-weight:300;font-family:'DM Mono',monospace;letter-spacing:-1.5px}
+.sc-val.blue{color:var(--accent)}.sc-val.green{color:var(--green)}.sc-val.amber{color:var(--amber)}.sc-val.teal{color:var(--teal)}.sc-val.red{color:var(--red)}.sc-val.purple{color:var(--purple)}
+.sc-lbl{font-size:12px;color:var(--text3);margin-top:2px}
+
+/* Info pairs */
+.ip{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.ip-i{padding:10px 16px;border-bottom:1px solid var(--border)}
+.ip-i:nth-child(odd){border-right:1px solid var(--border)}
+.ip-i.full{grid-column:1/-1;border-right:none}
+.ip-i:nth-last-child(-n+2):not(.full){border-bottom:none}
+.ip-i.full:last-child{border-bottom:none}
+.ip-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.ip-val{font-size:13px;font-weight:500;color:var(--text)}
+.ip-val.muted{font-weight:400;color:var(--text2)}
+.ip-val.mono{font-family:'DM Mono',monospace;font-size:12px;font-weight:400}
+
+/* Timeline */
+.tl{display:flex;flex-direction:column}
+.tl-row{display:flex;gap:12px}
+.tl-sp{display:flex;flex-direction:column;align-items:center;width:14px;flex-shrink:0}
+.tl-d{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.tl-d.done{background:var(--green)}.tl-d.on{background:var(--accent);box-shadow:0 0 0 3px var(--accent-mid)}.tl-d.wait{background:var(--border2)}.tl-d.red{background:var(--red)}
+.tl-vl{flex:1;width:1px;background:var(--border);margin:3px 0;min-height:14px}
+.tl-row:last-child .tl-vl{display:none}
+.tl-b{padding-bottom:14px;flex:1}
+.tl-t{font-size:13px;font-weight:500;margin-bottom:2px}
+.tl-t.done{color:var(--text2)}.tl-t.on{color:var(--text)}.tl-t.wait{color:var(--text3)}
+.tl-m{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+
+/* Detail layout */
+.dl{display:flex;gap:16px;align-items:flex-start}
+.dl-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
+.dl-side{width:272px;flex-shrink:0;display:flex;flex-direction:column;gap:12px}
+
+/* Avatar */
+.av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0}
+.av.blue{background:var(--accent-dim);color:var(--accent)}.av.amber{background:var(--amber-dim);color:var(--amber)}.av.green{background:var(--green-dim);color:var(--green)}
+
+/* Divider */
+.div{height:1px;background:var(--border)}
+
+/* ═══════════════════════════════
+   SERVICE CATALOG SPECIFIC
+═══════════════════════════════ */
+
+/* Hero banner */
+.catalog-hero{background:linear-gradient(135deg,#1e2a6e 0%,#2d3a8c 50%,#1a3a5c 100%);border-radius:var(--rxl);padding:32px 36px;color:#fff;position:relative;overflow:hidden}
+.catalog-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.04)}
+.catalog-hero::after{content:'';position:absolute;bottom:-60px;left:30%;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.03)}
+.hero-title{font-size:22px;font-weight:600;letter-spacing:-.5px;margin-bottom:6px;position:relative;z-index:1}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:20px;position:relative;z-index:1}
+.hero-search{display:flex;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:var(--rl);overflow:hidden;max-width:520px;position:relative;z-index:1;backdrop-filter:blur(4px)}
+.hero-search input{flex:1;border:none;outline:none;background:transparent;color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;padding:11px 16px}
+.hero-search input::placeholder{color:rgba(255,255,255,.45)}
+.hero-search button{background:var(--accent);border:none;color:#fff;padding:0 18px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500}
+.hero-tags{display:flex;gap:8px;margin-top:14px;position:relative;z-index:1;flex-wrap:wrap}
+.hero-tag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:3px 12px;font-size:12px;color:rgba(255,255,255,.8);cursor:pointer;transition:all .12s}
+.hero-tag:hover{background:rgba(255,255,255,.2)}
+.hero-stats{display:flex;gap:24px;position:relative;z-index:1;margin-top:18px}
+.hero-stat{text-align:center}
+.hero-stat-v{font-size:20px;font-weight:600;font-family:'DM Mono',monospace}
+.hero-stat-l{font-size:11px;color:rgba(255,255,255,.55);margin-top:1px}
+
+/* Category tabs */
+.cat-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.cat-tab{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all .12s}
+.cat-tab:hover{border-color:var(--border2);color:var(--text)}
+.cat-tab.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(59,91,219,.3)}
+
+/* Service card grid */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.svc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rxl);overflow:hidden;box-shadow:var(--sh);transition:all .18s;cursor:pointer;position:relative}
+.svc-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px);border-color:var(--accent-mid)}
+.svc-card-top{padding:20px 20px 14px;position:relative}
+.svc-icon-wrap{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:20px}
+.svc-icon-wrap.cloud{background:var(--accent-dim)}
+.svc-icon-wrap.security{background:var(--amber-dim)}
+.svc-icon-wrap.custom{background:var(--teal-dim)}
+.svc-icon-wrap.app{background:var(--purple-dim)}
+.svc-icon-wrap.info{background:var(--surface3)}
+.svc-name{font-size:14px;font-weight:600;margin-bottom:5px}
+.svc-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px}
+.svc-tags{display:flex;gap:5px;flex-wrap:wrap}
+.svc-card-bottom{padding:12px 20px;border-top:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:space-between}
+.svc-meta{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text3)}
+.svc-rating{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--amber)}
+.svc-corner-badge{position:absolute;top:14px;right:14px}
+
+/* Star rating */
+.stars{display:flex;gap:1px}
+.star{font-size:13px;line-height:1}
+.star.full{color:var(--amber)}.star.half{color:var(--amber);opacity:.6}.star.empty{color:var(--border2)}
+
+/* Review cards */
+.review-grid{display:flex;flex-direction:column;gap:12px}
+.review-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;box-shadow:var(--sh)}
+.review-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.reviewer-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.review-meta{flex:1}
+.reviewer-name{font-size:13px;font-weight:500}
+.review-info{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.review-body{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px}
+.review-tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.review-tag{padding:2px 8px;border-radius:4px;font-size:11px;background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.review-footer{display:flex;align-items:center;justify-content:space-between}
+.review-helpful{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px}
+.reply-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6}
+.reply-from{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+
+/* Score summary */
+.score-big{text-align:center;padding:20px}
+.score-num{font-size:52px;font-weight:300;font-family:'DM Mono',monospace;color:var(--amber);letter-spacing:-3px;line-height:1}
+.score-label{font-size:12px;color:var(--text3);margin-top:4px}
+.score-bars{display:flex;flex-direction:column;gap:7px}
+.score-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.score-lbl{width:30px;text-align:right;color:var(--text2);font-weight:500}
+.score-bar-wrap{flex:1;height:7px;background:var(--surface3);border-radius:4px;overflow:hidden}
+.score-bar{height:100%;background:var(--amber);border-radius:4px}
+.score-cnt{width:28px;color:var(--text3);font-size:11px;font-family:'DM Mono',monospace}
+
+/* Submit review form */
+.review-form{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);padding:20px}
+.rf-title{font-size:13px;font-weight:600;margin-bottom:14px}
+.rf-stars{display:flex;gap:6px;margin-bottom:14px}
+.rf-star{font-size:28px;cursor:pointer;color:var(--border2);transition:color .1s;line-height:1}
+.rf-star.on,.rf-star:hover{color:var(--amber)}
+.rf-dims{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.rf-dim{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.rf-dim-lbl{font-size:11px;color:var(--text3);margin-bottom:5px}
+.mini-stars{display:flex;gap:3px}
+.mini-star{font-size:16px;cursor:pointer;color:var(--border2)}.mini-star.on{color:var(--amber)}
+.rf-tags-pick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.rf-tag-pick{padding:4px 10px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:all .12s}
+.rf-tag-pick.on{background:var(--accent-dim);border-color:var(--accent-mid);color:var(--accent)}
+.rf-textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:80px;line-height:1.6;transition:border-color .12s;margin-bottom:12px}
+.rf-textarea:focus{border-color:var(--accent)}
+
+/* Qualification review specific */
+.qual-hero{display:flex;align-items:center;gap:16px;padding:18px 20px}
+.qual-av{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent-dim),var(--purple-dim));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--accent);flex-shrink:0;border:1px solid var(--border)}
+
+/* Doc item */
+.doc-list{display:flex;flex-direction:column;gap:8px;padding:14px 18px}
+.doc-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .12s}
+.doc-item:hover{border-color:var(--accent);background:var(--accent-dim)}
+.doc-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.doc-name{font-size:13px;font-weight:500;flex:1}
+.doc-size{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+.doc-status{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.doc-status.ok{background:var(--green-dim);color:var(--green);border:1px solid var(--green-mid)}
+.doc-status.ng{background:var(--red-dim);color:var(--red);border:1px solid var(--red-mid)}
+.doc-status.wait{background:var(--surface2);color:var(--text3);border:1px solid var(--border2)}
+.doc-status.ing{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-mid)}
+
+/* Checklist */
+.chk-list{display:flex;flex-direction:column}
+.chk-item{display:flex;align-items:flex-start;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border)}
+.chk-item:last-child{border-bottom:none}
+.chk-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border2);flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.chk-box.ok{background:var(--accent);border-color:var(--accent);color:#fff;font-size:10px}
+.chk-box.ng{background:var(--red);border-color:var(--red);color:#fff;font-size:10px}
+.chk-text{flex:1}
+.chk-lbl{font-size:13px;font-weight:500;margin-bottom:2px}
+.chk-desc{font-size:11px;color:var(--text3)}
+.chk-res{margin-left:auto;flex-shrink:0}
+
+/* Progress bar */
+.prog-wrap{height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.prog{height:100%;border-radius:3px}
+.prog.amber{background:var(--amber)}.prog.green{background:var(--green)}.prog.red{background:var(--red)}.prog.blue{background:var(--accent)}
+
+/* Reply / comment box */
+.comment-area{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.comment-input-area{border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:flex-end}
+.comment-input{flex:1;border:none;outline:none;background:transparent;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);resize:none;min-height:36px;line-height:1.5}
+.comment-input::placeholder{color:var(--text3)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── SIDEBAR ── -->
+<aside class="side">
+  <div class="side-logo">
+    <div class="logo-wrap">
+      <div class="logo-ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><path d="M2 14V6l6-4 6 4v8"/></svg></div>
+      云服务门户
+    </div>
+    <div class="logo-sub">CLOUD PORTAL v2.1</div>
+  </div>
+  <div class="nav">
+    <div class="ngl">服务</div>
+    <div class="ni on" onclick="goPage('catalog')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>服务目录</div>
+    <div class="ni" onclick="goPage('orders')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>我的订单<span class="nb blue">3</span></div>
+    <div class="ni" onclick="goPage('tickets')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>工单中心<span class="nb amber">2</span></div>
+    <div class="ni" onclick="goPage('reviews')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3.5 1.5.5-3.5L2.5 5.5 6 5z"/></svg>服务评价</div>
+    <div class="ngl">机构管理</div>
+    <div class="ni" onclick="goPage('qualification')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14V6l6-4 6 4v8"/><path d="M6 14v-4h4v4"/></svg>资质审核<span class="nb red">4</span></div>
+    <div class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 3V1M11 3V1M2 7h12"/></svg>机构档案</div>
+    <div class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v4M8 14v-2M14 8h-2M4 8H2M12.2 3.8l-1.4 1.4M5.2 10.8l-1.4 1.4M12.2 12.2l-1.4-1.4M5.2 5.2L3.8 3.8"/></svg>到期预警<span class="nb red">7</span></div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- demo switcher -->
+  <div class="demo-bar">
+    <span style="font-size:12px;color:var(--text3)">切换页面：</span>
+    <div class="ps">
+      <button class="psb on" onclick="goPage('catalog')">服务目录</button>
+      <button class="psb" onclick="goPage('svc-detail')">服务详情</button>
+      <button class="psb" onclick="goPage('reviews')">服务评价</button>
+      <button class="psb" onclick="goPage('review-submit')">提交评价</button>
+      <button class="psb" onclick="goPage('qualification')">资质审核列表</button>
+      <button class="psb" onclick="goPage('qual-review')">审核工作台</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       P1 · 服务目录（前台）
+  ══════════════════════════════ -->
+  <div id="page-catalog" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <div class="content" style="padding-top:16px">
+
+      <!-- Hero -->
+      <div class="catalog-hero">
+        <div class="hero-title">云服务目录</div>
+        <div class="hero-sub">100+ 款云服务，覆盖计算、安全、数据、能力组件四大领域</div>
+        <div class="hero-search">
+          <input placeholder="搜索服务名称、关键词，如「云主机」「等保」「API」...">
+          <button>搜索</button>
+        </div>
+        <div class="hero-tags">
+          <span class="hero-tag">云主机</span>
+          <span class="hero-tag">对象存储</span>
+          <span class="hero-tag">等保评估</span>
+          <span class="hero-tag">裸金属服务器</span>
+          <span class="hero-tag">WAF防护</span>
+          <span class="hero-tag">身份认证API</span>
+          <span class="hero-tag">数据库</span>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="hero-stat-v">128</div><div class="hero-stat-l">上架服务</div></div>
+          <div class="hero-stat"><div class="hero-stat-v">47</div><div class="hero-stat-l">入驻机构</div></div>
+          <div class="hero-stat"><div class="hero-stat-v">1,240</div><div class="hero-stat-l">累计订单</div></div>
+          <div class="hero-stat"><div class="hero-stat-v">4.8</div><div class="hero-stat-l">平均评分</div></div>
+        </div>
+      </div>
+
+      <!-- Category tabs -->
+      <div class="cat-tabs">
+        <div class="cat-tab on">全部</div>
+        <div class="cat-tab">☁️ 标准云资源</div>
+        <div class="cat-tab">🔐 安全服务</div>
+        <div class="cat-tab">⚙️ 定制化资源</div>
+        <div class="cat-tab">🧩 能力组件</div>
+        <div class="cat-tab">📰 信息资讯</div>
+      </div>
+
+      <!-- Hot services -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px"><span style="color:var(--red)">🔥</span> 热门服务</div>
+          <a href="#" style="font-size:12px;color:var(--accent);text-decoration:none">查看全部 →</a>
+        </div>
+        <div class="svc-grid">
+          <div class="svc-card" onclick="goPage('svc-detail')">
+            <div class="svc-card-top">
+              <div class="svc-corner-badge"><span class="tt hot">热门</span></div>
+              <div class="svc-icon-wrap cloud">☁️</div>
+              <div class="svc-name">云主机（ECS）</div>
+              <div class="svc-desc">弹性可扩展的云服务器，支持多种规格配置，秒级交付，自助管理。</div>
+              <div class="svc-tags"><span class="tt cloud">标准云资源</span><span class="tt" style="background:var(--green-dim);color:var(--green)">自动开通</span></div>
+            </div>
+            <div class="svc-card-bottom">
+              <div class="svc-meta">
+                <div class="svc-rating">
+                  <div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star half">★</span></div>
+                  4.8
+                </div>
+                <span>| 已申请 312 次</span>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation()">申请</button>
+            </div>
+          </div>
+
+          <div class="svc-card">
+            <div class="svc-card-top">
+              <div class="svc-corner-badge"><span class="tt new">新上架</span></div>
+              <div class="svc-icon-wrap security">🔐</div>
+              <div class="svc-name">等保三级合规评估</div>
+              <div class="svc-desc">专业安全团队提供等保三级差距分析、整改方案及认证辅导全流程服务。</div>
+              <div class="svc-tags"><span class="tt security">安全服务</span><span class="tt" style="background:var(--amber-dim);color:var(--amber)">需工单</span></div>
+            </div>
+            <div class="svc-card-bottom">
+              <div class="svc-meta">
+                <div class="svc-rating">
+                  <div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span></div>
+                  5.0
+                </div>
+                <span>| 已申请 48 次</span>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation()">申请</button>
+            </div>
+          </div>
+
+          <div class="svc-card">
+            <div class="svc-card-top">
+              <div class="svc-icon-wrap app">🧩</div>
+              <div class="svc-name">身份认证 API</div>
+              <div class="svc-desc">标准化 OAuth2.0 / OIDC 身份认证接口，支持多租户，快速接入业务系统。</div>
+              <div class="svc-tags"><span class="tt app">能力组件</span><span class="tt" style="background:var(--green-dim);color:var(--green)">自动开通</span></div>
+            </div>
+            <div class="svc-card-bottom">
+              <div class="svc-meta">
+                <div class="svc-rating">
+                  <div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star empty">★</span></div>
+                  4.2
+                </div>
+                <span>| 已申请 186 次</span>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation()">申请</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security services section -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px"><span>🔐</span> 安全服务</div>
+          <a href="#" style="font-size:12px;color:var(--accent);text-decoration:none">查看全部 →</a>
+        </div>
+        <div class="svc-grid">
+          <div class="svc-card">
+            <div class="svc-card-top">
+              <div class="svc-icon-wrap security">🛡️</div>
+              <div class="svc-name">云防火墙</div>
+              <div class="svc-desc">基于机器学习的下一代防火墙，实时防护 DDoS、CC 攻击，支持 1Gbps 以上防护带宽。</div>
+              <div class="svc-tags"><span class="tt security">安全服务</span><span class="tt" style="background:var(--amber-dim);color:var(--amber)">需工单</span></div>
+            </div>
+            <div class="svc-card-bottom">
+              <div class="svc-meta">
+                <div class="svc-rating"><div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star half">★</span></div>4.6</div>
+                <span>| 已申请 89 次</span>
+              </div>
+              <button class="btn btn-primary btn-sm">申请</button>
+            </div>
+          </div>
+          <div class="svc-card">
+            <div class="svc-card-top">
+              <div class="svc-icon-wrap security">🔍</div>
+              <div class="svc-name">漏洞扫描服务</div>
+              <div class="svc-desc">覆盖 Web 应用、主机系统的自动化漏洞扫描，出具详细报告和修复建议。</div>
+              <div class="svc-tags"><span class="tt security">安全服务</span><span class="tt" style="background:var(--amber-dim);color:var(--amber)">需工单</span></div>
+            </div>
+            <div class="svc-card-bottom">
+              <div class="svc-meta">
+                <div class="svc-rating"><div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star empty">★</span></div>4.3</div>
+                <span>| 已申请 64 次</span>
+              </div>
+              <button class="btn btn-primary btn-sm">申请</button>
+            </div>
+          </div>
+          <div class="svc-card">
+            <div class="svc-card-top">
+              <div class="svc-corner-badge"><span class="tt new">新上架</span></div>
+              <div class="svc-icon-wrap security">🔒</div>
+              <div class="svc-name">数据安全加固</div>
+              <div class="svc-desc">针对核心数据库的访问控制、加密存储、脱敏处理一体化安全加固方案。</div>
+              <div class="svc-tags"><span class="tt security">安全服务</span><span class="tt" style="background:var(--amber-dim);color:var(--amber)">需工单</span></div>
+            </div>
+            <div class="svc-card-bottom">
+              <div class="svc-meta">
+                <div class="svc-rating"><div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span></div>5.0</div>
+                <span>| 已申请 12 次</span>
+              </div>
+              <button class="btn btn-primary btn-sm">申请</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       P2 · 服务详情页
+  ══════════════════════════════ -->
+  <div id="page-svc-detail" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="ph">
+      <button class="btn btn-ghost btn-sm" onclick="goPage('catalog')">← 返回目录</button>
+      <div style="width:1px;height:18px;background:var(--border)"></div>
+      <div>
+        <div class="ph-title">云主机（ECS）</div>
+        <div class="ph-sub">标准云资源 · 自动开通 · 审批后 5 分钟内到账</div>
+      </div>
+      <div class="ph-sp"></div>
+      <button class="btn btn-ghost btn-sm" onclick="goPage('svc-detail')">收藏</button>
+      <button class="btn btn-primary" onclick="goPage('svc-detail')">立即申请</button>
+    </div>
+    <div class="content">
+      <div class="dl">
+        <div class="dl-main">
+
+          <div class="card">
+            <div class="card-hd"><span class="cht">服务介绍</span><span class="sb online">上架中</span></div>
+            <div class="card-bd">
+              <div style="display:flex;gap:14px;margin-bottom:16px">
+                <div style="width:60px;height:60px;border-radius:14px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">☁️</div>
+                <div>
+                  <div style="font-size:15px;font-weight:600;margin-bottom:5px">云主机（ECS）</div>
+                  <div style="font-size:13px;color:var(--text2);line-height:1.7">弹性云服务器（ECS）是可随时自助获取、可弹性伸缩的云服务器，帮助用户打造可靠、安全、灵活、高效的应用环境，确保服务持久稳定运行，提升运维效率。支持 Linux、Windows 多种操作系统，提供多种规格配置满足不同业务场景。</div>
+                </div>
+              </div>
+              <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">适用场景</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span class="tt cloud">Web 应用部署</span>
+                <span class="tt cloud">数据库托管</span>
+                <span class="tt cloud">开发测试环境</span>
+                <span class="tt cloud">计算密集型任务</span>
+                <span class="tt cloud">企业办公系统</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Specs -->
+          <div class="card">
+            <div class="card-hd"><span class="cht">规格配置</span><span class="chs">选择配置后申请</span></div>
+            <div class="card-bd" style="padding:16px">
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                <div style="border:2px solid var(--accent);border-radius:var(--r);padding:12px 14px;background:var(--accent-dim);cursor:pointer">
+                  <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:4px">基础型</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">2核 4G · 40G SSD</div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:4px">适合开发测试</div>
+                </div>
+                <div style="border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:all .12s" onmouseover="this.style.borderColor='var(--accent-mid)'" onmouseout="this.style.borderColor='var(--border)'">
+                  <div style="font-size:13px;font-weight:600;margin-bottom:4px">通用型</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">4核 8G · 100G SSD</div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:4px">适合中小型业务</div>
+                </div>
+                <div style="border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:all .12s" onmouseover="this.style.borderColor='var(--accent-mid)'" onmouseout="this.style.borderColor='var(--border)'">
+                  <div style="font-size:13px;font-weight:600;margin-bottom:4px">计算增强型</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">8核 16G · 200G SSD</div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:4px">适合计算密集场景</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviews preview -->
+          <div class="card">
+            <div class="card-hd"><span class="cht">用户评价</span><span class="chs">312 条评价 · 4.8 分</span><a href="#" style="font-size:12px;color:var(--accent);text-decoration:none;margin-left:auto" onclick="event.preventDefault();goPage('reviews')">查看全部</a></div>
+            <div style="padding:14px 18px;display:flex;gap:20px">
+              <div style="text-align:center;flex-shrink:0;width:90px">
+                <div style="font-size:44px;font-weight:300;font-family:'DM Mono',monospace;color:var(--amber);letter-spacing:-2px;line-height:1">4.8</div>
+                <div class="stars" style="justify-content:center;margin:4px 0"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star half">★</span></div>
+                <div style="font-size:11px;color:var(--text3);margin-top:2px">312 条评价</div>
+              </div>
+              <div style="flex:1">
+                <div class="score-bars">
+                  <div class="score-row"><span class="score-lbl">5★</span><div class="score-bar-wrap"><div class="score-bar" style="width:72%"></div></div><span class="score-cnt">225</span></div>
+                  <div class="score-row"><span class="score-lbl">4★</span><div class="score-bar-wrap"><div class="score-bar" style="width:20%"></div></div><span class="score-cnt">62</span></div>
+                  <div class="score-row"><span class="score-lbl">3★</span><div class="score-bar-wrap"><div class="score-bar" style="width:5%"></div></div><span class="score-cnt">16</span></div>
+                  <div class="score-row"><span class="score-lbl">2★</span><div class="score-bar-wrap"><div class="score-bar" style="width:2%"></div></div><span class="score-cnt">6</span></div>
+                  <div class="score-row"><span class="score-lbl">1★</span><div class="score-bar-wrap"><div class="score-bar" style="width:1%"></div></div><span class="score-cnt">3</span></div>
+                </div>
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--border)">
+              <div class="review-card" style="border:none;border-radius:0;box-shadow:none;border-bottom:1px solid var(--border)">
+                <div class="review-header">
+                  <div class="reviewer-av" style="background:var(--accent-dim);color:var(--accent)">张</div>
+                  <div class="review-meta">
+                    <div class="reviewer-name">张三 · 技术部</div>
+                    <div class="review-info"><div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span></div><span>2024-03-10</span></div>
+                  </div>
+                </div>
+                <div class="review-body">审批通过后大概3分钟服务器就到账了，速度很快。配置按需选，弹性扩容也很方便，稳定性不错，基本没遇到过中断。</div>
+                <div class="review-tags-row"><span class="review-tag">开通快</span><span class="review-tag">稳定可靠</span><span class="review-tag">操作简便</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="dl-side">
+          <div class="card">
+            <div class="card-hd"><span class="cht">申请须知</span></div>
+            <div class="card-bd" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;font-size:12px">
+              <div style="display:flex;gap:8px;color:var(--text2)"><span style="color:var(--green);flex-shrink:0">✓</span>机构资质审核通过后可申请</div>
+              <div style="display:flex;gap:8px;color:var(--text2)"><span style="color:var(--green);flex-shrink:0">✓</span>单级审批，IT管理员审批</div>
+              <div style="display:flex;gap:8px;color:var(--text2)"><span style="color:var(--green);flex-shrink:0">✓</span>审批通过后自动开通，无需工单</div>
+              <div style="display:flex;gap:8px;color:var(--text2)"><span style="color:var(--green);flex-shrink:0">✓</span>开通后 5 分钟内可使用</div>
+              <div class="div"></div>
+              <button class="btn btn-primary" style="width:100%;justify-content:center">立即申请</button>
+              <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:12px">加入收藏</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><span class="cht">服务信息</span></div>
+            <div class="ip">
+              <div class="ip-i"><div class="ip-lbl">上架时间</div><div class="ip-val mono">2023-06-01</div></div>
+              <div class="ip-i"><div class="ip-lbl">最近更新</div><div class="ip-val mono">2024-02-20</div></div>
+              <div class="ip-i"><div class="ip-lbl">服务版本</div><div class="ip-val">v3.2.1</div></div>
+              <div class="ip-i"><div class="ip-lbl">开通方式</div><div class="ip-val" style="color:var(--green);font-size:12px">自动开通</div></div>
+              <div class="ip-i full"><div class="ip-lbl">适用机构类型</div><div class="ip-val" style="font-size:12px;display:flex;gap:4px;flex-wrap:wrap"><span class="tt gov" style="padding:1px 6px">政府机关</span><span class="tt soe">国有企业</span><span class="tt ent">私营企业</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       P3 · 服务评价列表（运营后台）
+  ══════════════════════════════ -->
+  <div id="page-reviews" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="ph">
+      <div><div class="ph-title">服务评价</div><div class="ph-sub">全平台评价管理 · 后台视角</div></div>
+      <div class="ph-sp"></div>
+      <button class="btn btn-ghost btn-sm">导出报告</button>
+    </div>
+    <div class="content">
+      <div class="g4">
+        <div class="sc blue"><div class="sc-top"><div class="sc-ico blue"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3.5 1.5.5-3.5L2.5 5.5 6 5z"/></svg></div></div><div class="sc-val blue">1,024</div><div class="sc-lbl">累计评价</div></div>
+        <div class="sc amber"><div class="sc-top"><div class="sc-ico amber"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.5"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3.5 1.5.5-3.5L2.5 5.5 6 5z"/></svg></div></div><div class="sc-val amber">4.7</div><div class="sc-lbl">平均评分</div></div>
+        <div class="sc green"><div class="sc-top"><div class="sc-ico green"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M13 4L6 11 3 8"/></svg></div></div><div class="sc-val green">89%</div><div class="sc-lbl">好评率</div></div>
+        <div class="sc red"><div class="sc-top"><div class="sc-ico red"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--red)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg></div></div><div class="sc-val red">6</div><div class="sc-lbl">待回复差评</div></div>
+      </div>
+
+      <div class="fbar">
+        <div class="fsearch"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M11 11l3 3"/></svg><input placeholder="服务名称、机构名、评价内容..."></div>
+        <select class="fsel"><option>所有服务</option><option>云主机</option><option>等保评估</option><option>云防火墙</option></select>
+        <select class="fsel"><option>所有评分</option><option>5星</option><option>4星</option><option>3星及以下</option></select>
+        <select class="fsel"><option>所有状态</option><option>待回复</option><option>已回复</option></select>
+        <div class="fsp"></div>
+        <span style="font-size:12px;color:var(--text3)">共 1,024 条</span>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tabs">
+          <div class="tab on">全部 <span class="tcnt">1024</span></div>
+          <div class="tab">待回复 <span class="tcnt">6</span></div>
+          <div class="tab">差评（≤3星）<span class="tcnt">18</span></div>
+          <div class="tab">已回复 <span class="tcnt">1006</span></div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>评分</th><th>服务 / 订单号</th><th>评价机构</th><th>评价内容</th><th>评价标签</th><th>时间</th><th>状态</th><th>操作</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span></div></td>
+              <td><div class="tn">云主机（ECS）</div><div class="tm">#ORD-2024-0085</div></td>
+              <td><div style="font-size:12px;font-weight:500">华能数智科技集团</div><div class="ts">张三 · 技术部</div></td>
+              <td style="max-width:220px"><div style="font-size:12px;color:var(--text2);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">开通非常快，3分钟内到账，配置灵活，稳定性也很好。</div></td>
+              <td><div style="display:flex;gap:4px;flex-wrap:wrap"><span class="review-tag">开通快</span><span class="review-tag">稳定可靠</span></div></td>
+              <td class="tm">2024-03-15</td>
+              <td><span class="sb approved" style="font-size:10px">已回复</span></td>
+              <td><button class="btn btn-ghost btn-xs">查看</button></td>
+            </tr>
+            <tr style="background:#fff9f9">
+              <td><div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span></div></td>
+              <td><div class="tn" style="color:var(--red)">等保三级合规评估</div><div class="tm">#ORD-2024-0071</div></td>
+              <td><div style="font-size:12px;font-weight:500">中远云科技有限公司</div><div class="ts">王总 · 信息部</div></td>
+              <td style="max-width:220px"><div style="font-size:12px;color:var(--red);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">报告交付严重超期，比承诺时间晚了2周，沟通也不及时，影响了我们的申报计划。</div></td>
+              <td><div style="display:flex;gap:4px;flex-wrap:wrap"><span class="review-tag" style="border-color:var(--red-mid);color:var(--red)">超时交付</span><span class="review-tag" style="border-color:var(--red-mid);color:var(--red)">沟通差</span></div></td>
+              <td class="tm">2024-03-14</td>
+              <td><span class="sb pending" style="font-size:10px">待回复</span></td>
+              <td><button class="btn btn-primary btn-xs">立即回复</button></td>
+            </tr>
+            <tr>
+              <td><div class="stars"><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star full">★</span><span class="star half">★</span></div></td>
+              <td><div class="tn">云防火墙</div><div class="tm">#ORD-2024-0083</div></td>
+              <td><div style="font-size:12px;font-weight:500">北京协和医学院</div><div class="ts">李护士长 · 信息科</div></td>
+              <td style="max-width:220px"><div style="font-size:12px;color:var(--text2);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">防护效果很好，配置策略专业，扣一星是因为控制台UI稍微复杂了一点。</div></td>
+              <td><div style="display:flex;gap:4px;flex-wrap:wrap"><span class="review-tag">防护效果好</span><span class="review-tag">UI待优化</span></div></td>
+              <td class="tm">2024-03-13</td>
+              <td><span class="sb approved" style="font-size:10px">已回复</span></td>
+              <td><button class="btn btn-ghost btn-xs">查看</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       P4 · 提交评价（前台用户）
+  ══════════════════════════════ -->
+  <div id="page-review-submit" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="ph">
+      <button class="btn btn-ghost btn-sm" onclick="goPage('reviews')">← 返回</button>
+      <div style="width:1px;height:18px;background:var(--border)"></div>
+      <div><div class="ph-title">服务评价</div><div class="ph-sub">等保三级合规评估 · #ORD-2024-0089 · 服务已完成</div></div>
+    </div>
+    <div class="content">
+      <div class="dl">
+        <div class="dl-main">
+          <div class="card">
+            <div class="card-hd"><span class="cht">整体评分</span><span class="chs">您的评价对改善服务很有帮助</span></div>
+            <div class="card-bd">
+              <div style="text-align:center;padding:8px 0 16px">
+                <div style="font-size:12px;color:var(--text3);margin-bottom:10px">请为本次服务整体体验打分</div>
+                <div class="rf-stars" style="justify-content:center;gap:10px">
+                  <span class="rf-star on" onclick="setStars(1)">★</span>
+                  <span class="rf-star on" onclick="setStars(2)">★</span>
+                  <span class="rf-star on" onclick="setStars(3)">★</span>
+                  <span class="rf-star on" onclick="setStars(4)">★</span>
+                  <span class="rf-star on" onclick="setStars(5)">★</span>
+                </div>
+                <div style="font-size:13px;font-weight:500;color:var(--amber);margin-top:8px">非常满意</div>
+              </div>
+              <div class="div" style="margin-bottom:16px"></div>
+              <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">分项评分</div>
+              <div class="rf-dims">
+                <div class="rf-dim"><div class="rf-dim-lbl">服务专业度</div><div class="mini-stars"><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span></div></div>
+                <div class="rf-dim"><div class="rf-dim-lbl">响应及时性</div><div class="mini-stars"><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star">★</span></div></div>
+                <div class="rf-dim"><div class="rf-dim-lbl">交付质量</div><div class="mini-stars"><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span></div></div>
+                <div class="rf-dim"><div class="rf-dim-lbl">沟通顺畅度</div><div class="mini-stars"><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span><span class="mini-star on">★</span></div></div>
+              </div>
+              <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">评价标签（可多选）</div>
+              <div class="rf-tags-pick">
+                <span class="rf-tag-pick on">专业负责</span><span class="rf-tag-pick on">响应快</span><span class="rf-tag-pick on">报告详细</span><span class="rf-tag-pick">沟通顺畅</span><span class="rf-tag-pick">超出预期</span><span class="rf-tag-pick">性价比高</span><span class="rf-tag-pick">交付准时</span>
+              </div>
+              <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px">评价详情</div>
+              <textarea class="rf-textarea" placeholder="描述您的真实体验，帮助其他机构做出更好的选择...">整体服务非常专业，安全团队王五老师沟通很顺畅，评估报告内容详实，整改建议具体可落地。唯一建议是初次对接时可以更主动推进进度。</textarea>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-ghost">取消</button>
+                <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="goPage('reviews')">提交评价</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dl-side">
+          <div class="card">
+            <div class="card-hd"><span class="cht">评价对象</span></div>
+            <div class="card-bd" style="padding:14px 16px">
+              <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r)">
+                <div style="font-size:20px">🔐</div>
+                <div>
+                  <div style="font-size:13px;font-weight:500;margin-bottom:2px">等保三级合规评估</div>
+                  <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">#ORD-2024-0089</div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:3px">完成时间：2024-03-20</div>
+                </div>
+              </div>
+              <div style="font-size:12px;color:var(--text3);margin-top:10px;line-height:1.6">您的评价将在审核后公开显示，帮助其他机构了解服务质量。评价一经提交不可修改，请如实填写。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       P5 · 资质审核列表
+  ══════════════════════════════ -->
+  <div id="page-qualification" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="ph">
+      <div><div class="ph-title">资质审核</div><div class="ph-sub">机构入驻申请 · 人工审核管理</div></div>
+      <div class="ph-sp"></div>
+      <button class="btn btn-ghost btn-sm">导出记录</button>
+    </div>
+    <div class="content">
+      <div class="g4">
+        <div class="sc amber"><div class="sc-top"><div class="sc-ico amber"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg></div><span style="font-size:11px;color:var(--red);font-weight:600">+2 今日</span></div><div class="sc-val amber">4</div><div class="sc-lbl">待审核</div></div>
+        <div class="sc blue"><div class="sc-top"><div class="sc-ico blue"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg></div></div><div class="sc-val blue">1</div><div class="sc-lbl">审核中</div></div>
+        <div class="sc green"><div class="sc-top"><div class="sc-ico green"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M13 4L6 11 3 8"/></svg></div><span style="font-size:11px;color:var(--green);font-weight:600">+8 本月</span></div><div class="sc-val green">47</div><div class="sc-lbl">已通过</div></div>
+        <div class="sc purple"><div class="sc-top"><div class="sc-ico purple"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--purple)" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 3V1M11 3V1"/></svg></div><span style="font-size:11px;color:var(--amber);font-weight:600">2 临期</span></div><div class="sc-val purple">47</div><div class="sc-lbl">有效机构</div></div>
+      </div>
+
+      <div class="fbar">
+        <div class="fsearch"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M11 11l3 3"/></svg><input placeholder="机构名称、统一社会信用代码..."></div>
+        <select class="fsel"><option>全部机构类型</option><option>政府机关</option><option>国有企业</option><option>私营企业</option><option>事业单位</option></select>
+        <select class="fsel"><option>全部状态</option><option>待审核</option><option>审核中</option><option>已通过</option><option>已驳回</option></select>
+        <div class="fsp"></div>
+        <span style="font-size:12px;color:var(--text3)">共 52 条</span>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tabs">
+          <div class="tab on">全部 <span class="tcnt">52</span></div>
+          <div class="tab">待审核 <span class="tcnt">4</span></div>
+          <div class="tab">审核中 <span class="tcnt">1</span></div>
+          <div class="tab">已通过 <span class="tcnt">47</span></div>
+          <div class="tab">已驳回 <span class="tcnt">0</span></div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>机构名称</th><th>机构类型</th><th>提交材料</th><th>状态</th><th>申请时间</th><th>审核人</th><th>SLA</th><th>操作</th></tr>
+          </thead>
+          <tbody>
+            <tr onclick="goPage('qual-review')">
+              <td>
+                <div class="tn" style="display:flex;align-items:center;gap:6px">北京市海淀区数字经济发展局<span style="background:var(--red-dim);color:var(--red);font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px">加急</span></div>
+                <div class="tm">91110108MA012ABC3X</div>
+              </td>
+              <td><span class="tt gov">政府机关</span></td>
+              <td><span style="font-size:12px;color:var(--text2)">5 份 · 待核验</span></td>
+              <td><span class="sb pending">待审核</span></td>
+              <td class="tm">2024-03-15 09:12</td>
+              <td><span style="font-size:12px;color:var(--text3)">—</span></td>
+              <td><span style="font-size:11px;font-weight:600;color:var(--orange);font-family:'DM Mono',monospace">6h 20m</span></td>
+              <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();goPage('qual-review')">开始审核</button></td>
+            </tr>
+            <tr>
+              <td><div class="tn">中远云科技有限公司</div><div class="tm">91110105MA012DEF8Y</div></td>
+              <td><span class="tt ent">私营企业</span></td>
+              <td><span style="font-size:12px;color:var(--accent)">4 份 · 审核中</span></td>
+              <td><span class="sb reviewing">审核中</span></td>
+              <td class="tm">2024-03-14 16:30</td>
+              <td><div style="display:flex;align-items:center;gap:5px"><div class="av blue" style="font-size:8px">李</div><span style="font-size:12px">李四</span></div></td>
+              <td><span style="font-size:11px;font-weight:600;color:var(--green);font-family:'DM Mono',monospace">1d 2h</span></td>
+              <td><button class="btn btn-ghost btn-sm">继续审核</button></td>
+            </tr>
+            <tr>
+              <td><div class="tn">华能数智科技集团</div><div class="tm">91110101MA012GHI5Z</div></td>
+              <td><span class="tt soe">国有企业</span></td>
+              <td><span style="font-size:12px;color:var(--text3)">6 份 · 已归档</span></td>
+              <td><span class="sb approved">已通过</span></td>
+              <td class="tm">2024-03-12 10:05</td>
+              <td><div style="display:flex;align-items:center;gap:5px"><div class="av amber" style="font-size:8px">王</div><span style="font-size:12px">王五</span></div></td>
+              <td><span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">—</span></td>
+              <td><button class="btn btn-ghost btn-sm">查看档案</button></td>
+            </tr>
+            <tr>
+              <td><div class="tn">北京协和医学院附属医院</div><div class="tm">91110108MA012JKL2W</div></td>
+              <td><span class="tt" style="background:#e3f2fd;color:#1565c0">事业单位</span></td>
+              <td><span style="font-size:12px;color:var(--text3)">4 份 · 已归档</span></td>
+              <td><span class="sb approved">已通过</span></td>
+              <td class="tm">2024-03-10 14:22</td>
+              <td><div style="display:flex;align-items:center;gap:5px"><div class="av blue" style="font-size:8px">李</div><span style="font-size:12px">李四</span></div></td>
+              <td><span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">—</span></td>
+              <td><button class="btn btn-ghost btn-sm">查看档案</button></td>
+            </tr>
+            <tr>
+              <td><div class="tn">锐途智能科技（北京）有限公司</div><div class="tm">91110102MA012MNO7P</div></td>
+              <td><span class="tt ent">私营企业</span></td>
+              <td><span style="font-size:12px;color:var(--red)">3 份 · 不完整</span></td>
+              <td><span class="sb rejected">已驳回</span></td>
+              <td class="tm">2024-03-08 11:45</td>
+              <td><div style="display:flex;align-items:center;gap:5px"><div class="av amber" style="font-size:8px">王</div><span style="font-size:12px">王五</span></div></td>
+              <td><span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">—</span></td>
+              <td><button class="btn btn-ghost btn-sm">查看详情</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       P6 · 资质审核工作台
+  ══════════════════════════════ -->
+  <div id="page-qual-review" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="ph">
+      <button class="btn btn-ghost btn-sm" onclick="goPage('qualification')">← 返回列表</button>
+      <div style="width:1px;height:18px;background:var(--border)"></div>
+      <div><div class="ph-title">审核工作台</div><div class="ph-sub">北京市海淀区数字经济发展局 · 待审核</div></div>
+      <div class="ph-sp"></div>
+      <span style="font-size:12px;color:var(--text3);margin-right:4px">SLA 剩余：</span>
+      <span style="font-size:13px;font-weight:600;color:var(--orange);font-family:'DM Mono',monospace">6h 20m</span>
+    </div>
+    <div class="content">
+      <div class="dl">
+        <div class="dl-main">
+
+          <!-- Org info -->
+          <div class="card">
+            <div class="card-hd">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14V6l6-4 6 4v8"/><path d="M6 14v-4h4v4"/></svg>
+              <span class="cht">机构基本信息</span>
+              <span class="sb pending" style="margin-left:auto">待审核</span>
+            </div>
+            <div class="qual-hero">
+              <div class="qual-av">数</div>
+              <div style="flex:1">
+                <div style="font-size:15px;font-weight:600;margin-bottom:3px">北京市海淀区数字经济发展局</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text3);flex-wrap:wrap">
+                  <span style="font-family:'DM Mono',monospace">91110108MA012ABC3X</span>
+                  <span class="tt gov" style="padding:1px 7px">政府机关</span>
+                </div>
+              </div>
+            </div>
+            <div class="ip" style="border-top:1px solid var(--border)">
+              <div class="ip-i"><div class="ip-lbl">法定代表人</div><div class="ip-val">张建国</div></div>
+              <div class="ip-i"><div class="ip-lbl">联系电话</div><div class="ip-val mono">010-8888-xxxx</div></div>
+              <div class="ip-i"><div class="ip-lbl">成立日期</div><div class="ip-val mono">2018-04-12</div></div>
+              <div class="ip-i"><div class="ip-lbl">联系邮箱</div><div class="ip-val mono">admin@haidian.gov.cn</div></div>
+              <div class="ip-i full"><div class="ip-lbl">注册地址</div><div class="ip-val muted">北京市海淀区中关村南大街1号数字经济大厦</div></div>
+              <div class="ip-i full"><div class="ip-lbl">申请用途说明</div><div class="ip-val muted">本机构需接入云服务门户以开展智慧政务系统建设，涉及云主机、对象存储及安全评估等服务，拟使用期限3年。</div></div>
+            </div>
+          </div>
+
+          <!-- 材料核验 -->
+          <div class="card">
+            <div class="card-hd"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h8a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M5 6h6M5 9h4"/></svg><span class="cht">提交材料核验</span><span class="chs">5 份 · 点击查看原件</span></div>
+            <div class="doc-list">
+              <div class="doc-item"><div class="doc-ico" style="background:#fff1f0">📄</div><div class="doc-name">机构设立批文.pdf</div><div class="doc-size">2.4 MB</div><div class="doc-status ok">✓</div></div>
+              <div class="doc-item"><div class="doc-ico" style="background:#fff1f0">📄</div><div class="doc-name">法定代表人身份证（正反面）.pdf</div><div class="doc-size">1.8 MB</div><div class="doc-status ok">✓</div></div>
+              <div class="doc-item"><div class="doc-ico" style="background:#f0f9ff">🖼</div><div class="doc-name">机构公章扫描件.png</div><div class="doc-size">890 KB</div><div class="doc-status ing">⟳</div></div>
+              <div class="doc-item"><div class="doc-ico" style="background:#fff1f0">📄</div><div class="doc-name">授权委托书（加盖公章）.pdf</div><div class="doc-size">1.1 MB</div><div class="doc-status wait">—</div></div>
+              <div class="doc-item"><div class="doc-ico" style="background:#fff1f0">📄</div><div class="doc-name">网络安全承诺书.pdf</div><div class="doc-size">560 KB</div><div class="doc-status wait">—</div></div>
+            </div>
+          </div>
+
+          <!-- 逐项核验 -->
+          <div class="card">
+            <div class="card-hd"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 4L6 11 3 8"/></svg><span class="cht">审核核验清单</span><span class="chs">已完成 2 / 5 项</span></div>
+            <div class="chk-list">
+              <div class="chk-item">
+                <div class="chk-box ok" onclick="this.classList.toggle('ok');this.textContent=this.classList.contains('ok')?'✓':''">✓</div>
+                <div class="chk-text"><div class="chk-lbl">机构主体真实性核验</div><div class="chk-desc">通过国家企业信用信息系统核验机构存续状态</div></div>
+                <div class="chk-res"><span class="sb approved" style="font-size:10px;padding:2px 7px">通过</span></div>
+              </div>
+              <div class="chk-item">
+                <div class="chk-box ok" onclick="this.classList.toggle('ok');this.textContent=this.classList.contains('ok')?'✓':''">✓</div>
+                <div class="chk-text"><div class="chk-lbl">法定代表人身份核验</div><div class="chk-desc">证件号码与机构登记信息一致</div></div>
+                <div class="chk-res"><span class="sb approved" style="font-size:10px;padding:2px 7px">通过</span></div>
+              </div>
+              <div class="chk-item">
+                <div class="chk-box" onclick="this.classList.toggle('ok');this.textContent=this.classList.contains('ok')?'✓':''"></div>
+                <div class="chk-text"><div class="chk-lbl">公章真实性核验</div><div class="chk-desc">扫描件清晰度、章面完整性确认</div></div>
+                <div class="chk-res"><span class="sb reviewing" style="font-size:10px;padding:2px 7px">核验中</span></div>
+              </div>
+              <div class="chk-item">
+                <div class="chk-box" onclick="this.classList.toggle('ok');this.textContent=this.classList.contains('ok')?'✓':''"></div>
+                <div class="chk-text"><div class="chk-lbl">授权委托书核验</div><div class="chk-desc">委托人与法代一致，签字齐全，公章有效</div></div>
+                <div class="chk-res"><span class="sb draft" style="font-size:10px;padding:2px 7px">待核验</span></div>
+              </div>
+              <div class="chk-item">
+                <div class="chk-box" onclick="this.classList.toggle('ok');this.textContent=this.classList.contains('ok')?'✓':''"></div>
+                <div class="chk-text"><div class="chk-lbl">网络安全承诺书签署</div><div class="chk-desc">承诺书内容完整，签字盖章齐全</div></div>
+                <div class="chk-res"><span class="sb draft" style="font-size:10px;padding:2px 7px">待核验</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 右侧 -->
+        <div class="dl-side">
+          <!-- 审核操作 -->
+          <div class="card">
+            <div class="card-hd"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg><span class="cht">审核操作</span></div>
+            <div class="card-bd" style="padding:14px;display:flex;flex-direction:column;gap:8px">
+              <textarea class="rf-textarea" style="min-height:72px;margin-bottom:0" placeholder="填写审核意见（通过/驳回时必填）..."></textarea>
+              <button class="btn btn-success" style="width:100%;justify-content:center">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4L6 11 3 8"/></svg>
+                审核通过 · 激活账号
+              </button>
+              <button class="btn btn-danger" style="width:100%;justify-content:center">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4L4 12M4 4l8 8"/></svg>
+                驳回申请
+              </button>
+              <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:12px">发送补充材料通知</button>
+            </div>
+          </div>
+
+          <!-- 审核进度 -->
+          <div class="card">
+            <div class="card-hd"><span class="cht">处理进度</span></div>
+            <div class="card-bd" style="padding:14px">
+              <div class="tl">
+                <div class="tl-row"><div class="tl-sp"><div class="tl-d done"></div><div class="tl-vl"></div></div><div class="tl-b"><div class="tl-t done">提交申请</div><div class="tl-m">2024-03-15 09:12 · 机构管理员</div></div></div>
+                <div class="tl-row"><div class="tl-sp"><div class="tl-d done"></div><div class="tl-vl"></div></div><div class="tl-b"><div class="tl-t done">材料预审</div><div class="tl-m">2024-03-15 09:30 · 系统自动校验通过</div></div></div>
+                <div class="tl-row"><div class="tl-sp"><div class="tl-d on"></div><div class="tl-vl"></div></div><div class="tl-b"><div class="tl-t on">人工审核</div><div class="tl-m">进行中 · 等待 2h 18m</div></div></div>
+                <div class="tl-row"><div class="tl-sp"><div class="tl-d wait"></div></div><div class="tl-b"><div class="tl-t wait">账号激活 / 驳回通知</div><div class="tl-m">等待审核结果</div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLA -->
+          <div class="card">
+            <div class="card-hd"><span class="cht">SLA 进度</span></div>
+            <div class="card-bd" style="padding:14px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text3)">承诺时限</span><span style="font-weight:500">1 个工作日</span></div>
+              <div class="prog-wrap"><div class="prog amber" style="width:28%"></div></div>
+              <div style="font-size:11px;color:var(--orange);font-weight:500">已用 2h 20m · 剩余约 6h 20m</div>
+            </div>
+          </div>
+
+          <!-- 历史审核记录 -->
+          <div class="card">
+            <div class="card-hd"><span class="cht">审核说明</span></div>
+            <div class="card-bd" style="padding:12px 14px">
+              <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+                <div style="display:flex;gap:6px;align-items:flex-start;color:var(--text2)"><span style="color:var(--accent);flex-shrink:0;margin-top:1px">①</span>全部 5 项核验通过后方可点击「审核通过」</div>
+                <div style="display:flex;gap:6px;align-items:flex-start;color:var(--text2)"><span style="color:var(--accent);flex-shrink:0;margin-top:1px">②</span>通过后系统自动激活机构账号并发送通知邮件</div>
+                <div style="display:flex;gap:6px;align-items:flex-start;color:var(--text2)"><span style="color:var(--accent);flex-shrink:0;margin-top:1px">③</span>驳回需填写明确原因，机构可在修改材料后重新提交</div>
+                <div style="display:flex;gap:6px;align-items:flex-start;color:var(--text2)"><span style="color:var(--accent);flex-shrink:0;margin-top:1px">④</span>「补充材料通知」将以站内信+邮件形式发送给申请人</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+function goPage(name) {
+  const all = ['catalog','svc-detail','reviews','review-submit','qualification','qual-review'];
+  all.forEach(p => {
+    const el = document.getElementById('page-'+p);
+    if (el) el.style.display = (p === name) ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.psb').forEach(b => {
+    const map = {
+      'catalog':'服务目录','svc-detail':'服务详情','reviews':'服务评价',
+      'review-submit':'提交评价','qualification':'资质审核列表','qual-review':'审核工作台'
+    };
+    b.classList.toggle('on', b.textContent.trim() === (map[name]||''));
+  });
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
+  const sideMap = {catalog:0,reviews:3,qualification:4};
+  if (sideMap[name] !== undefined) {
+    document.querySelectorAll('.ni')[sideMap[name]]?.classList.add('on');
+  }
+}
+
+function setStars(n) {
+  document.querySelectorAll('.rf-star').forEach((s,i) => {
+    s.classList.toggle('on', i < n);
+  });
+}
+
+document.querySelectorAll('.rf-tag-pick').forEach(t => {
+  t.addEventListener('click', () => t.classList.toggle('on'));
+});
+
+goPage('catalog');
+</script>
+</body>
+</html>

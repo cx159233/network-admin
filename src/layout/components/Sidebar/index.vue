@@ -29,10 +29,10 @@
         mode="vertical"
       >
         <sidebar-item
-          v-for="(route, index) in sidebarRouters"
+          v-for="(route, index) in filteredSidebarRouters"
           :key="route.path + index"
           :item="route"
-          :base-path="route.path"
+          :base-path="getBasePath(route)"
         />
       </el-menu>
     </el-scrollbar>
@@ -49,7 +49,22 @@ export default {
   components: { SidebarItem, Logo },
   computed: {
     ...mapState(["settings"]),
-    ...mapGetters(["sidebarRouters", "sidebar"]),
+    ...mapGetters(["sidebar", "sidebarRouters"]),
+    filteredSidebarRouters() {
+      // 根据当前路由返回对应的侧边栏菜单
+      const currentPath = this.$route.path;
+      if (currentPath.startsWith('/workorder')) {
+        // 工单中心 - 只显示工单中心的菜单
+        const workorderRoute = this.sidebarRouters.find(r => r.path === '/workorder' || r.path === 'workorder');
+        return workorderRoute && workorderRoute.children ? workorderRoute.children : [];
+      } else if (currentPath.startsWith('/portal')) {
+        // 门户管理 - 只显示门户管理的菜单
+        const portalRoute = this.sidebarRouters.find(r => r.path === '/portal' || r.path === 'portal');
+        return portalRoute && portalRoute.children ? portalRoute.children : [];
+      }
+      // 默认返回空
+      return [];
+    },
     activeMenu() {
       const route = this.$route;
       const { meta, path } = route;
@@ -69,6 +84,16 @@ export default {
       return !this.sidebar.opened;
     },
   },
+  methods: {
+    getBasePath(route) {
+      // 根据当前路由确定基础路径
+      const currentPath = this.$route.path;
+      if (currentPath.startsWith('/workorder')) {
+        return '/workorder/' + route.path;
+      }
+      return '/portal/' + route.path;
+    }
+  }
 };
 </script>
 <style scoped lang="scss">

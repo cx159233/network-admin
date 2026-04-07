@@ -1,72 +1,91 @@
-import request from '@/utils/request'
-
 export function getTagWordList(params) {
-  return request({
-    url: '/word/tagword',
-    method: 'get',
-    params: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      rows: [
+        { wordId: 1, word: 'TAG词1', groupId: 1, groupName: '分组1', sort: 1, createTime: '2024-01-01 10:00:00' },
+        { wordId: 2, word: 'TAG词2', groupId: 1, groupName: '分组1', sort: 2, createTime: '2024-01-02 10:00:00' }
+      ],
+      total: 2
+    }
   })
 }
 
 export function addTagWord(data) {
-  return request({
-    url: '/word/tagword',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function batchAddTagWords(data) {
-  return request({
-    url: '/word/tagword/batchAdd',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function editTagWord(data) {
-  return request({
-    url: '/word/tagword',
-    method: 'put',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function deleteTagWord(data) {
-  return request({
-    url: '/word/tagword',
-    method: 'delete',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function getTagWordGroupTreeData() {
-  return request({
-    url: '/word/tagword/group/treedata',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: [
+      {
+        groupId: 1,
+        groupName: 'TAG分组1',
+        children: [
+          { groupId: 11, groupName: '子分组1' },
+          { groupId: 12, groupName: '子分组2' }
+        ]
+      },
+      {
+        groupId: 2,
+        groupName: 'TAG分组2',
+        children: []
+      }
+    ]
   })
 }
 
 export function addTagWordGroup(data) {
-  return request({
-    url: '/word/tagword/group',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function editTagWordGroup(data) {
-  return request({
-    url: '/word/tagword/group',
-    method: 'put',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function deleteTagWordGroup(data) {
-  return request({
-    url: '/word/tagword/group',
-    method: 'delete',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

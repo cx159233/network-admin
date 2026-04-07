@@ -1,41 +1,48 @@
-import request from '@/utils/request'
-
 export function getErrorProneWordList(params) {
-  return request({
-    url: '/word/errorproneword',
-    method: 'get',
-    params: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      rows: [
+        { wordId: 1, errorWord: '易错词1', correctWord: '正确词1', createTime: '2024-01-01 10:00:00' },
+        { wordId: 2, errorWord: '易错词2', correctWord: '正确词2', createTime: '2024-01-02 10:00:00' }
+      ],
+      total: 2
+    }
   })
 }
 
 export function addErrorProneWord(data) {
-  return request({
-    url: '/word/errorproneword',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function editErrorProneWord(data) {
-  return request({
-    url: '/word/errorproneword',
-    method: 'put',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function deleteErrorProneWord(data) {
-  return request({
-    url: '/word/errorproneword',
-    method: 'delete',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function checkFallibleWords(text) {
-  return request({
-    url: '/word/errorproneword/check',
-    method: 'post',
-    data: { text: text }
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      hasError: false,
+      errorWords: []
+    }
   })
 }

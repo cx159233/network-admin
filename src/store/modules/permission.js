@@ -5,6 +5,248 @@ import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
 
+// 写死的完整菜单数据
+const allMenus = [
+  {
+    name: 'Portal',
+    path: '/portal',
+    component: 'Layout',
+    alwaysShow: true,
+    meta: { title: '门户管理', icon: 'monitor' },
+    children: [
+      {
+        name: 'ContentManagement',
+        path: 'content',
+        component: 'cms/contentcore/content',
+        meta: { title: '内容管理', icon: 'content' },
+        children: [
+          {
+            name: 'SiteManagement',
+            path: 'site',
+            component: 'cms/contentcore/site',
+            meta: { title: '站点管理', icon: 'site-setting' }
+          },
+          {
+            name: 'CatalogManagement',
+            path: 'catalog',
+            component: 'cms/contentcore/catalog',
+            meta: { title: '栏目管理', icon: 'catalog' }
+          },
+          {
+            name: 'ContentList',
+            path: 'contentList',
+            component: 'cms/contentcore/contentList',
+            meta: { title: '内容列表', icon: 'list' },
+            hidden: true
+          },
+          {
+            name: 'ContentManage',
+            path: 'contentManage',
+            component: 'cms/contentcore/contentManage',
+            meta: { title: '内容管理', icon: 'edit' }
+          },
+          {
+            name: 'DigitalAppList',
+            path: 'digitalApp',
+            component: 'cms/contentcore/digitalAppList',
+            meta: { title: '数字应用管理', icon: 'app-log' }
+          },
+          {
+            name: 'ComponentList',
+            path: 'component',
+            component: 'cms/contentcore/componentList',
+            meta: { title: '能力组件管理', icon: 'component' }
+          },
+          {
+            name: 'ServiceCatalogList',
+            path: 'serviceCatalog',
+            component: 'cms/contentcore/serviceCatalogList',
+            meta: { title: '服务目录', icon: 'list' }
+          }
+        ]
+      },
+      {
+        name: 'InteractionManagement',
+        path: 'interaction',
+        component: 'cms/contentcore/interaction',
+        alwaysShow: true,
+        meta: { title: '互动运营', icon: 'link' },
+        children: [
+          {
+            name: 'FriendLinkManagement',
+            path: 'friendLink',
+            component: 'cms/link/linkGroup',
+            meta: { title: '友链管理', icon: 'link' }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'Workorder',
+    path: '/workorder',
+    component: 'Layout',
+    alwaysShow: true,
+    meta: { title: '工单中心', icon: 'form' },
+    children: [
+      {
+        name: 'ServiceDesk',
+        path: 'serviceDesk',
+        component: 'workorder/serviceDesk',
+        meta: { title: '服务台', icon: 'form' }
+      },
+      {
+        name: 'MyBills',
+        path: 'myBills',
+        component: 'workorder/layout',
+        meta: { title: '我的单据', icon: 'form' },
+        children: [
+          {
+            name: 'MyTodo',
+            path: 'myTodo',
+            component: 'workorder/index',
+            meta: { title: '我的待办', icon: 'form' }
+          },
+          {
+            name: 'MyApproval',
+            path: 'myApproval',
+            component: 'workorder/index',
+            meta: { title: '我已处理', icon: 'form' }
+          },
+          {
+            name: 'MyInitiated',
+            path: 'myInitiated',
+            component: 'workorder/index',
+            meta: { title: '我发起的', icon: 'form' }
+          },
+          {
+            name: 'AllBills',
+            path: 'allBills',
+            component: 'workorder/index',
+            meta: { title: '所有单据', icon: 'form' }
+          }
+        ]
+      },
+      {
+        name: 'ProcessConfig',
+        path: 'processConfig',
+        component: 'workorder/layout',
+        meta: { title: '流程配置', icon: 'form' }
+      },
+      {
+        name: 'AuditCenter',
+        path: 'auditCenter',
+        component: 'workorder/layout',
+        alwaysShow: true,
+        meta: { title: '审核中心', icon: 'tree' },
+        children: [
+          {
+            name: 'QualificationAudit',
+            path: 'qualificationAudit',
+            component: 'workorder/orgAudit/qualificationAudit',
+            meta: { title: '机构入驻审核', icon: 'form' }
+          },
+          {
+            name: 'DigitalAppAudit',
+            path: 'digitalAppAudit',
+            component: 'workorder/audit/digitalAppAudit',
+            meta: { title: '数字应用审核', icon: 'form' }
+          }
+        ]
+      },
+      {
+        name: 'MyApps',
+        path: 'myApps',
+        component: 'order/myApps',
+        meta: { title: '我的应用', icon: 'app-log' }
+      },
+      {
+        name: 'OrderCenter',
+        path: 'order',
+        component: 'order/layout',
+        redirect: '/workorder/order/myTodo',
+        alwaysShow: true,
+        meta: { title: '订单中心', icon: 'list' },
+        children: [
+          {
+            name: 'OrderMyTodo',
+            path: 'myTodo',
+            component: 'order/myTodo',
+            meta: { title: '我的待办', icon: 'form' }
+          },
+          {
+            name: 'OrderMyProcessed',
+            path: 'myProcessed',
+            component: 'order/myProcessed',
+            meta: { title: '我已处理', icon: 'form' }
+          },
+          {
+            name: 'OrderMyInitiated',
+            path: 'myInitiated',
+            component: 'order/myInitiated',
+            meta: { title: '我已发起', icon: 'form' }
+          },
+          {
+            name: 'OrderList',
+            path: 'list',
+            component: 'order/list',
+            meta: { title: '所有订单', icon: 'list' }
+          },
+          {
+            name: 'ServiceReview',
+            path: 'review',
+            component: 'order/review',
+            meta: { title: '服务评价', icon: 'star' }
+          },
+          {
+            name: 'OrderDetail',
+            path: 'detail',
+            component: 'order/detail',
+            meta: { title: '订单详情' },
+            hidden: true
+          },
+          {
+            name: 'OrderMyTodoDetail',
+            path: 'myTodoDetail',
+            component: 'order/myTodoDetail',
+            meta: { title: '订单详情' },
+            hidden: true
+          },
+          {
+            name: 'OrderMyProcessedDetail',
+            path: 'myProcessedDetail',
+            component: 'order/myProcessedDetail',
+            meta: { title: '订单详情' },
+            hidden: true
+          },
+          {
+            name: 'OrderMyInitiatedDetail',
+            path: 'myInitiatedDetail',
+            component: 'order/myInitiatedDetail',
+            meta: { title: '订单详情' },
+            hidden: true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'System',
+    path: '/system',
+    component: 'Layout',
+    alwaysShow: true,
+    meta: { title: '系统管理', icon: 'system' },
+    children: [
+      {
+        name: 'SystemIndex',
+        path: '',
+        component: 'system/index',
+        meta: { title: '系统管理', icon: 'system' }
+      }
+    ]
+  }
+]
+
 const permission = {
   state: {
     routes: [],
@@ -29,24 +271,23 @@ const permission = {
     },
   },
   actions: {
-    // 生成路由
+    // 生成路由 - 使用写死的菜单数据
     GenerateRoutes({ commit }) {
       return new Promise(resolve => {
-        // 向后端请求路由数据
-        getRouters().then(res => {
-          const sdata = JSON.parse(JSON.stringify(res.data))
-          const rdata = JSON.parse(JSON.stringify(res.data))
-          const sidebarRoutes = filterAsyncRouter(sdata)
-          const rewriteRoutes = filterAsyncRouter(rdata, false, true)
-          const asyncRoutes = filterDynamicRoutes(dynamicRoutes);
-          rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
-          router.addRoutes(asyncRoutes);
-          commit('SET_ROUTES', rewriteRoutes)
-          commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes))
-          commit('SET_DEFAULT_ROUTES', sidebarRoutes)
-          commit('SET_TOPBAR_ROUTES', sidebarRoutes)
-          resolve(rewriteRoutes)
-        })
+        // 使用写死的菜单数据
+        const sdata = JSON.parse(JSON.stringify(allMenus))
+        const rdata = JSON.parse(JSON.stringify(allMenus))
+        const sidebarRoutes = filterAsyncRouter(sdata)
+        const rewriteRoutes = filterAsyncRouter(rdata, false, true)
+        const asyncRoutes = filterDynamicRoutes(dynamicRoutes);
+        rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
+        router.addRoutes(asyncRoutes);
+        commit('SET_ROUTES', rewriteRoutes)
+        // 将所有菜单原样添加到侧边栏路由，在Sidebar组件中根据当前路由过滤显示
+        commit('SET_SIDEBAR_ROUTERS', sidebarRoutes)
+        commit('SET_DEFAULT_ROUTES', sidebarRoutes)
+        commit('SET_TOPBAR_ROUTES', sidebarRoutes)
+        resolve(rewriteRoutes)
       })
     }
   }
@@ -87,6 +328,21 @@ function filterChildren(childrenMap, lastRouter = false) {
       if (el.component === 'ParentView' && !lastRouter) {
         el.children.forEach(c => {
           c.path = el.path + '/' + c.path
+          if (c.children && c.children.length) {
+            children = children.concat(filterChildren(c.children, c))
+            return
+          }
+          children.push(c)
+        })
+        return
+      } else {
+        // 处理非ParentView的子路由
+        el.children.forEach(c => {
+          if (lastRouter) {
+            c.path = lastRouter.path + '/' + el.path + '/' + c.path
+          } else {
+            c.path = el.path + '/' + c.path
+          }
           if (c.children && c.children.length) {
             children = children.concat(filterChildren(c.children, c))
             return

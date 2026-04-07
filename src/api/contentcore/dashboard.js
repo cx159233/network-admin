@@ -1,8 +1,7 @@
-import request from '@/utils/request'
-
 export function getCmsConfiguration() {
-  return request({
-    url: '/cms/dashboard/config',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

@@ -8,42 +8,49 @@
  *
  * Copyright (c) 2025 by ${user.email}, All Rights Reserved.
  */
-import request from "@/utils/requestCmdb";
 // 删除模板
 export function deleteTemplate(templateId) {
-  return request({
-    url: `/system/workbench-template/delete/${templateId}`,
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 // 模板列表查询
 export function queryTemplate(query) {
-  return request({
-    url: '/system/workbench-template/list',
-    method: 'get',
-    params: query
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      rows: [],
+      total: 0
+    }
   })
 }
 // 更新或新增组件
 export function addOrUpdateTemplate(query) {
-  return request({
-    url: '/system/workbench-element/addOrUpdate',
-    method: 'post',
-    data: query
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 // 删除组件 -- 物理删除
 export function deleteMenu(elementId) {
-  return request({
-    url: `/system/workbench-element/delete/${elementId}`,
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 // 查询组件列表
 export function queryElementList(query) {
-  return request({
-    url: '/system/workbench-element/list',
-    method: 'get',
-    params: query
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      rows: [],
+      total: 0
+    }
   })
 }

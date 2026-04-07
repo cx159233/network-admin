@@ -20,7 +20,6 @@ function fn (el, binding) {
   if (permissionFlag.length == 0) {
     return
   }
-  return
   const hasPermissions = permissions.some(permission => {
     return all_permission === permission || permissionFlag.includes(permission)
   })

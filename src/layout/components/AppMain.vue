@@ -1,9 +1,11 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <keep-alive :include="cachedViews">
+      <!-- 如果路由设置了 noCache，则不使用 keep-alive -->
+      <keep-alive v-if="!$route.meta.noCache" :include="cachedViews">
         <router-view v-if="!$route.meta.link" :key="key" />
       </keep-alive>
+      <router-view v-else-if="!$route.meta.link" :key="key" />
     </transition>
     <iframe-toggle />
   </section>

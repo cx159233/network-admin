@@ -1,10 +1,8 @@
-import request from '@/utils/request'
-
 // 视频截图
 export function videoScreenshot(data) {
-  return request({
-    url: '/cms/video/screenshot',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

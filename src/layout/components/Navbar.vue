@@ -10,9 +10,7 @@
     <breadcrumb
       id="breadcrumb-container"
       class="breadcrumb-container"
-      v-if="!topNav"
     />
-    <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav" />
 
     <div class="right-menu">
       <template v-if="device !== 'mobile'">
@@ -92,7 +90,6 @@ import { checkSecurityConfig } from "@/api/system/security";
 
 import { mapGetters } from "vuex";
 import Breadcrumb from "@/components/Breadcrumb";
-import TopNav from "@/components/TopNav";
 import Hamburger from "@/components/Hamburger";
 import Screenfull from "@/components/Screenfull";
 import SizeSelect from "@/components/SizeSelect";
@@ -106,7 +103,6 @@ import PublishTask from "@/components/PublishTask";
 export default {
   components: {
     Breadcrumb,
-    TopNav,
     Hamburger,
     Screenfull,
     SizeSelect,
@@ -135,11 +131,7 @@ export default {
         });
       },
     },
-    topNav: {
-      get() {
-        return this.$store.state.settings.topNav;
-      },
-    },
+
   },
   created() {
     // this.loadSecurityConfig();

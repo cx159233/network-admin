@@ -1,109 +1,124 @@
-import request from '@/utils/request'
-
 export function listAdSpaces() {
-  return request({
-    url: '/cms/adspace',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: [
+      { adSpaceId: 1, spaceName: '广告位1', spaceCode: 'AD001', width: 300, height: 250 },
+      { adSpaceId: 2, spaceName: '广告位2', spaceCode: 'AD002', width: 728, height: 90 }
+    ]
   })
 }
 
 export function getAdSpace(pageWidgetId) {
-  return request({
-    url: '/cms/adspace/' + pageWidgetId,
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: { adSpaceId: 1, spaceName: '广告位1', spaceCode: 'AD001', width: 300, height: 250 }
   })
 }
 
 export function addAdSpace(params) {
-  return request({
-    url: '/cms/adspace',
-    method: 'post',
-    data: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function editAdSpace(params) {
-  return request({
-    url: '/cms/adspace',
-    method: 'put',
-    data: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function deleteAdSpace(params) {
-  return request({
-    url: '/cms/adspace',
-    method: 'delete',
-    data: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function publishAdSpace(params) {
-  return request({
-    url: '/cms/adspace/publish',
-    method: 'post',
-    data: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function listAdvertisementTypes() {
-  return request({
-    url: '/cms/advertisement/types',
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: [
+      { typeId: 1, typeName: '图片广告' },
+      { typeId: 2, typeName: '文字广告' },
+      { typeId: 3, typeName: '代码广告' }
+    ]
   })
 }
 
 export function listAdvertisements(params) {
-  return request({
-    url: '/cms/advertisement',
-    method: 'get',
-    params: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      rows: [
+        { advertisementId: 1, adName: '广告1', adSpaceId: 1, adSpaceName: '广告位1', typeId: 1, typeName: '图片广告', status: '1', createTime: '2024-01-01 10:00:00' },
+        { advertisementId: 2, adName: '广告2', adSpaceId: 2, adSpaceName: '广告位2', typeId: 2, typeName: '文字广告', status: '1', createTime: '2024-01-02 10:00:00' }
+      ],
+      total: 2
+    }
   })
 }
 
 export function getAdvertisement(advertisementId) {
-  return request({
-    url: '/cms/advertisement/' + advertisementId,
-    method: 'get'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: { advertisementId: 1, adName: '广告1', adSpaceId: 1, typeId: 1, status: '1', adContent: '{}' }
   })
 }
 
 export function addAdvertisement(params) {
-  return request({
-    url: '/cms/advertisement',
-    method: 'post',
-    data: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function editAdvertisement(params) {
-  return request({
-    url: '/cms/advertisement',
-    method: 'put',
-    data: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function deleteAdvertisement(params) {
-  return request({
-    url: '/cms/advertisement',
-    method: 'delete',
-    data: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function enableAdvertisement(params) {
-  return request({
-    url: '/cms/advertisement/enable',
-    method: 'put',
-    data: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function disableAdvertisement(params) {
-  return request({
-    url: '/cms/advertisement/disable',
-    method: 'put',
-    data: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

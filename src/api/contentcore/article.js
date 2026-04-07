@@ -1,9 +1,7 @@
-import request from '@/utils/request'
-
 export function getUEditorCSS(params) {
-  return request({
-    url: '/cms/article/ueditor_css',
-    method: 'get',
-    params: params
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: ''
   })
 }

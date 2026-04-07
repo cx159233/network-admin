@@ -1,9 +1,7 @@
-import request from '@/utils/request'
-
 export function executeGroovySrcity(data) {
-  return request({
-    url: '/groovy/exec',
-    method: 'post',
-    data: data
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

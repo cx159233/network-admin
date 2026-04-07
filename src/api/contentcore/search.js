@@ -1,34 +1,37 @@
-import request from '@/utils/request'
-
 // 查询内容索引列表
 export function getContentIndexList(query) {
-  return request({
-    url: '/cms/search/contents',
-    method: 'get',
-    params: query
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {
+      rows: [],
+      total: 0
+    }
   })
 }
 
 // 删除内容索引
 export function deleteContentIndex(contentIds) {
-  return request({
-    url: '/cms/search/contents',
-    method: 'delete',
-    data: contentIds
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 // 内容索引详情
-export function getContentIndexDetail() {
-  return request({
-    url: '/cms/search/content/' + contentId,
-    method: 'get'
+export function getContentIndexDetail(contentId) {
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }
 
 export function rebuildIndex() {
-  return request({
-    url: '/cms/search/rebuild',
-    method: 'post'
+  return Promise.resolve({
+    code: 200,
+    message: '操作成功',
+    data: {}
   })
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="cms-content-list">
     <el-row :gutter="24" class="mb12">
       <el-col :span="12">
         <el-row :gutter="10">

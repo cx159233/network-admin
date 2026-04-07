@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>门户平台 — 完整设计稿</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#f2f4f8;
+  --surface:#ffffff;
+  --surface2:#f7f8fa;
+  --border:#e3e7ef;
+  --border2:#c8cdd9;
+  --text:#1c2033;
+  --text2:#5c6480;
+  --text3:#9aa0b8;
+  --accent:#3b5bdb;
+  --accent-dim:#eef2ff;
+  --accent-mid:#c5d0fa;
+  --green:#2f9e44;
+  --green-dim:#ebfbee;
+  --green-mid:#b2f2bb;
+  --amber:#e67700;
+  --amber-dim:#fff9db;
+  --amber-mid:#ffec99;
+  --red:#c92a2a;
+  --red-dim:#fff5f5;
+  --red-mid:#ffc9c9;
+  --orange:#d9480f;
+  --orange-dim:#fff4e6;
+  --orange-mid:#ffd8a8;
+  --teal:#0c8599;
+  --teal-dim:#e3fafc;
+  --teal-mid:#99e9f2;
+  --purple:#6741d9;
+  --purple-dim:#f3f0ff;
+  --purple-mid:#d0bfff;
+  --r:8px;--rl:12px;--rxl:16px;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08);
+}
+
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+
+/* ── LAYOUT ── */
+.shell{display:flex;min-height:100vh}
+
+/* Sidebar */
+.side{width:228px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.side-logo{padding:18px 20px 16px;border-bottom:1px solid var(--border)}
+.logo-mark{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;letter-spacing:-.3px}
+.logo-icon{width:26px;height:26px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.logo-sub{font-size:10px;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace;letter-spacing:.5px}
+.nav{padding:10px 10px 0;flex:1}
+.nav-g{margin-bottom:14px}
+.nav-gl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:4px}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r);color:var(--text2);cursor:pointer;transition:all .12s;font-size:13px;margin-bottom:1px}
+.ni:hover{background:var(--surface2);color:var(--text)}
+.ni.on{background:var(--accent-dim);color:var(--accent);font-weight:500}
+.ni svg{width:15px;height:15px;flex-shrink:0;opacity:.65}
+.ni.on svg{opacity:1}
+.nb{margin-left:auto;font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;font-family:'DM Mono',monospace}
+.nb.red{background:var(--red);color:#fff}
+.nb.amber{background:var(--amber);color:#fff}
+.nb.blue{background:var(--accent);color:#fff}
+.nb.gray{background:var(--border2);color:var(--text2)}
+
+/* Top nav tabs */
+.topnav{background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.topnav-inner{display:flex;align-items:stretch;padding:0 24px;gap:0}
+.tn-tab{display:flex;align-items:center;gap:7px;padding:14px 18px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;white-space:nowrap}
+.tn-tab:hover{color:var(--text)}
+.tn-tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tn-cnt{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;font-family:'DM Mono',monospace}
+.tn-tab.on .tn-cnt{background:var(--accent-dim);color:var(--accent)}
+.tn-tab:not(.on) .tn-cnt{background:var(--surface2);color:var(--text3)}
+.tn-spacer{flex:1}
+.tn-action{display:flex;align-items:center;gap:8px;padding:0 0 0 12px}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:10px}
+.page-title{font-size:16px;font-weight:600}
+.page-sub{font-size:12px;color:var(--text3)}
+.ph-space{flex:1}
+.content{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:18px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .12s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#3451c5}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);border-color:var(--border2)}
+.btn-warn{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
+.btn-warn:hover{background:var(--amber-mid)}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid var(--red-mid)}
+.btn-success{background:var(--green-dim);color:var(--green);border:1px solid var(--green-mid)}
+.btn-sm{padding:5px 10px;font-size:12px}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--shadow)}
+.card-hd{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-hd-title{font-size:13px;font-weight:600;flex:1}
+.card-hd-sub{font-size:11px;color:var(--text3)}
+.card-bd{padding:18px}
+
+/* Grid helpers */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* Stat card */
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;cursor:default}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc.red::after{background:var(--red)}
+.sc.amber::after{background:var(--amber)}
+.sc.orange::after{background:var(--orange)}
+.sc.green::after{background:var(--green)}
+.sc.blue::after{background:var(--accent)}
+.sc.teal::after{background:var(--teal)}
+.sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sc-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.sc-ico.red{background:var(--red-dim)}
+.sc-ico.amber{background:var(--amber-dim)}
+.sc-ico.orange{background:var(--orange-dim)}
+.sc-ico.green{background:var(--green-dim)}
+.sc-ico.blue{background:var(--accent-dim)}
+.sc-ico.teal{background:var(--teal-dim)}
+.sc-val{font-size:28px;font-weight:300;font-family:'DM Mono',monospace;letter-spacing:-1.5px}
+.sc-val.red{color:var(--red)}
+.sc-val.amber{color:var(--amber)}
+.sc-val.orange{color:var(--orange)}
+.sc-val.green{color:var(--green)}
+.sc-val.blue{color:var(--accent)}
+.sc-val.teal{color:var(--teal)}
+.sc-lbl{font-size:12px;color:var(--text3);margin-top:2px}
+
+/* Status badge */
+.sb{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.sb::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.sb.critical{background:var(--red-dim);color:var(--red)}
+.sb.critical::before{background:var(--red);animation:blink 1s infinite}
+.sb.urgent{background:var(--orange-dim);color:var(--orange)}
+.sb.urgent::before{background:var(--orange);animation:blink 1.5s infinite}
+.sb.warning{background:var(--amber-dim);color:var(--amber)}
+.sb.warning::before{background:var(--amber)}
+.sb.normal{background:var(--green-dim);color:var(--green)}
+.sb.normal::before{background:var(--green)}
+.sb.pending{background:var(--amber-dim);color:var(--amber)}
+.sb.pending::before{background:var(--amber);animation:blink 1.5s infinite}
+.sb.processing{background:var(--accent-dim);color:var(--accent)}
+.sb.processing::before{background:var(--accent);animation:blink 1.5s infinite}
+.sb.done{background:var(--green-dim);color:var(--green)}
+.sb.done::before{background:var(--green)}
+.sb.closed{background:var(--surface2);color:var(--text3)}
+.sb.closed::before{background:var(--text3)}
+.sb.rejected{background:var(--red-dim);color:var(--red)}
+.sb.rejected::before{background:var(--red)}
+.sb.active{background:var(--green-dim);color:var(--green)}
+.sb.active::before{background:var(--green)}
+.sb.provisioning{background:var(--teal-dim);color:var(--teal)}
+.sb.provisioning::before{background:var(--teal);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* Type tags */
+.tt{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:500}
+.tt.qual{background:var(--purple-dim);color:var(--purple)}
+.tt.order{background:var(--accent-dim);color:var(--accent)}
+.tt.cert{background:var(--teal-dim);color:var(--teal)}
+.tt.cloud{background:var(--accent-dim);color:var(--accent)}
+.tt.security{background:var(--amber-dim);color:var(--amber)}
+.tt.custom{background:var(--teal-dim);color:var(--teal)}
+.tt.info{background:var(--surface2);color:var(--text3)}
+.tt.gov{background:#e3f2fd;color:#1565c0}
+.tt.soe{background:var(--amber-dim);color:var(--amber)}
+.tt.enterprise{background:var(--purple-dim);color:var(--purple)}
+
+/* Progress bar */
+.prog-wrap{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;border-radius:3px;transition:width .3s}
+.prog-bar.red{background:var(--red)}
+.prog-bar.orange{background:var(--orange)}
+.prog-bar.amber{background:var(--amber)}
+.prog-bar.green{background:var(--green)}
+
+/* Countdown chip */
+.cc{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600;font-family:'DM Mono',monospace}
+.cc.red{background:var(--red-dim);color:var(--red)}
+.cc.orange{background:var(--orange-dim);color:var(--orange)}
+.cc.amber{background:var(--amber-dim);color:var(--amber)}
+.cc.green{background:var(--green-dim);color:var(--green)}
+
+/* Table */
+.tbl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse}
+thead th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);background:var(--surface2)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f5f7ff}
+tbody td{padding:12px 16px;vertical-align:middle}
+.tbl-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.tbl-sub{font-size:11px;color:var(--text3)}
+.tbl-mono{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
+
+/* Filter bar */
+.fbar{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}
+.fsearch{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;flex:1;max-width:260px}
+.fsearch input{border:none;outline:none;background:transparent;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:100%}
+.fsearch input::placeholder{color:var(--text3)}
+.fsel{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;color:var(--text2);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;outline:none}
+.fsp{flex:1}
+.finfo{font-size:12px;color:var(--text3)}
+
+/* Alert banner */
+.alert-banner{border-radius:var(--r);padding:11px 14px;display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.6}
+.alert-banner.red{background:var(--red-dim);border:1px solid var(--red-mid);color:var(--red)}
+.alert-banner.amber{background:var(--amber-dim);border:1px solid var(--amber-mid);color:var(--amber)}
+.alert-banner.orange{background:var(--orange-dim);border:1px solid var(--orange-mid);color:var(--orange)}
+
+/* Timeline */
+.tl{display:flex;flex-direction:column}
+.tl-row{display:flex;gap:12px}
+.tl-spine{display:flex;flex-direction:column;align-items:center;width:14px;flex-shrink:0}
+.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.tl-dot.done{background:var(--green)}
+.tl-dot.on{background:var(--accent);box-shadow:0 0 0 3px var(--accent-mid)}
+.tl-dot.wait{background:var(--border2)}
+.tl-dot.red{background:var(--red)}
+.tl-vl{flex:1;width:1px;background:var(--border);margin:3px 0;min-height:16px}
+.tl-row:last-child .tl-vl{display:none}
+.tl-body{padding-bottom:14px;flex:1}
+.tl-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.tl-title.done{color:var(--text2)}
+.tl-title.on{color:var(--text)}
+.tl-title.wait{color:var(--text3)}
+.tl-time{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+
+/* Info pairs */
+.ip{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.ip-item{padding:10px 16px;border-bottom:1px solid var(--border)}
+.ip-item:nth-child(odd){border-right:1px solid var(--border)}
+.ip-item.full{grid-column:1/-1;border-right:none}
+.ip-item:nth-last-child(-n+2){border-bottom:none}
+.ip-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.ip-val{font-size:13px;font-weight:500;color:var(--text)}
+.ip-val.muted{font-weight:400;color:var(--text2)}
+.ip-val.mono{font-family:'DM Mono',monospace;font-size:12px;font-weight:400}
+
+/* Ticket reply area */
+.reply-area{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.reply-msgs{padding:14px 16px;display:flex;flex-direction:column;gap:12px;max-height:220px;overflow-y:auto}
+.msg{display:flex;gap:8px}
+.msg.mine{flex-direction:row-reverse}
+.msg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.msg-av.user{background:var(--accent-dim);color:var(--accent)}
+.msg-av.staff{background:var(--amber-dim);color:var(--amber)}
+.msg-bubble{max-width:72%;padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.6}
+.msg-bubble.user{background:var(--accent);color:#fff;border-radius:10px 10px 4px 10px}
+.msg-bubble.staff{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px 10px 10px 4px}
+.msg-meta{font-size:10px;color:var(--text3);margin-top:3px;text-align:right}
+.msg.mine .msg-meta{text-align:left}
+.reply-input{border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:flex-end}
+.reply-input textarea{flex:1;border:none;outline:none;background:transparent;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);resize:none;min-height:36px;line-height:1.5}
+.reply-input textarea::placeholder{color:var(--text3)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* Tabs */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border)}
+.tab{padding:9px 16px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;display:flex;align-items:center;gap:5px}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-n{font-size:10px;font-weight:600;padding:1px 5px;border-radius:10px;font-family:'DM Mono',monospace}
+.tab.on .tab-n{background:var(--accent-dim);color:var(--accent)}
+.tab:not(.on) .tab-n{background:var(--surface2);color:var(--text3)}
+
+/* Detail layout */
+.dl{display:flex;gap:16px;align-items:flex-start}
+.dl-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
+.dl-side{width:272px;flex-shrink:0;display:flex;flex-direction:column;gap:12px}
+
+/* Page switcher (demo nav) */
+.page-switch{display:flex;gap:6px;padding:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);width:fit-content;box-shadow:var(--shadow)}
+.ps-btn{padding:6px 16px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .12s;font-family:'DM Sans',sans-serif}
+.ps-btn.on{background:var(--accent);color:#fff}
+
+/* Avatar chip */
+.av-chip{display:inline-flex;align-items:center;gap:5px}
+.av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600}
+.av.blue{background:var(--accent-dim);color:var(--accent)}
+.av.amber{background:var(--amber-dim);color:var(--amber)}
+.av.green{background:var(--green-dim);color:var(--green)}
+
+/* Priority dot */
+.pri{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block}
+.pri.p1{background:var(--red)}
+.pri.p2{background:var(--orange)}
+.pri.p3{background:var(--amber)}
+.pri.p4{background:var(--text3)}
+
+/* Divider */
+.divider{height:1px;background:var(--border)}
+
+/* Section label */
+.sec-lbl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── SIDEBAR ── -->
+<aside class="side">
+  <div class="side-logo">
+    <div class="logo-mark">
+      <div class="logo-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><path d="M2 14V6l6-4 6 4v8"/></svg></div>
+      云服务门户
+    </div>
+    <div class="logo-sub">CLOUD PORTAL v2.1</div>
+  </div>
+  <div class="nav">
+    <div class="nav-g">
+      <div class="nav-gl">服务</div>
+      <div class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>服务目录</div>
+      <div class="ni" onclick="switchPage('orders')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>订单管理<span class="nb blue">3</span></div>
+      <div class="ni" onclick="switchPage('tickets')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>工单中心<span class="nb amber">2</span></div>
+      <div class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5-3.5-5-7a5 5 0 0110 0c0 3.5-5 7-5 7z"/></svg>服务评价</div>
+    </div>
+    <div class="nav-g">
+      <div class="nav-gl">机构管理</div>
+      <div class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14V6l6-4 6 4v8"/><path d="M6 14v-4h4v4"/></svg>资质审核<span class="nb red">4</span></div>
+      <div class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 3V1M11 3V1M2 7h12"/></svg>机构档案</div>
+      <div class="ni on" onclick="switchPage('expiry')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v4M8 14v-2M14 8h-2M4 8H2M12.2 3.8l-1.4 1.4M5.2 10.8l-1.4 1.4M12.2 12.2l-1.4-1.4M5.2 5.2L3.8 3.8"/></svg>到期预警<span class="nb red">7</span></div>
+    </div>
+    <div class="nav-g">
+      <div class="nav-gl">运营</div>
+      <div class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l3-4 3 3 3-5 3 3"/></svg>数据统计</div>
+      <div class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>用户管理</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- Page switcher (demo) -->
+  <div style="padding:12px 24px 0;background:var(--surface);border-bottom:1px solid var(--border)">
+    <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px">
+      <span style="font-size:12px;color:var(--text3)">切换页面：</span>
+      <div class="page-switch">
+        <button class="ps-btn" onclick="switchPage('expiry')">到期预警</button>
+        <button class="ps-btn" onclick="switchPage('orders')">订单管理</button>
+        <button class="ps-btn" onclick="switchPage('tickets')">工单中心</button>
+        <button class="ps-btn" onclick="switchPage('ticket-detail')">工单详情</button>
+        <button class="ps-btn" onclick="switchPage('order-detail')">订单详情</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       PAGE 1 · 到期预警
+  ════════════════════════════════════ -->
+  <div id="page-expiry" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <div class="page-header">
+      <div>
+        <div class="page-title">到期预警</div>
+        <div class="page-sub">机构资质 · 服务订单 · 资质证书 共 7 项需关注</div>
+      </div>
+      <div class="ph-space"></div>
+      <button class="btn btn-ghost btn-sm">导出清单</button>
+      <button class="btn btn-primary btn-sm">批量发送通知</button>
+    </div>
+
+    <div class="content">
+
+      <!-- 紧急提示 -->
+      <div class="alert-banner red">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg>
+        <div><strong>2 项已过期或即将在 7 天内到期</strong>，请立即处理，过期后相关机构的服务申请权限将被自动冻结。</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="g4">
+        <div class="sc red">
+          <div class="sc-top"><div class="sc-ico red"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--red)" stroke-width="1.5"><path d="M8 3v5M8 11v.5"/><circle cx="8" cy="8" r="6"/></svg></div></div>
+          <div class="sc-val red">2</div>
+          <div class="sc-lbl">7天内到期 / 已过期</div>
+        </div>
+        <div class="sc orange">
+          <div class="sc-top"><div class="sc-ico orange"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--orange)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg></div></div>
+          <div class="sc-val orange">3</div>
+          <div class="sc-lbl">30天内到期</div>
+        </div>
+        <div class="sc amber">
+          <div class="sc-top"><div class="sc-ico amber"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg></div></div>
+          <div class="sc-val amber">2</div>
+          <div class="sc-lbl">90天内到期</div>
+        </div>
+        <div class="sc green">
+          <div class="sc-top"><div class="sc-ico green"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M13 4L6 11 3 8"/></svg></div></div>
+          <div class="sc-val green">38</div>
+          <div class="sc-lbl">正常（90天以上）</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="card" style="overflow:hidden">
+        <div class="tabs" style="padding:0 16px">
+          <div class="tab on">全部 <span class="tab-n">7</span></div>
+          <div class="tab">机构资质 <span class="tab-n">3</span></div>
+          <div class="tab">服务订单 <span class="tab-n">2</span></div>
+          <div class="tab">资质证书 <span class="tab-n">2</span></div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>紧急程度</th>
+              <th>名称 / 归属机构</th>
+              <th>类型</th>
+              <th>到期时间</th>
+              <th>剩余时间</th>
+              <th>续期周期</th>
+              <th>通知状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="sb critical">紧急</span></td>
+              <td>
+                <div class="tbl-name">网络安全承诺书</div>
+                <div class="tbl-sub">锐途智能科技（北京）有限公司</div>
+              </td>
+              <td><span class="tt cert">证书</span></td>
+              <td><span style="color:var(--red);font-family:'DM Mono',monospace;font-size:12px;font-weight:600">2024-03-17</span></td>
+              <td>
+                <div class="cc red">−2天 已过期</div>
+                <div class="prog-wrap" style="width:80px;margin-top:4px"><div class="prog-bar red" style="width:100%"></div></div>
+              </td>
+              <td><span style="font-size:12px;color:var(--text3)">1年</span></td>
+              <td><span class="sb warning">已通知 3次</span></td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-danger btn-sm">冻结账号</button>
+                  <button class="btn btn-warn btn-sm">催办</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="sb urgent">加急</span></td>
+              <td>
+                <div class="tbl-name">云主机 · 4核8G × 3台</div>
+                <div class="tbl-sub">北京协和医学院附属医院 / #ORD-2023-0412</div>
+              </td>
+              <td><span class="tt order">订单</span></td>
+              <td><span style="color:var(--orange);font-family:'DM Mono',monospace;font-size:12px;font-weight:600">2024-03-22</span></td>
+              <td>
+                <div class="cc orange">3天</div>
+                <div class="prog-wrap" style="width:80px;margin-top:4px"><div class="prog-bar orange" style="width:92%"></div></div>
+              </td>
+              <td><span style="font-size:12px;color:var(--text3)">1年</span></td>
+              <td><span class="sb processing">已通知 1次</span></td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-primary btn-sm">发起续订</button>
+                  <button class="btn btn-ghost btn-sm">通知用户</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="sb warning">预警</span></td>
+              <td>
+                <div class="tbl-name">机构资质认证</div>
+                <div class="tbl-sub">华能数智科技集团</div>
+              </td>
+              <td><span class="tt qual">资质</span></td>
+              <td><span style="font-family:'DM Mono',monospace;font-size:12px">2024-04-12</span></td>
+              <td>
+                <div class="cc amber">24天</div>
+                <div class="prog-wrap" style="width:80px;margin-top:4px"><div class="prog-bar amber" style="width:72%"></div></div>
+              </td>
+              <td><span style="font-size:12px;color:var(--text3)">1年</span></td>
+              <td><span class="sb done">已通知 2次</span></td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-warn btn-sm">发起续审</button>
+                  <button class="btn btn-ghost btn-sm">查看档案</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="sb warning">预警</span></td>
+              <td>
+                <div class="tbl-name">等保三级认证证书</div>
+                <div class="tbl-sub">中远云科技有限公司</div>
+              </td>
+              <td><span class="tt cert">证书</span></td>
+              <td><span style="font-family:'DM Mono',monospace;font-size:12px">2024-04-18</span></td>
+              <td>
+                <div class="cc amber">30天</div>
+                <div class="prog-wrap" style="width:80px;margin-top:4px"><div class="prog-bar amber" style="width:65%"></div></div>
+              </td>
+              <td><span style="font-size:12px;color:var(--text3)">3年</span></td>
+              <td><span class="sb pending">未通知</span></td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-ghost btn-sm">发送通知</button>
+                  <button class="btn btn-ghost btn-sm">查看订单</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="sb warning">预警</span></td>
+              <td>
+                <div class="tbl-name">对象存储 · 标准型 500G</div>
+                <div class="tbl-sub">北京市海淀区数字经济发展局 / #ORD-2023-0387</div>
+              </td>
+              <td><span class="tt order">订单</span></td>
+              <td><span style="font-family:'DM Mono',monospace;font-size:12px">2024-04-25</span></td>
+              <td>
+                <div class="cc amber">37天</div>
+                <div class="prog-wrap" style="width:80px;margin-top:4px"><div class="prog-bar amber" style="width:58%"></div></div>
+              </td>
+              <td><span style="font-size:12px;color:var(--text3)">1年</span></td>
+              <td><span class="sb pending">未通知</span></td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-primary btn-sm">发起续订</button>
+                  <button class="btn btn-ghost btn-sm">通知用户</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="sb normal">正常</span></td>
+              <td>
+                <div class="tbl-name">机构资质认证</div>
+                <div class="tbl-sub">北京市海淀区数字经济发展局</div>
+              </td>
+              <td><span class="tt qual">资质</span></td>
+              <td><span style="font-family:'DM Mono',monospace;font-size:12px">2024-06-15</span></td>
+              <td>
+                <div class="cc green">88天</div>
+                <div class="prog-wrap" style="width:80px;margin-top:4px"><div class="prog-bar green" style="width:30%"></div></div>
+              </td>
+              <td><span style="font-size:12px;color:var(--text3)">1年</span></td>
+              <td><span class="sb closed">未到提醒期</span></td>
+              <td><button class="btn btn-ghost btn-sm">查看档案</button></td>
+            </tr>
+            <tr>
+              <td><span class="sb normal">正常</span></td>
+              <td>
+                <div class="tbl-name">机构资质认证</div>
+                <div class="tbl-sub">北京协和医学院附属医院</div>
+              </td>
+              <td><span class="tt qual">资质</span></td>
+              <td><span style="font-family:'DM Mono',monospace;font-size:12px">2024-09-10</span></td>
+              <td>
+                <div class="cc green">175天</div>
+                <div class="prog-wrap" style="width:80px;margin-top:4px"><div class="prog-bar green" style="width:8%"></div></div>
+              </td>
+              <td><span style="font-size:12px;color:var(--text3)">1年</span></td>
+              <td><span class="sb closed">未到提醒期</span></td>
+              <td><button class="btn btn-ghost btn-sm">查看档案</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 预警规则说明 -->
+      <div class="card card-bd" style="padding:16px 18px">
+        <div class="sec-lbl" style="margin-bottom:10px">预警规则配置</div>
+        <div style="display:flex;gap:24px;font-size:12px;color:var(--text2)">
+          <div style="display:flex;align-items:center;gap:6px"><span class="pri p1"></span>已过期 / 7天内：紧急 — 自动发送站内信 + 短信，标记账号为冻结待确认</div>
+          <div style="display:flex;align-items:center;gap:6px"><span class="pri p2"></span>8–30天：加急 — 每3天自动通知一次，管理员工作台置顶显示</div>
+          <div style="display:flex;align-items:center;gap:6px"><span class="pri p3"></span>31–90天：预警 — 首次通知后每15天提醒</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       PAGE 2 · 订单管理（后台运营视角）
+  ════════════════════════════════════ -->
+  <div id="page-orders" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="page-header">
+      <div>
+        <div class="page-title">订单管理</div>
+        <div class="page-sub">全平台服务订单 · 后台运营视角</div>
+      </div>
+      <div class="ph-space"></div>
+      <button class="btn btn-ghost btn-sm">导出订单</button>
+    </div>
+    <div class="content">
+      <div class="g4">
+        <div class="sc blue"><div class="sc-top"><div class="sc-ico blue"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg></div></div><div class="sc-val blue">138</div><div class="sc-lbl">全部订单</div></div>
+        <div class="sc amber"><div class="sc-top"><div class="sc-ico amber"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg></div></div><div class="sc-val amber">6</div><div class="sc-lbl">审批中</div></div>
+        <div class="sc teal"><div class="sc-top"><div class="sc-ico teal"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--teal)" stroke-width="1.5"><path d="M2 8h12M9 4l4 4-4 4"/></svg></div></div><div class="sc-val teal">4</div><div class="sc-lbl">开通中</div></div>
+        <div class="sc green"><div class="sc-top"><div class="sc-ico green"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M13 4L6 11 3 8"/></svg></div></div><div class="sc-val green">124</div><div class="sc-lbl">已生效</div></div>
+      </div>
+
+      <div class="fbar">
+        <div class="fsearch"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M11 11l3 3"/></svg><input placeholder="订单号、机构名、服务名称..."></div>
+        <select class="fsel"><option>所有机构</option></select>
+        <select class="fsel"><option>所有服务类型</option><option>标准云资源</option><option>安全服务</option><option>定制化资源</option><option>能力组件</option></select>
+        <select class="fsel"><option>所有状态</option><option>审批中</option><option>开通中</option><option>已生效</option><option>已驳回</option></select>
+        <div class="fsp"></div>
+        <span class="finfo">138 条</span>
+      </div>
+
+      <div class="tbl-card">
+        <div class="tabs" style="padding:0 16px">
+          <div class="tab on">全部 <span class="tab-n">138</span></div>
+          <div class="tab">待审批 <span class="tab-n">6</span></div>
+          <div class="tab">开通中 <span class="tab-n">4</span></div>
+          <div class="tab">工单处理中 <span class="tab-n">3</span></div>
+          <div class="tab">已生效 <span class="tab-n">124</span></div>
+          <div class="tab">已驳回 <span class="tab-n">1</span></div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>订单号</th>
+              <th>服务名称 / 规格</th>
+              <th>申请机构</th>
+              <th>服务类型</th>
+              <th>状态</th>
+              <th>关联工单</th>
+              <th>申请时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="switchPage('order-detail')">
+              <td><div class="tbl-mono">#ORD-2024-0089</div></td>
+              <td><div class="tbl-name">等保三级合规评估</div><div class="tbl-sub">含渗透测试 + 整改报告</div></td>
+              <td><div class="tbl-name" style="font-size:12px">北京市海淀区数字经济发展局</div><div class="tbl-sub">张三 · 技术部</div></td>
+              <td><span class="tt security">安全服务</span></td>
+              <td><span class="sb processing">工单处理中</span></td>
+              <td><span style="background:var(--amber-dim);color:var(--amber);padding:2px 7px;border-radius:4px;font-size:11px;font-family:'DM Mono',monospace">TK-0234</span></td>
+              <td class="tbl-mono">2024-03-15</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();switchPage('order-detail')">详情</button></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-mono">#ORD-2024-0088</div></td>
+              <td><div class="tbl-name">云主机 · 4核8G</div><div class="tbl-sub">CentOS 7.9 / 100G SSD</div></td>
+              <td><div class="tbl-name" style="font-size:12px">中远云科技有限公司</div><div class="tbl-sub">李明 · 运维部</div></td>
+              <td><span class="tt cloud">标准云资源</span></td>
+              <td><span class="sb pending">审批中</span></td>
+              <td><span style="font-size:11px;color:var(--text3)">—</span></td>
+              <td class="tbl-mono">2024-03-15</td>
+              <td><div style="display:flex;gap:5px"><button class="btn btn-success btn-sm">通过</button><button class="btn btn-danger btn-sm">驳回</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-mono">#ORD-2024-0087</div></td>
+              <td><div class="tbl-name">专属裸金属服务器</div><div class="tbl-sub">48核 / 256G内存 / 定制</div></td>
+              <td><div class="tbl-name" style="font-size:12px">华能数智科技集团</div><div class="tbl-sub">赵工 · 基础设施部</div></td>
+              <td><span class="tt custom">定制化资源</span></td>
+              <td><span class="sb provisioning">开通中</span></td>
+              <td><span style="background:var(--amber-dim);color:var(--amber);padding:2px 7px;border-radius:4px;font-size:11px;font-family:'DM Mono',monospace">TK-0231</span></td>
+              <td class="tbl-mono">2024-03-14</td>
+              <td><button class="btn btn-ghost btn-sm">详情</button></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-mono">#ORD-2024-0086</div></td>
+              <td><div class="tbl-name">云防火墙 · 企业版</div><div class="tbl-sub">防护带宽 1Gbps</div></td>
+              <td><div class="tbl-name" style="font-size:12px">北京协和医学院附属医院</div><div class="tbl-sub">王护士长 · 信息科</div></td>
+              <td><span class="tt security">安全服务</span></td>
+              <td><span class="sb pending">审批中</span></td>
+              <td><span style="font-size:11px;color:var(--text3)">—</span></td>
+              <td class="tbl-mono">2024-03-14</td>
+              <td><div style="display:flex;gap:5px"><button class="btn btn-success btn-sm">通过</button><button class="btn btn-danger btn-sm">驳回</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-mono">#ORD-2024-0085</div></td>
+              <td><div class="tbl-name">对象存储 · 标准型</div><div class="tbl-sub">500GB / 华北区</div></td>
+              <td><div class="tbl-name" style="font-size:12px">华能数智科技集团</div><div class="tbl-sub">张三 · IT部</div></td>
+              <td><span class="tt cloud">标准云资源</span></td>
+              <td><span class="sb active">已生效</span></td>
+              <td><span style="font-size:11px;color:var(--text3)">—</span></td>
+              <td class="tbl-mono">2024-03-12</td>
+              <td><button class="btn btn-ghost btn-sm">详情</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       PAGE 2B · 订单详情
+  ════════════════════════════════════ -->
+  <div id="page-order-detail" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="page-header">
+      <button class="btn btn-ghost btn-sm" onclick="switchPage('orders')">← 返回列表</button>
+      <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
+      <div><div class="page-title">#ORD-2024-0089 · 等保三级合规评估</div><div class="page-sub">安全服务 · 北京市海淀区数字经济发展局</div></div>
+      <div class="ph-space"></div>
+      <span class="sb processing">工单处理中</span>
+    </div>
+    <div class="content">
+      <div class="dl">
+        <div class="dl-main">
+          <div class="card">
+            <div class="card-hd"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg><span class="card-hd-title">订单基本信息</span></div>
+            <div class="ip">
+              <div class="ip-item"><div class="ip-lbl">申请人</div><div class="ip-val">张三</div></div>
+              <div class="ip-item"><div class="ip-lbl">所属部门</div><div class="ip-val">技术部</div></div>
+              <div class="ip-item"><div class="ip-lbl">所属机构</div><div class="ip-val">北京市海淀区数字经济发展局</div></div>
+              <div class="ip-item"><div class="ip-lbl">申请时间</div><div class="ip-val mono">2024-03-15 14:32</div></div>
+              <div class="ip-item"><div class="ip-lbl">服务周期</div><div class="ip-val">1年（2024-03 至 2025-03）</div></div>
+              <div class="ip-item"><div class="ip-lbl">审批人</div><div class="ip-val"><span class="av-chip"><span class="av blue">李</span> 李四 · IT管理员</span></div></div>
+              <div class="ip-item"><div class="ip-lbl">审批时间</div><div class="ip-val mono">2024-03-15 16:08</div></div>
+              <div class="ip-item"><div class="ip-lbl">开通方式</div><div class="ip-val">人工 + 工单交付</div></div>
+              <div class="ip-item full"><div class="ip-lbl">申请备注</div><div class="ip-val muted">本次申请等保三级评估，包含差距分析、渗透测试和整改报告，请安排专业团队对接。</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg><span class="card-hd-title">流程进度</span></div>
+            <div class="card-bd">
+              <div class="tl">
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">提交申请</div><div class="tl-time">2024-03-15 14:32 · 张三</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">单级审批通过</div><div class="tl-time">2024-03-15 16:08 · 李四（IT管理员）— 同意，符合安全合规要求</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">系统派发工单</div><div class="tl-time">2024-03-15 16:10 · 自动派发 → TK-0234 · 安全团队</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot on"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title on">工单执行中</div><div class="tl-time">安全团队已与申请人对接，正在进行现场评估准备</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">服务交付完成</div><div class="tl-time">等待工单关闭后自动更新</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div></div><div class="tl-body"><div class="tl-title wait">服务评价</div><div class="tl-time">交付完成后用户可评价</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dl-side">
+          <div class="card">
+            <div class="card-hd"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg><span class="card-hd-title">关联工单</span></div>
+            <div class="card-bd" style="padding:14px">
+              <div style="border:1px solid var(--amber-mid);border-left:3px solid var(--amber);border-radius:var(--r);padding:12px;background:var(--amber-dim)">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+                  <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);font-weight:600">TK-0234</span>
+                  <span class="sb processing" style="font-size:10px;padding:2px 6px">处理中</span>
+                </div>
+                <div style="font-size:13px;font-weight:500;margin-bottom:5px;color:var(--text)">等保三级合规评估服务交付</div>
+                <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px">已与申请人确认评估范围，覆盖3个核心系统，本周五启动现场评估。</div>
+                <div class="av-chip" style="font-size:11px;color:var(--text3)"><span class="av amber">王</span> 负责人：王五（安全团队）</div>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:10px">
+                <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="switchPage('ticket-detail')">查看工单</button>
+                <button class="btn btn-warn btn-sm" style="flex:1;justify-content:center">催单</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><span class="card-hd-title">订单操作</span></div>
+            <div class="card-bd" style="display:flex;flex-direction:column;gap:8px;padding:14px">
+              <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:12px">下载申请单 PDF</button>
+              <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:12px">强制关单</button>
+              <button class="btn btn-danger" style="width:100%;justify-content:center;font-size:12px">取消订单</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       PAGE 3 · 工单中心（后台处理视角）
+  ════════════════════════════════════ -->
+  <div id="page-tickets" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="page-header">
+      <div><div class="page-title">工单中心</div><div class="page-sub">服务交付执行 · 后台处理视角</div></div>
+      <div class="ph-space"></div>
+      <button class="btn btn-ghost btn-sm">我的待处理</button>
+      <button class="btn btn-primary btn-sm">新建工单</button>
+    </div>
+    <div class="content">
+      <div class="g4">
+        <div class="sc red"><div class="sc-top"><div class="sc-ico red"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--red)" stroke-width="1.5"><path d="M8 3v5M8 11v.5"/><circle cx="8" cy="8" r="6"/></svg></div></div><div class="sc-val red">2</div><div class="sc-lbl">超时 / 待响应</div></div>
+        <div class="sc amber"><div class="sc-top"><div class="sc-ico amber"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg></div></div><div class="sc-val amber">5</div><div class="sc-lbl">处理中</div></div>
+        <div class="sc teal"><div class="sc-top"><div class="sc-ico teal"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--teal)" stroke-width="1.5"><path d="M13 4L6 11 3 8"/></svg></div></div><div class="sc-val teal">3</div><div class="sc-lbl">待用户确认</div></div>
+        <div class="sc green"><div class="sc-top"><div class="sc-ico green"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M13 4L6 11 3 8"/></svg></div></div><div class="sc-val green">89</div><div class="sc-lbl">本月已完结</div></div>
+      </div>
+
+      <div class="fbar">
+        <div class="fsearch"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M11 11l3 3"/></svg><input placeholder="工单号、服务名称、机构名..."></div>
+        <select class="fsel"><option>所有处理人</option><option>我的工单</option><option>王五</option><option>赵六</option></select>
+        <select class="fsel"><option>所有优先级</option><option>P1 紧急</option><option>P2 加急</option><option>P3 普通</option></select>
+        <select class="fsel"><option>所有状态</option><option>待处理</option><option>处理中</option><option>待确认</option><option>已完结</option></select>
+        <div class="fsp"></div>
+        <span class="finfo">共 10 条</span>
+      </div>
+
+      <div class="tbl-card">
+        <div class="tabs" style="padding:0 16px">
+          <div class="tab on">全部 <span class="tab-n">10</span></div>
+          <div class="tab">待处理 <span class="tab-n">2</span></div>
+          <div class="tab">处理中 <span class="tab-n">5</span></div>
+          <div class="tab">待用户确认 <span class="tab-n">3</span></div>
+          <div class="tab">已完结 <span class="tab-n">0</span></div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>优先级</th>
+              <th>工单号 / 标题</th>
+              <th>来源订单</th>
+              <th>申请机构</th>
+              <th>状态</th>
+              <th>处理人</th>
+              <th>SLA剩余</th>
+              <th>更新时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="switchPage('ticket-detail')">
+              <td><div style="display:flex;align-items:center;gap:5px"><span class="pri p1"></span><span style="font-size:11px;font-weight:600;color:var(--red)">P1</span></div></td>
+              <td>
+                <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:2px">TK-0234</div>
+                <div class="tbl-name">等保三级合规评估服务交付</div>
+                <div class="tbl-sub">安全服务 · 评估 + 报告</div>
+              </td>
+              <td><span style="background:var(--accent-dim);color:var(--accent);padding:2px 7px;border-radius:4px;font-size:11px;font-family:'DM Mono',monospace">#ORD-0089</span></td>
+              <td><div style="font-size:12px;font-weight:500">海淀数字经济发展局</div></td>
+              <td><span class="sb processing">处理中</span></td>
+              <td><span class="av-chip" style="font-size:12px"><span class="av amber">王</span>王五</span></td>
+              <td><span class="cc orange">6h 40m</span></td>
+              <td class="tbl-mono">03-15 16:30</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();switchPage('ticket-detail')">处理</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:5px"><span class="pri p1"></span><span style="font-size:11px;font-weight:600;color:var(--red)">P1</span></div></td>
+              <td>
+                <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:2px">TK-0235</div>
+                <div class="tbl-name">专属裸金属服务器配置交付</div>
+                <div class="tbl-sub">定制化资源 · 48核 256G</div>
+              </td>
+              <td><span style="background:var(--accent-dim);color:var(--accent);padding:2px 7px;border-radius:4px;font-size:11px;font-family:'DM Mono',monospace">#ORD-0087</span></td>
+              <td><div style="font-size:12px;font-weight:500">华能数智科技集团</div></td>
+              <td><span class="sb pending">待处理</span></td>
+              <td><span style="font-size:12px;color:var(--text3)">未分配</span></td>
+              <td><span class="cc red">超时 2h</span></td>
+              <td class="tbl-mono">03-14 09:05</td>
+              <td><button class="btn btn-primary btn-sm">立即接单</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:5px"><span class="pri p2"></span><span style="font-size:11px;font-weight:600;color:var(--orange)">P2</span></div></td>
+              <td>
+                <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:2px">TK-0231</div>
+                <div class="tbl-name">云防火墙策略配置</div>
+                <div class="tbl-sub">安全服务 · 企业版防火墙</div>
+              </td>
+              <td><span style="background:var(--accent-dim);color:var(--accent);padding:2px 7px;border-radius:4px;font-size:11px;font-family:'DM Mono',monospace">#ORD-0083</span></td>
+              <td><div style="font-size:12px;font-weight:500">北京协和医学院</div></td>
+              <td><span class="sb done" style="background:var(--teal-dim);color:var(--teal)">待用户确认</span></td>
+              <td><span class="av-chip" style="font-size:12px"><span class="av green">赵</span>赵六</span></td>
+              <td><span class="cc green">1d 4h</span></td>
+              <td class="tbl-mono">03-13 14:20</td>
+              <td><button class="btn btn-ghost btn-sm">查看</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:5px"><span class="pri p3"></span><span style="font-size:11px;font-weight:600;color:var(--amber)">P3</span></div></td>
+              <td>
+                <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:2px">TK-0228</div>
+                <div class="tbl-name">安全加固服务实施</div>
+                <div class="tbl-sub">安全服务 · 系统基线加固</div>
+              </td>
+              <td><span style="background:var(--accent-dim);color:var(--accent);padding:2px 7px;border-radius:4px;font-size:11px;font-family:'DM Mono',monospace">#ORD-0079</span></td>
+              <td><div style="font-size:12px;font-weight:500">中远云科技有限公司</div></td>
+              <td><span class="sb processing">处理中</span></td>
+              <td><span class="av-chip" style="font-size:12px"><span class="av amber">王</span>王五</span></td>
+              <td><span class="cc amber">18h</span></td>
+              <td class="tbl-mono">03-12 10:00</td>
+              <td><button class="btn btn-ghost btn-sm">查看</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       PAGE 3B · 工单详情（前后台共用）
+  ════════════════════════════════════ -->
+  <div id="page-ticket-detail" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="page-header">
+      <button class="btn btn-ghost btn-sm" onclick="switchPage('tickets')">← 返回列表</button>
+      <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
+      <div>
+        <div class="page-title">TK-0234 · 等保三级合规评估服务交付</div>
+        <div class="page-sub">来源：#ORD-2024-0089 · 安全服务 · 海淀数字经济发展局</div>
+      </div>
+      <div class="ph-space"></div>
+      <span class="sb processing" style="margin-right:8px">处理中</span>
+      <span class="cc orange">SLA 剩余 6h 40m</span>
+    </div>
+    <div class="content">
+      <div class="dl">
+        <div class="dl-main">
+
+          <!-- 工单信息 -->
+          <div class="card">
+            <div class="card-hd"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg><span class="card-hd-title">工单信息</span></div>
+            <div class="ip">
+              <div class="ip-item"><div class="ip-lbl">工单类型</div><div class="ip-val">安全服务交付</div></div>
+              <div class="ip-item"><div class="ip-lbl">优先级</div><div class="ip-val"><span style="display:flex;align-items:center;gap:5px"><span class="pri p1"></span>P1 紧急</span></div></div>
+              <div class="ip-item"><div class="ip-lbl">创建时间</div><div class="ip-val mono">2024-03-15 16:10</div></div>
+              <div class="ip-item"><div class="ip-lbl">SLA时限</div><div class="ip-val">1个工作日（首次响应 2h）</div></div>
+              <div class="ip-item"><div class="ip-lbl">处理人</div><div class="ip-val"><span class="av-chip"><span class="av amber">王</span>王五（安全团队）</span></div></div>
+              <div class="ip-item"><div class="ip-lbl">申请机构</div><div class="ip-val">北京市海淀区数字经济发展局</div></div>
+              <div class="ip-item full"><div class="ip-lbl">服务需求</div><div class="ip-val muted">等保三级合规评估，包含差距分析、渗透测试和整改报告，覆盖订单管理、用户中心、数据平台三个系统。</div></div>
+            </div>
+          </div>
+
+          <!-- 沟通记录 -->
+          <div class="card">
+            <div class="card-hd">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 10a2 2 0 01-2 2H5l-3 3V4a2 2 0 012-2h8a2 2 0 012 2z"/></svg>
+              <span class="card-hd-title">沟通记录</span>
+              <span class="card-hd-sub">前后台均可查看</span>
+            </div>
+            <div class="reply-area" style="margin:14px;border-radius:var(--r)">
+              <div class="reply-msgs">
+                <div class="msg">
+                  <div class="msg-av staff">王</div>
+                  <div>
+                    <div class="msg-bubble staff">您好，我是安全团队的王五，已收到您的等保评估申请。请问您方便本周四下午进行一次评估范围确认会议吗？</div>
+                    <div class="msg-meta">王五（安全团队） · 03-15 16:45</div>
+                  </div>
+                </div>
+                <div class="msg mine">
+                  <div class="msg-av user">张</div>
+                  <div>
+                    <div class="msg-bubble user">好的，周四下午3点可以。需要我们准备哪些材料？</div>
+                    <div class="msg-meta">张三（申请人） · 03-15 17:20</div>
+                  </div>
+                </div>
+                <div class="msg">
+                  <div class="msg-av staff">王</div>
+                  <div>
+                    <div class="msg-bubble staff">请准备以下材料：1. 三个系统的网络拓扑图；2. 系统架构说明；3. 现有安全设备清单。会议采用线上形式，我稍后发邀请。</div>
+                    <div class="msg-meta">王五（安全团队） · 03-15 17:35</div>
+                  </div>
+                </div>
+                <div class="msg mine">
+                  <div class="msg-av user">张</div>
+                  <div>
+                    <div class="msg-bubble user">收到，材料我们今天下班前整理好。</div>
+                    <div class="msg-meta">张三（申请人） · 03-15 17:50</div>
+                  </div>
+                </div>
+              </div>
+              <div class="reply-input">
+                <textarea placeholder="输入回复内容... （后台处理人）"></textarea>
+                <button class="btn btn-primary btn-sm">发送</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 执行记录 -->
+          <div class="card">
+            <div class="card-hd"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 4L6 11 3 8"/></svg><span class="card-hd-title">执行步骤</span><span class="card-hd-sub">仅内部可见</span></div>
+            <div class="card-bd">
+              <div class="tl">
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">接单确认</div><div class="tl-time">2024-03-15 16:15 · 王五接单，SLA倒计时开始</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">与客户初步沟通</div><div class="tl-time">2024-03-15 16:45 · 确认周四下午召开评估范围会议</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot on"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title on">评估范围确认会议</div><div class="tl-time">计划 2024-03-21 15:00 · 等待材料准备中</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">现场/远程评估</div><div class="tl-time">待执行</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">整改报告交付</div><div class="tl-time">待执行</div></div></div>
+                <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div></div><div class="tl-body"><div class="tl-title wait">客户确认完结</div><div class="tl-time">客户确认后工单关闭，订单状态自动更新</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧 -->
+        <div class="dl-side">
+          <!-- 工单操作（后台） -->
+          <div class="card">
+            <div class="card-hd"><span class="card-hd-title">工单操作</span><span class="card-hd-sub" style="background:var(--orange-dim);color:var(--orange);padding:1px 6px;border-radius:4px;font-size:10px">后台</span></div>
+            <div class="card-bd" style="display:flex;flex-direction:column;gap:8px;padding:14px">
+              <button class="btn btn-success" style="width:100%;justify-content:center;font-size:13px">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4L6 11 3 8"/></svg>
+                标记交付完成，通知用户确认
+              </button>
+              <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:12px">转派其他处理人</button>
+              <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:12px">上传交付附件</button>
+              <div class="divider"></div>
+              <button class="btn btn-danger" style="width:100%;justify-content:center;font-size:12px">关闭工单</button>
+            </div>
+          </div>
+
+          <!-- 用户操作（前台） -->
+          <div class="card">
+            <div class="card-hd"><span class="card-hd-title">用户操作</span><span class="card-hd-sub" style="background:var(--accent-dim);color:var(--accent);padding:1px 6px;border-radius:4px;font-size:10px">前台</span></div>
+            <div class="card-bd" style="display:flex;flex-direction:column;gap:8px;padding:14px">
+              <div style="font-size:12px;color:var(--text3);padding:8px;background:var(--surface2);border-radius:var(--r);line-height:1.6">服务交付完成后，运营人员会通知您确认。确认后工单关闭，即可进行服务评价。</div>
+              <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:12px;opacity:.5;cursor:not-allowed">确认服务已完成（等待通知）</button>
+              <button class="btn btn-warn" style="width:100%;justify-content:center;font-size:12px">催单</button>
+            </div>
+          </div>
+
+          <!-- SLA -->
+          <div class="card">
+            <div class="card-hd"><span class="card-hd-title">SLA 状态</span></div>
+            <div class="card-bd" style="padding:14px;display:flex;flex-direction:column;gap:10px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text3)">首次响应</span><span class="cc green" style="font-size:10px">✓ 25分钟</span></div>
+                <div class="prog-wrap"><div class="prog-bar green" style="width:100%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--text3)">整体处理时限（1个工作日）</span><span class="cc orange" style="font-size:10px">剩余 6h 40m</span></div>
+                <div class="prog-wrap"><div class="prog-bar orange" style="width:62%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 关联订单 -->
+          <div class="card">
+            <div class="card-hd"><span class="card-hd-title">关联订单</span></div>
+            <div class="card-bd" style="padding:12px">
+              <div style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r)">
+                <div style="flex:1">
+                  <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">#ORD-2024-0089</div>
+                  <div style="font-size:12px;font-weight:500;margin-top:1px">等保三级合规评估</div>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="switchPage('order-detail')">查看</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+function switchPage(name) {
+  const pages = ['expiry','orders','order-detail','tickets','ticket-detail'];
+  pages.forEach(p => {
+    const el = document.getElementById('page-'+p);
+    if(el) el.style.display = (p===name) ? 'flex' : 'none';
+  });
+  // update sidebar active
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
+  // update ps-btn active
+  document.querySelectorAll('.ps-btn').forEach(b => {
+    b.classList.toggle('on', b.textContent.includes(
+      name==='expiry'?'到期预警':name==='orders'?'订单管理':
+      name==='order-detail'?'订单详情':name==='tickets'?'工单中心':'工单详情'
+    ));
+  });
+}
+// init
+switchPage('expiry');
+</script>
+</body>
+</html>

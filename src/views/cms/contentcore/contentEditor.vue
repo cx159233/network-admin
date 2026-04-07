@@ -411,6 +411,7 @@
                       show-word-limit
                     />
                   </el-form-item>
+                  <!-- 标签和关键词字段已隐藏
                   <el-form-item :label="$t('CMS.Content.Tags')" prop="tags">
                     <cms-tag-editor
                       v-model="form.tags"
@@ -423,6 +424,7 @@
                   >
                     <cms-tag-editor v-model="form.keywords"></cms-tag-editor>
                   </el-form-item>
+                  -->
                   <el-form-item :label="$t('CMS.Content.Source')" prop="source">
                     <el-input v-model="form.source" />
                   </el-form-item>
