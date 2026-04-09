@@ -6,7 +6,7 @@
         <i class="el-icon-arrow-left"></i> 返回列表
       </el-button>
       <span class="header-divider"></span>
-      <span class="header-title">#ORD-2024-0089 · 等保三级合规评估</span>
+      <span class="header-title">#ORD-2024-0089 · 智慧园区综合管理平台</span>
     </div>
 
     <!-- 工单详情内容 -->
@@ -24,11 +24,8 @@
             <div class="info-item"><div class="info-label">所属部门</div><div class="info-value">技术部</div></div>
             <div class="info-item"><div class="info-label">所属机构</div><div class="info-value">北京市海淀区数字经济发展局</div></div>
             <div class="info-item"><div class="info-label">申请时间</div><div class="info-value mono">2024-03-15 14:32</div></div>
-            <div class="info-item"><div class="info-label">服务周期</div><div class="info-value">1年（2024-03 至 2025-03）</div></div>
-            <div class="info-item"><div class="info-label">审批人</div><div class="info-value"><span class="av-chip"><span class="av blue">李</span> 李四 · IT管理员</span></div></div>
-            <div class="info-item"><div class="info-label">审批时间</div><div class="info-value mono">2024-03-15 16:08</div></div>
             <div class="info-item"><div class="info-label">开通方式</div><div class="info-value">人工 + 工单交付</div></div>
-            <div class="info-item full"><div class="info-label">申请备注</div><div class="info-value muted">本次申请等保三级评估，包含差距分析、渗透测试和整改报告，请安排专业团队对接。</div></div>
+            <div class="info-item full"><div class="info-label">申请备注</div><div class="info-value muted">本次申请智慧园区综合管理平台标准版，含500个设备接入及数据看板功能，请安排团队完成部署与联调。</div></div>
           </div>
         </el-card>
 
@@ -41,11 +38,36 @@
           </template>
           <div class="tl">
             <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">提交申请</div><div class="tl-time">2024-03-15 14:32 · 张三</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">单级审批通过</div><div class="tl-time">2024-03-15 16:08 · 李四（IT管理员）— 同意，符合安全合规要求</div></div></div>
             <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">系统派发工单</div><div class="tl-time">2024-03-15 16:10 · 自动派发 → TK-0234 · 安全团队</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot on"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title on">工单执行中</div><div class="tl-time">安全团队已与申请人对接，正在进行现场评估准备</div></div></div>
+            <div class="tl-row"><div class="tl-spine"><div class="tl-dot on"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title on">工单执行中</div><div class="tl-time">交付团队已与申请人对接，正在进行环境部署与系统联调</div></div></div>
             <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">服务交付完成</div><div class="tl-time">等待工单关闭后自动更新</div></div></div>
             <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div></div><div class="tl-body"><div class="tl-title wait">服务评价</div><div class="tl-time">交付完成后用户可评价</div></div></div>
+          </div>
+        </el-card>
+
+        <!-- 满意度评价 -->
+        <el-card shadow="never" class="description-card">
+          <template #header>
+            <div class="card-header">
+              <span>满意度评价</span>
+            </div>
+          </template>
+          <div v-if="reviewInfo.hasReviewed" class="review-result">
+            <div class="review-score-row">
+              <span class="review-label">满意度评分</span>
+              <el-rate v-model="reviewInfo.score" disabled show-text :texts="['非常差', '差', '一般', '好', '非常好']" />
+            </div>
+            <div class="review-score-row">
+              <span class="review-label">评价内容</span>
+              <span class="review-desc">{{ reviewInfo.description }}</span>
+            </div>
+            <div class="review-score-row">
+              <span class="review-label">评价时间</span>
+              <span class="review-desc mono">{{ reviewInfo.reviewTime }}</span>
+            </div>
+          </div>
+          <div v-else class="review-placeholder">
+            <div class="review-placeholder-text">服务交付完成后可进行满意度评价</div>
           </div>
         </el-card>
       </div>
@@ -63,9 +85,9 @@
               <span style="font-family:'DM Mono',monospace;font-size:11px;color:#e67700;font-weight:600">TK-0234</span>
               <span class="sb processing" style="font-size:10px;padding:2px 6px">处理中</span>
             </div>
-            <div style="font-size:13px;font-weight:500;margin-bottom:5px;color:#1c2033">等保三级合规评估服务交付</div>
-            <div style="font-size:12px;color:#5c6480;line-height:1.6;margin-bottom:8px">已与申请人确认评估范围，覆盖3个核心系统，本周五启动现场评估。</div>
-            <div class="av-chip" style="font-size:11px;color:#9aa0b8"><span class="av amber">王</span> 负责人：王五（安全团队）</div>
+            <div style="font-size:13px;font-weight:500;margin-bottom:5px;color:#1c2033">智慧园区综合管理平台部署交付</div>
+            <div style="font-size:12px;color:#5c6480;line-height:1.6;margin-bottom:8px">已完成服务器环境搭建，正在进行系统配置与设备接入联调测试。</div>
+            <div class="av-chip" style="font-size:11px;color:#9aa0b8">负责人：王五（安全团队）</div>
           </div>
           <div style="display:flex;gap:6px;margin-top:10px">
             <el-button plain size="small" style="flex:1">查看工单</el-button>
@@ -81,7 +103,6 @@
             </div>
           </template>
           <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-            <div class="custom-button" @click="forceCloseOrder">强制关单</div>
             <div class="custom-button danger" @click="cancelOrder">取消订单</div>
           </div>
         </el-card>
@@ -93,6 +114,16 @@
 <script>
 export default {
   name: 'OrderDetail',
+  data() {
+    return {
+      reviewInfo: {
+        hasReviewed: true,
+        score: 4,
+        description: '平台功能完善，交付团队响应及时，设备接入联调顺利，整体使用体验良好。',
+        reviewTime: '2024-03-20 10:30'
+      }
+    };
+  },
   methods: {
     goBack() {
       this.$router.push('/workorder/order/list');
@@ -414,6 +445,50 @@ export default {
   border-color: #f56c6c;
   background-color: #fef0f0;
   color: #f56c6c;
+}
+
+/* 满意度评价 */
+.review-result {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0;
+}
+
+.review-score-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.review-label {
+  color: #606266;
+  font-size: 13px;
+  width: 90px;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.review-desc {
+  color: #303133;
+  font-size: 13px;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.review-desc.mono {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+}
+
+.review-placeholder {
+  padding: 20px 0;
+  text-align: center;
+}
+
+.review-placeholder-text {
+  color: #9aa0b8;
+  font-size: 13px;
 }
 
 

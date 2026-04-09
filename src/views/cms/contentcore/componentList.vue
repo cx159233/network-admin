@@ -774,8 +774,20 @@ export default {
       });
     },
     handleDetail(row) {
-      this.detailForm = { ...row };
-      this.detailDialogVisible = true;
+      this.$router.push({
+        path: '/cms/componentDetail',
+        query: {
+          name: row.name || '未设置',
+          serviceProviderName: row.serviceProviderName || '未设置',
+          deployServiceProviderView: row.deployServiceProviderView || '未设置',
+          coverView: row.coverView || '未设置',
+          description: row.description || '未设置',
+          contact1Name: row.contact1Name || '未设置',
+          contact1Phone: row.contact1Phone || '未设置',
+          platformRating: row.platformRating || 0,
+          usageRating: row.usageRating || 0
+        }
+      });
     },
     handleEdit(row) {
       if (row && row.componentId) {

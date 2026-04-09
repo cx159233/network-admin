@@ -1,3 +1,4 @@
+// GEMINI_MODIFIED
 /*
  * @Author: ranfenghua ranfenghua@cecinvestment.com
  * @Date: 2025-02-17 17:29:09
@@ -122,12 +123,28 @@ export const constantRoutes = [
             component: () => import('@/views/cms/contentcore/contentManage'),
             name: 'ContentManage',
             meta: { title: '内容管理' }
-          },
+          }
+        ]
+      },
+      {
+        path: 'service',
+        component: () => import('@/views/cms/contentcore/content'),
+        name: 'ServiceManagement',
+        alwaysShow: true,
+        meta: { title: '服务管理', icon: 'list' },
+        children: [
           {
             path: 'digitalApp',
             component: () => import('@/views/cms/contentcore/digitalAppList'),
             name: 'DigitalAppList',
             meta: { title: '数字应用管理', icon: 'app-log' }
+          },
+          {
+            path: 'digitalAppDetail',
+            component: () => import('@/views/cms/contentcore/digitalAppDetail'),
+            name: 'DigitalAppDetail',
+            hidden: true,
+            meta: { title: '应用详情', noCache: true, activeMenu: '/portal/service/digitalApp' }
           },
           {
             path: 'component',
@@ -136,10 +153,24 @@ export const constantRoutes = [
             meta: { title: '能力组件管理' }
           },
           {
+            path: 'componentDetail',
+            component: () => import('@/views/cms/contentcore/componentDetail'),
+            name: 'ComponentDetail',
+            hidden: true,
+            meta: { title: '组件详情', noCache: true, activeMenu: '/portal/service/component' }
+          },
+          {
             path: 'serviceCatalog',
             component: () => import('@/views/cms/contentcore/serviceCatalogList'),
             name: 'ServiceCatalogList',
             meta: { title: '服务目录', icon: 'list' }
+          },
+          {
+            path: 'serviceCatalogDetail',
+            component: () => import('@/views/cms/contentcore/serviceCatalogDetail'),
+            name: 'ServiceCatalogDetail',
+            hidden: true,
+            meta: { title: '服务详情', noCache: true, activeMenu: '/portal/service/serviceCatalog' }
           }
         ]
       },
@@ -155,6 +186,124 @@ export const constantRoutes = [
             component: () => import('@/views/cms/link/linkGroup'),
             name: 'FriendLinkManagement',
             meta: { title: '友链管理' }
+          }
+        ]
+      },
+      {
+        path: 'auditCenter',
+        component: () => import('@/views/workorder/layout'),
+        name: 'AuditCenter',
+        alwaysShow: true,
+        meta: { title: '审核管理' },
+        children: [
+          {
+            path: 'qualificationAudit',
+            component: () => import('@/views/workorder/orgAudit/qualificationAudit'),
+            name: 'QualificationAudit',
+            meta: { title: '机构入驻审核', noCache: true }
+          },
+          {
+            path: 'digitalAppAudit',
+            component: () => import('@/views/workorder/audit/digitalAppAudit'),
+            name: 'DigitalAppAudit',
+            meta: { title: '数字应用审核', noCache: true }
+          },
+          {
+            path: 'componentAudit',
+            component: () => import('@/views/workorder/audit/componentAudit'),
+            name: 'ComponentAudit',
+            meta: { title: '能力组件审核', noCache: true }
+          },
+          {
+            path: 'qualificationDetail',
+            component: () => import('@/views/workorder/orgAudit/qualificationDetail'),
+            name: 'QualificationDetail',
+            meta: { title: '机构入驻审核详情', noCache: true, activeMenu: '/portal/auditCenter/qualificationAudit' },
+            hidden: true
+          },
+          {
+            path: 'digitalAppAuditDetail',
+            component: () => import('@/views/workorder/audit/digitalAppAuditDetail'),
+            name: 'DigitalAppAuditDetail',
+            meta: { title: '数字应用审核详情', noCache: true, activeMenu: '/portal/auditCenter/digitalAppAudit' },
+            hidden: true
+          },
+          {
+            path: 'componentAuditDetail',
+            component: () => import('@/views/workorder/audit/componentAuditDetail'),
+            name: 'ComponentAuditDetail',
+            meta: { title: '能力组件审核详情', noCache: true, activeMenu: '/portal/auditCenter/componentAudit' },
+            hidden: true
+          },
+          {
+            path: 'cloudServiceAudit',
+            component: () => import('@/views/workorder/audit/cloudServiceAudit'),
+            name: 'CloudServiceAudit',
+            meta: { title: '云服务审核', noCache: true }
+          },
+          {
+            path: 'cloudServiceAuditDetail',
+            component: () => import('@/views/workorder/audit/cloudServiceAuditDetail'),
+            name: 'CloudServiceAuditDetail',
+            meta: { title: '云服务审核详情', noCache: true, activeMenu: '/portal/auditCenter/cloudServiceAudit' },
+            hidden: true
+          }
+        ]
+      },
+      {
+        path: 'order',
+        component: () => import('@/views/order/layout'),
+        redirect: '/portal/order/list',
+        name: 'PortalOrderCenter',
+        alwaysShow: true,
+        meta: { title: '订单管理' },
+        children: [
+          {
+            path: 'list',
+            component: () => import('@/views/order/list'),
+            name: 'PortalOrderList',
+            meta: { title: '所有订单' }
+          },
+          {
+            path: 'review',
+            component: () => import('@/views/order/review'),
+            name: 'PortalServiceReview',
+            meta: { title: '服务评价' }
+          },
+          {
+            path: 'myTodo',
+            component: () => import('@/views/order/myTodo'),
+            name: 'PortalOrderMyTodo',
+            hidden: true,
+            meta: { title: '我的待办' }
+          },
+          {
+            path: 'myProcessed',
+            component: () => import('@/views/order/myProcessed'),
+            name: 'PortalOrderMyProcessed',
+            hidden: true,
+            meta: { title: '我已处理' }
+          },
+          {
+            path: 'detail',
+            component: () => import('@/views/order/detail'),
+            name: 'PortalOrderDetail',
+            meta: { title: '订单详情', noCache: true, activeMenu: '/portal/order/list' },
+            hidden: true
+          },
+          {
+            path: 'myTodoDetail',
+            component: () => import('@/views/order/myTodoDetail'),
+            name: 'PortalOrderMyTodoDetail',
+            meta: { title: '订单详情', noCache: true, activeMenu: '/portal/order/myTodo' },
+            hidden: true
+          },
+          {
+            path: 'myProcessedDetail',
+            component: () => import('@/views/order/myProcessedDetail'),
+            name: 'PortalOrderMyProcessedDetail',
+            meta: { title: '订单详情', noCache: true, activeMenu: '/portal/order/myProcessed' },
+            hidden: true
           }
         ]
       }
@@ -183,6 +332,7 @@ export const constantRoutes = [
         path: 'myBills',
         component: () => import('@/views/workorder/layout'),
         name: 'MyBills',
+        hidden: true,
         meta: { title: '我的单据' },
         children: [
           {
@@ -239,41 +389,8 @@ export const constantRoutes = [
         path: 'processConfig',
         component: () => import('@/views/workorder/layout'),
         name: 'ProcessConfig',
+        hidden: true,
         meta: { title: '流程配置' }
-      },
-      {
-        path: 'auditCenter',
-        component: () => import('@/views/workorder/layout'),
-        name: 'AuditCenter',
-        meta: { title: '审核中心' },
-        children: [
-          {
-            path: 'qualificationAudit',
-            component: () => import('@/views/workorder/orgAudit/qualificationAudit'),
-            name: 'QualificationAudit',
-            meta: { title: '机构入驻审核', noCache: true }
-          },
-          {
-            path: 'digitalAppAudit',
-            component: () => import('@/views/workorder/audit/digitalAppAudit'),
-            name: 'DigitalAppAudit',
-            meta: { title: '数字应用审核', noCache: true }
-          },
-          {
-            path: 'qualificationDetail',
-            component: () => import('@/views/workorder/orgAudit/qualificationDetail'),
-            name: 'QualificationDetail',
-            meta: { title: '机构入驻审核详情', noCache: true, activeMenu: '/workorder/auditCenter/qualificationAudit' },
-            hidden: true
-          },
-          {
-            path: 'digitalAppAuditDetail',
-            component: () => import('@/views/workorder/audit/digitalAppAuditDetail'),
-            name: 'DigitalAppAuditDetail',
-            meta: { title: '数字应用审核详情', noCache: true, activeMenu: '/workorder/auditCenter/digitalAppAudit' },
-            hidden: true
-          }
-        ]
       },
       {
         path: 'myApps',
@@ -283,29 +400,40 @@ export const constantRoutes = [
       },
       {
         path: 'myAppsDetail',
-        component: () => import('@/views/order/myAppsDetail'),
-        name: 'MyAppsDetail',
-        meta: { title: '应用详情', noCache: true, activeMenu: '/workorder/myApps' },
-        hidden: true
+        component: () => import('@/views/order/layout'),
+        name: 'MyAppsDetailLayout',
+        redirect: 'noRedirect',
+        meta: { title: '应用详情' },
+        hidden: true,
+        children: [
+          {
+            path: '',
+            component: () => import('@/views/order/myAppsDetail'),
+            name: 'MyAppsDetail',
+            meta: { title: '应用详情', noCache: true, activeMenu: '/workorder/myApps' }
+          }
+        ]
       },
       {
         path: 'order',
         component: () => import('@/views/order/layout'),
-        redirect: '/workorder/order/myTodo',
+        redirect: '/workorder/order/myInitiated',
         name: 'OrderCenter',
         alwaysShow: true,
-        meta: { title: '订单中心', icon: 'list' },
+        meta: { title: '我的订单', icon: 'list' },
         children: [
           {
             path: 'myTodo',
             component: () => import('@/views/order/myTodo'),
             name: 'OrderMyTodo',
+            hidden: true,
             meta: { title: '我的待办' }
           },
           {
             path: 'myProcessed',
             component: () => import('@/views/order/myProcessed'),
             name: 'OrderMyProcessed',
+            hidden: true,
             meta: { title: '我已处理' }
           },
           {
@@ -359,7 +487,8 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/system',    component: Layout,
+    path: '/system',
+    component: Layout,
     meta: { title: '系统管理' },
     children: [
       {
@@ -367,6 +496,18 @@ export const constantRoutes = [
         component: () => import('@/views/system/index'),
         name: 'SystemIndex',
         meta: { title: '系统管理' }
+      },
+      {
+        path: 'operlog',
+        component: () => import('@/views/system/operlog'),
+        name: 'SystemOperLog',
+        meta: { noCache: true, title: '操作日志' }
+      },
+      {
+        path: 'accesslog',
+        component: () => import('@/views/system/accesslog'),
+        name: 'SystemAccessLog',
+        meta: { noCache: true, title: '访问日志' }
       }
     ]
   },
@@ -439,12 +580,7 @@ export const constantRoutes = [
         name: 'CMSDigitalAppList',
         meta: { noCache: true, title: '数字应用管理', activeMenu: '/cms/digitalAppList'}
       },
-      {
-        path: 'componentList',
-        component: () => import('@/views/cms/contentcore/componentList'),
-        name: 'CMSComponentList',
-        meta: { noCache: true, title: '能力组件管理', activeMenu: '/cms/componentList'}
-      }
+
     ]
   },
   {

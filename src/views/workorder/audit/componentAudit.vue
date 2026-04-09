@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <!-- 统计卡片 - 优化样式 -->
+    <!-- 统计卡片 -->
     <div class="stats-card mb12">
       <div class="stat-item stat-pending">
         <div class="stat-value">2</div>
@@ -12,7 +12,7 @@
       </div>
       <div class="stat-item stat-valid">
         <div class="stat-value">3</div>
-        <div class="stat-label">总应用数</div>
+        <div class="stat-label">总组件数</div>
       </div>
     </div>
 
@@ -25,26 +25,25 @@
           class="el-form-search"
           :inline="true"
         >
-          <el-form-item prop="appName">
+          <el-form-item prop="name">
             <el-input
-              v-model="filterForm.appName"
-              placeholder="应用名称、厂商"
+              v-model="filterForm.name"
+              placeholder="组件名称、服务商"
               clearable
               style="width: 150px"
               @keyup.enter.native="handleSearch"
             />
           </el-form-item>
-          <el-form-item prop="category">
+          <el-form-item prop="cover">
             <el-select
-              v-model="filterForm.category"
-              placeholder="应用分类"
+              v-model="filterForm.cover"
+              placeholder="开放范围"
               clearable
               style="width: 150px"
             >
-              <el-option label="办公软件" value="office" />
-              <el-option label="企业管理" value="enterprise" />
-              <el-option label="数据分析" value="data" />
-              <el-option label="其他" value="other" />
+              <el-option label="不限" value="all" />
+              <el-option label="市级" value="city" />
+              <el-option label="区（县）域" value="district" />
             </el-select>
           </el-form-item>
           <el-form-item prop="auditStatus">
@@ -74,19 +73,23 @@
       </el-col>
     </el-row>
 
-    <!-- 应用列表 -->
-    <el-table v-loading="loading" :data="appList" size="small" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
-      <el-table-column prop="appName" label="应用名称" min-width="220">
+    <!-- 组件列表 -->
+    <el-table v-loading="loading" :data="componentList" size="small" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
+      <el-table-column prop="name" label="组件名称" min-width="220">
         <template slot-scope="scope">
           <div>
-            <div class="org-name">{{ scope.row.appName }}</div>
-            <div class="org-code">{{ scope.row.version }}</div>
+            <div class="org-name">{{ scope.row.name }}</div>
+            <div class="org-code">{{ scope.row.componentId }}</div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="vendor" label="厂商" width="120" />
-      <el-table-column prop="category" label="分类" width="100" />
-      <el-table-column prop="cloudProvider" label="云服务商" width="120" />
+      <el-table-column prop="serviceProviderName" label="服务商" width="120">
+        <template slot-scope="scope">
+          <el-tag :type="getVendorTagType(scope.row.serviceProviderName)" size="mini" effect="plain">{{ scope.row.serviceProviderName }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="deployServiceProviderView" label="云服务商" width="120" />
+      <el-table-column prop="coverView" label="开放范围" width="120" />
       <el-table-column prop="submitTime" label="提交时间" width="160" />
       <el-table-column prop="auditStatus" label="状态" width="90">
         <template slot-scope="scope">
@@ -129,7 +132,7 @@
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
-      @pagination="loadAppList"
+      @pagination="loadComponentList"
     />
   </div>
 </template>
@@ -138,7 +141,7 @@
 import Pagination from '@/components/Pagination/index.vue';
 
 export default {
-  name: "DigitalAppAudit",
+  name: "ComponentAudit",
   components: {
     Pagination
   },
@@ -147,126 +150,101 @@ export default {
       loading: false,
       total: 0,
       filterForm: {
-        appName: '',
-        category: '',
+        name: '',
+        cover: '',
         auditStatus: ''
       },
       queryParams: {
         pageNum: 1,
         pageSize: 10
       },
-      appList: [
+      componentList: [
         {
           id: 1,
-          appName: '智能办公系统',
-          version: 'v1.0.0',
-          vendor: '腾讯科技',
-          category: '办公软件',
-          cloudProvider: '腾讯云',
-          submitTime: '2024-01-01 10:00:00',
+          name: '电子签章服务组件',
+          componentId: 'COMP-2024-001',
+          serviceProviderName: '华为技术',
+          deployServiceProviderView: '电信云',
+          coverView: '不限',
+          submitTime: '2024-03-10 09:30:00',
           auditStatus: 10
         },
         {
           id: 2,
-          appName: '企业管理系统',
-          version: 'v2.0.0',
-          vendor: '阿里巴巴',
-          category: '企业管理',
-          cloudProvider: '阿里云',
-          submitTime: '2024-01-02 11:00:00',
+          name: '身份认证组件',
+          componentId: 'COMP-2024-002',
+          serviceProviderName: '阿里云计算',
+          deployServiceProviderView: '移动云',
+          coverView: '市级',
+          submitTime: '2024-03-11 14:20:00',
           auditStatus: 10
         },
         {
           id: 3,
-          appName: '数据分析平台',
-          version: 'v3.0.0',
-          vendor: '百度',
-          category: '数据分析',
-          cloudProvider: '百度云',
-          submitTime: '2024-01-03 12:00:00',
+          name: '消息推送组件',
+          componentId: 'COMP-2024-003',
+          serviceProviderName: '腾讯科技',
+          deployServiceProviderView: '联通云',
+          coverView: '区（县）域',
+          submitTime: '2024-03-05 10:00:00',
           auditStatus: 20
-        },
-        {
-          id: 4,
-          appName: '电子病历管理系统',
-          version: 'v1.2.0',
-          vendor: '华为技术',
-          category: '医疗信息化',
-          cloudProvider: '联通云',
-          submitTime: '2024-02-15 09:30:00',
-          auditStatus: 30
         }
       ]
     };
   },
   created() {
-    this.loadAppList();
+    this.loadComponentList();
   },
   methods: {
-    loadAppList() {
+    loadComponentList() {
       this.loading = true;
-      // 模拟API请求
       setTimeout(() => {
-        this.total = this.appList.length;
+        this.total = this.componentList.length;
         this.loading = false;
       }, 500);
     },
     getVendorTagType(vendor) {
-      // 根据厂商返回不同的标签类型
       const vendors = {
-        '腾讯科技': 'primary',
-        '阿里巴巴': 'success',
-        '百度': 'warning'
+        '华为技术': 'primary',
+        '阿里云计算': 'success',
+        '腾讯科技': 'warning'
       };
       return vendors[vendor] || 'info';
     },
     getStatusTagType(status) {
       switch (status) {
-        case 10:
-          return 'warning';
-        case 20:
-          return 'success';
-        case 30:
-          return 'danger';
-        default:
-          return '';
+        case 10: return 'warning';
+        case 20: return 'success';
+        case 30: return 'danger';
+        default: return '';
       }
     },
-    startAudit(app) {
-      // 开始审核
+    startAudit(comp) {
       this.$router.push({
-        path: '/portal/auditCenter/digitalAppAuditDetail',
-        query: { id: app.id }
+        path: '/portal/auditCenter/componentAuditDetail',
+        query: { id: comp.id }
       });
     },
-    viewDetails(app) {
-      // 查看详情
+    viewDetails(comp) {
       this.$router.push({
-        path: '/portal/auditCenter/digitalAppAuditDetail',
-        query: { id: app.id }
+        path: '/portal/auditCenter/componentAuditDetail',
+        query: { id: comp.id }
       });
     },
     handleSearch() {
-      // 执行搜索
       this.queryParams.pageNum = 1;
-      this.loadAppList();
+      this.loadComponentList();
     },
     resetFilter() {
-      // 重置筛选条件
-      this.filterForm = {
-        appName: '',
-        category: '',
-        auditStatus: ''
-      };
+      this.filterForm = { name: '', cover: '', auditStatus: '' };
       this.queryParams.pageNum = 1;
-      this.loadAppList();
+      this.loadComponentList();
     }
   }
 };
 </script>
 
 <style scoped>
-/* 统计卡片样式优化 */
 .stats-card {
   display: flex;
   gap: 16px;
@@ -299,11 +277,6 @@ export default {
   background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
 }
 
-.stat-processing {
-  border-top-color: #1890ff;
-  background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
-}
-
 .stat-approved {
   border-top-color: #52c41a;
   background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
@@ -320,21 +293,9 @@ export default {
   margin-bottom: 8px;
 }
 
-.stat-pending .stat-value {
-  color: #faad14;
-}
-
-.stat-processing .stat-value {
-  color: #1890ff;
-}
-
-.stat-approved .stat-value {
-  color: #52c41a;
-}
-
-.stat-valid .stat-value {
-  color: #722ed1;
-}
+.stat-pending .stat-value { color: #faad14; }
+.stat-approved .stat-value { color: #52c41a; }
+.stat-valid .stat-value { color: #722ed1; }
 
 .stat-label {
   font-size: 13px;
@@ -342,25 +303,10 @@ export default {
   font-weight: 500;
 }
 
-/* 筛选区域样式优化 */
-.filter-section {
-  background: #fff;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  border-radius: 4px;
-  border: 1px solid #e8e8e8;
+.mb12 {
+  margin-bottom: 12px;
 }
 
-.filter-form {
-  margin-bottom: 0;
-}
-
-.compact-form-item {
-  margin-bottom: 0 !important;
-  margin-right: 12px !important;
-}
-
-/* El-form 搜索样式 */
 :deep(.el-form-search) {
   margin-bottom: 0;
   width: 100%;
@@ -371,7 +317,6 @@ export default {
   padding: 0;
 }
 
-/* 确保按钮组右对齐 */
 :deep(.el-form-search .el-form-item:last-child) {
   margin-right: 0;
 }
@@ -379,11 +324,6 @@ export default {
 :deep(.el-form-search .el-form-item) {
   margin-bottom: 0;
   margin-right: 0;
-}
-
-/* 表格样式优化 */
-.table-card {
-  border: 1px solid #e8e8e8;
 }
 
 .org-name {
@@ -396,10 +336,5 @@ export default {
   font-size: 12px;
   color: #8c8c8c;
   margin-top: 4px;
-}
-
-.pagination-container {
-  margin-top: 16px;
-  text-align: right;
 }
 </style>

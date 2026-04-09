@@ -233,14 +233,14 @@
           {{ scope.row.cloudProvider || '未设置' }}
         </template>
       </el-table-column>
-      <el-table-column label="平台评价" width="100">
+      <el-table-column label="用户评价" width="100">
         <template slot-scope="scope">
-          <span @click="openRatingDialog(scope.row)" class="rating-star">{{ scope.row.platformRating || 0 }}</span>
+          <span @click="handleDetail(scope.row)" class="rating-star">{{ scope.row.usageRating || 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="使用评价" width="100">
+      <el-table-column label="用户评价" width="100">
         <template slot-scope="scope">
-          <span @click="openRatingDialog(scope.row)" class="rating-star">{{ scope.row.usageRating || 0 }}</span>
+          <span @click="handleDetail(scope.row)" class="rating-star">{{ scope.row.usageRating || 0 }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -643,70 +643,24 @@
       @close="handleCatalogSelectorClose"
     ></cms-catalog-selector>
 
-    <!-- 评分弹窗 -->
+    <!-- 平台评价弹窗 -->
     <el-dialog
-      title="应用评价"
-      width="800px"
+      title="平台评价"
+      width="500px"
       :visible.sync="ratingDialogVisible"
       :close-on-click-modal="false"
       append-to-body
     >
-      <el-tabs v-model="activeTab">
-        <el-tab-pane label="平台评价">
-          <el-form ref="ratingForm" :model="ratingForm" label-width="80px">
-            <el-form-item label="评分">
-              <el-rate v-model="ratingForm.score" :max="5" show-score />
-            </el-form-item>
-            <el-form-item label="评价描述">
-              <el-input v-model="ratingForm.description" type="textarea" rows="4" placeholder="请输入评价描述" />
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-        <el-tab-pane label="使用评价列表">
-          <el-table :data="usageRatings" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
-            <el-table-column label="评分" width="80">
-              <template slot-scope="scope">
-                <div class="stars">
-                  <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= scope.row.score }">★</span>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column label="服务 / 订单号" min-width="200">
-              <template slot-scope="scope">
-                <div>
-                  <div class="review-service">{{ scope.row.serviceName || scope.row.title }}</div>
-                  <div class="review-order">{{ scope.row.orderNo || '无订单号' }}</div>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column label="评价机构" min-width="200">
-              <template slot-scope="scope">
-                <div>
-                  <div class="review-org">{{ scope.row.orgName || '未知机构' }}</div>
-                  <div class="review-user">{{ scope.row.user || '未知用户' }}</div>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column label="评价内容" min-width="250">
-              <template slot-scope="scope">
-                <div class="review-content">{{ scope.row.description || '无评价内容' }}</div>
-              </template>
-            </el-table-column>
-            <el-table-column label="状态" width="90">
-              <template slot-scope="scope">
-                <el-tag :type="scope.row.status === '已回复' ? 'success' : 'warning'" size="mini">{{ scope.row.status || '待回复' }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="评价时间" width="130">
-              <template slot-scope="scope">
-                {{ scope.row.createTime || '未知时间' }}
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-      </el-tabs>
+      <el-form ref="ratingForm" :model="ratingForm" label-width="80px">
+        <el-form-item label="评分">
+          <el-rate v-model="ratingForm.score" :max="5" show-score />
+        </el-form-item>
+        <el-form-item label="评价描述">
+          <el-input v-model="ratingForm.description" type="textarea" rows="4" placeholder="请输入评价描述" />
+        </el-form-item>
+      </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button v-if="activeTab === '0'" type="primary" @click="handleRatingSubmit">提交</el-button>
+        <el-button type="primary" @click="handleRatingSubmit">提交</el-button>
         <el-button @click="ratingDialogVisible = false">关闭</el-button>
       </div>
     </el-dialog>
@@ -882,12 +836,10 @@ export default {
       statusColumn: [],
       // 评分弹窗
       ratingDialogVisible: false,
-      activeTab: '0', // 0: 平台评价, 1: 使用评价列表
       ratingForm: {
         score: 0,
         description: ''
       },
-      usageRatings: [],
       currentApp: null,
     };
   },
@@ -1016,31 +968,23 @@ export default {
       });
     },
     handleDetail(row) {
-      console.log('handleDetail called:', row);
-      // 模拟数据填充
-      this.detailForm = {
-        title: row.title || '卫宁健康区域医疗卫生信息应用服务',
-        logo: row.logo || '',
-        description: row.description || '卫宁健康区域医疗卫生信息系统是基于云计算研发，集中式云部署，为中小规模医疗机构提供标准化、集约化、一体化、可共享的云端医疗信息管理系统，能够实现区域内医疗卫生信息资源的集中统管、统一调配、按需服务。主要提供门诊管理、住院管理、电子病历、药品管理、物资设备管理、院长查询、任务中心、居民健康档案管理、健康教育管理、预防接种管理、0～6 岁儿童健康管理、孕产妇健康管理、老年人健康管理、高血压患者健康管理、2 型糖尿病患者健康管理、严重精神障碍患者管理、肺结核患者健康管理、中医药健康管理、传染病及突发公共卫生事件报告和处理、卫生计生监督协管、统计分析、家医首页、居民管理、履约计划、家医管理、签约记录、服务记录、统计管理、移动家医、居民掌上健康等功能。',
-        systemUrl: row.systemUrl || 'http://10.227.10.14:10000/basic-frame/#/',
-        sortOrder: row.sortOrder || 1,
-        serviceProvider: row.serviceProvider || '重庆卫宁健康科技有限公司',
-        cooperativeEnterprise: row.cooperativeEnterprise || '--',
-        contact1Name: row.contact1Name || '陈宇鹏',
-        contact1Phone: row.contact1Phone || '18523554131',
-        contact2Name: row.contact2Name || '--',
-        contact2Phone: row.contact2Phone || '--',
-        targetObject: row.targetObject || ['基层医疗卫生机构', '公立医院'],
-        appArchitecture: row.appArchitecture || [],
-        cloudProvider: row.cloudProvider || ['电信云'],
-        appScope: row.appScope || '基本公共卫生服务;医院信息系统（HIS）;家庭医生签约;医院信息系统（HIS）'
-      };
-      console.log('detailForm set:', this.detailForm);
-      // 使用setTimeout确保异步更新
-      setTimeout(() => {
-        this.detailDialogVisible = true;
-        console.log('detailDialogVisible set to:', this.detailDialogVisible);
-      }, 0);
+      this.$router.push({
+        path: '/cms/digitalAppDetail',
+        query: {
+          title: row.title || '未设置',
+          serviceProvider: row.serviceProvider || '未设置',
+          systemUrl: row.systemUrl || '未设置',
+          description: row.description || '未设置',
+          cooperativeEnterprise: row.cooperativeEnterprise || '未设置',
+          contact1Name: row.contact1Name || '未设置',
+          contact1Phone: row.contact1Phone || '未设置',
+          targetObjectStr: Array.isArray(row.targetObject) ? row.targetObject.join('、') : (row.targetObject || '未设置'),
+          appScope: Array.isArray(row.cover) ? row.cover.map(item => item.value || item).join('、') : (row.appScope || row.coverView || '未设置'),
+          cloudProviderStr: Array.isArray(row.cloudProvider) ? row.cloudProvider.join('、') : (row.cloudProviderStr || row.cloudProvider || '未设置'),
+          platformRating: row.platformRating || 0,
+          usageRating: row.usageRating || 0
+        }
+      });
     },
     handleTestDetail() {
       console.log('handleTestDetail called');
@@ -1268,14 +1212,8 @@ export default {
     },
     openRatingDialog(row) {
       this.currentApp = row;
-      this.activeTab = '0'; // 默认显示平台评价
       this.ratingForm.score = row.platformRating || 0;
       this.ratingForm.description = '';
-      // 模拟使用评价数据
-      this.usageRatings = [
-        { user: '用户1', score: 5, description: '非常好用', createTime: '2024-01-01 10:00:00' },
-        { user: '用户2', score: 4, description: '还不错', createTime: '2024-01-02 11:00:00' }
-      ];
       this.ratingDialogVisible = true;
     },
     handleRatingSubmit() {

@@ -91,10 +91,15 @@ export default {
       // 搜索逻辑已在computed中处理
     },
     handleServiceClick(service) {
-      this.$router.replace({
-        path: '/workorder/form',
-        query: { serviceId: service.id, serviceName: service.name }
+      const loading = this.$loading({
+        lock: true,
+        text: '正在跳转至多云管理系统...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.5)'
       });
+      setTimeout(() => {
+        loading.close();
+      }, 2000);
     }
   }
 };

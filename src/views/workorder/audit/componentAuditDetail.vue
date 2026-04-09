@@ -6,7 +6,7 @@
         <i class="el-icon-arrow-left"></i> 返回列表
       </el-button>
       <span class="header-divider"></span>
-      <span class="header-title">资质审核 · {{ orgInfo.orgName }}</span>
+      <span class="header-title">能力组件审核 · {{ compInfo.name }}</span>
     </div>
 
     <!-- 工单详情内容 -->
@@ -14,29 +14,29 @@
       <div class="detail-main">
         <!-- 左侧主内容 -->
         <div class="dl-main">
-          <!-- 机构基本信息 -->
+          <!-- 组件基本信息 -->
           <div class="card">
             <div class="card-hd">
-              <span class="cht">机构基本信息</span>
+              <span class="cht">组件基本信息</span>
               <span class="sb pending" style="margin-left: auto">待审核</span>
             </div>
             <div class="qual-hero">
-              <div class="qual-av">{{ orgInfo.shortName }}</div>
+              <div class="qual-av">{{ compInfo.name.charAt(0) }}</div>
               <div style="flex: 1">
-                <div class="org-title">{{ orgInfo.orgName }}</div>
+                <div class="org-title">{{ compInfo.name }}</div>
                 <div class="org-meta">
-                  <span class="org-code">{{ orgInfo.orgCode }}</span>
-                  <span class="org-type">{{ orgInfo.orgType }}</span>
+                  <span class="org-code">{{ compInfo.componentId }}</span>
                 </div>
               </div>
             </div>
             <div class="ip" style="border-top: 1px solid #e3e7ef">
-              <div class="ip-i"><div class="ip-lbl">法定代表人</div><div class="ip-val">{{ orgInfo.legalRepresentative }}</div></div>
-              <div class="ip-i"><div class="ip-lbl">联系电话</div><div class="ip-val mono">{{ orgInfo.contactPhone }}</div></div>
-              <div class="ip-i"><div class="ip-lbl">成立日期</div><div class="ip-val mono">{{ orgInfo.establishDate }}</div></div>
-              <div class="ip-i"><div class="ip-lbl">联系邮箱</div><div class="ip-val mono">{{ orgInfo.email }}</div></div>
-              <div class="ip-i full"><div class="ip-lbl">注册地址</div><div class="ip-val muted">{{ orgInfo.registeredAddress }}</div></div>
-              <div class="ip-i full"><div class="ip-lbl">申请用途说明</div><div class="ip-val muted">{{ orgInfo.description }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">服务商名称</div><div class="ip-val">{{ compInfo.serviceProviderName }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">云服务商</div><div class="ip-val">{{ compInfo.deployServiceProviderView }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">开放范围</div><div class="ip-val">{{ compInfo.coverView }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">提交时间</div><div class="ip-val mono">{{ compInfo.submitTime }}</div></div>
+              <div class="ip-i full"><div class="ip-lbl">组件描述</div><div class="ip-val muted">{{ compInfo.description }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">联系人</div><div class="ip-val">{{ compInfo.contact1Name }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">联系电话</div><div class="ip-val mono">{{ compInfo.contact1Phone }}</div></div>
             </div>
           </div>
 
@@ -44,37 +44,18 @@
           <div class="card">
             <div class="card-hd">
               <span class="cht">提交材料核验</span>
-              <span class="chs">{{ orgInfo.materials.length }} 份 · 点击查看原件</span>
+              <span class="chs">{{ compInfo.materials.length }} 份 · 点击查看原件</span>
             </div>
             <div class="doc-list">
               <div
-                v-for="(material, index) in orgInfo.materials"
+                v-for="(material, index) in compInfo.materials"
                 :key="index"
                 class="doc-item"
               >
-                <div class="doc-ico" :style="{ background: material.bgColor }">📄</div>
+                <div class="doc-ico" :style="{ background: material.bgColor }">{{ material.icon }}</div>
                 <div class="doc-name">{{ material.name }}</div>
                 <div class="doc-size">{{ material.size }}</div>
                 <div :class="['doc-status', material.statusClass]">{{ material.statusIcon }}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 处理进度 -->
-          <div class="card">
-            <div class="card-hd"><span class="cht">处理进度</span></div>
-            <div class="card-bd" style="padding: 14px">
-              <div class="tl">
-                <div v-for="(step, index) in orgInfo.processSteps" :key="index" class="tl-row">
-                  <div class="tl-sp">
-                    <div class="tl-d" :class="step.statusClass"></div>
-                    <div class="tl-vl" v-if="index < orgInfo.processSteps.length - 1"></div>
-                  </div>
-                  <div class="tl-b">
-                    <div class="tl-t" :class="step.statusClass">{{ step.title }}</div>
-                    <div class="tl-m">{{ step.time }} · {{ step.handler }}</div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -93,7 +74,7 @@
                 placeholder="填写审核意见（通过/驳回时必填）..."
               ></textarea>
               <button class="btn btn-success" style="width: 100%; justify-content: center" @click="approve">
-                ✓ 审核通过 · 激活账号
+                ✓ 审核通过
               </button>
               <button class="btn btn-danger" style="width: 100%; justify-content: center" @click="reject">
                 ✕ 驳回申请
@@ -104,6 +85,25 @@
             </div>
           </div>
 
+          <!-- 处理进度 -->
+          <div class="card">
+            <div class="card-hd"><span class="cht">处理进度</span></div>
+            <div class="card-bd" style="padding: 14px">
+              <div class="tl">
+                <div v-for="(step, index) in compInfo.processSteps" :key="index" class="tl-row">
+                  <div class="tl-sp">
+                    <div class="tl-d" :class="step.statusClass"></div>
+                    <div class="tl-vl" v-if="index < compInfo.processSteps.length - 1"></div>
+                  </div>
+                  <div class="tl-b">
+                    <div class="tl-t" :class="step.statusClass">{{ step.title }}</div>
+                    <div class="tl-m">{{ step.time }} · {{ step.handler }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- 审核说明 -->
           <div class="card">
             <div class="card-hd"><span class="cht">审核说明</span></div>
@@ -111,11 +111,11 @@
               <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px">
                 <div style="display: flex; gap: 6px; align-items: flex-start; color: #5c6480">
                   <span style="color: #3b5bdb; flex-shrink: 0; margin-top: 1px">①</span>
-                  审核通过后系统自动激活机构账号并发送通知邮件
+                  审核通过后系统自动激活组件并发布到能力组件市场
                 </div>
                 <div style="display: flex; gap: 6px; align-items: flex-start; color: #5c6480">
                   <span style="color: #3b5bdb; flex-shrink: 0; margin-top: 1px">②</span>
-                  驳回需填写明确原因，机构可在修改材料后重新提交
+                  驳回需填写明确原因，服务商可在修改材料后重新提交
                 </div>
                 <div style="display: flex; gap: 6px; align-items: flex-start; color: #5c6480">
                   <span style="color: #3b5bdb; flex-shrink: 0; margin-top: 1px">③</span>
@@ -132,79 +132,29 @@
 
 <script>
 export default {
-  name: 'QualificationDetail',
+  name: "ComponentAuditDetail",
   data() {
     return {
-      orgInfo: {
+      compInfo: {
         id: 1,
-        orgName: '北京市海淀区数字经济发展局',
-        orgCode: '91110108MA012ABC3X',
-        shortName: '数',
-        orgType: '政府机关',
-        legalRepresentative: '张建国',
-        establishDate: '2018-04-12',
-        registeredAddress: '北京市海淀区中关村南大街1号数字经济大厦',
-        contactPhone: '010-8888-xxxx',
-        email: 'admin@haidian.gov.cn',
-        description: '本机构需接入云服务门户以开展智慧政务系统建设，涉及云主机、对象存储及安全评估等服务，拟使用期限3年。',
+        name: '电子签章服务组件',
+        componentId: 'COMP-2024-001',
+        serviceProviderName: '华为技术',
+        deployServiceProviderView: '电信云',
+        coverView: '不限',
+        submitTime: '2024-03-10 09:30',
+        description: '电子签章服务组件提供数字签名、电子印章、合同签署等能力，支持PDF、OFD等格式，符合国家电子签名法要求。',
+        contact1Name: '张经理',
+        contact1Phone: '13800138000',
         materials: [
-          {
-            name: '机构设立批文.pdf',
-            size: '2.4 MB',
-            bgColor: '#fff1f0',
-            statusClass: 'ok',
-            statusIcon: '✓'
-          },
-          {
-            name: '法定代表人身份证（正反面）.pdf',
-            size: '1.8 MB',
-            bgColor: '#fff1f0',
-            statusClass: 'ok',
-            statusIcon: '✓'
-          },
-          {
-            name: '机构公章扫描件.png',
-            size: '890 KB',
-            bgColor: '#f0f9ff',
-            statusClass: 'ing',
-            statusIcon: '⟳'
-          },
-          {
-            name: '授权委托书（加盖公章）.pdf',
-            size: '1.1 MB',
-            bgColor: '#fff1f0',
-            statusClass: 'wait',
-            statusIcon: '—'
-          },
-          {
-            name: '网络安全承诺书.pdf',
-            size: '560 KB',
-            bgColor: '#fff1f0',
-            statusClass: 'wait',
-            statusIcon: '—'
-          }
+          { name: '组件功能说明.pdf', size: '1.8 MB', bgColor: '#fff1f0', statusClass: 'ok', statusIcon: '✓', icon: '📄' },
+          { name: '安全评估报告.pdf', size: '2.1 MB', bgColor: '#f0f9ff', statusClass: 'ok', statusIcon: '✓', icon: '📄' },
+          { name: '厂商资质证明.pdf', size: '960 KB', bgColor: '#fff1f0', statusClass: 'wait', statusIcon: '—', icon: '📄' }
         ],
         processSteps: [
-          {
-            title: '提交申请',
-            time: '2024-03-15 09:12 · 机构管理员',
-            statusClass: 'done'
-          },
-          {
-            title: '材料预审',
-            time: '2024-03-15 09:30 · 系统自动校验通过',
-            statusClass: 'done'
-          },
-          {
-            title: '人工审核',
-            time: '进行中 · 等待 2h 18m',
-            statusClass: 'on'
-          },
-          {
-            title: '账号激活 / 驳回通知',
-            time: '等待审核结果',
-            statusClass: 'wait'
-          }
+          { title: '提交申请', time: '2024-03-10 09:30', handler: '华为技术', statusClass: 'done' },
+          { title: '人工审核', time: '进行中', handler: '等待审核', statusClass: 'on' },
+          { title: '审核结果通知', time: '等待审核结果', handler: '', statusClass: 'wait' }
         ]
       },
       auditForm: {
@@ -213,52 +163,48 @@ export default {
     };
   },
   created() {
-    const orgId = this.$route.query.orgId;
-    if (orgId) {
-      this.loadOrgDetail(orgId);
+    const compId = this.$route.query.id;
+    if (compId) {
+      this.loadCompDetail(compId);
     }
   },
   methods: {
-    loadOrgDetail(orgId) {
-      // API请求获取机构详情
+    loadCompDetail(compId) {
+      // API请求获取组件详情
     },
     goBack() {
-      this.$router.push('/portal/auditCenter/qualificationAudit');
+      this.$router.push('/portal/auditCenter/componentAudit');
     },
     approve() {
       if (!this.auditForm.opinion.trim()) {
-        this.$modal.msgError('请填写审核意见');
+        this.$message.error('请填写审核意见');
         return;
       }
-      this.$modal.confirm({
-        title: '确认通过',
-        content: '确定要通过该机构的资质审核并激活账号吗？',
-        success: (action) => {
-          if (action === 'confirm') {
-            this.$modal.msgSuccess('审核通过，账号已激活');
-            this.goBack();
-          }
-        }
-      });
+      this.$confirm('确定要通过该组件的审核吗？', '确认通过', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        this.$message.success('审核通过，组件已激活');
+        this.goBack();
+      }).catch(() => {});
     },
     reject() {
       if (!this.auditForm.opinion.trim()) {
-        this.$modal.msgError('请填写驳回原因');
+        this.$message.error('请填写驳回原因');
         return;
       }
-      this.$modal.confirm({
-        title: '确认驳回',
-        content: '确定要驳回该机构的资质审核吗？',
-        success: (action) => {
-          if (action === 'confirm') {
-            this.$modal.msgSuccess('审核已驳回');
-            this.goBack();
-          }
-        }
-      });
+      this.$confirm('确定要拒绝该组件的审核吗？', '确认拒绝', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        this.$message.success('审核已拒绝');
+        this.goBack();
+      }).catch(() => {});
     },
     sendNotice() {
-      this.$modal.msgSuccess('补充材料通知已发送');
+      this.$message.success('补充材料通知已发送');
     }
   }
 };
@@ -387,7 +333,6 @@ export default {
   color: #8c8c8c;
 }
 
-/* 机构信息卡 */
 .qual-hero {
   display: flex;
   align-items: center;
@@ -429,17 +374,6 @@ export default {
   font-family: 'DM Mono', monospace;
 }
 
-.org-type {
-  display: inline-block;
-  background: #e3f2fd;
-  color: #1565c0;
-  padding: 1px 7px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-/* 信息对网格 */
 .ip {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -493,7 +427,6 @@ export default {
   font-weight: 400;
 }
 
-/* 文档列表 */
 .doc-list {
   display: flex;
   flex-direction: column;
@@ -557,25 +490,12 @@ export default {
   border: 1px solid #b2f2bb;
 }
 
-.doc-status.ng {
-  background: #fff5f5;
-  color: #c92a2a;
-  border: 1px solid #ffc9c9;
-}
-
 .doc-status.wait {
   background: #f7f8fa;
   color: #9aa0b8;
   border: 1px solid #c8cdd9;
 }
 
-.doc-status.ing {
-  background: #eef2ff;
-  color: #3b5bdb;
-  border: 1px solid #c5d0fa;
-}
-
-/* 按钮样式 */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -622,7 +542,6 @@ export default {
   color: #1c2033;
 }
 
-/* 状态标签 */
 .sb {
   display: inline-flex;
   align-items: center;
@@ -660,7 +579,6 @@ export default {
   background: #2f9e44;
 }
 
-/* 时间线 */
 .tl {
   display: flex;
   flex-direction: column;
@@ -688,18 +606,10 @@ export default {
   flex-shrink: 0;
 }
 
-.tl-d.done {
-  background: #2f9e44;
-}
-
-.tl-d.on {
-  background: #3b5bdb;
-  box-shadow: 0 0 0 3px #c5d0fa;
-}
-
-.tl-d.wait {
-  background: #c8cdd9;
-}
+.tl-d.done { background: #2f9e44; }
+.tl-d.on { background: #3b5bdb; box-shadow: 0 0 0 3px #c5d0fa; }
+.tl-d.wait { background: #c8cdd9; }
+.tl-d.red { background: #c92a2a; }
 
 .tl-vl {
   flex: 1;
@@ -724,17 +634,10 @@ export default {
   margin-bottom: 2px;
 }
 
-.tl-t.done {
-  color: #5c6480;
-}
-
-.tl-t.on {
-  color: #1c2033;
-}
-
-.tl-t.wait {
-  color: #9aa0b8;
-}
+.tl-t.done { color: #5c6480; }
+.tl-t.on { color: #1c2033; }
+.tl-t.wait { color: #9aa0b8; }
+.tl-t.red { color: #c92a2a; }
 
 .tl-m {
   font-size: 11px;
@@ -742,7 +645,6 @@ export default {
   font-family: 'DM Mono', monospace;
 }
 
-/* 文本框样式 */
 .rf-textarea {
   width: 100%;
   background: #fff;

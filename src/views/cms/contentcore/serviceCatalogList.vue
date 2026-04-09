@@ -284,11 +284,15 @@
         </el-form-item>
         <el-form-item label="服务类型" prop="serviceType" required>
           <el-select v-model="addForm.serviceType" placeholder="请选择服务类型" style="width: 300px">
-            <el-option label="云服务器" value="ecs" />
-            <el-option label="云存储" value="storage" />
-            <el-option label="数据库" value="database" />
-            <el-option label="网络" value="network" />
-            <el-option label="安全" value="security" />
+            <el-option label="计算服务" value="compute" />
+            <el-option label="存储服务" value="storage" />
+            <el-option label="网络服务" value="network" />
+            <el-option label="安全服务" value="security" />
+            <el-option label="大数据服务" value="bigdata" />
+            <el-option label="数据库服务" value="database" />
+            <el-option label="备份容灾服务" value="backup" />
+            <el-option label="软件与应用服务" value="software" />
+            <el-option label="机房托管服务" value="hosting" />
           </el-select>
         </el-form-item>
         <el-form-item label="云服务商" prop="cloudProvider" required>
@@ -400,11 +404,15 @@
         </el-form-item>
         <el-form-item label="服务类型" prop="serviceType" required>
           <el-select v-model="editForm.serviceType" placeholder="请选择服务类型" style="width: 300px">
-            <el-option label="云服务器" value="ecs" />
-            <el-option label="云存储" value="storage" />
-            <el-option label="数据库" value="database" />
-            <el-option label="网络" value="network" />
-            <el-option label="安全" value="security" />
+            <el-option label="计算服务" value="compute" />
+            <el-option label="存储服务" value="storage" />
+            <el-option label="网络服务" value="network" />
+            <el-option label="安全服务" value="security" />
+            <el-option label="大数据服务" value="bigdata" />
+            <el-option label="数据库服务" value="database" />
+            <el-option label="备份容灾服务" value="backup" />
+            <el-option label="软件与应用服务" value="software" />
+            <el-option label="机房托管服务" value="hosting" />
           </el-select>
         </el-form-item>
         <el-form-item label="云服务商" prop="cloudProvider" required>
@@ -597,8 +605,10 @@ export default {
       });
     },
     handleDetail(row) {
-      this.detailForm = { ...row };
-      this.detailDialogVisible = true;
+      this.$router.push({
+        path: '/portal/service/serviceCatalogDetail',
+        query: row
+      });
     },
     handleEdit(row) {
       if (row && row.serviceId) {

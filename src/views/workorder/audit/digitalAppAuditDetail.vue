@@ -18,7 +18,7 @@
           <div class="card">
             <div class="card-hd">
               <span class="cht">应用基本信息</span>
-              <span class="sb pending" style="margin-left: auto">{{ appInfo.auditStatus === 10 ? '待审核' : appInfo.auditStatus === 20 ? '已通过' : '已拒绝' }}</span>
+              <span class="sb pending" style="margin-left: auto">待审核</span>
             </div>
             <div class="qual-hero">
               <div class="qual-av">{{ appInfo.appName.charAt(0) }}</div>
@@ -26,17 +26,18 @@
                 <div class="org-title">{{ appInfo.appName }}</div>
                 <div class="org-meta">
                   <span class="org-code">{{ appInfo.version }}</span>
-                  <span class="org-type">{{ appInfo.category }}</span>
                 </div>
               </div>
             </div>
             <div class="ip" style="border-top: 1px solid #e3e7ef">
-              <div class="ip-i"><div class="ip-lbl">厂商</div><div class="ip-val">{{ appInfo.vendor }}</div></div>
-              <div class="ip-i"><div class="ip-lbl">云服务商</div><div class="ip-val">{{ appInfo.cloudProvider }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">服务商名称</div><div class="ip-val">{{ appInfo.vendor }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">系统地址</div><div class="ip-val mono">{{ appInfo.systemUrl }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">合作伙伴</div><div class="ip-val">{{ appInfo.cooperativeEnterprise }}</div></div>
               <div class="ip-i"><div class="ip-lbl">提交时间</div><div class="ip-val mono">{{ appInfo.submitTime }}</div></div>
-              <div class="ip-i"><div class="ip-lbl">审核状态</div><div class="ip-val">{{ appInfo.auditStatus === 10 ? '待审核' : appInfo.auditStatus === 20 ? '已通过' : '已拒绝' }}</div></div>
               <div class="ip-i full"><div class="ip-lbl">应用描述</div><div class="ip-val muted">{{ appInfo.description }}</div></div>
-              <div class="ip-i full"><div class="ip-lbl">审核意见</div><div class="ip-val muted">{{ appInfo.auditOpinion || '未审核' }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">面向对象</div><div class="ip-val">{{ appInfo.targetObject }}</div></div>
+              <div class="ip-i"><div class="ip-lbl">应用架构</div><div class="ip-val">{{ appInfo.appArchitecture }}</div></div>
+              <div class="ip-i full"><div class="ip-lbl">部署云服务商</div><div class="ip-val">{{ appInfo.cloudProvider }}</div></div>
             </div>
           </div>
 
@@ -56,30 +57,6 @@
                 <div class="doc-name">{{ material.name }}</div>
                 <div class="doc-size">{{ material.size }}</div>
                 <div :class="['doc-status', material.statusClass]">{{ material.statusIcon }}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 审核核验清单 -->
-          <div class="card">
-            <div class="card-hd">
-              <span class="cht">审核核验清单</span>
-              <span class="chs">已完成 {{ completedCount }} / 5 项</span>
-            </div>
-            <div class="chk-list">
-              <div
-                v-for="(item, index) in appInfo.checklist"
-                :key="index"
-                class="chk-item"
-              >
-                <div class="chk-box" :class="item.statusClass" @click="toggleCheckItem(index)">{{ item.checkIcon }}</div>
-                <div class="chk-text">
-                  <div class="chk-lbl">{{ item.title }}</div>
-                  <div class="chk-desc">{{ item.description }}</div>
-                </div>
-                <div class="chk-res">
-                  <span class="sb" :class="item.statusClass" style="font-size: 10px; padding: 2px 7px">{{ item.statusText }}</span>
-                </div>
               </div>
             </div>
           </div>
@@ -120,24 +97,33 @@
                     <div class="tl-vl" v-if="index < appInfo.processSteps.length - 1"></div>
                   </div>
                   <div class="tl-b">
-                    <div class="tl-t" :class="step.statusClass">{{ step.title }}</div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <div class="tl-t" :class="step.statusClass">{{ step.title }}</div>
+                      <el-button
+                        v-if="step.showSnapshot"
+                        type="text"
+                        size="mini"
+                        style="padding:0;font-size:11px;color:#3b5bdb"
+                        @click="viewSnapshot(step.snapshotId)"
+                      >查看提交内容</el-button>
+                    </div>
                     <div class="tl-m">{{ step.time }} · {{ step.handler }}</div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <!-- SLA 进度 -->
-          <div class="card">
-            <div class="card-hd"><span class="cht">SLA 进度</span></div>
-            <div class="card-bd" style="padding: 14px; display: flex; flex-direction: column; gap: 8px">
-              <div style="display: flex; justify-content: space-between; font-size: 12px">
-                <span style="color: #9aa0b8">承诺时限</span>
-                <span style="font-weight: 500">1 个工作日</span>
+              <!-- 版本快照记录 -->
+              <div class="snapshot-section" v-if="appInfo.snapshots && appInfo.snapshots.length">
+                <div class="snapshot-title">版本快照记录</div>
+                <div v-for="(snap, idx) in appInfo.snapshots" :key="idx" class="snapshot-item" @click="viewSnapshot(snap.id)">
+                  <div class="snapshot-ver">{{ snap.version }}</div>
+                  <div class="snapshot-info">
+                    <div class="snapshot-time-text">{{ snap.submitTime }}</div>
+                    <div class="snapshot-changelog">{{ snap.changeLog }}</div>
+                  </div>
+                  <el-tag :type="getSnapshotStatusType(snap.status)" size="mini" effect="plain">{{ getSnapshotStatusText(snap.status) }}</el-tag>
+                </div>
               </div>
-              <div class="prog-wrap"><div class="prog amber" style="width: 28%"></div></div>
-              <div style="font-size: 11px; color: #d9480f; font-weight: 500">已用 2h 20m · 剩余约 6h 20m</div>
             </div>
           </div>
 
@@ -148,18 +134,14 @@
               <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px">
                 <div style="display: flex; gap: 6px; align-items: flex-start; color: #5c6480">
                   <span style="color: #3b5bdb; flex-shrink: 0; margin-top: 1px">①</span>
-                  全部 5 项核验通过后方可点击「审核通过」
+                  审核通过后系统自动激活应用并发布到应用市场
                 </div>
                 <div style="display: flex; gap: 6px; align-items: flex-start; color: #5c6480">
                   <span style="color: #3b5bdb; flex-shrink: 0; margin-top: 1px">②</span>
-                  通过后系统自动激活应用并发布到应用市场
-                </div>
-                <div style="display: flex; gap: 6px; align-items: flex-start; color: #5c6480">
-                  <span style="color: #3b5bdb; flex-shrink: 0; margin-top: 1px">③</span>
                   驳回需填写明确原因，厂商可在修改材料后重新提交
                 </div>
                 <div style="display: flex; gap: 6px; align-items: flex-start; color: #5c6480">
-                  <span style="color: #3b5bdb; flex-shrink: 0; margin-top: 1px">④</span>
+                  <span style="color: #3b5bdb; flex-shrink: 0; margin-top: 1px">③</span>
                   「补充材料通知」将以站内信+邮件形式发送给申请人
                 </div>
               </div>
@@ -167,6 +149,33 @@
           </div>
         </div>
       </div>
+    <!-- 版本快照弹窗 -->
+    <el-dialog :title="'提交内容 · ' + (currentSnapshot ? currentSnapshot.version : '')" :visible.sync="snapshotDialogVisible" width="680px" append-to-body>
+      <div v-if="currentSnapshot" class="snapshot-dialog-content">
+        <div class="snapshot-dialog-header">
+          <span class="snapshot-dialog-ver">{{ currentSnapshot.version }}</span>
+          <span class="snapshot-dialog-time">{{ currentSnapshot.submitTime }}</span>
+          <el-tag :type="getSnapshotStatusType(currentSnapshot.status)" size="mini" effect="dark">{{ getSnapshotStatusText(currentSnapshot.status) }}</el-tag>
+        </div>
+        <div class="snapshot-dialog-changelog">
+          <div class="snapshot-dialog-label">变更说明</div>
+          <div class="snapshot-dialog-text">{{ currentSnapshot.changeLog }}</div>
+        </div>
+        <div class="snapshot-dialog-grid">
+          <div class="sg-item"><div class="sg-label">应用名称</div><div class="sg-value">{{ currentSnapshot.data.appName }}</div></div>
+          <div class="sg-item"><div class="sg-label">版本号</div><div class="sg-value">{{ currentSnapshot.data.version }}</div></div>
+          <div class="sg-item"><div class="sg-label">系统地址</div><div class="sg-value mono">{{ currentSnapshot.data.systemUrl }}</div></div>
+          <div class="sg-item"><div class="sg-label">服务商名称</div><div class="sg-value">{{ currentSnapshot.data.vendor }}</div></div>
+          <div class="sg-item"><div class="sg-label">合作伙伴</div><div class="sg-value">{{ currentSnapshot.data.cooperativeEnterprise }}</div></div>
+          <div class="sg-item"><div class="sg-label">联系人</div><div class="sg-value">{{ currentSnapshot.data.contact1Name }}</div></div>
+          <div class="sg-item"><div class="sg-label">联系电话</div><div class="sg-value mono">{{ currentSnapshot.data.contact1Phone }}</div></div>
+          <div class="sg-item"><div class="sg-label">面向对象</div><div class="sg-value">{{ currentSnapshot.data.targetObject }}</div></div>
+          <div class="sg-item"><div class="sg-label">应用架构</div><div class="sg-value">{{ currentSnapshot.data.appArchitecture }}</div></div>
+          <div class="sg-item"><div class="sg-label">部署云服务商</div><div class="sg-value">{{ currentSnapshot.data.cloudProvider }}</div></div>
+          <div class="sg-item full"><div class="sg-label">应用描述</div><div class="sg-value muted">{{ currentSnapshot.data.description }}</div></div>
+        </div>
+      </div>
+    </el-dialog>
     </div>
   </div>
 </template>
@@ -181,14 +190,13 @@ export default {
         appName: '智能办公系统',
         version: 'v1.0.0',
         vendor: '腾讯科技',
-        category: '办公软件',
-        cloudProvider: '腾讯云',
-        submitTime: '2024-01-01 10:00:00',
+        cooperativeEnterprise: '北京协同科技有限公司',
+        systemUrl: 'https://oa.tencent.com',
+        submitTime: '2024-01-01 10:00',
         description: '智能办公系统是一款集协同办公、文档管理、审批流程等功能于一体的企业级办公软件，旨在提高企业内部沟通效率和管理水平。',
-        auditStatus: 10,
-        auditOpinion: '',
-        auditTime: '',
-        auditor: '',
+        targetObject: '基层医疗卫生机构、公立医院',
+        appArchitecture: 'B/S',
+        cloudProvider: '浪潮云、移动云',
         materials: [
           {
             name: '应用截图.png',
@@ -210,8 +218,8 @@ export default {
             name: '安全评估报告.pdf',
             size: '890 KB',
             bgColor: '#f0f9ff',
-            statusClass: 'ing',
-            statusIcon: '⟳',
+            statusClass: 'ok',
+            statusIcon: '✓',
             icon: '📄'
           },
           {
@@ -221,56 +229,6 @@ export default {
             statusClass: 'wait',
             statusIcon: '—',
             icon: '📄'
-          },
-          {
-            name: '用户手册.pdf',
-            size: '560 KB',
-            bgColor: '#fff1f0',
-            statusClass: 'wait',
-            statusIcon: '—',
-            icon: '📄'
-          }
-        ],
-        checklist: [
-          {
-            title: '应用功能完整性核验',
-            description: '确认应用功能与描述一致，无缺失功能',
-            statusClass: 'ok',
-            statusText: '通过',
-            checkIcon: '✓',
-            checked: true
-          },
-          {
-            title: '安全合规性核验',
-            description: '应用符合安全合规要求，无安全隐患',
-            statusClass: 'ok',
-            statusText: '通过',
-            checkIcon: '✓',
-            checked: true
-          },
-          {
-            title: '性能稳定性核验',
-            description: '应用性能稳定，响应时间符合要求',
-            statusClass: 'reviewing',
-            statusText: '核验中',
-            checkIcon: '',
-            checked: false
-          },
-          {
-            title: '用户体验核验',
-            description: '应用界面友好，操作流程清晰',
-            statusClass: 'draft',
-            statusText: '待核验',
-            checkIcon: '',
-            checked: false
-          },
-          {
-            title: '文档完整性核验',
-            description: '应用文档完整，包含用户手册、部署指南等',
-            statusClass: 'draft',
-            statusText: '待核验',
-            checkIcon: '',
-            checked: false
           }
         ],
         processSteps: [
@@ -278,18 +236,34 @@ export default {
             title: '提交申请',
             time: '2024-01-01 10:00',
             handler: '腾讯科技',
-            statusClass: 'done'
+            statusClass: 'done',
+            showSnapshot: true,
+            snapshotId: 1
           },
           {
-            title: '材料预审',
-            time: '2024-01-01 10:30',
-            handler: '系统自动校验通过',
-            statusClass: 'done'
+            title: '人工审核',
+            time: '2024-01-02 14:30',
+            handler: '平台管理员 — 审核驳回',
+            statusClass: 'red'
+          },
+          {
+            title: '驳回原因',
+            time: '安全评估报告不完整，请补充后重新提交',
+            handler: '',
+            statusClass: 'red'
+          },
+          {
+            title: '重新提交申请',
+            time: '2024-01-03 09:15',
+            handler: '腾讯科技',
+            statusClass: 'done',
+            showSnapshot: true,
+            snapshotId: 2
           },
           {
             title: '人工审核',
             time: '进行中',
-            handler: '等待 2h 18m',
+            handler: '等待审核',
             statusClass: 'on'
           },
           {
@@ -298,17 +272,38 @@ export default {
             handler: '',
             statusClass: 'wait'
           }
+        ],
+        snapshots: [
+          {
+            id: 1, version: 'v1.0.0', submitTime: '2024-01-01 10:00', status: 'rejected', changeLog: '初始版本提交',
+            data: {
+              appName: '智能办公系统', version: 'v1.0.0', systemUrl: 'https://oa.tencent.com',
+              vendor: '腾讯科技', cooperativeEnterprise: '北京协同科技有限公司',
+              contact1Name: '张经理', contact1Phone: '13800138000',
+              targetObject: '基层医疗卫生机构、公立医院', appArchitecture: 'B/S',
+              cloudProvider: '浪潮云、移动云',
+              description: '智能办公系统初始版本，提供基础办公自动化功能，包括文档管理、审批流程、协同办公等核心模块。'
+            }
+          },
+          {
+            id: 2, version: 'v1.0.1', submitTime: '2024-01-03 09:15', status: 'pending', changeLog: '补充安全评估报告，更新应用描述',
+            data: {
+              appName: '智能办公系统', version: 'v1.0.1', systemUrl: 'https://oa.tencent.com',
+              vendor: '腾讯科技', cooperativeEnterprise: '北京协同科技有限公司',
+              contact1Name: '张经理', contact1Phone: '13800138000',
+              targetObject: '基层医疗卫生机构、公立医院、社区卫生服务中心', appArchitecture: 'B/S',
+              cloudProvider: '浪潮云、移动云、联通云',
+              description: '智能办公系统是一款集协同办公、文档管理、审批流程等功能于一体的企业级办公软件，已通过安全评估认证。'
+            }
+          }
         ]
       },
       auditForm: {
         opinion: ''
-      }
+      },
+      snapshotDialogVisible: false,
+      currentSnapshot: null
     };
-  },
-  computed: {
-    completedCount() {
-      return this.appInfo.checklist.filter(item => item.checked).length;
-    }
   },
   created() {
     const appId = this.$route.query.id;
@@ -321,7 +316,7 @@ export default {
       // API请求获取应用详情
     },
     goBack() {
-      this.$router.push('/workorder/auditCenter/digitalAppAudit');
+      this.$router.push('/portal/auditCenter/digitalAppAudit');
     },
     approve() {
       if (!this.auditForm.opinion.trim()) {
@@ -354,8 +349,20 @@ export default {
     sendNotice() {
       this.$message.success('补充材料通知已发送');
     },
-    toggleCheckItem(index) {
-      this.appInfo.checklist[index].checked = !this.appInfo.checklist[index].checked;
+    getSnapshotStatusType(status) {
+      const map = { approved: 'success', rejected: 'danger', pending: 'warning' };
+      return map[status] || 'info';
+    },
+    getSnapshotStatusText(status) {
+      const map = { approved: '已通过', rejected: '已驳回', pending: '待审核' };
+      return map[status] || '未知';
+    },
+    viewSnapshot(id) {
+      const snap = this.appInfo.snapshots.find(s => s.id === id);
+      if (snap) {
+        this.currentSnapshot = snap;
+        this.snapshotDialogVisible = true;
+      }
     }
   }
 };
@@ -672,70 +679,6 @@ export default {
   border: 1px solid #c5d0fa;
 }
 
-/* 核验清单 */
-.chk-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.chk-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 18px;
-  border-bottom: 1px solid #e3e7ef;
-}
-
-.chk-item:last-child {
-  border-bottom: none;
-}
-
-.chk-box {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  border: 2px solid #c8cdd9;
-  flex-shrink: 0;
-  margin-top: 2px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.12s;
-  font-size: 10px;
-  color: #fff;
-}
-
-.chk-box.ok {
-  background: #3b5bdb;
-  border-color: #3b5bdb;
-}
-
-.chk-box.ng {
-  background: #c92a2a;
-  border-color: #c92a2a;
-}
-
-.chk-text {
-  flex: 1;
-}
-
-.chk-lbl {
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 2px;
-}
-
-.chk-desc {
-  font-size: 11px;
-  color: #9aa0b8;
-}
-
-.chk-res {
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
 /* 按钮样式 */
 .btn {
   display: inline-flex;
@@ -862,6 +805,10 @@ export default {
   background: #c8cdd9;
 }
 
+.tl-d.red {
+  background: #c92a2a;
+}
+
 .tl-vl {
   flex: 1;
   width: 1px;
@@ -897,28 +844,14 @@ export default {
   color: #9aa0b8;
 }
 
+.tl-t.red {
+  color: #c92a2a;
+}
+
 .tl-m {
   font-size: 11px;
   color: #9aa0b8;
   font-family: 'DM Mono', monospace;
-}
-
-/* 进度条 */
-.prog-wrap {
-  height: 6px;
-  background: #f7f8fa;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.prog {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.3s;
-}
-
-.prog.amber {
-  background: #e67700;
 }
 
 /* 文本框样式 */
@@ -940,5 +873,158 @@ export default {
 
 .rf-textarea:focus {
   border-color: #3b5bdb;
+}
+
+/* 版本快照记录 */
+.snapshot-section {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e3e7ef;
+}
+
+.snapshot-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5c6480;
+  margin-bottom: 8px;
+}
+
+.snapshot-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid #e3e7ef;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.snapshot-item:hover {
+  border-color: #3b5bdb;
+  background: #eef2ff;
+}
+
+.snapshot-item:last-child {
+  margin-bottom: 0;
+}
+
+.snapshot-ver {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b5bdb;
+  width: 60px;
+  flex-shrink: 0;
+  font-family: 'DM Mono', monospace;
+}
+
+.snapshot-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.snapshot-time-text {
+  font-size: 11px;
+  color: #9aa0b8;
+  font-family: 'DM Mono', monospace;
+}
+
+.snapshot-changelog {
+  font-size: 12px;
+  color: #5c6480;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 快照弹窗 */
+.snapshot-dialog-content {
+  padding: 4px;
+}
+
+.snapshot-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e8e8e8;
+  margin-bottom: 14px;
+}
+
+.snapshot-dialog-ver {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1c2033;
+}
+
+.snapshot-dialog-time {
+  font-size: 12px;
+  color: #9aa0b8;
+  font-family: 'DM Mono', monospace;
+}
+
+.snapshot-dialog-changelog {
+  background: #f5f7fa;
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+
+.snapshot-dialog-label {
+  font-size: 11px;
+  color: #9aa0b8;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.snapshot-dialog-text {
+  font-size: 13px;
+  color: #303133;
+  line-height: 1.6;
+}
+
+.snapshot-dialog-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 28px;
+}
+
+.sg-item {
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  background: #f5f7fa;
+  border-radius: 4px;
+}
+
+.sg-item.full {
+  grid-column: 1 / -1;
+}
+
+.sg-label {
+  color: #9aa0b8;
+  font-size: 12px;
+  width: 82px;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.sg-value {
+  color: #1c2033;
+  font-size: 13px;
+  flex: 1;
+  word-break: break-all;
+}
+
+.sg-value.mono {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+}
+
+.sg-value.muted {
+  color: #5c6480;
+  font-weight: 400;
 }
 </style>

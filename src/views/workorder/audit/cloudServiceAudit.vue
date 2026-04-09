@@ -3,16 +3,16 @@
     <!-- 统计卡片 - 优化样式 -->
     <div class="stats-card mb12">
       <div class="stat-item stat-pending">
-        <div class="stat-value">4</div>
+        <div class="stat-value">2</div>
         <div class="stat-label">待审核</div>
       </div>
       <div class="stat-item stat-approved">
-        <div class="stat-value">47</div>
+        <div class="stat-value">1</div>
         <div class="stat-label">已通过</div>
       </div>
       <div class="stat-item stat-valid">
-        <div class="stat-value">47</div>
-        <div class="stat-label">有效机构</div>
+        <div class="stat-value">3</div>
+        <div class="stat-label">总应用数</div>
       </div>
     </div>
 
@@ -25,38 +25,38 @@
           class="el-form-search"
           :inline="true"
         >
-          <el-form-item prop="keyword">
+          <el-form-item prop="appName">
             <el-input
-              v-model="filterForm.keyword"
-              placeholder="机构名称、代码"
+              v-model="filterForm.appName"
+              placeholder="应用名称、厂商"
               clearable
               style="width: 150px"
               @keyup.enter.native="handleSearch"
             />
           </el-form-item>
-          <el-form-item prop="orgType">
+          <el-form-item prop="category">
             <el-select
-              v-model="filterForm.orgType"
-              placeholder="机构类型"
+              v-model="filterForm.category"
+              placeholder="应用分类"
               clearable
               style="width: 150px"
             >
-              <el-option label="政府机关" value="government" />
-              <el-option label="事业单位" value="institution" />
-              <el-option label="国有企业" value="state-owned" />
-              <el-option label="私营企业" value="private" />
+              <el-option label="办公软件" value="office" />
+              <el-option label="企业管理" value="enterprise" />
+              <el-option label="数据分析" value="data" />
+              <el-option label="其他" value="other" />
             </el-select>
           </el-form-item>
-          <el-form-item prop="status">
+          <el-form-item prop="auditStatus">
             <el-select
-              v-model="filterForm.status"
+              v-model="filterForm.auditStatus"
               placeholder="审核状态"
               clearable
               style="width: 150px"
             >
-              <el-option label="待审核" value="pending" />
-              <el-option label="已通过" value="approved" />
-              <el-option label="已驳回" value="rejected" />
+              <el-option label="待审核" value="10" />
+              <el-option label="已通过" value="20" />
+              <el-option label="已拒绝" value="30" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -74,37 +74,29 @@
       </el-col>
     </el-row>
 
-    <!-- 机构列表 -->
-    <el-table v-loading="loading" :data="orgList" size="small" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
-      <el-table-column prop="orgName" label="机构名称" min-width="220">
+    <!-- 应用列表 -->
+    <el-table v-loading="loading" :data="appList" size="small" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
+      <el-table-column prop="appName" label="应用名称" min-width="220">
         <template slot-scope="scope">
           <div>
-            <div class="org-name">{{ scope.row.orgName }}</div>
-            <div class="org-code">{{ scope.row.orgCode }}</div>
+            <div class="org-name">{{ scope.row.appName }}</div>
+            <div class="org-code">{{ scope.row.version }}</div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="orgType" label="机构类型" width="100">
+      <el-table-column prop="vendor" label="厂商" width="120" />
+      <el-table-column prop="category" label="分类" width="100" />
+      <el-table-column prop="cloudProvider" label="云服务商" width="120" />
+      <el-table-column prop="submitTime" label="提交时间" width="160" />
+      <el-table-column prop="auditStatus" label="状态" width="90">
         <template slot-scope="scope">
-          <el-tag :type="getOrgTypeTagType(scope.row.orgType)" size="mini" effect="plain">{{ scope.row.orgType }}</el-tag>
+          <el-tag :type="getStatusTagType(scope.row.auditStatus)" size="mini" effect="dark">{{ scope.row.auditStatus === 10 ? '待审核' : scope.row.auditStatus === 20 ? '已通过' : '已拒绝' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="applyMaterials" label="申请材料" width="120">
-        <template slot-scope="scope">
-          <el-link type="primary" :underline="false" @click="viewMaterials(scope.row)">{{ scope.row.applyMaterials }}</el-link>
-        </template>
-      </el-table-column>
-      <el-table-column prop="status" label="状态" width="90">
-        <template slot-scope="scope">
-          <el-tag :type="getStatusTagType(scope.row.status)" size="mini" effect="dark">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="applyTime" label="申请时间" width="160" />
-      <el-table-column prop="auditor" label="审核人" width="100" />
       <el-table-column label="操作" width="120" fixed="right">
         <template slot-scope="scope">
           <el-link
-            v-if="scope.row.status === '待审核'"
+            v-if="scope.row.auditStatus === 10"
             type="primary"
             :underline="false"
             @click="startAudit(scope.row)"
@@ -112,12 +104,12 @@
             开始审核
           </el-link>
           <el-link
-            v-else-if="scope.row.status === '已通过'"
+            v-else-if="scope.row.auditStatus === 20"
             type="success"
             :underline="false"
-            @click="viewFiles(scope.row)"
+            @click="viewDetails(scope.row)"
           >
-            查看档案
+            查看详情
           </el-link>
           <el-link
             v-else
@@ -137,7 +129,7 @@
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
-      @pagination="loadOrgList"
+      @pagination="loadAppList"
     />
   </div>
 </template>
@@ -146,7 +138,7 @@
 import Pagination from '@/components/Pagination/index.vue';
 
 export default {
-  name: 'QualificationAudit',
+  name: "DigitalAppAudit",
   components: {
     Pagination
   },
@@ -155,157 +147,100 @@ export default {
       loading: false,
       total: 0,
       filterForm: {
-        keyword: '',
-        orgType: '',
-        status: ''
+        appName: '',
+        category: '',
+        auditStatus: ''
       },
       queryParams: {
         pageNum: 1,
         pageSize: 10
       },
-      orgList: [
+      serviceList: [
         {
           id: 1,
-          orgName: '北京市海淀区数字经济发展局',
-          orgCode: '91110108MA012ABC3X',
-          orgType: '政府机关',
-          applyMaterials: '5份 - 待审核',
-          status: '待审核',
-          applyTime: '2024-03-15 00:12',
-          auditor: ''
+          serviceName: '云服务器ECS',
+          serviceId: 'SVC001',
+          serviceType: 'ecs',
+          cloudProvider: '电信云',
+          region: '华东',
+          submitTime: '2024-01-01 10:00:00',
+          auditStatus: 10
         },
         {
           id: 2,
-          orgName: '中远云科技有限公司',
-          orgCode: '91110105MA012DEF8Y',
-          orgType: '私营企业',
-          applyMaterials: '4份 - 待审核',
-          status: '待审核',
-          applyTime: '2024-03-14 16:30',
-          auditor: '李四'
+          serviceName: '对象存储OSS',
+          serviceId: 'SVC002',
+          serviceType: 'storage',
+          cloudProvider: '移动云',
+          region: '华北',
+          submitTime: '2024-01-02 11:00:00',
+          auditStatus: 10
         },
         {
           id: 3,
-          orgName: '华能数智科技集团',
-          orgCode: '91110101MA012GH15Z',
-          orgType: '国有企业',
-          applyMaterials: '6份 - 已归档',
-          status: '已通过',
-          applyTime: '2024-03-12 10:05',
-          auditor: '王五'
-        },
-        {
-          id: 4,
-          orgName: '北京协和医学院附属医院',
-          orgCode: '91110108MA012JKL2W',
-          orgType: '事业单位',
-          applyMaterials: '4份 - 已归档',
-          status: '已通过',
-          applyTime: '2024-03-10 14:22',
-          auditor: '李四'
-        },
-        {
-          id: 5,
-          orgName: '锐途智能科技（北京）有限公司',
-          orgCode: '91110102MA012MNO7P',
-          orgType: '私营企业',
-          applyMaterials: '3份 - 不完整',
-          status: '已驳回',
-          applyTime: '2024-03-09 11:45',
-          auditor: '王五'
+          serviceName: '云数据库RDS',
+          serviceId: 'SVC003',
+          serviceType: 'database',
+          cloudProvider: '联通云',
+          region: '华南',
+          submitTime: '2024-01-03 12:00:00',
+          auditStatus: 20
         }
       ]
     };
   },
   created() {
-    this.loadOrgList();
+    this.loadServiceList();
   },
   methods: {
-    loadOrgList() {
+    loadServiceList() {
       this.loading = true;
       // 模拟API请求
       setTimeout(() => {
-        this.total = this.orgList.length;
+        this.total = this.serviceList.length;
         this.loading = false;
       }, 500);
     },
-    handleSizeChange(size) {
-      this.queryParams.pageSize = size;
-      this.loadOrgList();
-    },
-    handleCurrentChange(current) {
-      this.queryParams.pageNum = current;
-      this.loadOrgList();
-    },
-    getOrgTypeTagType(orgType) {
-      switch (orgType) {
-        case '政府机关':
-          return 'primary';
-        case '事业单位':
-          return 'success';
-        case '国有企业':
-          return 'warning';
-        case '私营企业':
-          return 'info';
-        default:
-          return '';
-      }
-    },
     getStatusTagType(status) {
       switch (status) {
-        case '待审核':
+        case 10:
           return 'warning';
-        case '已通过':
+        case 20:
           return 'success';
-        case '已驳回':
+        case 30:
           return 'danger';
         default:
           return '';
       }
     },
-    viewMaterials(org) {
-      // 查看申请材料
-      console.log('查看申请材料:', org);
-    },
-    startAudit(org) {
+    startAudit(service) {
       // 开始审核
       this.$router.push({
-        path: '/portal/auditCenter/qualificationDetail',
-        query: { orgId: org.id }
+        path: '/portal/auditCenter/cloudServiceAuditDetail',
+        query: { id: service.id }
       });
     },
-    continueAudit(org) {
-      // 继续审核
-      this.$router.push({
-        path: '/portal/auditCenter/qualificationDetail',
-        query: { orgId: org.id }
-      });
-    },
-    viewFiles(org) {
-      // 查看档案
-      console.log('查看档案:', org);
-    },
-    viewDetails(org) {
+    viewDetails(service) {
       // 查看详情
       this.$router.push({
-        path: '/portal/auditCenter/qualificationDetail',
-        query: { orgId: org.id }
+        path: '/portal/auditCenter/cloudServiceAuditDetail',
+        query: { id: service.id }
       });
     },
     handleSearch() {
       // 执行搜索
       this.queryParams.pageNum = 1;
-      this.loadOrgList();
+      this.loadServiceList();
     },
     resetFilter() {
       // 重置筛选条件
       this.filterForm = {
-        keyword: '',
-        orgType: '',
-        status: ''
+        serviceName: '',
+        serviceType: '',
+        auditStatus: ''
       };
       this.queryParams.pageNum = 1;
-      this.loadOrgList();
+      this.loadServiceList();
     }
   }
 };
@@ -446,6 +381,46 @@ export default {
 
 .pagination-container {
   margin-top: 16px;
+  text-align: right;
+}
+</style>tent: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0;
+}
+
+/* 确保按钮组右对齐 */
+:deep(.el-form-search .el-form-item:last-child) {
+  margin-right: 0;
+}
+
+:deep(.el-form-search .el-form-item) {
+  margin-bottom: 0;
+  margin-right: 0;
+}
+
+/* 表格样式优化 */
+.table-card {
+  border: 1px solid #e8e8e8;
+}
+
+.org-name {
+  font-size: 14px;
+  color: #262626;
+  font-weight: 500;
+}
+
+.org-code {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-top: 4px;
+}
+
+.pagination-container {
+  margin-top: 16px;
+  text-align: right;
+}
+</style>  margin-top: 16px;
   text-align: right;
 }
 </style>
