@@ -111,9 +111,8 @@
               clearable
               style="width: 110px"
             >
-              <el-option label="草稿" value="10" />
-              <el-option label="发布" value="20" />
-              <el-option label="下线" value="30" />
+              <el-option label="已发布" value="20" />
+              <el-option label="已下线" value="30" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -209,8 +208,26 @@
       >
         <template slot-scope="scope">
           <el-tag :type="scope.row.status === 20 ? 'success' : scope.row.status === 30 ? 'danger' : 'info'">
-            {{ scope.row.status === 10 ? '草稿' : scope.row.status === 20 ? '发布' : scope.row.status === 30 ? '下线' : '未知' }}
+            {{ scope.row.status === 20 ? '已发布' : scope.row.status === 30 ? '已下线' : '未知' }}
           </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="平台评价"
+        align="center"
+        width="90"
+      >
+        <template slot-scope="scope">
+          <span class="rating-star" @click="openRatingDialog(scope.row)">{{ scope.row.platformRating || 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="用户评价"
+        align="center"
+        width="90"
+      >
+        <template slot-scope="scope">
+          <span class="rating-star" @click="openRatingDialog(scope.row)">{{ scope.row.usageRating || 0 }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -260,17 +277,16 @@
 
     <!-- 新增弹窗 -->
     <el-dialog
-      title="新增服务目录"
-      width="900px"
+      title="新增基础服务"
+      width="920px"
       :visible.sync="addDialogVisible"
       :close-on-click-modal="false"
       append-to-body
+      top="5vh"
     >
-      <el-form ref="addForm" :model="addForm" :rules="rules" label-width="130px">
-        <!-- 基本信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">基本信息</p>
-        </el-form-item>
+      <el-form ref="addForm" :model="addForm" :rules="rules" label-width="110px" class="add-form">
+        <div class="form-section">
+          <div class="form-section-title">基本信息</div>
         <el-form-item label="服务名称" prop="serviceName" required>
           <el-input v-model="addForm.serviceName" placeholder="请输入服务名称" />
         </el-form-item>
@@ -319,9 +335,10 @@
             controls-position="right"
           />
         </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleAddSubmit">保存草稿</el-button>
+        <el-button type="primary" @click="handleAddSubmit">直接发布</el-button>
         <el-button @click="addDialogVisible = false">取消</el-button>
       </div>
     </el-dialog>
@@ -329,47 +346,49 @@
     <!-- 详情弹窗 -->
     <el-dialog
       title="详情"
-      width="800px"
+      width="920px"
       :visible.sync="detailDialogVisible"
       :close-on-click-modal="false"
       append-to-body
+      top="5vh"
     >
-      <div class="dialog-body">
-        <!-- 基本信息 -->
-        <p class="fz-16 mt--8">基本信息</p>
-        <div class="gird">
-          <div class="content">
-            <span>服务名称</span>
-            <span>{{ detailForm.serviceName || '--' }}</span>
+      <div class="add-form">
+        <div class="form-section">
+          <div class="form-section-title">基本信息</div>
+          <div class="gird">
+            <div class="content">
+              <span>服务名称</span>
+              <span>{{ detailForm.serviceName || '--' }}</span>
+            </div>
+            <div class="content">
+              <span>服务ID</span>
+              <span>{{ detailForm.serviceId || '--' }}</span>
+            </div>
+            <div class="content">
+              <span>显示顺序</span>
+              <span>{{ detailForm.sortOrder || 0 }}</span>
+            </div>
           </div>
-          <div class="content">
-            <span>服务ID</span>
-            <span>{{ detailForm.serviceId || '--' }}</span>
-          </div>
-          <div class="content">
-            <span>显示顺序</span>
-            <span>{{ detailForm.sortOrder || 0 }}</span>
+          <div class="content pt-24">
+            <span>服务描述</span>
+            <span>{{ detailForm.description || '--' }}</span>
           </div>
         </div>
-        <div class="content pt-24">
-          <span>服务描述</span>
-          <span>{{ detailForm.description || '--' }}</span>
-        </div>
-
-        <!-- 服务信息 -->
-        <p class="pt-24 fz-16">服务信息</p>
-        <div class="gird">
-          <div class="content">
-            <span>云服务商</span>
-            <span>{{ detailForm.cloudProvider || '--' }}</span>
-          </div>
-          <div class="content">
-            <span>服务类型</span>
-            <span>{{ detailForm.serviceType || '--' }}</span>
-          </div>
-          <div class="content">
-            <span>区域</span>
-            <span>{{ detailForm.region || '--' }}</span>
+        <div class="form-section">
+          <div class="form-section-title">服务信息</div>
+          <div class="gird">
+            <div class="content">
+              <span>云服务商</span>
+              <span>{{ detailForm.cloudProvider || '--' }}</span>
+            </div>
+            <div class="content">
+              <span>服务类型</span>
+              <span>{{ detailForm.serviceType || '--' }}</span>
+            </div>
+            <div class="content">
+              <span>区域</span>
+              <span>{{ detailForm.region || '--' }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -380,17 +399,16 @@
 
     <!-- 编辑弹窗 -->
     <el-dialog
-      title="编辑服务目录"
-      width="900px"
+      title="编辑基础服务"
+      width="920px"
       :visible.sync="editDialogVisible"
       :close-on-click-modal="false"
       append-to-body
+      top="5vh"
     >
-      <el-form ref="editForm" :model="editForm" :rules="rules" label-width="130px">
-        <!-- 基本信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">基本信息</p>
-        </el-form-item>
+      <el-form ref="editForm" :model="editForm" :rules="rules" label-width="110px" class="add-form">
+        <div class="form-section">
+          <div class="form-section-title">基本信息</div>
         <el-form-item label="服务名称" prop="serviceName" required>
           <el-input v-model="editForm.serviceName" placeholder="请输入服务名称" />
         </el-form-item>
@@ -439,10 +457,80 @@
             controls-position="right"
           />
         </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleEditSubmit">保存草稿</el-button>
+        <el-button type="primary" @click="handleEditSubmit">直接发布</el-button>
         <el-button @click="editDialogVisible = false">取消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 评价弹窗 -->
+    <el-dialog
+      title="服务评价"
+      width="920px"
+      :visible.sync="ratingDialogVisible"
+      :close-on-click-modal="false"
+      append-to-body
+      top="5vh"
+    >
+      <div class="add-form">
+        <el-tabs v-model="activeTab">
+          <el-tab-pane label="平台评价" name="platform">
+            <el-form ref="ratingForm" :model="ratingForm" label-width="80px">
+              <el-form-item label="评分">
+                <div class="stars">
+                  <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= ratingForm.score }" @click="ratingForm.score = i">★</span>
+                </div>
+                <span class="score-text">{{ ratingForm.score }}分</span>
+              </el-form-item>
+              <el-form-item label="评价描述">
+                <el-input v-model="ratingForm.description" type="textarea" rows="4" placeholder="请输入评价描述" />
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+          <el-tab-pane label="用户评价" name="user">
+            <el-table :data="usageRatings" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
+              <el-table-column label="评分" width="80">
+                <template slot-scope="scope">
+                  <div class="stars">
+                    <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= scope.row.score }">★</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="服务/订单号" width="200">
+                <template slot-scope="scope">
+                  <div>
+                    <div class="review-service">{{ scope.row.serviceName }}</div>
+                    <div class="review-order">{{ scope.row.orderNo }}</div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="评价机构" width="200">
+                <template slot-scope="scope">
+                  <div>
+                    <div class="review-org">{{ scope.row.orgName }}</div>
+                    <div class="review-user">{{ scope.row.userName }} · {{ scope.row.department }}</div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="评价内容" min-width="160" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row.content }}
+                </template>
+              </el-table-column>
+              <el-table-column label="评价时间" width="140">
+                <template slot-scope="scope">
+                  {{ scope.row.time }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button v-if="activeTab === 'platform'" type="primary" @click="handleRatingSubmit">提交</el-button>
+        <el-button @click="ratingDialogVisible = false">关闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -509,6 +597,36 @@ export default {
         region: '',
         sortOrder: 0
       },
+      // 评价弹窗
+      ratingDialogVisible: false,
+      activeTab: 'platform',
+      ratingForm: {
+        score: 0,
+        description: ''
+      },
+      currentService: null,
+      usageRatings: [
+        {
+          score: 5,
+          serviceName: '弹性计算服务ECS',
+          orderNo: '#ORD-2024-0101',
+          orgName: '北京市海淀区数字经济发展局',
+          userName: '张三',
+          department: '技术部',
+          content: '计算性能稳定，弹性扩容响应快，性价比高，满足业务需求。',
+          time: '2024-03-18 10:30'
+        },
+        {
+          score: 4,
+          serviceName: '对象存储服务OSS',
+          orderNo: '#ORD-2024-0098',
+          orgName: '北京市第一人民医院',
+          userName: '李四',
+          department: '信息科',
+          content: '存储容量充足，数据安全性好，上传下载速度较快。',
+          time: '2024-03-15 14:00'
+        }
+      ],
       // 表单验证规则
       rules: {
         serviceName: [
@@ -597,7 +715,7 @@ export default {
       this.$refs.addForm.validate((valid) => {
         if (valid) {
           console.log('表单数据:', this.addForm);
-          this.$modal.msgSuccess('保存成功');
+          this.$modal.msgSuccess('发布成功');
           this.addDialogVisible = false;
           this.resetForm('addForm');
           this.loadServiceCatalogList();
@@ -625,7 +743,7 @@ export default {
       this.$refs.editForm.validate((valid) => {
         if (valid) {
           console.log('表单数据:', this.editForm);
-          this.$modal.msgSuccess('保存成功');
+          this.$modal.msgSuccess('发布成功');
           this.editDialogVisible = false;
           this.loadServiceCatalogList();
         }
@@ -673,6 +791,20 @@ export default {
           this.loadServiceCatalogList();
         });
     },
+    openRatingDialog(row) {
+      this.currentService = row;
+      this.ratingForm.score = row.platformRating || 0;
+      this.ratingForm.description = '';
+      this.activeTab = 'platform';
+      this.ratingDialogVisible = true;
+    },
+    handleRatingSubmit() {
+      this.$modal.msgSuccess('评价成功');
+      this.ratingDialogVisible = false;
+      if (this.currentService) {
+        this.currentService.platformRating = this.ratingForm.score;
+      }
+    },
     handleSyncData() {
       // 同步数据逻辑
       this.$modal.loading('同步中...');
@@ -717,10 +849,65 @@ export default {
   margin-left: 2px;
 }
 
-/* 弹窗样式 */
-.el-dialog__body {
-  max-height: 600px;
+/* 新增/编辑弹窗样式 */
+:deep(.el-dialog) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:deep(.el-dialog__header) {
+  padding: 14px 24px 6px;
+  border-bottom: 1px solid #ebeef5;
+  background: #fafbfc;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+:deep(.el-dialog__body) {
+  padding: 0;
+  max-height: 62vh;
   overflow-y: auto;
+}
+
+:deep(.el-dialog__footer) {
+  padding: 14px 24px;
+  border-top: 1px solid #ebeef5;
+  background: #fafbfc;
+}
+
+.add-form {
+  padding: 12px 24px 20px;
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.form-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 18px;
+}
+
+:deep(.el-form-item__label) {
+  color: #606266;
+  font-weight: 500;
+  font-size: 13px;
 }
 
 /* 详情弹窗样式 */
@@ -754,5 +941,69 @@ export default {
 .content span:last-child {
   flex: 1;
   color: #333;
+}
+
+/* 评价样式 */
+.rating-star {
+  color: #409EFF;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.rating-star:hover {
+  text-decoration: underline;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: middle;
+}
+
+.star {
+  font-size: 20px;
+  color: #d9d9d9;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.star:hover {
+  color: #faad14;
+}
+
+.star.full {
+  color: #faad14;
+}
+
+.score-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1890ff;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.review-service {
+  color: #262626;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.review-order {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-top: 2px;
+}
+
+.review-org {
+  color: #262626;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.review-user {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-top: 2px;
 }
 </style>

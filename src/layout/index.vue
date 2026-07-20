@@ -97,6 +97,8 @@ export default {
     position: relative;
     height: 100%;
     width: 100%;
+    display: flex;
+    flex-direction: column;
 
     &.mobile.openSidebar {
       position: fixed;
@@ -105,19 +107,17 @@ export default {
   }
 
   .top-nav-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
     height: 50px;
     background-color: #ffffff;
     box-shadow: 0 2px 4px rgba(0, 21, 41, 0.1);
+    flex-shrink: 0;
+    position: relative;
     z-index: 1001;
   }
 
   .sidebar-container {
-    position: fixed;
-    top: 50px;
+    position: absolute;
+    top: 0;
     left: 0;
     bottom: 0;
     width: $base-sidebar-width;
@@ -126,8 +126,11 @@ export default {
   }
 
   .main-content {
-    margin-top: 50px;
-    height: calc(100% - 50px);
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    position: relative;
+    z-index: 0;
   }
 
   .drawer-bg {
@@ -140,17 +143,21 @@ export default {
     z-index: 998;
   }
 
-  .fixed-header {
-    position: fixed;
-    top: 50px;
-    right: 0;
-    z-index: 9;
-    width: calc(100% - #{$base-sidebar-width});
-    transition: width 0.28s;
+  .main-container {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
   }
 
-  .hideSidebar .fixed-header {
-    width: calc(100% - 54px);
+  .fixed-header {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    width: 100%;
+    transition: width 0.28s;
+    flex-shrink: 0;
   }
 
   .sidebarHide .fixed-header {

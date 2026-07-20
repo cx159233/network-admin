@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div>
     <el-row :gutter="24" class="mb12">
       <el-col :span="24">
         <el-form

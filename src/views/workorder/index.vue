@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div>
     <!-- 筛选条件 -->
     <el-row :gutter="24" class="mb12">
       <el-col :span="24">

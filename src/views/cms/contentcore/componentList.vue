@@ -111,9 +111,8 @@
               clearable
               style="width: 110px"
             >
-              <el-option label="草稿" value="10" />
-              <el-option label="发布" value="20" />
-              <el-option label="下线" value="30" />
+              <el-option label="已发布" value="20" />
+              <el-option label="已下线" value="30" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -179,7 +178,7 @@
       >
         <template slot-scope="scope">
           <el-tag :type="scope.row.status === 20 ? 'success' : scope.row.status === 30 ? 'danger' : 'info'">
-            {{ scope.row.status === 10 ? '草稿' : scope.row.status === 20 ? '发布' : scope.row.status === 30 ? '下线' : '未知' }}
+            {{ scope.row.status === 20 ? '已发布' : scope.row.status === 30 ? '已下线' : '未知' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -218,7 +217,7 @@
           <span @click="openRatingDialog(scope.row)" class="rating-star">{{ scope.row.platformRating || 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="使用评价" width="100">
+      <el-table-column label="用户评价" width="100">
         <template slot-scope="scope">
           <span @click="openRatingDialog(scope.row)" class="rating-star">{{ scope.row.usageRating || 0 }}</span>
         </template>
@@ -271,103 +270,101 @@
     <!-- 新增弹窗 -->
     <el-dialog
       title="新增能力组件"
-      width="900px"
+      width="920px"
       :visible.sync="addDialogVisible"
       :close-on-click-modal="false"
       append-to-body
+      top="5vh"
     >
-      <el-form ref="addForm" :model="addForm" :rules="rules" label-width="130px">
-        <!-- 基本信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">基本信息</p>
-        </el-form-item>
-        <el-form-item label="组件名称" prop="name" required>
-          <el-input v-model="addForm.name" placeholder="请输入组件名称" />
-        </el-form-item>
-        <el-form-item label="上传LOGO">
-          <div class="upload-logo">
-            <el-upload
-              class="el-upload--text"
-              action="#"
-              :auto-upload="false"
-              :on-change="handleLogoUpload"
-              :limit="1"
-              :accept="'image/png,image/jpeg,image/jpg,image/bmp'"
-            >
-              <div class="el-upload-dragger">
-                <i class="el-icon-upload" v-if="!addForm.logo"></i>
-                <img v-else :src="addForm.logo" class="avatar" />
-                <div class="el-upload__text">
-                  建议上传图片尺寸为640*640，大小不超过1M支持jpg、jpeg、png、bmp图片格式
+      <el-form ref="addForm" :model="addForm" :rules="rules" label-width="110px" class="add-form">
+        <div class="form-section">
+          <div class="form-section-title">基本信息</div>
+          <el-form-item label="组件名称" prop="name" required>
+            <el-input v-model="addForm.name" placeholder="请输入组件名称" />
+          </el-form-item>
+          <el-form-item label="上传LOGO">
+            <div class="upload-logo">
+              <el-upload
+                class="el-upload--text"
+                action="#"
+                :auto-upload="false"
+                :on-change="handleLogoUpload"
+                :limit="1"
+                :accept="'image/png,image/jpeg,image/jpg,image/bmp'"
+              >
+                <div class="el-upload-dragger">
+                  <i class="el-icon-upload" v-if="!addForm.logo"></i>
+                  <img v-else :src="addForm.logo" class="avatar" />
+                  <div class="el-upload__text">
+                    建议上传图片尺寸为640*640，大小不超过1M支持jpg、jpeg、png、bmp图片格式
+                  </div>
                 </div>
+              </el-upload>
+              <div class="el-upload__tip">
+                只能上传 image/png, image/jpeg,image/jpg,image/bmp 文件，且不超过 1 MB
               </div>
-            </el-upload>
-            <div class="el-upload__tip">
-              只能上传 image/png, image/jpeg,image/jpg,image/bmp 文件，且不超过 1 MB
             </div>
-          </div>
-        </el-form-item>
-        <el-form-item label="组件描述" prop="description" required>
-          <el-input
-            v-model="addForm.description"
-            type="textarea"
-            rows="4"
-            placeholder="请输入组件描述"
-          />
-        </el-form-item>
-        <el-form-item label="显示顺序">
-          <el-input-number
-            v-model="addForm.sortOrder"
-            :min="0"
-            controls-position="right"
-          />
-        </el-form-item>
+          </el-form-item>
+          <el-form-item label="组件描述" prop="description" required>
+            <el-input
+              v-model="addForm.description"
+              type="textarea"
+              rows="4"
+              placeholder="请输入组件描述"
+            />
+          </el-form-item>
+          <el-form-item label="显示顺序">
+            <el-input-number
+              v-model="addForm.sortOrder"
+              :min="0"
+              controls-position="right"
+            />
+          </el-form-item>
+        </div>
 
-        <!-- 联系信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">联系信息</p>
-        </el-form-item>
-        <el-form-item label="服务商名称">
-          <el-input v-model="addForm.serviceProviderName" placeholder="请输入服务商名称" />
-        </el-form-item>
-        <el-form-item label="联系方式1">
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="addForm.contact1Name" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="addForm.contact1Phone" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        <el-form-item label="联系方式2">
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="addForm.contact2Name" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="addForm.contact2Phone" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">联系信息</div>
+          <el-form-item label="服务商名称">
+            <el-input v-model="addForm.serviceProviderName" placeholder="请输入服务商名称" />
+          </el-form-item>
+          <el-form-item label="联系方式1">
+            <div style="display: flex; align-items: center;">
+              <el-input v-model="addForm.contact1Name" placeholder="请输入联系人姓名" style="width: 200px" />
+              <span style="margin: 0 16px;">-</span>
+              <el-input v-model="addForm.contact1Phone" placeholder="请输入联系人手机号" style="width: 200px" />
+            </div>
+          </el-form-item>
+          <el-form-item label="联系方式2">
+            <div style="display: flex; align-items: center;">
+              <el-input v-model="addForm.contact2Name" placeholder="请输入联系人姓名" style="width: 200px" />
+              <span style="margin: 0 16px;">-</span>
+              <el-input v-model="addForm.contact2Phone" placeholder="请输入联系人手机号" style="width: 200px" />
+            </div>
+          </el-form-item>
+        </div>
 
-        <!-- 分类标签 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">分类标签</p>
-        </el-form-item>
-        <el-form-item label="云服务商" prop="deployServiceProvider" required>
-          <el-select v-model="addForm.deployServiceProvider" placeholder="请选择云服务商" style="width: 300px">
-            <el-option label="影像云" value="10251" />
-            <el-option label="电信云" value="10252" />
-            <el-option label="移动云" value="10253" />
-            <el-option label="联通云" value="10254" />
-            <el-option label="浪潮云" value="10250" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="开放范围" prop="cover" required>
-          <el-select v-model="addForm.cover" placeholder="请选择开放范围" style="width: 300px">
-            <el-option label="不限" value="10256" />
-            <el-option label="市级" value="10257" />
-            <el-option label="区（县）域" value="10258" />
-          </el-select>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">分类标签</div>
+          <el-form-item label="云服务商" prop="deployServiceProvider" required>
+            <el-select v-model="addForm.deployServiceProvider" placeholder="请选择云服务商" style="width: 300px">
+              <el-option label="影像云" value="10251" />
+              <el-option label="电信云" value="10252" />
+              <el-option label="移动云" value="10253" />
+              <el-option label="联通云" value="10254" />
+              <el-option label="浪潮云" value="10250" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="开放范围" prop="cover" required>
+            <el-select v-model="addForm.cover" placeholder="请选择开放范围" style="width: 300px">
+              <el-option label="不限" value="10256" />
+              <el-option label="市级" value="10257" />
+              <el-option label="区（县）域" value="10258" />
+            </el-select>
+          </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleAddSubmit">保存草稿</el-button>
+        <el-button type="primary" @click="handleAddSubmit">直接发布</el-button>
         <el-button @click="addDialogVisible = false">取消</el-button>
       </div>
     </el-dialog>
@@ -375,61 +372,65 @@
     <!-- 详情弹窗 -->
     <el-dialog
       title="详情"
-      width="800px"
+      width="920px"
       :visible.sync="detailDialogVisible"
       :close-on-click-modal="false"
       append-to-body
+      top="5vh"
     >
-      <div class="dialog-body">
-        <!-- 基本信息 -->
-        <p class="fz-16 mt--8">基本信息</p>
-        <div class="gird">
-          <div class="content">
-            <span>组件名称</span>
-            <span>{{ detailForm.name || '--' }}</span>
+      <div class="add-form">
+        <div class="form-section">
+          <div class="form-section-title">基本信息</div>
+          <div class="gird">
+            <div class="content">
+              <span>组件名称</span>
+              <span>{{ detailForm.name || '--' }}</span>
+            </div>
+            <div class="content">
+              <span class="pr-16">LOGO</span>
+              <img v-if="detailForm.logo" :src="detailForm.logo" class="img" />
+              <span v-else>--</span>
+            </div>
+            <div class="content">
+              <span>显示顺序</span>
+              <span>{{ detailForm.sortOrder || 0 }}</span>
+            </div>
           </div>
-          <div class="content">
-            <span class="pr-16">LOGO</span>
-            <img v-if="detailForm.logo" :src="detailForm.logo" class="img" />
-            <span v-else>--</span>
-          </div>
-          <div class="content">
-            <span>显示顺序</span>
-            <span>{{ detailForm.sortOrder || 0 }}</span>
-          </div>
-        </div>
-        <div class="content pt-24">
-          <span>组件描述</span>
-          <span>{{ detailForm.description || '--' }}</span>
-        </div>
-
-        <!-- 联系信息 -->
-        <p class="pt-24 fz-16">联系信息</p>
-        <div class="gird">
-          <div class="content">
-            <span>服务商名称</span>
-            <span>{{ detailForm.serviceProviderName || '--' }}</span>
-          </div>
-          <div class="content">
-            <span>联系方式1</span>
-            <span>{{ detailForm.contact1Name || '--' }} {{ detailForm.contact1Phone || '--' }}</span>
-          </div>
-          <div class="content">
-            <span>联系方式2</span>
-            <span>{{ detailForm.contact2Name || '--' }} {{ detailForm.contact2Phone || '--' }}</span>
+          <div class="content pt-24">
+            <span>组件描述</span>
+            <span>{{ detailForm.description || '--' }}</span>
           </div>
         </div>
 
-        <!-- 分类标签 -->
-        <p class="pt-24 fz-16">分类标签</p>
-        <div class="gird">
-          <div class="content">
-            <span>云服务商</span>
-            <span>{{ detailForm.deployServiceProviderView || '--' }}</span>
+        <div class="form-section">
+          <div class="form-section-title">联系信息</div>
+          <div class="gird">
+            <div class="content">
+              <span>服务商名称</span>
+              <span>{{ detailForm.serviceProviderName || '--' }}</span>
+            </div>
+            <div class="content">
+              <span>联系方式1</span>
+              <span>{{ detailForm.contact1Name || '--' }} {{ detailForm.contact1Phone || '--' }}</span>
+            </div>
+            <div class="content">
+              <span>联系方式2</span>
+              <span>{{ detailForm.contact2Name || '--' }} {{ detailForm.contact2Phone || '--' }}</span>
+            </div>
           </div>
-          <div class="content">
-            <span>开放范围</span>
-            <span>{{ detailForm.coverView || '--' }}</span>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">分类标签</div>
+          <div class="gird">
+            <div class="content">
+              <span>云服务商</span>
+              <span>{{ detailForm.deployServiceProviderView || '--' }}</span>
+            </div>
+            <div class="content">
+              <span>开放范围</span>
+              <span>{{ detailForm.coverView || '--' }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -441,133 +442,130 @@
     <!-- 编辑弹窗 -->
     <el-dialog
       title="编辑能力组件"
-      width="900px"
+      width="920px"
       :visible.sync="editDialogVisible"
       :close-on-click-modal="false"
       append-to-body
+      top="5vh"
     >
-      <el-form ref="editForm" :model="editForm" :rules="rules" label-width="130px">
-        <!-- 基本信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">基本信息</p>
-        </el-form-item>
-        <el-form-item label="组件名称" prop="name" required>
-          <el-input v-model="editForm.name" placeholder="请输入组件名称" />
-        </el-form-item>
-        <el-form-item label="上传LOGO">
-          <div class="upload-logo">
-            <el-upload
-              class="el-upload--text"
-              action="#"
-              :auto-upload="false"
-              :on-change="handleLogoUpload"
-              :limit="1"
-              :accept="'image/png,image/jpeg,image/jpg,image/bmp'"
-            >
-              <div class="el-upload-dragger">
-                <i class="el-icon-upload" v-if="!editForm.logo"></i>
-                <img v-else :src="editForm.logo" class="avatar" />
-                <div class="el-upload__text">
-                  建议上传图片尺寸为640*640，大小不超过1M支持jpg、jpeg、png、bmp图片格式
+      <el-form ref="editForm" :model="editForm" :rules="rules" label-width="110px" class="add-form">
+        <div class="form-section">
+          <div class="form-section-title">基本信息</div>
+          <el-form-item label="组件名称" prop="name" required>
+            <el-input v-model="editForm.name" placeholder="请输入组件名称" />
+          </el-form-item>
+          <el-form-item label="上传LOGO">
+            <div class="upload-logo">
+              <el-upload
+                class="el-upload--text"
+                action="#"
+                :auto-upload="false"
+                :on-change="handleLogoUpload"
+                :limit="1"
+                :accept="'image/png,image/jpeg,image/jpg,image/bmp'"
+              >
+                <div class="el-upload-dragger">
+                  <i class="el-icon-upload" v-if="!editForm.logo"></i>
+                  <img v-else :src="editForm.logo" class="avatar" />
+                  <div class="el-upload__text">
+                    建议上传图片尺寸为640*640，大小不超过1M支持jpg、jpeg、png、bmp图片格式
+                  </div>
                 </div>
+              </el-upload>
+              <div class="el-upload__tip">
+                只能上传 image/png, image/jpeg,image/jpg,image/bmp 文件，且不超过 1 MB
               </div>
-            </el-upload>
-            <div class="el-upload__tip">
-              只能上传 image/png, image/jpeg,image/jpg,image/bmp 文件，且不超过 1 MB
             </div>
-          </div>
-        </el-form-item>
-        <el-form-item label="组件描述" prop="description" required>
-          <el-input
-            v-model="editForm.description"
-            type="textarea"
-            rows="4"
-            placeholder="请输入组件描述"
-          />
-        </el-form-item>
-        <el-form-item label="显示顺序">
-          <el-input-number
-            v-model="editForm.sortOrder"
-            :min="0"
-            controls-position="right"
-          />
-        </el-form-item>
+          </el-form-item>
+          <el-form-item label="组件描述" prop="description" required>
+            <el-input
+              v-model="editForm.description"
+              type="textarea"
+              rows="4"
+              placeholder="请输入组件描述"
+            />
+          </el-form-item>
+          <el-form-item label="显示顺序">
+            <el-input-number
+              v-model="editForm.sortOrder"
+              :min="0"
+              controls-position="right"
+            />
+          </el-form-item>
+        </div>
 
-        <!-- 联系信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">联系信息</p>
-        </el-form-item>
-        <el-form-item label="服务商名称">
-          <el-input v-model="editForm.serviceProviderName" placeholder="请输入服务商名称" />
-        </el-form-item>
-        <el-form-item label="联系方式1">
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="editForm.contact1Name" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="editForm.contact1Phone" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        <el-form-item label="联系方式2">
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="editForm.contact2Name" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="editForm.contact2Phone" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">联系信息</div>
+          <el-form-item label="服务商名称">
+            <el-input v-model="editForm.serviceProviderName" placeholder="请输入服务商名称" />
+          </el-form-item>
+          <el-form-item label="联系方式1">
+            <div style="display: flex; align-items: center;">
+              <el-input v-model="editForm.contact1Name" placeholder="请输入联系人姓名" style="width: 200px" />
+              <span style="margin: 0 16px;">-</span>
+              <el-input v-model="editForm.contact1Phone" placeholder="请输入联系人手机号" style="width: 200px" />
+            </div>
+          </el-form-item>
+          <el-form-item label="联系方式2">
+            <div style="display: flex; align-items: center;">
+              <el-input v-model="editForm.contact2Name" placeholder="请输入联系人姓名" style="width: 200px" />
+              <span style="margin: 0 16px;">-</span>
+              <el-input v-model="editForm.contact2Phone" placeholder="请输入联系人手机号" style="width: 200px" />
+            </div>
+          </el-form-item>
+        </div>
 
-        <!-- 分类标签 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">分类标签</p>
-        </el-form-item>
-        <el-form-item label="云服务商" prop="deployServiceProvider" required>
-          <el-select v-model="editForm.deployServiceProvider" placeholder="请选择云服务商" style="width: 300px">
-            <el-option label="影像云" value="10251" />
-            <el-option label="电信云" value="10252" />
-            <el-option label="移动云" value="10253" />
-            <el-option label="联通云" value="10254" />
-            <el-option label="浪潮云" value="10250" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="开放范围" prop="cover" required>
-          <el-select v-model="editForm.cover" placeholder="请选择开放范围" style="width: 300px">
-            <el-option label="不限" value="10256" />
-            <el-option label="市级" value="10257" />
-            <el-option label="区（县）域" value="10258" />
-          </el-select>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">分类标签</div>
+          <el-form-item label="云服务商" prop="deployServiceProvider" required>
+            <el-select v-model="editForm.deployServiceProvider" placeholder="请选择云服务商" style="width: 300px">
+              <el-option label="影像云" value="10251" />
+              <el-option label="电信云" value="10252" />
+              <el-option label="移动云" value="10253" />
+              <el-option label="联通云" value="10254" />
+              <el-option label="浪潮云" value="10250" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="开放范围" prop="cover" required>
+            <el-select v-model="editForm.cover" placeholder="请选择开放范围" style="width: 300px">
+              <el-option label="不限" value="10256" />
+              <el-option label="市级" value="10257" />
+              <el-option label="区（县）域" value="10258" />
+            </el-select>
+          </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleEditSubmit">保存草稿</el-button>
+        <el-button type="primary" @click="handleEditSubmit">直接发布</el-button>
         <el-button @click="editDialogVisible = false">取消</el-button>
       </div>
     </el-dialog>
 
-    <!-- 评分弹窗 -->
+    <!-- 评价弹窗 -->
     <el-dialog
       title="组件评价"
-      width="800px"
+      width="920px"
       :visible.sync="ratingDialogVisible"
       :close-on-click-modal="false"
       append-to-body
+      top="5vh"
     >
-      <div class="rating-dialog-content">
-        <el-tabs v-model="activeTab" class="rating-tabs">
-          <el-tab-pane label="平台评价">
-            <div class="rating-form">
-              <el-form ref="ratingForm" :model="ratingForm" label-width="80px">
-                <el-form-item label="评分">
-                  <div class="stars">
-                    <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= ratingForm.score }" @click="ratingForm.score = i">★</span>
-                  </div>
-                  <span class="score-text">{{ ratingForm.score }}分</span>
-                </el-form-item>
-                <el-form-item label="评价描述">
-                  <el-input v-model="ratingForm.description" type="textarea" rows="4" placeholder="请输入评价描述" class="description-input" />
-                </el-form-item>
-              </el-form>
-            </div>
+      <div class="add-form">
+        <el-tabs v-model="activeTab">
+          <el-tab-pane label="平台评价" name="platform">
+            <el-form ref="ratingForm" :model="ratingForm" label-width="80px">
+              <el-form-item label="评分">
+                <div class="stars">
+                  <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= ratingForm.score }" @click="ratingForm.score = i">★</span>
+                </div>
+                <span class="score-text">{{ ratingForm.score }}分</span>
+              </el-form-item>
+              <el-form-item label="评价描述">
+                <el-input v-model="ratingForm.description" type="textarea" rows="4" placeholder="请输入评价描述" />
+              </el-form-item>
+            </el-form>
           </el-tab-pane>
-          <el-tab-pane label="使用评价列表">
+          <el-tab-pane label="用户评价" name="user">
             <el-table :data="usageRatings" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
               <el-table-column label="评分" width="80">
                 <template slot-scope="scope">
@@ -576,7 +574,7 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="服务 / 订单号" min-width="200">
+              <el-table-column label="服务/订单号" width="200">
                 <template slot-scope="scope">
                   <div>
                     <div class="review-service">{{ scope.row.serviceName }}</div>
@@ -584,7 +582,7 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="评价机构" min-width="200">
+              <el-table-column label="评价机构" width="200">
                 <template slot-scope="scope">
                   <div>
                     <div class="review-org">{{ scope.row.orgName }}</div>
@@ -592,17 +590,12 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="评价内容" min-width="250">
+              <el-table-column label="评价内容" min-width="160" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  <div class="review-content">{{ scope.row.content }}</div>
+                  {{ scope.row.content }}
                 </template>
               </el-table-column>
-              <el-table-column label="状态" width="90">
-                <template slot-scope="scope">
-                  <el-tag :type="getStatusTagType(scope.row.status)" size="mini">{{ scope.row.status }}</el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column label="时间" width="130">
+              <el-table-column label="评价时间" width="140">
                 <template slot-scope="scope">
                   {{ scope.row.time }}
                 </template>
@@ -612,7 +605,7 @@
         </el-tabs>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button v-if="activeTab === '0'" type="primary" @click="handleRatingSubmit">提交</el-button>
+        <el-button v-if="activeTab === 'platform'" type="primary" @click="handleRatingSubmit">提交</el-button>
         <el-button @click="ratingDialogVisible = false">关闭</el-button>
       </div>
     </el-dialog>
@@ -710,7 +703,7 @@ export default {
       },
       // 评分弹窗
       ratingDialogVisible: false,
-      activeTab: '0', // 0: 平台评价, 1: 使用评价列表
+      activeTab: 'platform',
       ratingForm: {
         score: 0,
         description: ''
@@ -775,7 +768,7 @@ export default {
     },
     handleDetail(row) {
       this.$router.push({
-        path: '/cms/componentDetail',
+        path: '/portal/service/componentDetail',
         query: {
           name: row.name || '未设置',
           serviceProviderName: row.serviceProviderName || '未设置',
@@ -1007,20 +1000,67 @@ export default {
   margin: 0;
 }
 
-/* 弹窗样式 */
-.el-dialog__body {
-  max-height: 600px;
+/* 新增/编辑弹窗样式 */
+:deep(.el-dialog) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:deep(.el-dialog__header) {
+  padding: 14px 24px 6px;
+  border-bottom: 1px solid #ebeef5;
+  background: #fafbfc;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+:deep(.el-dialog__body) {
+  padding: 0;
+  max-height: 62vh;
   overflow-y: auto;
 }
 
-/* 详情弹窗样式 */
-.fz-16 {
-  font-size: 16px;
-  font-weight: bold;
+:deep(.el-dialog__footer) {
+  padding: 14px 24px;
+  border-top: 1px solid #ebeef5;
+  background: #fafbfc;
 }
-.mt--8 {
-  margin-top: -8px;
+
+.add-form {
+  padding: 12px 24px 20px;
 }
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.form-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 18px;
+}
+
+:deep(.el-form-item__label) {
+  color: #606266;
+  font-weight: 500;
+  font-size: 13px;
+}
+
 .pt-24 {
   padding-top: 24px;
 }
@@ -1062,63 +1102,22 @@ export default {
   text-decoration: underline;
 }
 
-/* 评分弹窗样式 */
-.rating-dialog-content {
-  padding: 16px;
-}
-
-.rating-tabs {
-  margin-bottom: 20px;
-}
-
-.rating-tabs .el-tabs__header {
-  margin-bottom: 20px;
-}
-
-.rating-tabs .el-tabs__nav {
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.rating-tabs .el-tabs__item {
-  padding: 10px 20px;
-  font-size: 14px;
-  color: #606266;
-}
-
-.rating-tabs .el-tabs__item.is-active {
-  color: #1890ff;
-  font-weight: 500;
-}
-
-.rating-tabs .el-tabs__active-bar {
-  background-color: #1890ff;
-  height: 2px;
-}
-
-/* 评分表单样式 */
-.rating-form {
-  background: #fff;
-  padding: 20px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
+/* 评价弹窗样式 */
 .stars {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 8px;
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: middle;
 }
 
 .star {
-  font-size: 24px;
+  font-size: 20px;
   color: #d9d9d9;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.2s;
 }
 
 .star:hover {
   color: #faad14;
-  transform: scale(1.1);
 }
 
 .star.full {
@@ -1126,59 +1125,35 @@ export default {
 }
 
 .score-text {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: #1890ff;
-  margin-left: 12px;
+  margin-left: 10px;
+  vertical-align: middle;
 }
 
-.description-input {
-  width: 100%;
-  border-radius: 4px;
-}
-
-.description-input textarea {
-  font-size: 14px;
-  line-height: 1.5;
-  resize: vertical;
-}
-
-/* 评价内容样式 */
-.review-content {
-  font-size: 12px;
-  color: #5c6480;
-  line-height: 1.5;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-/* 表格样式 */
-.rating-tabs .el-table {
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.rating-tabs .el-table th {
-  font-weight: 500;
-  color: #606266;
-}
-
-.rating-tabs .el-table td {
+.review-service {
+  color: #262626;
   font-size: 13px;
-  color: #303133;
+  font-weight: 500;
 }
 
-/* 弹窗底部样式 */
-.dialog-footer {
-  text-align: right;
-  padding: 16px 20px;
-  border-top: 1px solid #f0f0f0;
-  margin-top: 0;
+.review-order {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-top: 2px;
 }
 
-.dialog-footer .el-button {
-  margin-left: 8px;
+.review-org {
+  color: #262626;
+  font-size: 13px;
+  font-weight: 500;
 }
+
+.review-user {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-top: 2px;
+}
+
 </style>

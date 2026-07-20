@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div>
     <!-- 筛选条件 -->
     <el-row :gutter="24" class="mb12">
       <el-col :span="24">
@@ -10,24 +10,32 @@
           class="el-form-search"
           :inline="true"
         >
-          <el-form-item prop="keyword">
+          <el-form-item prop="orderNo">
             <el-input
-              v-model="queryParams.keyword"
-              placeholder="订单号、机构名、服务名称"
+              v-model="queryParams.orderNo"
+              placeholder="请输入订单号"
               clearable
-              style="width: 240px"
+              style="width: 160px"
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item prop="org">
-            <el-select
-              v-model="queryParams.org"
-              placeholder="所有机构"
+          <el-form-item prop="orgName">
+            <el-input
+              v-model="queryParams.orgName"
+              placeholder="请输入机构名称"
               clearable
-              style="width: 150px"
-            >
-              <el-option label="北京市海淀区数字经济发展局" value="北京市海淀区数字经济发展局" />
-            </el-select>
+              style="width: 160px"
+              @keyup.enter.native="handleQuery"
+            />
+          </el-form-item>
+          <el-form-item prop="serviceName">
+            <el-input
+              v-model="queryParams.serviceName"
+              placeholder="请输入服务名称"
+              clearable
+              style="width: 160px"
+              @keyup.enter.native="handleQuery"
+            />
           </el-form-item>
           <el-form-item prop="serviceType">
             <el-select
@@ -36,25 +44,24 @@
               clearable
               style="width: 150px"
             >
-              <el-option label="标准云资源" value="标准云资源" />
-              <el-option label="安全服务" value="安全服务" />
               <el-option label="数字应用服务" value="数字应用服务" />
               <el-option label="能力组件服务" value="能力组件服务" />
-              <el-option label="定制化资源" value="定制化资源" />
+              <el-option label="安全服务" value="安全服务" />
+              <el-option label="基础资源服务" value="基础资源服务" />
             </el-select>
           </el-form-item>
           <el-form-item prop="status">
             <el-select
               v-model="queryParams.status"
-              placeholder="所有状态"
+              placeholder="订单状态"
               clearable
               style="width: 150px"
             >
-              <el-option label="审批中" value="approving" />
-              <el-option label="审批通过" value="approved" />
+              <el-option label="工单流转中" value="workorder_processing" />
+              <el-option label="已完成" value="completed" />
+              <el-option label="已评价" value="evaluated" />
               <el-option label="已驳回" value="rejected" />
-              <el-option label="已生效" value="effective" />
-              <el-option label="已关闭" value="closed" />
+              <el-option label="已取消" value="cancelled" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -93,7 +100,7 @@
         <template slot-scope="scope">
           <div>
             <div class="tbl-name">{{ scope.row.orgName }}</div>
-            <div class="tbl-sub">{{ scope.row.applicant }} · {{ scope.row.department }}</div>
+            <div class="tbl-sub">{{ scope.row.applicant }}</div>
           </div>
         </template>
       </el-table-column>
@@ -109,10 +116,9 @@
       </el-table-column>
       <el-table-column prop="workorderId" label="关联工单" width="120" />
       <el-table-column prop="applyTime" label="申请时间" width="160" />
-      <el-table-column label="操作" width="200" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="100" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="goToDetail(scope.row)">详情</el-button>
-          <el-button v-if="scope.row.status === '已完成'" type="text" size="small" @click="openReviewDialog(scope.row)">满意度评价</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -124,32 +130,6 @@
       :limit.sync="queryParams.pageSize"
       @pagination="loadOrderList"
     />
-
-    <!-- 满意度评价弹窗 -->
-    <el-dialog
-      title="服务满意度评价"
-      width="520px"
-      :visible.sync="reviewDialogVisible"
-      :close-on-click-modal="false"
-      append-to-body
-    >
-      <div class="review-order-info">
-        <span class="review-order-no">{{ reviewForm.orderNo }}</span>
-        <span class="review-order-name">{{ reviewForm.serviceName }}</span>
-      </div>
-      <el-form ref="reviewFormRef" :model="reviewForm" :rules="reviewRules" label-width="90px">
-        <el-form-item label="满意度" prop="score">
-          <el-rate v-model="reviewForm.score" show-text :texts="['非常差', '差', '一般', '好', '非常好']" />
-        </el-form-item>
-        <el-form-item label="评价描述" prop="description">
-          <el-input v-model="reviewForm.description" type="textarea" :rows="4" placeholder="请输入您对本次服务的评价" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="reviewDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleReviewSubmit">提 交</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -168,8 +148,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        keyword: undefined,
-        org: undefined,
+        orderNo: undefined,
+        orgName: undefined,
+        serviceName: undefined,
         serviceType: undefined,
         status: undefined
       },
@@ -193,7 +174,7 @@ export default {
           applicant: '张三',
           department: '技术部',
           serviceType: '数字应用服务',
-          status: '审批通过',
+          status: '工单流转中',
           workorderId: 'TK-0234',
           applyTime: '2024-03-15 14:32'
         },
@@ -205,7 +186,7 @@ export default {
           applicant: '张三',
           department: '技术部',
           serviceType: '能力组件服务',
-          status: '已生效',
+          status: '已完成',
           workorderId: 'TK-0235',
           applyTime: '2024-03-10 09:15'
         },
@@ -217,7 +198,7 @@ export default {
           applicant: '张三',
           department: '技术部',
           serviceType: '数字应用服务',
-          status: '审批中',
+          status: '工单流转中',
           workorderId: 'TK-0236',
           applyTime: '2024-03-05 16:45'
         },
@@ -265,47 +246,28 @@ export default {
       }, 500);
     },
     goToDetail(row) {
-      this.$router.push('/workorder/order/myInitiatedDetail');
+      const currentPath = this.$route.path;
+      const source = currentPath.includes('myReceived') ? 'received' : 'initiated';
+      this.$router.push({ path: '/workorder/order/myInitiatedDetail', query: { source, id: row.orderNo } });
     },
     getServiceTypeColor(type) {
       const colorMap = {
-        '标准云资源': 'primary',
-        '安全服务': 'warning',
         '数字应用服务': 'info',
         '能力组件服务': 'success',
-        '定制化资源': 'info'
+        '安全服务': 'warning',
+        '基础资源服务': 'primary'
       };
       return colorMap[type] || 'info';
     },
     getStatusColor(status) {
       const colorMap = {
-        '审批中': 'warning',
-        '审批通过': 'success',
-        '已生效': 'success',
+        '工单流转中': '',
         '已完成': 'success',
+        '已评价': 'success',
         '已驳回': 'danger',
-        '已关闭': 'info'
+        '已取消': 'info'
       };
       return colorMap[status] || 'info';
-    },
-    openReviewDialog(row) {
-      this.reviewForm = {
-        orderNo: row.orderNo,
-        serviceName: row.serviceName,
-        score: 0,
-        description: ''
-      };
-      this.reviewDialogVisible = true;
-      this.$nextTick(() => {
-        this.$refs.reviewFormRef && this.$refs.reviewFormRef.clearValidate();
-      });
-    },
-    handleReviewSubmit() {
-      this.$refs.reviewFormRef.validate(valid => {
-        if (!valid) return;
-        this.$modal.msgSuccess('评价提交成功');
-        this.reviewDialogVisible = false;
-      });
     }
   }
 };
@@ -370,5 +332,22 @@ export default {
   font-size: 14px;
   font-weight: 500;
   color: #303133;
+}
+
+.rate-form-item :deep(.el-rate) {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.rate-form-item :deep(.el-rate__item) {
+  line-height: 1;
+}
+
+.rate-form-item :deep(.el-rate__text) {
+  font-size: 14px;
+  color: #262626;
+  margin-left: 8px;
+  line-height: 1;
 }
 </style>

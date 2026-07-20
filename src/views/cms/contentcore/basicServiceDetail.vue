@@ -8,42 +8,39 @@
 
     <div class="detail-content-wrap">
       <div class="detail-left">
-        <!-- 组件基本信息 -->
+        <!-- 服务基本信息 -->
         <el-card shadow="hover" class="mb-4">
           <div slot="header" class="clearfix">
-            <span>组件基本信息</span>
+            <span>服务基本信息</span>
           </div>
 
           <div class="detail-section">
             <div class="detail-section-title">基本信息</div>
             <div class="detail-kv">
-              <div class="kv-item"><label>组件ID</label><span>{{ compInfo.componentId || '--' }}</span></div>
-              <div class="kv-item"><label>组件名称</label><span>{{ compInfo.name || '--' }}</span></div>
-              <div class="kv-item"><label>状态</label><span>{{ compInfo.statusView || '--' }}</span></div>
-              <div class="kv-item"><label>显示顺序</label><span>{{ compInfo.sortOrder || '0' }}</span></div>
-              <div class="kv-item full"><label>组件描述</label><span>{{ compInfo.description || '--' }}</span></div>
+              <div class="kv-item"><label>服务ID</label><span>{{ serviceInfo.serviceId || '--' }}</span></div>
+              <div class="kv-item"><label>服务名称</label><span>{{ serviceInfo.serviceName || '--' }}</span></div>
+              <div class="kv-item"><label>服务类型</label><span>{{ serviceInfo.serviceType || '--' }}</span></div>
+              <div class="kv-item"><label>显示顺序</label><span>{{ serviceInfo.sortOrder || '0' }}</span></div>
+              <div class="kv-item full"><label>服务描述</label><span>{{ serviceInfo.description || '--' }}</span></div>
             </div>
           </div>
 
           <div class="detail-section">
-            <div class="detail-section-title">联系信息</div>
+            <div class="detail-section-title">服务信息</div>
             <div class="detail-kv">
-              <div class="kv-item"><label>服务商名称</label><span>{{ compInfo.serviceProviderName || '--' }}</span></div>
-              <div class="kv-item"><label>联系人1</label><span>{{ compInfo.contact1Name || '--' }}</span></div>
-              <div class="kv-item"><label>联系电话1</label><span>{{ compInfo.contact1Phone || '--' }}</span></div>
-              <div class="kv-item"><label>联系人2</label><span>{{ compInfo.contact2Name || '--' }}</span></div>
-              <div class="kv-item"><label>联系电话2</label><span>{{ compInfo.contact2Phone || '--' }}</span></div>
+              <div class="kv-item"><label>云服务商</label><span>{{ serviceInfo.cloudProvider || '--' }}</span></div>
+              <div class="kv-item"><label>区域</label><span>{{ serviceInfo.region || '--' }}</span></div>
             </div>
           </div>
 
           <div class="detail-section">
-            <div class="detail-section-title">分类标签</div>
+            <div class="detail-section-title">附件材料</div>
             <div class="detail-kv">
-              <div class="kv-item"><label>云服务商</label><span>{{ compInfo.deployServiceProviderView || '--' }}</span></div>
-              <div class="kv-item"><label>开放范围</label><span>{{ compInfo.coverView || '--' }}</span></div>
+              <div class="kv-item full">
+                <a v-for="(m, i) in serviceInfo.materials" :key="i" class="file-link" href="javascript:void(0)" @click="downloadMaterial(m)">{{ m.name }}</a>
+              </div>
             </div>
           </div>
-
         </el-card>
 
         <!-- 审核记录 -->
@@ -82,11 +79,11 @@
           <div class="review-section">
             <div class="review-row">
               <span class="review-label">平台评价</span>
-              <el-rate v-model="compInfo.platformRating" disabled show-score />
+              <el-rate v-model="serviceInfo.platformRating" disabled show-score />
             </div>
             <div class="review-row">
               <span class="review-label">用户评价</span>
-              <el-rate v-model="compInfo.usageRating" disabled show-score />
+              <el-rate v-model="serviceInfo.usageRating" disabled show-score />
             </div>
             <div class="review-row">
               <span class="review-label">评价数量</span>
@@ -147,24 +144,18 @@
 
 <script>
 export default {
-  name: 'ComponentDetail',
+  name: 'BasicServiceDetail',
   data() {
     return {
-      compInfo: {
+      serviceInfo: {
         id: '',
-        componentId: '',
-        name: '',
+        serviceId: '',
+        serviceName: '',
         description: '',
         sortOrder: 0,
-        status: 20,
-        statusView: '已发布',
-        serviceProviderName: '',
-        contact1Name: '',
-        contact1Phone: '',
-        contact2Name: '',
-        contact2Phone: '',
-        deployServiceProviderView: '',
-        coverView: '',
+        cloudProvider: '',
+        serviceType: '',
+        region: '',
         submitTime: '',
         platformRating: 0,
         usageRating: 0,
@@ -183,35 +174,30 @@ export default {
   },
   watch: {
     reviewDialogVisible(val) {
-      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.2.2.4'); }
+      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.2.3.4'); }
     },
   },
   created() {
     const q = this.$route.query;
-    // 加载组件基本信息
-    this.compInfo = {
-      ...this.compInfo,
+    // 加载服务基本信息
+    this.serviceInfo = {
+      ...this.serviceInfo,
       id: q.id || '1',
-      componentId: q.componentId || 'COMP-2024-001',
-      name: q.name || '电子签章服务组件',
-      description: q.description || '电子签章服务组件提供数字签名、电子印章、合同签署等能力，支持 PDF、OFD 等格式，符合国家电子签名法要求。',
+      serviceId: q.serviceId || 'SVC-2024-0001',
+      serviceName: q.serviceName || '弹性计算服务 ECS',
+      description: q.description || '弹性计算服务（ECS）是一种简单高效、处理能力可弹性伸缩的计算服务，帮助快速构建更稳定、安全的应用，提升运维效率，降低 IT 成本。',
       sortOrder: parseInt(q.sortOrder) || 1,
-      status: parseInt(q.status) || 20,
-      statusView: parseInt(q.status) === 20 ? '已发布' : parseInt(q.status) === 30 ? '已下线' : '未知',
-      serviceProviderName: q.serviceProviderName || '华为技术',
-      contact1Name: q.contact1Name || '张经理',
-      contact1Phone: q.contact1Phone || '13800138000',
-      contact2Name: q.contact2Name || '李助理',
-      contact2Phone: q.contact2Phone || '13900139000',
-      deployServiceProviderView: q.deployServiceProviderView || '电信云',
-      coverView: q.coverView || '不限',
-      submitTime: q.submitTime || '2024-03-10 09:30',
+      cloudProvider: q.cloudProvider || '浪潮云',
+      serviceType: q.serviceType || '计算服务',
+      region: q.region || '华东',
+      submitTime: q.submitTime || '2024-03-01 10:00:00',
       platformRating: parseFloat(q.platformRating) || parseFloat((Math.random() * 4 + 1).toFixed(1)),
       usageRating: parseFloat(q.usageRating) || parseFloat((Math.random() * 4 + 1).toFixed(1)),
       materials: [
-        { name: '组件功能说明.pdf', size: '1.8 MB' },
-        { name: '安全评估报告.pdf', size: '2.1 MB' },
-        { name: '厂商资质证明.pdf', size: '960 KB' }
+        { name: '服务技术白皮书.pdf', size: '3.2 MB' },
+        { name: '安全合规认证.pdf', size: '1.5 MB' },
+        { name: '服务等级协议 SLA.pdf', size: '920 KB' },
+        { name: '厂商资质证明.pdf', size: '1.1 MB' }
       ]
     };
     this.loadAuditRecords();
@@ -219,21 +205,21 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push('/portal/service/component');
+      this.$router.push('/portal/service/serviceCatalog');
     },
     loadAuditRecords() {
       this.auditRecords = [
         {
           id: '1',
-          submitTime: '2024-03-10 09:30',
+          submitTime: '2024-03-01 10:00',
           status: 'approved',
           auditor: '平台管理员',
-          auditTime: '2024-03-11 10:00',
-          opinion: '组件功能符合标准，审核通过。'
+          auditTime: '2024-03-02 09:30',
+          opinion: '服务符合上架标准，审核通过。'
         },
         {
           id: '2',
-          submitTime: '2024-03-12 14:00',
+          submitTime: '2024-03-05 11:00',
           status: 'pending',
           auditor: '',
           auditTime: '',
@@ -246,38 +232,38 @@ export default {
         {
           id: '1',
           score: 5,
-          serviceName: '智能数据分析组件',
-          orderNo: 'ORD20240120001',
+          serviceName: '云存储服务',
+          orderNo: 'ORD20240118001',
           orgName: '测试机构',
-          content: '组件功能强大，数据分析效果很好，推荐使用！',
-          time: '2024-01-20 10:30:00',
+          content: '服务稳定，响应速度快，非常满意！',
+          time: '2024-01-18 09:30:00',
           status: '已回复',
-          reply: '感谢您的评价，我们会继续优化！',
-          replyTime: '2024-01-20 11:00:00'
+          reply: '感谢您的认可！',
+          replyTime: '2024-01-18 10:00:00'
         },
         {
           id: '2',
           score: 4,
-          serviceName: '智能数据分析组件',
-          orderNo: 'ORD20240118002',
+          serviceName: '云存储服务',
+          orderNo: 'ORD20240115002',
           orgName: '研发部门',
-          content: '使用体验不错，希望能增加更多可视化图表类型',
-          time: '2024-01-18 14:20:00',
-          status: '已回复',
-          reply: '您的建议已收到，我们正在规划新版本功能',
-          replyTime: '2024-01-18 15:00:00'
+          content: '存储空间充足，价格合理',
+          time: '2024-01-15 14:00:00',
+          status: '待回复',
+          reply: '--',
+          replyTime: '--'
         },
         {
           id: '3',
           score: 5,
-          serviceName: '智能数据分析组件',
-          orderNo: 'ORD20240116003',
+          serviceName: '云存储服务',
+          orderNo: 'ORD20240112003',
           orgName: '产品部门',
-          content: '文档清晰，集成简单，好评！',
-          time: '2024-01-16 09:15:00',
-          status: '待回复',
-          reply: '--',
-          replyTime: '--'
+          content: 'API文档清晰，集成简单',
+          time: '2024-01-12 11:20:00',
+          status: '已回复',
+          reply: '感谢反馈，我们会持续优化文档',
+          replyTime: '2024-01-12 12:00:00'
         }
       ];
       this.reviewPage.total = this.reviewListAll.length;

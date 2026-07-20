@@ -131,7 +131,7 @@ export const constantRoutes = [
         component: () => import('@/views/cms/contentcore/content'),
         name: 'ServiceManagement',
         alwaysShow: true,
-        meta: { title: '服务管理', icon: 'list' },
+        meta: { title: '服务目录管理', icon: 'list' },
         children: [
           {
             path: 'digitalApp',
@@ -144,7 +144,7 @@ export const constantRoutes = [
             component: () => import('@/views/cms/contentcore/digitalAppDetail'),
             name: 'DigitalAppDetail',
             hidden: true,
-            meta: { title: '应用详情', noCache: true, activeMenu: '/portal/service/digitalApp' }
+            meta: { title: '数字应用详情', noCache: true, activeMenu: '/portal/service/digitalApp' }
           },
           {
             path: 'component',
@@ -163,29 +163,14 @@ export const constantRoutes = [
             path: 'serviceCatalog',
             component: () => import('@/views/cms/contentcore/serviceCatalogList'),
             name: 'ServiceCatalogList',
-            meta: { title: '服务目录', icon: 'list' }
+            meta: { title: '基础服务管理', icon: 'list' }
           },
           {
             path: 'serviceCatalogDetail',
-            component: () => import('@/views/cms/contentcore/serviceCatalogDetail'),
+            component: () => import('@/views/cms/contentcore/basicServiceDetail'),
             name: 'ServiceCatalogDetail',
             hidden: true,
             meta: { title: '服务详情', noCache: true, activeMenu: '/portal/service/serviceCatalog' }
-          }
-        ]
-      },
-      {
-        path: 'interaction',
-        component: () => import('@/views/cms/contentcore/interaction'),
-        name: 'InteractionManagement',
-        alwaysShow: true,
-        meta: { title: '互动运营', icon: 'interaction' },
-        children: [
-          {
-            path: 'friendLink',
-            component: () => import('@/views/cms/link/linkGroup'),
-            name: 'FriendLinkManagement',
-            meta: { title: '友链管理' }
           }
         ]
       },
@@ -194,7 +179,7 @@ export const constantRoutes = [
         component: () => import('@/views/workorder/layout'),
         name: 'AuditCenter',
         alwaysShow: true,
-        meta: { title: '审核管理' },
+        meta: { title: '服务备案审核' },
         children: [
           {
             path: 'qualificationAudit',
@@ -215,6 +200,19 @@ export const constantRoutes = [
             meta: { title: '能力组件审核', noCache: true }
           },
           {
+            path: 'basicServiceAudit',
+            component: () => import('@/views/workorder/audit/basicServiceAudit'),
+            name: 'BasicServiceAudit',
+            meta: { title: '基础服务审核', noCache: true }
+          },
+          {
+            path: 'basicServiceAuditDetail',
+            component: () => import('@/views/workorder/audit/basicServiceAuditDetail'),
+            name: 'BasicServiceAuditDetail',
+            meta: { title: '基础服务审核详情', noCache: true, activeMenu: '/portal/auditCenter/basicServiceAudit' },
+            hidden: true
+          },
+          {
             path: 'qualificationDetail',
             component: () => import('@/views/workorder/orgAudit/qualificationDetail'),
             name: 'QualificationDetail',
@@ -233,19 +231,6 @@ export const constantRoutes = [
             component: () => import('@/views/workorder/audit/componentAuditDetail'),
             name: 'ComponentAuditDetail',
             meta: { title: '能力组件审核详情', noCache: true, activeMenu: '/portal/auditCenter/componentAudit' },
-            hidden: true
-          },
-          {
-            path: 'cloudServiceAudit',
-            component: () => import('@/views/workorder/audit/cloudServiceAudit'),
-            name: 'CloudServiceAudit',
-            meta: { title: '云服务审核', noCache: true }
-          },
-          {
-            path: 'cloudServiceAuditDetail',
-            component: () => import('@/views/workorder/audit/cloudServiceAuditDetail'),
-            name: 'CloudServiceAuditDetail',
-            meta: { title: '云服务审核详情', noCache: true, activeMenu: '/portal/auditCenter/cloudServiceAudit' },
             hidden: true
           }
         ]
@@ -306,6 +291,43 @@ export const constantRoutes = [
             hidden: true
           }
         ]
+      },
+      {
+        path: 'demand',
+        component: () => import('@/views/order/layout'),
+        name: 'DemandManagement',
+        alwaysShow: true,
+        meta: { title: '需求管理（V3）', icon: 'list' },
+        children: [
+          {
+            path: 'all',
+            component: () => import('@/views/order/allDemands'),
+            name: 'AllDemands',
+            meta: { title: '所有需求' }
+          },
+          {
+            path: 'detail',
+            component: () => import('@/views/order/allDemandsDetail'),
+            name: 'AllDemandsDetail',
+            meta: { title: '需求详情', noCache: true, activeMenu: '/portal/demand/all' },
+            hidden: true
+          }
+        ]
+      },
+      {
+        path: 'interaction',
+        component: () => import('@/views/cms/contentcore/interaction'),
+        name: 'InteractionManagement',
+        alwaysShow: true,
+        meta: { title: '互动运营', icon: 'interaction' },
+        children: [
+          {
+            path: 'friendLink',
+            component: () => import('@/views/cms/link/linkGroup'),
+            name: 'FriendLinkManagement',
+            meta: { title: '友链管理' }
+          }
+        ]
       }
     ]
   },
@@ -319,7 +341,7 @@ export const constantRoutes = [
         path: 'serviceDesk',
         component: () => import('@/views/workorder/serviceDesk'),
         name: 'ServiceDesk',
-        meta: { title: '服务台' }
+        meta: { title: '服务台（V3）' }
       },
       {
           path: 'form',
@@ -403,14 +425,14 @@ export const constantRoutes = [
         component: () => import('@/views/order/layout'),
         name: 'MyAppsDetailLayout',
         redirect: 'noRedirect',
-        meta: { title: '应用详情' },
+        meta: { title: '数字应用详情' },
         hidden: true,
         children: [
           {
             path: '',
             component: () => import('@/views/order/myAppsDetail'),
             name: 'MyAppsDetail',
-            meta: { title: '应用详情', noCache: true, activeMenu: '/workorder/myApps' }
+            meta: { title: '数字应用详情', noCache: true, activeMenu: '/workorder/myApps' }
           }
         ]
       },
@@ -441,6 +463,12 @@ export const constantRoutes = [
             component: () => import('@/views/order/myInitiated'),
             name: 'OrderMyInitiated',
             meta: { title: '我发起的' }
+          },
+          {
+            path: 'myReceived',
+            component: () => import('@/views/order/myInitiated'),
+            name: 'OrderMyReceived',
+            meta: { title: '我收到的' }
           },
           {
             path: 'list',
@@ -480,6 +508,48 @@ export const constantRoutes = [
             component: () => import('@/views/order/myInitiatedDetail'),
             name: 'OrderMyInitiatedDetail',
             meta: { title: '订单详情', noCache: true, activeMenu: '/workorder/order/myInitiated' },
+            hidden: true
+          }
+        ]
+      },
+      {
+        path: 'myDemand',
+        component: () => import('@/views/order/layout'),
+        name: 'MyDemand',
+        alwaysShow: true,
+        meta: { title: '我的需求（V3）', icon: 'list' },
+        children: [
+          {
+            path: 'initiate',
+            component: () => import('@/views/order/myDemandInitiate'),
+            name: 'MyDemandInitiate',
+            meta: { title: '发起需求' }
+          },
+          {
+            path: 'initiateDetail',
+            component: () => import('@/views/order/myDemandInitiateDetail'),
+            name: 'MyDemandInitiateDetail',
+            meta: { title: '需求详情', noCache: true, activeMenu: '/workorder/myDemand/initiate' },
+            hidden: true
+          },
+          {
+            path: 'response',
+            component: () => import('@/views/order/myDemandResponse'),
+            name: 'MyDemandResponse',
+            meta: { title: '响应需求' }
+          },
+          {
+            path: 'allDetail',
+            component: () => import('@/views/order/myDemandAllDetail'),
+            name: 'MyDemandAllDetail',
+            meta: { title: '需求详情', noCache: true, activeMenu: '/workorder/myDemand/response' },
+            hidden: true
+          },
+          {
+            path: 'responseDetail',
+            component: () => import('@/views/order/myDemandResponseDetail'),
+            name: 'MyDemandResponseDetail',
+            meta: { title: '响应详情', noCache: true, activeMenu: '/workorder/myDemand/response' },
             hidden: true
           }
         ]

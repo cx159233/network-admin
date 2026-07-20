@@ -1,58 +1,61 @@
 <template>
-  <div class="app-container">
-    <!-- 统计卡片 - 优化样式 -->
-    <div class="stats-card mb12">
-      <div class="stat-item stat-pending">
-        <div class="stat-value">2</div>
-        <div class="stat-label">待审核</div>
-      </div>
-      <div class="stat-item stat-approved">
-        <div class="stat-value">1</div>
-        <div class="stat-label">已通过</div>
-      </div>
-      <div class="stat-item stat-valid">
-        <div class="stat-value">3</div>
-        <div class="stat-label">总应用数</div>
-      </div>
-    </div>
-
+  <div>
     <!-- 筛选条件 -->
     <el-row :gutter="24" class="mb12">
       <el-col :span="24">
         <el-form
-          :model="filterForm"
+          :model="queryParams"
+          ref="queryForm"
           size="small"
           class="el-form-search"
+          style="text-align: right"
           :inline="true"
         >
-          <el-form-item prop="appName">
+          <el-form-item prop="title">
             <el-input
-              v-model="filterForm.appName"
-              placeholder="应用名称、厂商"
+              v-model="queryParams.title"
+              placeholder="请输入应用名称"
               clearable
-              style="width: 150px"
-              @keyup.enter.native="handleSearch"
+              style="width: 200px"
+              @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item prop="category">
+          <el-form-item prop="appScope">
             <el-select
-              v-model="filterForm.category"
-              placeholder="应用分类"
+              v-model="queryParams.appScope"
+              placeholder="请选择应用覆盖范围"
               clearable
               style="width: 150px"
             >
-              <el-option label="办公软件" value="office" />
-              <el-option label="企业管理" value="enterprise" />
-              <el-option label="数据分析" value="data" />
-              <el-option label="其他" value="other" />
+              <el-option
+                v-for="item in appScopeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </el-select>
           </el-form-item>
-          <el-form-item prop="auditStatus">
+          <el-form-item prop="targetObject">
             <el-select
-              v-model="filterForm.auditStatus"
-              placeholder="审核状态"
+              v-model="queryParams.targetObject"
+              placeholder="请选择面向对象"
               clearable
               style="width: 150px"
+            >
+              <el-option
+                v-for="item in targetObjectOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="status">
+            <el-select
+              v-model="queryParams.status"
+              placeholder="审核状态"
+              clearable
+              style="width: 110px"
             >
               <el-option label="待审核" value="10" />
               <el-option label="已通过" value="20" />
@@ -64,66 +67,132 @@
               <el-button
                 type="primary"
                 icon="el-icon-search"
-                @click="handleSearch"
-                >搜索</el-button
-              >
-              <el-button icon="el-icon-refresh" @click="resetFilter">重置</el-button>
+                @click="handleQuery"
+              >搜索</el-button>
+              <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
             </el-button-group>
           </el-form-item>
         </el-form>
       </el-col>
     </el-row>
 
-    <!-- 应用列表 -->
-    <el-table v-loading="loading" :data="appList" size="small" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
-      <el-table-column prop="appName" label="应用名称" min-width="220">
+    <!-- 表格 -->
+    <el-table
+      v-loading="loading"
+      ref="tableAppList"
+      size="small"
+      :data="appList"
+      :height="tableHeight"
+      :max-height="tableMaxHeight"
+      @row-click="handleRowClick"
+      @cell-dblclick="handleEdit"
+    >
+      <el-table-column
+        label="应用名称"
+        :show-overflow-tooltip="true"
+        min-width="180"
+      >
         <template slot-scope="scope">
-          <div>
-            <div class="org-name">{{ scope.row.appName }}</div>
-            <div class="org-code">{{ scope.row.version }}</div>
-          </div>
+          {{ scope.row.title }}
         </template>
       </el-table-column>
-      <el-table-column prop="vendor" label="厂商" width="120" />
-      <el-table-column prop="category" label="分类" width="100" />
-      <el-table-column prop="cloudProvider" label="云服务商" width="120" />
-      <el-table-column prop="submitTime" label="提交时间" width="160" />
-      <el-table-column prop="auditStatus" label="状态" width="90">
+      <el-table-column
+        label="应用ID"
+        width="120"
+        align="center"
+        prop="appId"
+      >
         <template slot-scope="scope">
-          <el-tag :type="getStatusTagType(scope.row.auditStatus)" size="mini" effect="dark">{{ scope.row.auditStatus === 10 ? '待审核' : scope.row.auditStatus === 20 ? '已通过' : '已拒绝' }}</el-tag>
+          {{ scope.row.appId || scope.row.contentId }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="120" fixed="right">
+      <el-table-column
+        label="面向对象"
+        width="120"
+        align="center"
+        prop="targetObject"
+      >
         <template slot-scope="scope">
-          <el-link
-            v-if="scope.row.auditStatus === 10"
-            type="primary"
-            :underline="false"
-            @click="startAudit(scope.row)"
-          >
-            开始审核
-          </el-link>
-          <el-link
-            v-else-if="scope.row.auditStatus === 20"
-            type="success"
-            :underline="false"
-            @click="viewDetails(scope.row)"
-          >
-            查看详情
-          </el-link>
-          <el-link
-            v-else
-            type="info"
-            :underline="false"
-            @click="viewDetails(scope.row)"
-          >
-            查看详情
-          </el-link>
+          {{ scope.row.targetObject || '未设置' }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="应用覆盖范围"
+        width="200"
+        align="center"
+        prop="appScope"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.cover ? scope.row.cover.map(item => item.value).join(';') : (scope.row.appScope || '未设置') }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="状态"
+        align="center"
+        width="80"
+      >
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.auditStatus === 20 ? 'success' : scope.row.auditStatus === 30 ? 'danger' : 'warning'">
+            {{ scope.row.auditStatus === 10 ? '待审核' : scope.row.auditStatus === 20 ? '已通过' : '已拒绝' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="应用服务商"
+        :show-overflow-tooltip="true"
+        min-width="150"
+        prop="serviceProvider"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.serviceProvider || '未设置' }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="合作企业"
+        :show-overflow-tooltip="true"
+        min-width="150"
+        prop="cooperativeEnterprise"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.cooperativeEnterprise || '未设置' }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="云服务商"
+        :show-overflow-tooltip="true"
+        min-width="150"
+        prop="cloudProvider"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.cloudProvider || '未设置' }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作"
+        align="center"
+        width="200"
+        class-name="small-padding fixed-width"
+      >
+        <template slot-scope="scope">
+          <span class="btn-cell-wrap">
+            <el-button
+              v-if="scope.row.auditStatus === 10"
+              size="small"
+              type="text"
+              icon="el-icon-edit"
+              @click="startAudit(scope.row)"
+            >审核</el-button>
+            <el-button
+              v-else
+              size="small"
+              type="text"
+              icon="el-icon-view"
+              @click.stop="viewDetails(scope.row)"
+            >详情</el-button>
+          </span>
         </template>
       </el-table-column>
     </el-table>
-
-    <!-- 分页 -->
     <pagination
       v-show="total > 0"
       :total="total"
@@ -136,270 +205,92 @@
 
 <script>
 import Pagination from '@/components/Pagination/index.vue';
+import { getContentList } from '@/api/contentcore/content';
 
 export default {
   name: "DigitalAppAudit",
-  components: {
-    Pagination
-  },
+  components: { Pagination },
   data() {
     return {
       loading: false,
       total: 0,
-      filterForm: {
-        appName: '',
-        category: '',
-        auditStatus: ''
-      },
+      tableHeight: 600,
+      tableMaxHeight: 600,
+      appScopeOptions: [
+        { value: '基本公共卫生服务', label: '基本公共卫生服务' },
+        { value: '医院信息系统（HIS）', label: '医院信息系统（HIS）' },
+        { value: '家庭医生签约', label: '家庭医生签约' },
+        { value: '实验室信息管理系统（LIS）', label: '实验室信息管理系统（LIS）' },
+        { value: '影像归档和通信系统（PACS）', label: '影像归档和通信系统（PACS）' }
+      ],
+      targetObjectOptions: [
+        { value: '基层医疗卫生机构', label: '基层医疗卫生机构' },
+        { value: '公立医院', label: '公立医院' },
+        { value: '医技护人员', label: '医技护人员' }
+      ],
       queryParams: {
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
+        title: undefined,
+        appScope: undefined,
+        targetObject: undefined,
+        status: undefined,
+        catalogId: '603612031287365'
       },
-      appList: [
-        {
-          id: 1,
-          appName: '智能办公系统',
-          version: 'v1.0.0',
-          vendor: '腾讯科技',
-          category: '办公软件',
-          cloudProvider: '腾讯云',
-          submitTime: '2024-01-01 10:00:00',
-          auditStatus: 10
-        },
-        {
-          id: 2,
-          appName: '企业管理系统',
-          version: 'v2.0.0',
-          vendor: '阿里巴巴',
-          category: '企业管理',
-          cloudProvider: '阿里云',
-          submitTime: '2024-01-02 11:00:00',
-          auditStatus: 10
-        },
-        {
-          id: 3,
-          appName: '数据分析平台',
-          version: 'v3.0.0',
-          vendor: '百度',
-          category: '数据分析',
-          cloudProvider: '百度云',
-          submitTime: '2024-01-03 12:00:00',
-          auditStatus: 20
-        },
-        {
-          id: 4,
-          appName: '电子病历管理系统',
-          version: 'v1.2.0',
-          vendor: '华为技术',
-          category: '医疗信息化',
-          cloudProvider: '联通云',
-          submitTime: '2024-02-15 09:30:00',
-          auditStatus: 30
-        }
-      ]
+      appList: []
     };
   },
   created() {
+    this.changeTableHeight();
     this.loadAppList();
   },
   methods: {
     loadAppList() {
       this.loading = true;
-      // 模拟API请求
-      setTimeout(() => {
-        this.total = this.appList.length;
+      getContentList({
+        pageNum: this.queryParams.pageNum,
+        pageSize: this.queryParams.pageSize,
+        catalogId: this.queryParams.catalogId
+      }).then((response) => {
+        this.appList = response.data.rows.map(item => ({
+          ...item,
+          auditStatus: item.status,
+          submitTime: item.createTime
+        }));
+        this.total = parseInt(response.data.total);
         this.loading = false;
-      }, 500);
+      });
     },
-    getVendorTagType(vendor) {
-      // 根据厂商返回不同的标签类型
-      const vendors = {
-        '腾讯科技': 'primary',
-        '阿里巴巴': 'success',
-        '百度': 'warning'
-      };
-      return vendors[vendor] || 'info';
+    handleRowClick(currentRow) {},
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.loadAppList();
     },
-    getStatusTagType(status) {
-      switch (status) {
-        case 10:
-          return 'warning';
-        case 20:
-          return 'success';
-        case 30:
-          return 'danger';
-        default:
-          return '';
-      }
+    resetQuery() {
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    changeTableHeight() {
+      let height = document.body.offsetHeight;
+      this.tableHeight = height - 330;
+      this.tableMaxHeight = this.tableHeight;
     },
     startAudit(app) {
-      // 开始审核
       this.$router.push({
         path: '/portal/auditCenter/digitalAppAuditDetail',
-        query: { id: app.id }
+        query: { id: app.contentId }
       });
     },
     viewDetails(app) {
-      // 查看详情
       this.$router.push({
         path: '/portal/auditCenter/digitalAppAuditDetail',
-        query: { id: app.id }
+        query: { id: app.contentId }
       });
-    },
-    handleSearch() {
-      // 执行搜索
-      this.queryParams.pageNum = 1;
-      this.loadAppList();
-    },
-    resetFilter() {
-      // 重置筛选条件
-      this.filterForm = {
-        appName: '',
-        category: '',
-        auditStatus: ''
-      };
-      this.queryParams.pageNum = 1;
-      this.loadAppList();
     }
   }
 };
 </script>
 
 <style scoped>
-/* 统计卡片样式优化 */
-.stats-card {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.stat-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 16px;
-  border-radius: 6px;
-  background: #fff;
-  border: none;
-  border-top: 3px solid;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.stat-item:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
-}
-
-.stat-pending {
-  border-top-color: #faad14;
-  background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
-}
-
-.stat-processing {
-  border-top-color: #1890ff;
-  background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
-}
-
-.stat-approved {
-  border-top-color: #52c41a;
-  background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
-}
-
-.stat-valid {
-  border-top-color: #722ed1;
-  background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.stat-pending .stat-value {
-  color: #faad14;
-}
-
-.stat-processing .stat-value {
-  color: #1890ff;
-}
-
-.stat-approved .stat-value {
-  color: #52c41a;
-}
-
-.stat-valid .stat-value {
-  color: #722ed1;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: #8c8c8c;
-  font-weight: 500;
-}
-
-/* 筛选区域样式优化 */
-.filter-section {
-  background: #fff;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  border-radius: 4px;
-  border: 1px solid #e8e8e8;
-}
-
-.filter-form {
-  margin-bottom: 0;
-}
-
-.compact-form-item {
-  margin-bottom: 0 !important;
-  margin-right: 12px !important;
-}
-
-/* El-form 搜索样式 */
-:deep(.el-form-search) {
-  margin-bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 0;
-}
-
-/* 确保按钮组右对齐 */
-:deep(.el-form-search .el-form-item:last-child) {
-  margin-right: 0;
-}
-
-:deep(.el-form-search .el-form-item) {
-  margin-bottom: 0;
-  margin-right: 0;
-}
-
-/* 表格样式优化 */
-.table-card {
-  border: 1px solid #e8e8e8;
-}
-
-.org-name {
-  font-size: 14px;
-  color: #262626;
-  font-weight: 500;
-}
-
-.org-code {
-  font-size: 12px;
-  color: #8c8c8c;
-  margin-top: 4px;
-}
-
-.pagination-container {
-  margin-top: 16px;
-  text-align: right;
-}
+.mb12 { margin-bottom: 12px; }
 </style>

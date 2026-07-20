@@ -40,12 +40,12 @@ export default {
   data() {
     return {
       serviceInfo: {
-        serviceName: '未设置',
-        serviceId: '未设置',
-        serviceType: '未设置',
-        cloudProvider: '未设置',
-        region: '未设置',
-        description: '未设置'
+        serviceName: '--',
+        serviceId: '--',
+        serviceType: '--',
+        cloudProvider: '--',
+        region: '--',
+        description: '--'
       }
     };
   },
@@ -53,12 +53,12 @@ export default {
     const q = this.$route.query;
     if (q && q.serviceName) {
       this.serviceInfo = {
-        serviceName: q.serviceName || '未设置',
-        serviceId: q.serviceId || '未设置',
-        serviceType: q.serviceType || '未设置',
-        cloudProvider: q.cloudProvider || '未设置',
-        region: q.region || '未设置',
-        description: q.description || '未设置'
+        serviceName: q.serviceName || '--',
+        serviceId: q.serviceId || '--',
+        serviceType: q.serviceType || '--',
+        cloudProvider: q.cloudProvider || '--',
+        region: q.region || '--',
+        description: q.description || '--'
       };
     }
   },
@@ -189,7 +189,8 @@ export default {
 
 .info-value {
   color: #303133;
-  font-size: 13px;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   flex: 1;
   font-weight: 400;
   word-break: break-all;

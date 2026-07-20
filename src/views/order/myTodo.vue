@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div>
     <!-- 筛选条件 -->
     <el-row :gutter="24" class="mb12">
       <el-col :span="24">
@@ -52,11 +52,11 @@
               clearable
               style="width: 150px"
             >
-              <el-option label="审批中" value="审批中" />
-              <el-option label="开通中" value="开通中" />
-              <el-option label="已生效" value="已生效" />
+              <el-option label="工单流转中" value="工单流转中" />
+              <el-option label="已完成" value="已完成" />
+              <el-option label="已评价" value="已评价" />
               <el-option label="已驳回" value="已驳回" />
-              <el-option label="工单处理中" value="工单处理中" />
+              <el-option label="已取消" value="已取消" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -95,7 +95,7 @@
         <template slot-scope="scope">
           <div>
             <div class="tbl-name">{{ scope.row.org }}</div>
-            <div class="tbl-sub">{{ scope.row.applicant || '未知' }} · {{ scope.row.department || '未知' }}</div>
+            <div class="tbl-sub">{{ scope.row.applicant || '未知' }}</div>
           </div>
         </template>
       </el-table-column>
@@ -159,7 +159,7 @@ export default {
           applicant: '张三',
           department: '技术部',
           type: '安全服务',
-          status: '审批中',
+          status: '工单流转中',
           workorderCode: 'WO-2024-0001',
           createTime: '2024-03-15 10:30:00'
         },
@@ -172,7 +172,7 @@ export default {
           applicant: '李四',
           department: '运维部',
           type: '标准云资源',
-          status: '开通中',
+          status: '工单流转中',
           workorderCode: 'WO-2024-0002',
           createTime: '2024-03-14 14:20:00'
         },
@@ -185,7 +185,7 @@ export default {
           applicant: '王五',
           department: '信息化部',
           type: '数字应用服务',
-          status: '工单处理中',
+          status: '工单流转中',
           workorderCode: 'WO-2024-0003',
           createTime: '2024-03-13 09:15:00'
         },
@@ -198,7 +198,7 @@ export default {
           applicant: '赵六',
           department: '创新部',
           type: '能力组件服务',
-          status: '审批中',
+          status: '工单流转中',
           workorderCode: 'WO-2024-0004',
           createTime: '2024-03-12 16:45:00'
         },
@@ -211,7 +211,7 @@ export default {
           applicant: '孙七',
           department: '安全部',
           type: '定制化资源',
-          status: '工单处理中',
+          status: '工单流转中',
           workorderCode: 'WO-2024-0005',
           createTime: '2024-03-11 11:20:00'
         }
@@ -253,7 +253,7 @@ export default {
             applicant: '张三',
             department: '技术部',
             type: '安全服务',
-            status: '审批中',
+            status: '工单流转中',
             workorderCode: 'WO-2024-0001',
             createTime: '2024-03-15 10:30:00'
           },
@@ -266,7 +266,7 @@ export default {
             applicant: '李四',
             department: '运维部',
             type: '标准云资源',
-            status: '开通中',
+            status: '工单流转中',
             workorderCode: 'WO-2024-0002',
             createTime: '2024-03-14 14:20:00'
           },
@@ -279,7 +279,7 @@ export default {
             applicant: '王五',
             department: '信息化部',
             type: '数字应用服务',
-            status: '工单处理中',
+            status: '工单流转中',
             workorderCode: 'WO-2024-0003',
             createTime: '2024-03-13 09:15:00'
           },
@@ -292,7 +292,7 @@ export default {
             applicant: '赵六',
             department: '创新部',
             type: '能力组件服务',
-            status: '审批中',
+            status: '工单流转中',
             workorderCode: 'WO-2024-0004',
             createTime: '2024-03-12 16:45:00'
           },
@@ -305,7 +305,7 @@ export default {
             applicant: '孙七',
             department: '安全部',
             type: '定制化资源',
-            status: '工单处理中',
+            status: '工单流转中',
             workorderCode: 'WO-2024-0005',
             createTime: '2024-03-11 11:20:00'
           }
@@ -333,11 +333,11 @@ export default {
     },
     getStatusColor(status) {
       const colorMap = {
-        '审批中': 'warning',
-        '开通中': 'primary',
-        '已生效': 'success',
+        '工单流转中': '',
+        '已完成': 'success',
+        '已评价': 'success',
         '已驳回': 'danger',
-        '工单处理中': 'info'
+        '已取消': 'info'
       };
       return colorMap[status] || 'info';
     }

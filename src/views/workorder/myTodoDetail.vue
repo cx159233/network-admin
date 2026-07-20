@@ -468,27 +468,26 @@ export default {
 .info-item {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  padding: 8px 0;
+  border-radius: 0;
+  transition: none;
 }
 
 .info-item:hover {
-  background-color: #ecf5ff;
+  background-color: transparent;
 }
 
 .info-label {
-  color: #606266;
-  font-size: 13px;
+  color: #8c8c8c;
+  font-size: 14px;
   width: 90px;
   flex-shrink: 0;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .info-value {
-  color: #303133;
-  font-size: 13px;
+  color: #262626;
+  font-size: 14px;
   flex: 1;
   font-weight: 400;
 }

@@ -1,25 +1,5 @@
 <template>
-  <div class="app-container">
-    <!-- 统计卡片 -->
-    <div class="stats-card mb12">
-      <div class="stat-item">
-        <div class="stat-value">1,024</div>
-        <div class="stat-label">累计评价</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">4.7</div>
-        <div class="stat-label">平均评分</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">89%</div>
-        <div class="stat-label">好评率</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">6</div>
-        <div class="stat-label">待回复差评</div>
-      </div>
-    </div>
-
+  <div>
     <!-- 筛选条件 -->
     <el-row :gutter="24" class="mb12">
       <el-col :span="24">
@@ -29,26 +9,35 @@
           class="el-form-search"
           :inline="true"
         >
-          <el-form-item prop="keyword">
+          <el-form-item prop="serviceName">
             <el-input
-              v-model="queryParams.keyword"
-              placeholder="服务名称、机构名、评价内容"
+              v-model="queryParams.serviceName"
+              placeholder="请输入服务名称"
               clearable
-              style="width: 200px"
+              style="width: 160px"
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item prop="service">
+          <el-form-item prop="orgName">
+            <el-input
+              v-model="queryParams.orgName"
+              placeholder="请输入机构名称"
+              clearable
+              style="width: 160px"
+              @keyup.enter.native="handleQuery"
+            />
+          </el-form-item>
+          <el-form-item prop="serviceType">
             <el-select
-              v-model="queryParams.service"
-              placeholder="所有服务"
+              v-model="queryParams.serviceType"
+              placeholder="所有服务类型"
               clearable
               style="width: 150px"
             >
-              <el-option label="所有服务" value="" />
-              <el-option label="云主机" value="cloud" />
-              <el-option label="等保评估" value="security" />
-              <el-option label="云防火墙" value="firewall" />
+              <el-option label="数字应用服务" value="数字应用服务" />
+              <el-option label="能力组件服务" value="能力组件服务" />
+              <el-option label="安全服务" value="安全服务" />
+              <el-option label="基础资源服务" value="基础资源服务" />
             </el-select>
           </el-form-item>
           <el-form-item prop="score">
@@ -106,36 +95,35 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="服务 / 订单号" min-width="200">
+      <el-table-column label="服务/订单号" min-width="200">
         <template slot-scope="scope">
-          <div>
-            <div class="review-service">{{ scope.row.serviceName }}</div>
-            <div class="review-order">{{ scope.row.orderNo }}</div>
-          </div>
+          <div><div class="rv-title">{{ scope.row.serviceName || '--' }}</div><div class="rv-sub">{{ scope.row.orderNo || '--' }}</div></div>
         </template>
       </el-table-column>
-      <el-table-column label="评价机构" min-width="200">
+      <el-table-column label="服务类型" width="120">
         <template slot-scope="scope">
-          <div>
-            <div class="review-org">{{ scope.row.orgName }}</div>
-            <div class="review-user">{{ scope.row.userName }} · {{ scope.row.department }}</div>
-          </div>
+          <el-tag :type="getServiceTypeColor(scope.row.serviceType)" size="small">{{ scope.row.serviceType || '--' }}</el-tag>
         </template>
+      </el-table-column>
+      <el-table-column label="评价机构" min-width="180">
+        <template slot-scope="scope">{{ scope.row.orgName || '--' }}</template>
       </el-table-column>
       <el-table-column label="评价内容" min-width="250">
-        <template slot-scope="scope">
-          <div class="review-content">{{ scope.row.content }}</div>
-        </template>
+        <template slot-scope="scope"><div class="rv-content">{{ scope.row.content || '--' }}</div></template>
+      </el-table-column>
+      <el-table-column label="评价时间" width="130">
+        <template slot-scope="scope">{{ scope.row.time || '--' }}</template>
       </el-table-column>
       <el-table-column label="状态" width="90">
         <template slot-scope="scope">
-          <el-tag :type="getStatusTagType(scope.row.status)" size="mini">{{ scope.row.status }}</el-tag>
+          <el-tag :type="scope.row.status === '已回复' ? 'success' : 'warning'" size="mini">{{ scope.row.status || '--' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="时间" width="130">
-        <template slot-scope="scope">
-          {{ scope.row.time }}
-        </template>
+      <el-table-column label="回复内容" min-width="250">
+        <template slot-scope="scope"><div class="rv-content">{{ scope.row.reply || '--' }}</div></template>
+      </el-table-column>
+      <el-table-column label="回复时间" width="130">
+        <template slot-scope="scope">{{ scope.row.replyTime || '--' }}</template>
       </el-table-column>
       <el-table-column label="操作" width="100" fixed="right">
         <template slot-scope="scope">
@@ -154,58 +142,53 @@
       @pagination="loadReviewList"
     />
 
-    <!-- 查看详情对话框 -->
-    <el-dialog title="评价详情" :visible.sync="viewDialogVisible" width="600px">
-      <div v-if="currentReview.content" class="review-detail">
-        <div class="detail-header">
-          <div class="reviewer-info">
-            <div class="reviewer-name">{{ currentReview.userName }} · {{ currentReview.department }}</div>
-            <div class="reviewer-org">{{ currentReview.orgName }}</div>
-          </div>
-          <div class="stars">
-            <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= currentReview.score }">★</span>
-          </div>
-        </div>
-        <div class="detail-content">{{ currentReview.content }}</div>
-        <div v-if="currentReview.reply" class="detail-reply">
-          <div class="reply-label">客服回复</div>
-          <div class="reply-content">{{ currentReview.reply }}</div>
-        </div>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="viewDialogVisible = false">关闭</el-button>
-      </div>
-    </el-dialog>
-
     <!-- 回复对话框 -->
-    <el-dialog title="回复评价" :visible.sync="replyDialogVisible" width="600px">
-      <div v-if="currentReview.content" class="reply-form">
-        <div class="form-section">
-          <div class="section-title">原评价</div>
-          <div class="detail-header">
-            <div class="reviewer-info">
-              <div class="reviewer-name">{{ currentReview.userName }} · {{ currentReview.department }}</div>
-              <div class="reviewer-org">{{ currentReview.orgName }}</div>
-            </div>
-            <div class="stars">
-              <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= currentReview.score }">★</span>
-            </div>
-          </div>
-          <div class="detail-content">{{ currentReview.content }}</div>
+    <el-dialog :title="isViewMode ? '评价详情' : '回复评价'" :visible.sync="replyDialogVisible" width="620px" top="5vh" :close-on-click-modal="false" :modal-append-to-body="false">
+      <div class="dialog-tip" v-if="!isViewMode">
+        <i class="el-icon-info"></i>
+        <span>请对用户评价进行回复，回复内容将对用户可见。</span>
+      </div>
+      <div class="review-info-box" v-if="currentReview.content">
+        <div class="form-section-title">评价信息</div>
+        <div class="detail-kv">
+          <div class="kv-item"><label>评价人</label><span>{{ currentReview.userName || '--' }}</span></div>
+          <div class="kv-item"><label>所属部门</label><span>{{ currentReview.department || '--' }}</span></div>
+          <div class="kv-item"><label>评价机构</label><span>{{ currentReview.orgName || '--' }}</span></div>
+          <div class="kv-item"><label>服务名称</label><span>{{ currentReview.serviceName || '--' }}</span></div>
+          <div class="kv-item"><label>订单号</label><span>{{ currentReview.orderNo || '--' }}</span></div>
+          <div class="kv-item"><label>评分</label><span><div class="stars-inline"><span v-for="i in 5" :key="i" class="star" :class="{ full: i <= currentReview.score }">★</span></div></span></div>
+          <div class="kv-item full"><label>评价内容</label><span>{{ currentReview.content }}</span></div>
         </div>
+      </div>
+      <el-form
+        v-if="!isViewMode"
+        ref="replyFormRef"
+        :model="replyForm"
+        label-width="100px"
+        class="add-form"
+      >
         <div class="form-section">
-          <div class="section-title">回复内容</div>
-          <el-input
-            v-model="replyContent"
-            type="textarea"
-            placeholder="请输入回复内容..."
-            :rows="5"
-          />
+          <div class="form-section-title">回复信息</div>
+          <el-form-item label="回复内容" prop="replyContent">
+            <el-input
+              v-model="replyForm.replyContent"
+              type="textarea"
+              :rows="5"
+              placeholder="请输入回复内容..."
+            />
+          </el-form-item>
+        </div>
+      </el-form>
+      <div v-if="isViewMode && currentReview.reply" class="review-info-box">
+        <div class="form-section-title">客服回复</div>
+        <div class="detail-kv">
+          <div class="kv-item full"><label>回复内容</label><span>{{ currentReview.reply }}</span></div>
+          <div class="kv-item"><label>回复时间</label><span>{{ currentReview.replyTime || '--' }}</span></div>
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="replyDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitReply">提交回复</el-button>
+        <el-button @click="replyDialogVisible = false">取 消</el-button>
+        <el-button v-if="!isViewMode" type="primary" @click="submitReply">提交回复</el-button>
       </div>
     </el-dialog>
   </div>
@@ -226,8 +209,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        keyword: '',
-        service: '',
+        serviceName: '',
+        orgName: '',
+        serviceType: '',
         score: '',
         status: ''
       },
@@ -236,24 +220,27 @@ export default {
           id: 1,
           score: 5,
           serviceName: '云主机（ECS）',
+          serviceType: '基础资源服务',
           orderNo: '#ORD-2024-0085',
           orgName: '华能数智科技集团',
           userName: '张三',
           department: '技术部',
-          content: '开通非常快，3分钟内到账，配置灵活，稳定性也很好。',
+          content: '开通非常快，3 分钟内到账，配置灵活，稳定性也很好。',
           time: '2024-03-15 10:30',
           status: '已回复',
-          reply: '感谢您的好评，我们会继续努力提供更好的服务！'
+          reply: '感谢您的好评，我们会继续努力提供更好的服务！',
+          replyTime: '2024-03-15 14:20'
         },
         {
           id: 2,
           score: 2,
           serviceName: '等保三级合规评估',
+          serviceType: '安全服务',
           orderNo: '#ORD-2024-0071',
           orgName: '中远云科技有限公司',
           userName: '王总',
           department: '信息部',
-          content: '报告交付严重超期，比承诺时间晚了2周，沟通也不及时，影响了我们的申报计划。',
+          content: '报告交付严重超期，比承诺时间晚了 2 周，沟通也不及时，影响了我们的申报计划。',
           time: '2024-03-14 14:20',
           status: '待回复'
         },
@@ -261,19 +248,25 @@ export default {
           id: 3,
           score: 4,
           serviceName: '云防火墙',
+          serviceType: '安全服务',
           orderNo: '#ORD-2024-0083',
           orgName: '北京协和医学院',
           userName: '李护士长',
           department: '信息科',
-          content: '防护效果很好，配置策略专业，扣一星是因为控制台UI稍微复杂了一点。',
+          content: '防护效果很好，配置策略专业，扣一星是因为控制台 UI 稍微复杂了一点。',
           time: '2024-03-13 16:45',
           status: '已回复',
-          reply: '感谢您的反馈，我们正在优化控制台UI，预计下月会推出新版本。'
+          reply: '感谢您的反馈，我们正在优化控制台 UI，预计下月会推出新版本。',
+          replyTime: '2024-03-13 18:30'
         }
       ],
       viewDialogVisible: false,
       replyDialogVisible: false,
+      isViewMode: false,
       currentReview: {},
+      replyForm: {
+        replyContent: ''
+      },
       replyContent: ''
     }
   },
@@ -296,8 +289,9 @@ export default {
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
-        keyword: '',
-        service: '',
+        serviceName: '',
+        orgName: '',
+        serviceType: '',
         score: '',
         status: ''
       }
@@ -305,25 +299,28 @@ export default {
     },
     handleView(row) {
       this.currentReview = JSON.parse(JSON.stringify(row))
-      this.viewDialogVisible = true
+      this.isViewMode = true
+      this.replyDialogVisible = true
     },
     handleReply(row) {
       this.currentReview = JSON.parse(JSON.stringify(row))
-      this.replyContent = ''
+      this.replyForm = {
+        replyContent: ''
+      }
+      this.isViewMode = false
       this.replyDialogVisible = true
     },
     submitReply() {
-      if (!this.replyContent) {
+      if (!this.replyForm.replyContent) {
         this.$message.warning('请输入回复内容')
         return
       }
-      this.currentReview.reply = this.replyContent
+      this.currentReview.reply = this.replyForm.replyContent
       this.currentReview.status = '已回复'
-      // 更新列表中的数据
       const index = this.reviewList.findIndex(item => item.id === this.currentReview.id)
       if (index > -1) {
         this.reviewList[index].status = '已回复'
-        this.reviewList[index].reply = this.replyContent
+        this.reviewList[index].reply = this.replyForm.replyContent
       }
       this.replyDialogVisible = false
       this.$message.success('回复成功')
@@ -337,87 +334,32 @@ export default {
         default:
           return ''
       }
+    },
+    getServiceTypeColor(type) {
+      const colorMap = {
+        '数字应用服务': 'info',
+        '能力组件服务': 'success',
+        '安全服务': 'warning',
+        '基础资源服务': 'primary'
+      }
+      return colorMap[type] || 'info'
     }
   }
 }
 </script>
 
 <style scoped>
-/* 容器样式 */
-.app-container {
-  display: flex;
-  flex-direction: column;
-}
-
-/* 统计卡片样式 */
-.stats-card {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.stat-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 16px;
-  border-radius: 6px;
-  background: #fff;
-  border: none;
-  border-top: 3px solid #1890ff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.stat-item:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1890ff;
-  margin-bottom: 8px;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: #8c8c8c;
-  font-weight: 500;
-}
-
 .mb12 {
   margin-bottom: 12px;
 }
 
-/* El-form 搜索样式 */
-:deep(.el-form-search) {
-  margin-bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 0;
-}
-
-/* 确保按钮组右对齐 */
-:deep(.el-form-search .el-form-item:last-child) {
-  margin-right: 0;
-}
-
-:deep(.el-form-search .el-form-item) {
-  margin-bottom: 0;
-  margin-right: 0;
-}
-
-/* 星级评分 */
 .stars {
   display: flex;
+  gap: 2px;
+}
+
+.stars-inline {
+  display: inline-flex;
   gap: 2px;
 }
 
@@ -430,114 +372,95 @@ export default {
   color: #faad14;
 }
 
-/* 表格单元格样式 */
-.review-service {
-  font-size: 13px;
-  font-weight: 500;
-  color: #262626;
-}
+/* 评价列表样式 - 与其他列表保持一致 */
+.rv-title { font-size: 12px; font-weight: 400; color: #606266; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+.rv-sub { font-size: 12px; color: #8c8c8c; margin-top: 2px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+.rv-content { font-size: 12px; color: #606266; line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
 
-.review-order {
-  font-size: 12px;
-  color: #8c8c8c;
-  margin-top: 4px;
-}
-
-.review-org {
-  font-size: 13px;
-  font-weight: 500;
-  color: #262626;
-}
-
-.review-user {
-  font-size: 12px;
-  color: #8c8c8c;
-  margin-top: 4px;
-}
-
-.review-content {
-  font-size: 12px;
-  color: #5c6480;
-  line-height: 1.5;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-/* 对话框样式 */
-.review-detail {
-  padding: 16px;
-}
-
-.detail-header {
+/* 弹窗样式 */
+.dialog-tip {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.reviewer-info {
-  flex: 1;
-}
-
-.reviewer-name {
+  gap: 8px;
+  margin: 10px 20px;
+  padding: 10px 16px;
+  background: #eef6ff;
+  border: 1px solid #d4e5ff;
+  border-radius: 2px;
   font-size: 13px;
-  font-weight: 500;
-  color: #1c2033;
+  color: #3b5bdb;
 }
 
-.reviewer-org {
-  font-size: 12px;
-  color: #8c8c8c;
-  margin-top: 4px;
+.dialog-tip i {
+  font-size: 16px;
+  color: #3b5bdb;
+  flex-shrink: 0;
 }
 
-.detail-content {
-  font-size: 13px;
-  color: #5c6480;
-  line-height: 1.7;
-  margin-bottom: 16px;
+.add-form {
+  padding: 12px 24px 20px;
 }
 
-.detail-reply {
-  background: #f7f8fa;
-  border-left: 3px solid #1890ff;
-  padding: 12px;
+:deep(.el-dialog__header) {
+  padding: 14px 24px 6px;
+}
+
+:deep(.el-dialog__body) {
+  padding: 0;
+}
+
+:deep(.el-dialog__footer) {
+  padding: 8px 24px 16px;
+}
+
+.form-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.review-info-box {
+  margin: 0 20px 10px;
+  padding: 12px 16px;
+  background: #f5f7fa;
   border-radius: 4px;
-  margin-top: 12px;
 }
 
-.reply-label {
-  font-size: 11px;
-  color: #1890ff;
-  font-weight: 600;
-  margin-bottom: 6px;
+/* 键值对网格 */
+.detail-kv {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px 40px;
 }
 
-.reply-content {
-  font-size: 12px;
-  color: #5c6480;
-  line-height: 1.6;
+.kv-item {
+  display: flex;
+  align-items: baseline;
+  font-size: 14px;
+  line-height: 2;
 }
 
-/* 回复表单 */
-.reply-form {
-  padding: 16px;
+.kv-item.full {
+  grid-column: 1 / -1;
 }
 
-.form-section {
-  margin-bottom: 20px;
+.kv-item label {
+  color: #8c8c8c;
+  width: 80px;
+  flex-shrink: 0;
+  font-weight: 400;
+  white-space: nowrap;
 }
 
-.section-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: #606266;
-  margin-bottom: 8px;
-  text-transform: uppercase;
+.kv-item span {
+  color: #262626;
+  word-break: break-all;
+  font-weight: 400;
+  font-size: 14px;
+  min-width: 0;
 }
 
 .dialog-footer {

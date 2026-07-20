@@ -11,35 +11,28 @@
           style="text-align: right"
           :inline="true"
         >
-          <el-form-item prop="orgName">
+          <el-form-item prop="serviceName">
             <el-input
-              v-model="queryParams.orgName"
-              placeholder="机构名称"
+              v-model="queryParams.serviceName"
+              placeholder="请输入服务名称"
               clearable
               style="width: 200px"
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item prop="orgCode">
-            <el-input
-              v-model="queryParams.orgCode"
-              placeholder="机构代码"
-              clearable
-              style="width: 200px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item prop="orgType">
+          <el-form-item prop="cloudProvider">
             <el-select
-              v-model="queryParams.orgType"
-              placeholder="机构类型"
+              v-model="queryParams.cloudProvider"
+              placeholder="请选择云服务商"
               clearable
               style="width: 150px"
             >
-              <el-option label="政府机关" value="government" />
-              <el-option label="事业单位" value="institution" />
-              <el-option label="国有企业" value="state-owned" />
-              <el-option label="私营企业" value="private" />
+              <el-option
+                v-for="item in cloudProviderOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </el-select>
           </el-form-item>
           <el-form-item prop="status">
@@ -49,9 +42,9 @@
               clearable
               style="width: 110px"
             >
-              <el-option label="待审核" value="pending" />
-              <el-option label="已通过" value="approved" />
-              <el-option label="已驳回" value="rejected" />
+              <el-option label="待审核" value="10" />
+              <el-option label="已通过" value="20" />
+              <el-option label="已拒绝" value="30" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -71,41 +64,71 @@
     <!-- 表格 -->
     <el-table
       v-loading="loading"
-      ref="tableOrgList"
+      ref="tableServiceList"
       size="small"
-      :data="orgList"
+      :data="serviceList"
       :height="tableHeight"
       :max-height="tableMaxHeight"
       @row-click="handleRowClick"
       @cell-dblclick="handleEdit"
     >
       <el-table-column
-        label="机构名称"
+        label="服务名称"
         :show-overflow-tooltip="true"
         min-width="180"
       >
         <template slot-scope="scope">
-          {{ scope.row.orgName }}
+          {{ scope.row.serviceName }}
         </template>
       </el-table-column>
       <el-table-column
-        label="机构代码"
-        width="160"
+        label="服务ID"
+        width="140"
         align="center"
-        prop="orgCode"
+        prop="serviceId"
       >
         <template slot-scope="scope">
-          {{ scope.row.orgCode }}
+          {{ scope.row.serviceId }}
         </template>
       </el-table-column>
       <el-table-column
-        label="机构类型"
-        width="100"
-        align="center"
-        prop="orgType"
+        label="服务描述"
+        :show-overflow-tooltip="true"
+        min-width="250"
+        prop="description"
       >
         <template slot-scope="scope">
-          <el-tag :type="getOrgTypeTagType(scope.row.orgType)" size="mini" effect="plain">{{ scope.row.orgType }}</el-tag>
+          {{ scope.row.description || '无' }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="云服务商"
+        :show-overflow-tooltip="true"
+        min-width="150"
+        prop="cloudProvider"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.cloudProvider || '未设置' }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="服务类型"
+        width="120"
+        align="center"
+        prop="serviceType"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.serviceType || '未设置' }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="区域"
+        width="120"
+        align="center"
+        prop="region"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.region || '未设置' }}
         </template>
       </el-table-column>
       <el-table-column
@@ -114,27 +137,9 @@
         width="80"
       >
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status === '已通过' ? 'success' : scope.row.status === '已驳回' ? 'danger' : 'warning'">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="申请时间"
-        width="160"
-        align="center"
-        prop="applyTime"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.applyTime }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="审核人"
-        width="100"
-        align="center"
-        prop="auditor"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.auditor || '--' }}
+          <el-tag :type="scope.row.auditStatus === 20 ? 'success' : scope.row.auditStatus === 30 ? 'danger' : 'warning'">
+            {{ scope.row.auditStatus === 10 ? '待审核' : scope.row.auditStatus === 20 ? '已通过' : '已拒绝' }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -146,7 +151,7 @@
         <template slot-scope="scope">
           <span class="btn-cell-wrap">
             <el-button
-              v-if="scope.row.status === '待审核'"
+              v-if="scope.row.auditStatus === 10"
               size="small"
               type="text"
               icon="el-icon-edit"
@@ -168,7 +173,7 @@
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
-      @pagination="loadOrgList"
+      @pagination="loadServiceList"
     />
   </div>
 </template>
@@ -177,7 +182,7 @@
 import Pagination from '@/components/Pagination/index.vue';
 
 export default {
-  name: 'QualificationAudit',
+  name: "BasicServiceAudit",
   components: { Pagination },
   data() {
     return {
@@ -185,79 +190,74 @@ export default {
       total: 0,
       tableHeight: 600,
       tableMaxHeight: 600,
+      cloudProviderOptions: [
+        { value: '影像云', label: '影像云' },
+        { value: '电信云', label: '电信云' },
+        { value: '移动云', label: '移动云' },
+        { value: '联通云', label: '联通云' },
+        { value: '浪潮云', label: '浪潮云' }
+      ],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        orgName: undefined,
-        orgCode: undefined,
-        orgType: undefined,
+        serviceName: undefined,
+        cloudProvider: undefined,
         status: undefined,
       },
-      orgList: [
-        {
-          id: 1,
-          orgName: '北京市海淀区数字经济发展局',
-          orgCode: '91110108MA012ABC3X',
-          orgType: '政府机关',
-          status: '待审核',
-          applyTime: '2024-03-15 00:12',
-          auditor: ''
-        },
-        {
-          id: 2,
-          orgName: '中远云科技有限公司',
-          orgCode: '91110105MA012DEF8Y',
-          orgType: '私营企业',
-          status: '待审核',
-          applyTime: '2024-03-14 16:30',
-          auditor: '李四'
-        },
-        {
-          id: 3,
-          orgName: '华能数智科技集团',
-          orgCode: '91110101MA012GH15Z',
-          orgType: '国有企业',
-          status: '已通过',
-          applyTime: '2024-03-12 10:05',
-          auditor: '王五'
-        },
-        {
-          id: 4,
-          orgName: '北京协和医学院附属医院',
-          orgCode: '91110108MA012JKL2W',
-          orgType: '事业单位',
-          status: '已通过',
-          applyTime: '2024-03-10 14:22',
-          auditor: '李四'
-        },
-        {
-          id: 5,
-          orgName: '锐途智能科技（北京）有限公司',
-          orgCode: '91110102MA012MNO7P',
-          orgType: '私营企业',
-          status: '已驳回',
-          applyTime: '2024-03-09 11:45',
-          auditor: '王五'
-        }
-      ]
+      serviceList: [],
     };
   },
   created() {
     this.changeTableHeight();
-    this.loadOrgList();
+    this.loadServiceList();
   },
   methods: {
-    loadOrgList() {
+    loadServiceList() {
       this.loading = true;
       setTimeout(() => {
-        this.total = this.orgList.length;
+        this.serviceList = [
+          {
+            serviceId: 'SVC001',
+            serviceName: '云服务器ECS',
+            description: '弹性计算服务，提供安全可靠、弹性可扩展的云服务器',
+            serviceType: 'ecs',
+            cloudProvider: '电信云',
+            region: '华东',
+            status: 20,
+            auditStatus: 20,
+            submitTime: '2024-10-18 11:21:45'
+          },
+          {
+            serviceId: 'SVC002',
+            serviceName: '对象存储OSS',
+            description: '安全、稳定、高效的云存储服务',
+            serviceType: 'storage',
+            cloudProvider: '移动云',
+            region: '华北',
+            status: 20,
+            auditStatus: 20,
+            submitTime: '2024-10-21 14:45:23'
+          },
+          {
+            serviceId: 'SVC003',
+            serviceName: '云数据库RDS',
+            description: '稳定可靠的关系型数据库服务',
+            serviceType: 'database',
+            cloudProvider: '联通云',
+            region: '华南',
+            status: 10,
+            auditStatus: 10,
+            submitTime: '2024-10-21 15:38:24'
+          }
+        ];
+        this.total = 3;
         this.loading = false;
       }, 500);
     },
     handleRowClick(currentRow) {},
     handleQuery() {
       this.queryParams.pageNum = 1;
-      this.loadOrgList();
+      this.loadServiceList();
     },
     resetQuery() {
       this.resetForm("queryForm");
@@ -268,25 +268,16 @@ export default {
       this.tableHeight = height - 330;
       this.tableMaxHeight = this.tableHeight;
     },
-    getOrgTypeTagType(orgType) {
-      switch (orgType) {
-        case '政府机关': return 'primary';
-        case '事业单位': return 'success';
-        case '国有企业': return 'warning';
-        case '私营企业': return 'info';
-        default: return '';
-      }
-    },
-    startAudit(org) {
+    startAudit(service) {
       this.$router.push({
-        path: '/portal/auditCenter/qualificationDetail',
-        query: { orgId: org.id }
+        path: '/portal/auditCenter/basicServiceAuditDetail',
+        query: { id: service.serviceId }
       });
     },
-    viewDetails(org) {
+    viewDetails(service) {
       this.$router.push({
-        path: '/portal/auditCenter/qualificationDetail',
-        query: { orgId: org.id }
+        path: '/portal/auditCenter/basicServiceAuditDetail',
+        query: { id: service.serviceId }
       });
     }
   }

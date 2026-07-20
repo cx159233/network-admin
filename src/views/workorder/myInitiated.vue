@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container my-initiated-v2">
+  <div class="my-initiated-v2">
     <h3 style="display:none">我发起的页面 V2</h3>
     <el-row :gutter="24" class="mb12">
       <el-col :span="24">

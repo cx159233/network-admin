@@ -1,25 +1,5 @@
 <template>
-  <div class="app-container">
-    <!-- 统计卡片 -->
-    <div class="stats-card mb12">
-      <div class="stat-item">
-        <div class="stat-value">138</div>
-        <div class="stat-label">全部订单</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">6</div>
-        <div class="stat-label">审批中</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">4</div>
-        <div class="stat-label">开通中</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">124</div>
-        <div class="stat-label">已生效</div>
-      </div>
-    </div>
-
+  <div>
     <!-- 筛选条件 -->
     <el-row :gutter="24" class="mb12">
       <el-col :span="24">
@@ -29,27 +9,32 @@
           class="el-form-search"
           :inline="true"
         >
-          <el-form-item prop="keyword">
+          <el-form-item prop="orderNo">
             <el-input
-              v-model="queryParams.keyword"
-              placeholder="订单号、机构名、服务名称"
+              v-model="queryParams.orderNo"
+              placeholder="请输入订单号"
               clearable
-              style="width: 200px"
+              style="width: 160px"
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item prop="org">
-            <el-select
-              v-model="queryParams.org"
-              placeholder="所有机构"
+          <el-form-item prop="orgName">
+            <el-input
+              v-model="queryParams.orgName"
+              placeholder="请输入机构名称"
               clearable
-              style="width: 150px"
-            >
-              <el-option label="所有机构" value="" />
-              <el-option label="北京市海淀区数字经济发展局" value="1" />
-              <el-option label="中远云科技有限公司" value="2" />
-              <el-option label="华能数智科技集团" value="3" />
-            </el-select>
+              style="width: 160px"
+              @keyup.enter.native="handleQuery"
+            />
+          </el-form-item>
+          <el-form-item prop="serviceName">
+            <el-input
+              v-model="queryParams.serviceName"
+              placeholder="请输入服务名称"
+              clearable
+              style="width: 160px"
+              @keyup.enter.native="handleQuery"
+            />
           </el-form-item>
           <el-form-item prop="serviceType">
             <el-select
@@ -59,11 +44,10 @@
               style="width: 150px"
             >
               <el-option label="所有服务类型" value="" />
-              <el-option label="标准云资源" value="cloud" />
-              <el-option label="安全服务" value="security" />
               <el-option label="数字应用服务" value="digitalApp" />
               <el-option label="能力组件服务" value="component" />
-              <el-option label="定制化资源" value="custom" />
+              <el-option label="安全服务" value="security" />
+              <el-option label="基础资源服务" value="basicResource" />
             </el-select>
           </el-form-item>
           <el-form-item prop="status">
@@ -74,10 +58,11 @@
               style="width: 150px"
             >
               <el-option label="所有状态" value="" />
-              <el-option label="审批中" value="pending" />
-              <el-option label="开通中" value="provisioning" />
-              <el-option label="已生效" value="active" />
-              <el-option label="已驳回" value="rejected" />
+              <el-option label="工单流转中" value="工单流转中" />
+              <el-option label="已完成" value="已完成" />
+              <el-option label="已评价" value="已评价" />
+              <el-option label="已驳回" value="已驳回" />
+              <el-option label="已取消" value="已取消" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -116,7 +101,7 @@
         <template slot-scope="scope">
           <div>
             <div class="tbl-name">{{ scope.row.orgName }}</div>
-            <div class="tbl-sub">{{ scope.row.applicant }} · {{ scope.row.department }}</div>
+            <div class="tbl-sub">{{ scope.row.applicant }}</div>
           </div>
         </template>
       </el-table-column>
@@ -164,8 +149,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        keyword: undefined,
-        org: undefined,
+        orderNo: undefined,
+        orgName: undefined,
+        serviceName: undefined,
         serviceType: undefined,
         status: undefined
       },
@@ -178,7 +164,7 @@ export default {
           applicant: '张三',
           department: '技术部',
           serviceType: '数字应用服务',
-          status: '工单处理中',
+          status: '工单流转中',
           workorderId: 'TK-0234',
           applyTime: '2024-03-15'
         },
@@ -190,7 +176,7 @@ export default {
           applicant: '李明',
           department: '运维部',
           serviceType: '能力组件服务',
-          status: '审批中',
+          status: '工单流转中',
           workorderId: '—',
           applyTime: '2024-03-15'
         },
@@ -202,7 +188,7 @@ export default {
           applicant: '王芳',
           department: '信息化部',
           serviceType: '数字应用服务',
-          status: '已生效',
+          status: '已完成',
           workorderId: 'TK-0233',
           applyTime: '2024-03-14'
         },
@@ -214,7 +200,7 @@ export default {
           applicant: '张伟',
           department: '创新部',
           serviceType: '能力组件服务',
-          status: '开通中',
+          status: '工单流转中',
           workorderId: 'TK-0232',
           applyTime: '2024-03-14'
         }
@@ -240,33 +226,38 @@ export default {
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
-        keyword: undefined,
-        org: undefined,
+        orderNo: undefined,
+        orgName: undefined,
+        serviceName: undefined,
         serviceType: undefined,
         status: undefined
       };
       this.loadOrderList();
     },
     goToDetail(row) {
-      this.$router.push('/workorder/order/detail');
+      const currentPath = this.$route.path;
+      if (currentPath.startsWith('/portal/order')) {
+        this.$router.push('/portal/order/detail');
+      } else {
+        this.$router.push('/workorder/order/detail');
+      }
     },
     getServiceTypeColor(type) {
       const colorMap = {
-        '标准云资源': 'primary',
-        '安全服务': 'warning',
         '数字应用服务': 'info',
         '能力组件服务': 'success',
-        '定制化资源': 'info'
+        '安全服务': 'warning',
+        '基础资源服务': 'primary'
       };
       return colorMap[type] || 'info';
     },
     getStatusColor(status) {
       const colorMap = {
-        '审批中': 'warning',
-        '开通中': 'primary',
-        '已生效': 'success',
+        '工单流转中': '',
+        '已完成': 'success',
+        '已评价': 'success',
         '已驳回': 'danger',
-        '工单处理中': 'info'
+        '已取消': 'info'
       };
       return colorMap[status] || 'info';
     }
@@ -275,70 +266,6 @@ export default {
 </script>
 
 <style scoped>
-/* 统计卡片样式 */
-.stats-card {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.stat-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 16px;
-  border-radius: 6px;
-  background: #fff;
-  border: none;
-  border-top: 3px solid #1890ff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.stat-item:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1890ff;
-  margin-bottom: 8px;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: #8c8c8c;
-  font-weight: 500;
-}
-
-/* El-form 搜索样式 */
-:deep(.el-form-search) {
-  margin-bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 0;
-}
-
-/* 确保按钮组右对齐 */
-:deep(.el-form-search .el-form-item:last-child) {
-  margin-right: 0;
-}
-
-
-
-:deep(.el-form-search .el-form-item) {
-  margin-bottom: 0;
-  margin-right: 0;
-}
-
 .mb12 {
   margin-bottom: 12px;
 }

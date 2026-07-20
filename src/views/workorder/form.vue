@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div>
     <el-page-header
       @back="goBack"
       :title="form.title || '工单表单'"

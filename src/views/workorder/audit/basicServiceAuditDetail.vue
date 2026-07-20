@@ -8,36 +8,38 @@
 
     <div class="detail-content-wrap">
       <div class="detail-left">
-        <!-- 机构基本信息 -->
-        <el-card shadow="hover">
+        <!-- 服务基本信息 -->
+        <el-card shadow="hover" class="mb-4">
           <div slot="header" class="clearfix">
-            <span>机构基本信息</span>
+            <span>服务基本信息</span>
             <span class="sb pending" style="float: right">待审核</span>
           </div>
 
           <div class="detail-section">
-            <div class="detail-section-title">机构信息</div>
+            <div class="detail-section-title">服务信息</div>
             <div class="detail-kv">
-              <div class="kv-item"><label>机构名称</label><span>{{ orgInfo.orgName }}</span></div>
-              <div class="kv-item"><label>机构代码</label><span>{{ orgInfo.orgCode }}</span></div>
-              <div class="kv-item"><label>机构类型</label><span>{{ orgInfo.orgType }}</span></div>
-              <div class="kv-item"><label>法定代表人</label><span>{{ orgInfo.legalRepresentative }}</span></div>
-              <div class="kv-item"><label>联系电话</label><span>{{ orgInfo.contactPhone }}</span></div>
-              <div class="kv-item"><label>成立日期</label><span>{{ orgInfo.establishDate }}</span></div>
-              <div class="kv-item"><label>联系邮箱</label><span>{{ orgInfo.email }}</span></div>
-              <div class="kv-item full"><label>注册地址</label><span>{{ orgInfo.registeredAddress }}</span></div>
-              <div class="kv-item full"><label>申请用途</label><span>{{ orgInfo.description }}</span></div>
+              <div class="kv-item"><label>服务名称</label><span>{{ serviceInfo.serviceName }}</span></div>
+              <div class="kv-item"><label>服务ID</label><span>{{ serviceInfo.serviceId }}</span></div>
+              <div class="kv-item"><label>云服务商</label><span>{{ serviceInfo.cloudProvider }}</span></div>
+              <div class="kv-item"><label>服务类型</label><span>{{ serviceInfo.serviceType }}</span></div>
+              <div class="kv-item"><label>服务商名称</label><span>{{ serviceInfo.vendor }}</span></div>
+              <div class="kv-item"><label>提交时间</label><span>{{ serviceInfo.submitTime }}</span></div>
+              <div class="kv-item"><label>服务范围</label><span>{{ serviceInfo.serviceScope }}</span></div>
+              <div class="kv-item"><label>服务等级</label><span>{{ serviceInfo.serviceLevel }}</span></div>
+              <div class="kv-item full"><label>服务描述</label><span>{{ serviceInfo.description }}</span></div>
             </div>
           </div>
 
+          <!-- 附件材料 - 暂时注释
           <div class="detail-section">
             <div class="detail-section-title">附件材料</div>
             <div class="detail-kv">
               <div class="kv-item full">
-                <a v-for="(m, i) in orgInfo.materials" :key="i" class="file-link" href="javascript:void(0)" @click="downloadMaterial(m)">{{ m.name }}</a>
+                <a v-for="(m, i) in serviceInfo.materials" :key="i" class="file-link" href="javascript:void(0)" @click="downloadMaterial(m)">{{ m.name }}</a>
               </div>
             </div>
           </div>
+          -->
         </el-card>
 
         <!-- 审核记录 -->
@@ -73,7 +75,7 @@
               placeholder="填写审核意见（通过/驳回时必填）..."
             ></textarea>
             <button class="btn btn-success" style="width: 100%; justify-content: center" @click="approve">
-              ✓ 审核通过 · 激活账号
+              ✓ 审核通过
             </button>
             <button class="btn btn-danger" style="width: 100%; justify-content: center" @click="reject">
               ✕ 驳回申请
@@ -87,86 +89,76 @@
 
 <script>
 export default {
-  name: 'QualificationDetail',
+  name: "BasicServiceAuditDetail",
   data() {
     return {
-      orgInfo: {
+      serviceInfo: {
         id: 1,
-        orgName: '北京市海淀区数字经济发展局',
-        orgCode: '91110108MA012ABC3X',
-        orgType: '政府机关',
-        legalRepresentative: '张建国',
-        establishDate: '2018-04-12',
-        registeredAddress: '北京市海淀区中关村南大街1号数字经济大厦',
-        contactPhone: '010-8888-xxxx',
-        email: 'admin@haidian.gov.cn',
-        description: '本机构需接入云服务门户以开展智慧政务系统建设，涉及云主机、对象存储及安全评估等服务，拟使用期限3年。',
+        serviceName: '弹性计算服务ECS',
+        serviceId: 'SVC-2024-0001',
+        cloudProvider: '浪潮云',
+        serviceType: '计算服务',
+        vendor: '浪潮云信息技术有限公司',
+        submitTime: '2024-03-01 10:00:00',
+        description: '弹性计算服务（ECS）是一种简单高效、处理能力可弹性伸缩的计算服务，帮助快速构建更稳定、安全的应用，提升运维效率，降低IT成本。',
+        serviceScope: '全国',
+        serviceLevel: 'SLA 99.95%',
         materials: [
-          { name: '机构设立批文.pdf', size: '2.4 MB' },
-          { name: '法定代表人身份证（正反面）.pdf', size: '1.8 MB' },
-          { name: '机构公章扫描件.png', size: '890 KB' },
-          { name: '授权委托书（加盖公章）.pdf', size: '1.1 MB' },
-          { name: '网络安全承诺书.pdf', size: '560 KB' }
+          { name: '服务技术白皮书.pdf', size: '3.2 MB' },
+          { name: '安全合规认证.pdf', size: '1.5 MB' },
+          { name: '服务等级协议SLA.pdf', size: '920 KB' },
+          { name: '厂商资质证明.pdf', size: '1.1 MB' }
         ],
         processSteps: [
-          { title: '提交申请', time: '2024-03-15 09:12', handler: '机构管理员', statusClass: 'done' },
-          { title: '材料预审', time: '2024-03-15 09:30', handler: '系统自动校验通过', statusClass: 'done' },
-          { title: '人工审核', time: '进行中', handler: '等待 2h 18m', statusClass: 'on' },
-          { title: '账号激活 / 驳回通知', time: '等待审核结果', handler: '', statusClass: 'wait' }
+          { title: '提交申请', time: '2024-03-01 10:00', handler: '浪潮云信息技术有限公司', statusClass: 'done' },
+          { title: '人工审核', time: '进行中', handler: '等待审核', statusClass: 'on' },
+          { title: '审核结果通知', time: '等待审核结果', handler: '', statusClass: 'wait' }
         ]
       },
       auditForm: { opinion: '' },
       auditRecords: [
-        { id: 1, submitTime: '2024-03-15 09:12', status: 'approved', auditor: '平台管理员', auditTime: '2024-03-15 14:30', opinion: '资质材料齐全，审核通过。' },
-        { id: 2, submitTime: '2024-03-20 10:00', status: 'pending', auditor: '', auditTime: '', opinion: '' }
+        { id: 1, submitTime: '2024-03-01 10:00', status: 'approved', auditor: '平台管理员', auditTime: '2024-03-02 09:30', opinion: '服务符合上架标准，审核通过。' },
+        { id: 2, submitTime: '2024-03-05 11:00', status: 'pending', auditor: '', auditTime: '', opinion: '' }
       ]
     };
   },
   created() {
-    const orgId = this.$route.query.orgId;
-    if (orgId) {
-      this.loadOrgDetail(orgId);
+    const serviceId = this.$route.query.id;
+    if (serviceId) {
+      this.loadServiceDetail(serviceId);
     }
   },
   methods: {
-    loadOrgDetail(orgId) {},
+    loadServiceDetail(serviceId) {},
     goBack() {
-      this.$router.push('/portal/auditCenter/qualificationAudit');
+      this.$router.push('/portal/auditCenter/basicServiceAudit');
     },
     approve() {
       if (!this.auditForm.opinion.trim()) {
-        this.$modal.msgError('请填写审核意见');
+        this.$message.error('请填写审核意见');
         return;
       }
-      this.$modal.confirm({
-        title: '确认通过',
-        content: '确定要通过该机构的资质审核并激活账号吗？',
-        success: (action) => {
-          if (action === 'confirm') {
-            this.$modal.msgSuccess('审核通过，账号已激活');
-            this.goBack();
-          }
-        }
-      });
+      this.$confirm('确定要通过该服务的审核吗？', '确认通过', {
+        confirmButtonText: '确定', cancelButtonText: '取消', type: 'success'
+      }).then(() => {
+        this.$message.success('审核通过，服务已上架');
+        this.goBack();
+      }).catch(() => {});
     },
     reject() {
       if (!this.auditForm.opinion.trim()) {
-        this.$modal.msgError('请填写驳回原因');
+        this.$message.error('请填写驳回原因');
         return;
       }
-      this.$modal.confirm({
-        title: '确认驳回',
-        content: '确定要驳回该机构的资质审核吗？',
-        success: (action) => {
-          if (action === 'confirm') {
-            this.$modal.msgSuccess('审核已驳回');
-            this.goBack();
-          }
-        }
-      });
+      this.$confirm('确定要拒绝该服务的审核吗？', '确认拒绝', {
+        confirmButtonText: '确定', cancelButtonText: '取消', type: 'error'
+      }).then(() => {
+        this.$message.success('审核已拒绝');
+        this.goBack();
+      }).catch(() => {});
     },
     downloadMaterial(material) {
-      this.$modal.msgSuccess('下载附件：' + material.name);
+      this.$message.success('下载附件：' + material.name);
     },
     getAuditStatusType(status) {
       const map = { approved: 'success', rejected: 'danger', pending: 'warning' };
@@ -422,6 +414,35 @@ export default {
 }
 
 .rf-textarea:focus { border-color: #3b5bdb; }
+
+/* 审核记录表格 */
+.audit-table {
+  min-height: auto !important;
+}
+
+.audit-table :deep(.el-table) {
+  --el-table-row-height: 32px !important;
+}
+
+.audit-table :deep(.el-table__row) {
+  height: 32px !important;
+  line-height: 32px !important;
+}
+
+.audit-table :deep(.el-table__header-wrapper) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.audit-table :deep(.el-table__body-wrapper) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.audit-table :deep(.el-table td),
+.audit-table :deep(.el-table th) {
+  padding: 6px 12px !important;
+}
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }

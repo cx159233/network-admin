@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div>
     <!-- 筛选条件 -->
     <el-row :gutter="24" class="mb12">
       <el-col :span="24">
@@ -52,11 +52,11 @@
               clearable
               style="width: 150px"
             >
-              <el-option label="审批中" value="approving" />
-              <el-option label="审批通过" value="approved" />
-              <el-option label="已驳回" value="rejected" />
-              <el-option label="已生效" value="effective" />
-              <el-option label="已关闭" value="closed" />
+              <el-option label="工单流转中" value="工单流转中" />
+              <el-option label="已完成" value="已完成" />
+              <el-option label="已评价" value="已评价" />
+              <el-option label="已驳回" value="已驳回" />
+              <el-option label="已取消" value="已取消" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -95,7 +95,7 @@
         <template slot-scope="scope">
           <div>
             <div class="tbl-name">{{ scope.row.orgName }}</div>
-            <div class="tbl-sub">{{ scope.row.applicant }} · {{ scope.row.department }}</div>
+            <div class="tbl-sub">{{ scope.row.applicant }}</div>
           </div>
         </template>
       </el-table-column>
@@ -157,7 +157,7 @@ export default {
           applicant: '李四',
           department: '信息中心',
           serviceType: '标准云资源',
-          status: '审批通过',
+          status: '已完成',
           workorderId: 'TK-0232',
           applyTime: '2024-03-14 10:20'
         },
@@ -181,7 +181,7 @@ export default {
           applicant: '赵六',
           department: '数据分析部',
           serviceType: '数字应用服务',
-          status: '审批通过',
+          status: '已完成',
           workorderId: 'TK-0231',
           applyTime: '2024-03-12 09:30'
         }
@@ -231,11 +231,11 @@ export default {
     },
     getStatusColor(status) {
       const colorMap = {
-        '审批中': 'warning',
-        '审批通过': 'success',
-        '已生效': 'success',
+        '工单流转中': '',
+        '已完成': 'success',
+        '已评价': 'success',
         '已驳回': 'danger',
-        '已关闭': 'info'
+        '已取消': 'info'
       };
       return colorMap[status] || 'info';
     }

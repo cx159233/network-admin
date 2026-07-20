@@ -83,9 +83,9 @@
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item prop="appScope">
+          <el-form-item prop="cover">
             <el-select
-              v-model="queryParams.appScope"
+              v-model="queryParams.cover"
               placeholder="请选择应用覆盖范围"
               clearable
               style="width: 150px"
@@ -98,9 +98,9 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item prop="targetObject">
+          <el-form-item prop="target">
             <el-select
-              v-model="queryParams.targetObject"
+              v-model="queryParams.target"
               placeholder="请选择面向对象"
               clearable
               style="width: 150px"
@@ -120,9 +120,8 @@
               clearable
               style="width: 110px"
             >
-              <el-option label="草稿" value="10" />
-              <el-option label="发布" value="20" />
-              <el-option label="下线" value="30" />
+              <el-option label="已发布" value="10" />
+              <el-option label="已下线" value="40" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -179,7 +178,7 @@
         prop="targetObject"
       >
         <template slot-scope="scope">
-          {{ scope.row.targetObject || '未设置' }}
+          {{ scope.row.targetObject || '--' }}
         </template>
       </el-table-column>
       <el-table-column
@@ -189,7 +188,7 @@
         prop="appScope"
       >
         <template slot-scope="scope">
-          {{ scope.row.cover ? scope.row.cover.map(item => item.value).join(';') : '未设置' }}
+          {{ scope.row.cover ? scope.row.cover.map(item => item.value).join(';') : '--' }}
         </template>
       </el-table-column>
       <el-table-column
@@ -198,8 +197,8 @@
         width="80"
       >
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status === 20 ? 'success' : scope.row.status === 30 ? 'danger' : 'info'">
-            {{ scope.row.status === 10 ? '草稿' : scope.row.status === 20 ? '发布' : scope.row.status === 30 ? '下线' : '未知' }}
+          <el-tag :type="scope.row.status === 10 ? 'success' : scope.row.status === 40 ? 'danger' : 'info'">
+            {{ scope.row.status === 10 ? '已发布' : scope.row.status === 40 ? '已下线' : '未知' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -210,7 +209,7 @@
         prop="serviceProvider"
       >
         <template slot-scope="scope">
-          {{ scope.row.serviceProvider || '未设置' }}
+          {{ scope.row.serviceProvider || '--' }}
         </template>
       </el-table-column>
       <el-table-column
@@ -220,7 +219,7 @@
         prop="cooperativeEnterprise"
       >
         <template slot-scope="scope">
-          {{ scope.row.cooperativeEnterprise || '未设置' }}
+          {{ scope.row.cooperativeEnterprise || '--' }}
         </template>
       </el-table-column>
       <el-table-column
@@ -230,15 +229,15 @@
         prop="cloudProvider"
       >
         <template slot-scope="scope">
-          {{ scope.row.cloudProvider || '未设置' }}
+          {{ scope.row.cloudProvider || '--' }}
         </template>
       </el-table-column>
-      <el-table-column label="用户评价" width="100">
+      <el-table-column label="平台评价" width="90" align="center">
         <template slot-scope="scope">
-          <span @click="handleDetail(scope.row)" class="rating-star">{{ scope.row.usageRating || 0 }}</span>
+          <span @click="handleDetail(scope.row)" class="rating-star">{{ scope.row.platformRating || 0 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户评价" width="100">
+      <el-table-column label="用户评价" width="90" align="center">
         <template slot-scope="scope">
           <span @click="handleDetail(scope.row)" class="rating-star">{{ scope.row.usageRating || 0 }}</span>
         </template>
@@ -296,17 +295,16 @@
 
     <!-- 新增弹窗 -->
     <el-dialog
-      title="新增"
-      width="900px"
+      title="新增数字应用"
+      width="920px"
       :visible.sync="addDialogVisible"
       :close-on-click-modal="false"
-      append-to-body
+      :modal-append-to-body="false"
+      top="5vh"
     >
-      <el-form ref="addForm" :model="addForm" :rules="rules" label-width="130px">
-        <!-- 基本信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">基本信息</p>
-        </el-form-item>
+      <el-form ref="addForm" :model="addForm" :rules="rules" label-width="130px" class="add-form">
+        <div class="form-section">
+          <div class="form-section-title">基本信息</div>
         <el-form-item label="应用名称" prop="title" required>
           <el-input v-model="addForm.title" placeholder="请输入应用名称" />
         </el-form-item>
@@ -351,11 +349,10 @@
             controls-position="right"
           />
         </el-form-item>
+        </div>
 
-        <!-- 联系信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">联系信息</p>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">联系信息</div>
         <el-form-item label="服务商名称" prop="serviceProvider" required>
           <el-input v-model="addForm.serviceProvider" placeholder="请输入服务商名称" />
         </el-form-item>
@@ -364,52 +361,61 @@
         </el-form-item>
         <el-form-item label="联系方式1" required>
           <div style="display: flex; align-items: center;">
-            <el-input v-model="addForm.contact1Name" placeholder="请输入联系人姓名" style="width: 200px" />
+            <el-input v-model="addForm.contactName1" placeholder="请输入联系人姓名" style="width: 200px" />
             <span style="margin: 0 16px;">-</span>
-            <el-input v-model="addForm.contact1Phone" placeholder="请输入联系人手机号" style="width: 200px" />
+            <el-input v-model="addForm.contactPhone1" placeholder="请输入联系人手机号" style="width: 200px" />
           </div>
         </el-form-item>
         <el-form-item label="联系方式2">
           <div style="display: flex; align-items: center;">
-            <el-input v-model="addForm.contact2Name" placeholder="请输入联系人姓名" style="width: 200px" />
+            <el-input v-model="addForm.contactName2" placeholder="请输入联系人姓名" style="width: 200px" />
             <span style="margin: 0 16px;">-</span>
-            <el-input v-model="addForm.contact2Phone" placeholder="请输入联系人手机号" style="width: 200px" />
+            <el-input v-model="addForm.contactPhone2" placeholder="请输入联系人手机号" style="width: 200px" />
           </div>
         </el-form-item>
+        </div>
 
-        <!-- 分类标签 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">分类标签</p>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">分类标签</div>
         <el-form-item label="面向对象" prop="targetObject" required>
           <el-checkbox-group v-model="addForm.targetObject">
-            <el-checkbox label="基层医疗卫生机构">基层医疗卫生机构</el-checkbox>
-            <el-checkbox label="公立医院">公立医院</el-checkbox>
-            <el-checkbox label="医技护人员">医技护人员</el-checkbox>
+            <el-checkbox v-for="opt in flatTargetObjectAdd" :key="opt" :label="opt">{{ opt }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="应用架构">
           <el-checkbox-group v-model="addForm.appArchitecture">
-            <el-checkbox label="B/S">B/S</el-checkbox>
-            <el-checkbox label="C/S架构">C/S架构</el-checkbox>
-            <el-checkbox label="B/S+C/S">B/S+C/S</el-checkbox>
-            <el-checkbox label="单机">单机</el-checkbox>
-            <el-checkbox label="其他">其他</el-checkbox>
+            <el-checkbox v-for="opt in flatArchAdd" :key="opt" :label="opt">{{ opt }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="部署云服务商" prop="cloudProvider" required>
-          <el-checkbox-group v-model="addForm.cloudProvider">
-            <el-checkbox label="浪潮云">浪潮云</el-checkbox>
-            <el-checkbox label="影像云">影像云</el-checkbox>
-            <el-checkbox label="电信云">电信云</el-checkbox>
-            <el-checkbox label="移动云">移动云</el-checkbox>
-            <el-checkbox label="联通云">联通云</el-checkbox>
-            <el-checkbox label="紫光云">紫光云</el-checkbox>
-          </el-checkbox-group>
+          <div>
+            <el-checkbox-group v-model="addForm.cloudProvider">
+              <el-checkbox v-for="opt in flatCloudAdd" :key="opt" :label="opt">{{ opt }}</el-checkbox>
+            </el-checkbox-group>
+            <div v-if="addForm.targetObject.includes('基层医疗卫生机构')" style="margin-top:12px">
+              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">基层应用覆盖范围</div>
+              <el-checkbox-group v-model="addForm.coverBase">
+                <el-checkbox v-for="item in coverBaseOptions" :key="item" :label="item">{{ item }}</el-checkbox>
+              </el-checkbox-group>
+            </div>
+            <div v-if="addForm.targetObject.includes('公立医院')" style="margin-top:12px">
+              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">公立应用覆盖范围</div>
+              <el-checkbox-group v-model="addForm.coverPublic">
+                <el-checkbox v-for="item in coverPublicOptions" :key="item" :label="item">{{ item }}</el-checkbox>
+              </el-checkbox-group>
+            </div>
+            <div v-if="addForm.targetObject.includes('医技护人员')" style="margin-top:12px">
+              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">医技应用覆盖范围</div>
+              <el-checkbox-group v-model="addForm.coverTech">
+                <el-checkbox v-for="item in coverTechOptions" :key="item" :label="item">{{ item }}</el-checkbox>
+              </el-checkbox-group>
+            </div>
+          </div>
         </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleAddSubmit">保存草稿</el-button>
+        <el-button type="primary" @click="handleAddSubmit">直接发布</el-button>
         <el-button @click="addDialogVisible = false">取消</el-button>
       </div>
     </el-dialog>
@@ -423,12 +429,16 @@
       append-to-body
     >
       <div class="dialog-body">
-        <!-- 基本信息 -->
-        <p class="fz-16 mt--8">基本信息</p>
+        <!-- 应用信息 -->
+        <p class="fz-16 mt--8">应用信息</p>
         <div class="gird">
           <div class="content">
             <span>应用名称</span>
             <span>{{ detailForm.title || '--' }}</span>
+          </div>
+          <div class="content">
+            <span>系统地址</span>
+            <span>{{ detailForm.systemUrl || '--' }}</span>
           </div>
           <div class="content">
             <span class="pr-16">LOGO</span>
@@ -445,20 +455,24 @@
           <span>{{ detailForm.description || '--' }}</span>
         </div>
 
-        <!-- 联系信息 -->
-        <p class="pt-24 fz-16">联系信息</p>
+        <!-- 服务商信息 -->
+        <p class="pt-24 fz-16">服务商信息</p>
         <div class="gird">
           <div class="content">
             <span>服务商名称</span>
             <span>{{ detailForm.serviceProvider || '--' }}</span>
           </div>
           <div class="content">
+            <span>合作伙伴名称</span>
+            <span>{{ detailForm.cooperativeEnterprise || '--' }}</span>
+          </div>
+          <div class="content">
             <span>联系方式1</span>
-            <span>{{ detailForm.contact1Name || '--' }} {{ detailForm.contact1Phone || '--' }}</span>
+            <span>{{ detailForm.contactName1 || '--' }} {{ detailForm.contactPhone1 || '--' }}</span>
           </div>
           <div class="content">
             <span>联系方式2</span>
-            <span>{{ detailForm.contact2Name || '--' }} {{ detailForm.contact2Phone || '--' }}</span>
+            <span>{{ detailForm.contactName2 || '--' }} {{ detailForm.contactPhone2 || '--' }}</span>
           </div>
         </div>
 
@@ -466,12 +480,20 @@
         <p class="pt-24 fz-16">分类标签</p>
         <div class="gird">
           <div class="content">
-            <span>开放范围</span>
-            <span>{{ detailForm.appScope || '--' }}</span>
+            <span>面向对象</span>
+            <span>{{ detailForm.targetObject ? detailForm.targetObject.join('；') : '--' }}</span>
+          </div>
+          <div class="content">
+            <span>应用架构</span>
+            <span>{{ detailForm.appArchitecture ? detailForm.appArchitecture.join('；') : '--' }}</span>
           </div>
           <div class="content">
             <span>部署云服务商</span>
             <span>{{ detailForm.cloudProvider ? detailForm.cloudProvider.join('；') : '--' }}</span>
+          </div>
+          <div class="content">
+            <span>应用覆盖范围</span>
+            <span>{{ detailForm.appScope || '--' }}</span>
           </div>
         </div>
       </div>
@@ -483,16 +505,15 @@
     <!-- 编辑弹窗 -->
     <el-dialog
       title="编辑数字应用"
-      width="900px"
+      width="920px"
       :visible.sync="editDialogVisible"
       :close-on-click-modal="false"
-      append-to-body
+      :modal-append-to-body="false"
+      top="5vh"
     >
-      <el-form ref="editForm" :model="editForm" :rules="rules" label-width="130px">
-        <!-- 基本信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">基本信息</p>
-        </el-form-item>
+      <el-form ref="editForm" :model="editForm" :rules="rules" label-width="130px" class="add-form">
+        <div class="form-section">
+          <div class="form-section-title">基本信息</div>
         <el-form-item label="应用名称" prop="title" required>
           <el-input v-model="editForm.title" placeholder="请输入应用名称" />
         </el-form-item>
@@ -537,11 +558,10 @@
             controls-position="right"
           />
         </el-form-item>
+        </div>
 
-        <!-- 联系信息 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">联系信息</p>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">联系信息</div>
         <el-form-item label="服务商名称" prop="serviceProvider" required>
           <el-input v-model="editForm.serviceProvider" placeholder="请输入服务商名称" />
         </el-form-item>
@@ -550,52 +570,61 @@
         </el-form-item>
         <el-form-item label="联系方式1" required>
           <div style="display: flex; align-items: center;">
-            <el-input v-model="editForm.contact1Name" placeholder="请输入联系人姓名" style="width: 200px" />
+            <el-input v-model="editForm.contactName1" placeholder="请输入联系人姓名" style="width: 200px" />
             <span style="margin: 0 16px;">-</span>
-            <el-input v-model="editForm.contact1Phone" placeholder="请输入联系人手机号" style="width: 200px" />
+            <el-input v-model="editForm.contactPhone1" placeholder="请输入联系人手机号" style="width: 200px" />
           </div>
         </el-form-item>
         <el-form-item label="联系方式2">
           <div style="display: flex; align-items: center;">
-            <el-input v-model="editForm.contact2Name" placeholder="请输入联系人姓名" style="width: 200px" />
+            <el-input v-model="editForm.contactName2" placeholder="请输入联系人姓名" style="width: 200px" />
             <span style="margin: 0 16px;">-</span>
-            <el-input v-model="editForm.contact2Phone" placeholder="请输入联系人手机号" style="width: 200px" />
+            <el-input v-model="editForm.contactPhone2" placeholder="请输入联系人手机号" style="width: 200px" />
           </div>
         </el-form-item>
+        </div>
 
-        <!-- 分类标签 -->
-        <el-form-item>
-          <p class="fz-16 mt--8">分类标签</p>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">分类标签</div>
         <el-form-item label="面向对象" prop="targetObject" required>
           <el-checkbox-group v-model="editForm.targetObject">
-            <el-checkbox label="基层医疗卫生机构">基层医疗卫生机构</el-checkbox>
-            <el-checkbox label="公立医院">公立医院</el-checkbox>
-            <el-checkbox label="医护人员">医护人员</el-checkbox>
-            <el-checkbox label="市民">市民</el-checkbox>
-            <el-checkbox label="企业">企业</el-checkbox>
+            <el-checkbox v-for="opt in flatTargetObjectEdit" :key="opt" :label="opt">{{ opt }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="应用架构">
           <el-checkbox-group v-model="editForm.appArchitecture">
-            <el-checkbox label="云端部署">云端部署</el-checkbox>
-            <el-checkbox label="本地部署">本地部署</el-checkbox>
+            <el-checkbox v-for="opt in flatArchEdit" :key="opt" :label="opt">{{ opt }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="部署云服务商" prop="cloudProvider" required>
-          <el-checkbox-group v-model="editForm.cloudProvider">
-            <el-checkbox label="电信云">电信云</el-checkbox>
-            <el-checkbox label="移动云">移动云</el-checkbox>
-            <el-checkbox label="联通云">联通云</el-checkbox>
-            <el-checkbox label="阿里云">阿里云</el-checkbox>
-            <el-checkbox label="腾讯云">腾讯云</el-checkbox>
-            <el-checkbox label="华为云">华为云</el-checkbox>
-            <el-checkbox label="紫光云">紫光云</el-checkbox>
-          </el-checkbox-group>
+          <div>
+            <el-checkbox-group v-model="editForm.cloudProvider">
+              <el-checkbox v-for="opt in flatCloudEdit" :key="opt" :label="opt">{{ opt }}</el-checkbox>
+            </el-checkbox-group>
+            <div v-if="editForm.targetObject.includes('基层医疗卫生机构')" style="margin-top:12px">
+              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">基层应用覆盖范围</div>
+              <el-checkbox-group v-model="editForm.coverBase">
+                <el-checkbox v-for="item in coverBaseOptions" :key="item" :label="item">{{ item }}</el-checkbox>
+              </el-checkbox-group>
+            </div>
+            <div v-if="editForm.targetObject.includes('公立医院')" style="margin-top:12px">
+              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">公立应用覆盖范围</div>
+              <el-checkbox-group v-model="editForm.coverPublic">
+                <el-checkbox v-for="item in coverPublicOptions" :key="item" :label="item">{{ item }}</el-checkbox>
+              </el-checkbox-group>
+            </div>
+            <div v-if="editForm.targetObject.includes('医技护人员')" style="margin-top:12px">
+              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">医技应用覆盖范围</div>
+              <el-checkbox-group v-model="editForm.coverTech">
+                <el-checkbox v-for="item in coverTechOptions" :key="item" :label="item">{{ item }}</el-checkbox>
+              </el-checkbox-group>
+            </div>
+          </div>
         </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleEditSubmit">保存草稿</el-button>
+        <el-button type="primary" @click="handleEditSubmit">直接发布</el-button>
         <el-button @click="editDialogVisible = false">取消</el-button>
       </div>
     </el-dialog>
@@ -643,24 +672,71 @@
       @close="handleCatalogSelectorClose"
     ></cms-catalog-selector>
 
-    <!-- 平台评价弹窗 -->
+    <!-- 评价弹窗 -->
     <el-dialog
-      title="平台评价"
-      width="500px"
+      title="应用评价"
+      width="920px"
       :visible.sync="ratingDialogVisible"
       :close-on-click-modal="false"
       append-to-body
+      top="5vh"
     >
-      <el-form ref="ratingForm" :model="ratingForm" label-width="80px">
-        <el-form-item label="评分">
-          <el-rate v-model="ratingForm.score" :max="5" show-score />
-        </el-form-item>
-        <el-form-item label="评价描述">
-          <el-input v-model="ratingForm.description" type="textarea" rows="4" placeholder="请输入评价描述" />
-        </el-form-item>
-      </el-form>
+      <div class="add-form">
+        <el-tabs v-model="activeTab">
+          <el-tab-pane label="平台评价" name="platform">
+            <el-form ref="ratingForm" :model="ratingForm" label-width="80px">
+              <el-form-item label="评分">
+                <div class="stars">
+                  <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= ratingForm.score }" @click="ratingForm.score = i">★</span>
+                </div>
+                <span class="score-text">{{ ratingForm.score }}分</span>
+              </el-form-item>
+              <el-form-item label="评价描述">
+                <el-input v-model="ratingForm.description" type="textarea" rows="4" placeholder="请输入评价描述" />
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+          <el-tab-pane label="用户评价" name="user">
+            <el-table :data="usageRatings" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
+              <el-table-column label="评分" width="80">
+                <template slot-scope="scope">
+                  <div class="stars">
+                    <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= scope.row.score }">★</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="服务/订单号" width="200">
+                <template slot-scope="scope">
+                  <div>
+                    <div class="review-service">{{ scope.row.serviceName }}</div>
+                    <div class="review-order">{{ scope.row.orderNo }}</div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="评价机构" width="200">
+                <template slot-scope="scope">
+                  <div>
+                    <div class="review-org">{{ scope.row.orgName }}</div>
+                    <div class="review-user">{{ scope.row.userName }} · {{ scope.row.department }}</div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="评价内容" min-width="160" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row.content }}
+                </template>
+              </el-table-column>
+              <el-table-column label="评价时间" width="140">
+                <template slot-scope="scope">
+                  {{ scope.row.time }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleRatingSubmit">提交</el-button>
+        <el-button v-if="activeTab === 'platform'" type="primary" @click="handleRatingSubmit">提交</el-button>
         <el-button @click="ratingDialogVisible = false">关闭</el-button>
       </div>
     </el-dialog>
@@ -711,11 +787,23 @@ export default {
       contentTypeOptions: [],
       // 应用覆盖范围选项
       appScopeOptions: [
-        { value: '基本公共卫生服务', label: '基本公共卫生服务' },
         { value: '医院信息系统（HIS）', label: '医院信息系统（HIS）' },
-        { value: '家庭医生签约', label: '家庭医生签约' },
         { value: '实验室信息管理系统（LIS）', label: '实验室信息管理系统（LIS）' },
-        { value: '影像归档和通信系统（PACS）', label: '影像归档和通信系统（PACS）' }
+        { value: '影像归档和通信系统（PACS）', label: '影像归档和通信系统（PACS）' },
+        { value: '心电', label: '心电' },
+        { value: '医养结合一体化', label: '医养结合一体化' },
+        { value: '智慧管理平台（HRP）', label: '智慧管理平台（HRP）' },
+        { value: '药店应用管理', label: '药店应用管理' },
+        { value: '智能外呼', label: '智能外呼' },
+        { value: '临床专病库', label: '临床专病库' },
+        { value: '医共体信息平台', label: '医共体信息平台' },
+        { value: '妇幼健康', label: '妇幼健康' },
+        { value: '基本公共卫生服务', label: '基本公共卫生服务' },
+        { value: '家庭医生签约', label: '家庭医生签约' },
+        { value: '村卫生室管理', label: '村卫生室管理' },
+        { value: '辅助诊疗', label: '辅助诊疗' },
+        { value: '区域综合', label: '区域综合' },
+        { value: '基本公共卫生服务绩效评价', label: '基本公共卫生服务绩效评价' }
       ],
       // 面向对象选项
       targetObjectOptions: [
@@ -723,6 +811,9 @@ export default {
         { value: '公立医院', label: '公立医院' },
         { value: '医技护人员', label: '医技护人员' }
       ],
+      coverBaseOptions: ['基本公共卫生服务', '医院信息系统（HIS）', '实验室信息管理系统（LIS）', '影像归档和通信系统（PACS）', '智慧管理平台（HRP）', '心电', '家庭医生签约', '村卫生室管理', '药店应用管理', '智能外呼', '辅助诊疗', '临床专病库', '区域综合', '基本公共卫生服务绩效评价', '妇幼健康'],
+      coverPublicOptions: ['医院信息系统（HIS）', '实验室信息管理系统（LIS）', '影像归档和通信系统（PACS）', '心电', '医养结合一体化', '智慧管理平台（HRP）', '药店应用管理', '智能外呼', '临床专病库', '医共体信息平台', '妇幼健康'],
+      coverTechOptions: [],
       catalogId: this.cid || '603612031287365',
       contentList: null,
       total: 0,
@@ -738,8 +829,8 @@ export default {
         title: undefined,
         contentType: undefined,
         status: undefined,
-        appScope: undefined,
-        targetObject: undefined,
+        cover: undefined,
+        target: undefined,
         catalogId: undefined,
         sorts: "",
       },
@@ -753,13 +844,16 @@ export default {
         sortOrder: 0,
         serviceProvider: '',
         cooperativeEnterprise: '',
-        contact1Name: '',
-        contact1Phone: '',
-        contact2Name: '',
-        contact2Phone: '',
+        contactName1: '',
+        contactPhone1: '',
+        contactName2: '',
+        contactPhone2: '',
         targetObject: [],
         appArchitecture: [],
-        cloudProvider: []
+        cloudProvider: [],
+        coverBase: [],
+        coverPublic: [],
+        coverTech: []
       },
       // 编辑弹窗
       editDialogVisible: false,
@@ -772,13 +866,16 @@ export default {
         sortOrder: 0,
         serviceProvider: '',
         cooperativeEnterprise: '',
-        contact1Name: '',
-        contact1Phone: '',
-        contact2Name: '',
-        contact2Phone: '',
+        contactName1: '',
+        contactPhone1: '',
+        contactName2: '',
+        contactPhone2: '',
         targetObject: [],
         appArchitecture: [],
-        cloudProvider: []
+        cloudProvider: [],
+        coverBase: [],
+        coverPublic: [],
+        coverTech: []
       },
       // 详情弹窗
       detailDialogVisible: false,
@@ -790,15 +887,43 @@ export default {
         sortOrder: 0,
         serviceProvider: '',
         cooperativeEnterprise: '',
-        contact1Name: '',
-        contact1Phone: '',
-        contact2Name: '',
-        contact2Phone: '',
+        contactName1: '',
+        contactPhone1: '',
+        contactName2: '',
+        contactPhone2: '',
         targetObject: [],
         appArchitecture: [],
         cloudProvider: [],
         appScope: ''
       },
+      // 分类标签子分组配置（新增弹窗）
+      targetObjectSubgroupsAdd: [
+        { key: 'org', title: '机构类', options: ['基层医疗卫生机构', '公立医院'] },
+        { key: 'person', title: '人员类', options: ['医技护人员'] }
+      ],
+      archSubgroupsAdd: [
+        { key: 'web', title: 'Web架构', options: ['B/S'] },
+        { key: 'client', title: '客户端架构', options: ['C/S架构', 'B/S+C/S'] },
+        { key: 'standalone', title: '独立部署', options: ['单机', '其他'] }
+      ],
+      cloudSubgroupsAdd: [
+        { key: 'carrier', title: '运营商云', options: ['电信云', '移动云', '联通云'] },
+        { key: 'independent', title: '独立云厂商', options: ['浪潮云', '紫光云', '影像云'] }
+      ],
+      // 分类标签子分组配置（编辑弹窗）
+      targetObjectSubgroupsEdit: [
+        { key: 'org', title: '机构类', options: ['基层医疗卫生机构', '公立医院'] },
+        { key: 'person', title: '人员类', options: ['医护人员', '市民'] },
+        { key: 'org2', title: '组织类', options: ['企业'] }
+      ],
+      archSubgroupsEdit: [
+        { key: 'deploy', title: '部署方式', options: ['云端部署', '本地部署'] }
+      ],
+      cloudSubgroupsEdit: [
+        { key: 'carrier', title: '运营商云', options: ['电信云', '移动云', '联通云'] },
+        { key: 'platform', title: '云平台厂商', options: ['阿里云', '腾讯云', '华为云'] },
+        { key: 'independent', title: '独立云厂商', options: ['紫光云'] }
+      ],
       // 表单验证规则
       rules: {
         title: [
@@ -834,13 +959,36 @@ export default {
       openContentSortDialog: false, // 内容选择弹窗
       openEditorW: true,
       statusColumn: [],
-      // 评分弹窗
+      // 评价弹窗
       ratingDialogVisible: false,
+      activeTab: 'platform',
       ratingForm: {
         score: 0,
         description: ''
       },
       currentApp: null,
+      usageRatings: [
+        {
+          score: 5,
+          serviceName: '智慧园区综合管理平台',
+          orderNo: '#ORD-2024-0089',
+          orgName: '北京市海淀区数字经济发展局',
+          userName: '张三',
+          department: '技术部',
+          content: '平台运行稳定，功能齐全，售后服务响应及时，整体体验很好。',
+          time: '2024-03-15 14:32'
+        },
+        {
+          score: 4,
+          serviceName: '统一身份认证组件',
+          orderNo: '#ORD-2024-0090',
+          orgName: '北京市朝阳区卫健委',
+          userName: '李四',
+          department: '信息科',
+          content: '组件集成方便，文档完善，基本满足需求，部分场景适配需优化。',
+          time: '2024-03-12 09:15'
+        }
+      ],
     };
   },
   watch: {
@@ -849,6 +997,12 @@ export default {
     },
     catalogId(newVal) {
       this.loadContentList();
+    },
+    addDialogVisible(val) {
+      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.2.1.2'); }
+    },
+    editDialogVisible(val) {
+      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.2.1.3'); }
     },
     "dict.type.CMSContentStatus": {
       handler(val) {
@@ -870,6 +1024,26 @@ export default {
         this.statusColumn = arr;
       },
       deep: true,
+    },
+  },
+  computed: {
+    flatTargetObjectAdd() {
+      return this.targetObjectSubgroupsAdd.flatMap(sg => sg.options);
+    },
+    flatArchAdd() {
+      return this.archSubgroupsAdd.flatMap(sg => sg.options);
+    },
+    flatCloudAdd() {
+      return this.cloudSubgroupsAdd.flatMap(sg => sg.options);
+    },
+    flatTargetObjectEdit() {
+      return this.targetObjectSubgroupsEdit.flatMap(sg => sg.options);
+    },
+    flatArchEdit() {
+      return this.archSubgroupsEdit.flatMap(sg => sg.options);
+    },
+    flatCloudEdit() {
+      return this.cloudSubgroupsEdit.flatMap(sg => sg.options);
     },
   },
   created() {
@@ -934,7 +1108,7 @@ export default {
       this.selectedRows = [];
     },
     handleQuery() {
-      this.queryParams.page = 1;
+      this.queryParams.pageNum = 1;
       this.loadContentList();
     },
     resetQuery() {
@@ -969,18 +1143,20 @@ export default {
     },
     handleDetail(row) {
       this.$router.push({
-        path: '/cms/digitalAppDetail',
+        path: '/portal/service/digitalAppDetail',
         query: {
-          title: row.title || '未设置',
-          serviceProvider: row.serviceProvider || '未设置',
-          systemUrl: row.systemUrl || '未设置',
-          description: row.description || '未设置',
-          cooperativeEnterprise: row.cooperativeEnterprise || '未设置',
-          contact1Name: row.contact1Name || '未设置',
-          contact1Phone: row.contact1Phone || '未设置',
-          targetObjectStr: Array.isArray(row.targetObject) ? row.targetObject.join('、') : (row.targetObject || '未设置'),
-          appScope: Array.isArray(row.cover) ? row.cover.map(item => item.value || item).join('、') : (row.appScope || row.coverView || '未设置'),
-          cloudProviderStr: Array.isArray(row.cloudProvider) ? row.cloudProvider.join('、') : (row.cloudProviderStr || row.cloudProvider || '未设置'),
+          title: row.title || '--',
+          status: row.status || '--',
+          serviceProvider: row.serviceProvider || '--',
+          systemUrl: row.systemUrl || '--',
+          description: row.description || '--',
+          deployServiceProviderView: row.cooperativeEnterprise || '--',
+          contactName1: row.contactName1 || '--',
+          contactPhone1: row.contactPhone1 || '--',
+          targetView: Array.isArray(row.targetObject) ? row.targetObject.join('、') : (row.targetObject || '--'),
+          coverView: Array.isArray(row.cover) ? row.cover.map(item => item.value || item).join('、') : (row.coverView || '--'),
+          cloudProviderStr: Array.isArray(row.cloudProvider) ? row.cloudProvider.join('、') : (row.cloudProviderStr || row.cloudProvider || '--'),
+          sortOrder: row.sortOrder,
           platformRating: row.platformRating || 0,
           usageRating: row.usageRating || 0
         }
@@ -1001,13 +1177,16 @@ export default {
         sortOrder: row.sortOrder || 0,
         serviceProvider: row.serviceProvider || '',
         cooperativeEnterprise: row.cooperativeEnterprise || '',
-        contact1Name: row.contact1Name || '',
-        contact1Phone: row.contact1Phone || '',
-        contact2Name: row.contact2Name || '',
-        contact2Phone: row.contact2Phone || '',
+        contactName1: row.contactName1 || '',
+        contactPhone1: row.contactPhone1 || '',
+        contactName2: row.contactName2 || '',
+        contactPhone2: row.contactPhone2 || '',
         targetObject: row.targetObject || [],
         appArchitecture: row.appArchitecture || [],
         cloudProvider: row.cloudProvider || [],
+        coverBase: Array.isArray(row.coverBase) ? row.coverBase : [],
+        coverPublic: Array.isArray(row.coverPublic) ? row.coverPublic : [],
+        coverTech: Array.isArray(row.coverTech) ? row.coverTech : [],
         appScope: row.appScope || ''
       };
       console.log('editForm set:', this.editForm);
@@ -1281,49 +1460,65 @@ export default {
   margin-left: 2px;
 }
 
-/* 上传LOGO样式 */
-.upload-logo {
-  margin-top: 10px;
-}
-.upload-area {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  padding: 20px;
-  text-align: center;
-  margin-bottom: 10px;
-}
-.upload-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.upload-content .el-icon {
-  font-size: 48px;
-  color: #409EFF;
-  margin-bottom: 10px;
-}
-.upload-content .avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-.upload-text {
-  font-size: 14px;
-  color: #909399;
-  line-height: 1.5;
-}
-.upload-tip {
-  font-size: 12px;
-  color: #909399;
-  text-align: center;
-  margin: 0;
+/* 新增/编辑弹窗样式 */
+:deep(.el-dialog) {
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-/* 弹窗样式 */
-.el-dialog__body {
-  max-height: 600px;
+:deep(.el-dialog__header) {
+  padding: 14px 24px 6px;
+  border-bottom: 1px solid #ebeef5;
+  background: #fafbfc;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+:deep(.el-dialog__body) {
+  padding: 0;
+  max-height: 62vh;
   overflow-y: auto;
+}
+
+:deep(.el-dialog__footer) {
+  padding: 14px 24px;
+  border-top: 1px solid #ebeef5;
+  background: #fafbfc;
+}
+
+.add-form {
+  padding: 4px 24px 20px;
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.form-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 18px;
+}
+
+:deep(.el-form-item__label) {
+  color: #606266;
+  font-weight: 500;
+  font-size: 13px;
 }
 
 /* 详情弹窗样式 */
@@ -1389,6 +1584,14 @@ export default {
   color: #faad14;
 }
 
+.score-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1890ff;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
 /* 表格单元格样式 */
 .review-service {
   font-size: 13px;
@@ -1422,5 +1625,13 @@ export default {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+/* 弹窗仅覆盖左侧Demo区域 */
+:deep(.el-dialog__wrapper) {
+  position: absolute !important;
+}
+:deep(.v-modal) {
+  position: absolute !important;
 }
 </style>

@@ -5,11 +5,7 @@ export function getContentList(query) {
 
   // 如果是数字应用栏目，返回应用列表数据
   if (query && String(query.catalogId) === digitalAppCatalogId) {
-    return Promise.resolve({
-      code: 200,
-      msg: 'SUCCESS',
-      data: {
-        rows: [
+    const allRows = [
           {
             applicationId: 'SZYY202410180001',
             siteId: '411683596922949',
@@ -611,8 +607,16 @@ export function getContentList(query) {
             cooperativeEnterprise: '',
             cloudProvider: '影像云'
           }
-        ],
-        total: '31'
+        ];
+    const pageNum = query && query.pageNum ? parseInt(query.pageNum) : 1;
+    const pageSize = query && query.pageSize ? parseInt(query.pageSize) : 10;
+    const start = (pageNum - 1) * pageSize;
+    return Promise.resolve({
+      code: 200,
+      msg: 'SUCCESS',
+      data: {
+        rows: allRows.slice(start, start + pageSize),
+        total: String(allRows.length)
       }
     });
   }

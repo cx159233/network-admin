@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div>
     <!-- 常用服务 -->
     <div class="section">
       <h3 class="section-title">常用服务</h3>

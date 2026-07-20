@@ -604,7 +604,7 @@ export default {
       this.selectedRows = [];
     },
     handleQuery() {
-      this.queryParams.page = 1;
+      this.queryParams.pageNum = 1;
       this.loadContentList();
     },
     resetQuery() {
