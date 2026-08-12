@@ -1234,9 +1234,26 @@ export const prdChapters = [
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件：</p>
-<p>a.管理员提交即视为审核通过，即时生效，初始状态为已上线使用，进行消息提示，返回列表页</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：新增成功</p>
-<p>b.系统自动生成审核记录，四阶段审核流水如下：<br>①申报材料评估：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员<br>②应用技术测评：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员<br>③现场演示答辩：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员<br>④服务目录发布：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+</table>
 <p>5、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回能力组件列表页，不保存修改。</p>
 
@@ -1271,9 +1288,26 @@ export const prdChapters = [
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件：</p>
-<p>a.管理员提交即视为审核通过，即时生效，状态不变，进行消息提示，返回列表页</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：修改成功</p>
-<p>b.系统自动生成审核记录，四阶段审核流水如下：<br>①申报材料评估：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员<br>②应用技术测评：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员<br>③现场演示答辩：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员<br>④服务目录发布：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员编辑后重新提交，即时生效"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+</table>
 <p>3、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回能力组件列表页，不保存修改。</p>
 
@@ -1337,7 +1371,7 @@ export const prdChapters = [
 <tr><td>回复内容</td><td></td><td>当状态为已回复时显示回复内容，完整展示；状态为待回复时不显示</td></tr>
 </table>
 <p>4、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，返回能力组件列表页。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉。</p>
 
 <h3 id="prd-3.2.1.2.5">3.2.1.2.5 发布能力组件</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 能力组件管理 / 发布能力组件</p>
@@ -1352,9 +1386,26 @@ export const prdChapters = [
 <p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>2）若满足条件：</p>
-<p>a.管理员提交即视为审核通过，即时生效，状态变更为已上线使用，关闭确认弹窗，进行消息提示，刷新列表</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态变更为"已上线使用"，关闭确认弹窗，进行消息提示，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：发布成功</p>
-<p>b.系统自动生成审核记录，四阶段审核流水如下：<br>①申报材料评估：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员<br>②应用技术测评：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员<br>③现场演示答辩：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员<br>④服务目录发布：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+</table>
 
 <h3 id="prd-3.2.1.2.6">3.2.1.2.6 下线能力组件</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 能力组件管理 / 下线能力组件</p>
@@ -1383,7 +1434,9 @@ export const prdChapters = [
 <p>点击【确定-按钮】，判断逻辑如下：</p>
 <p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>2）若满足条件，软删除数据，关闭此对话框，进行消息提示，刷新列表</p>
+<p>2）若存在关联数据，例如该能力组件已有关联服务开通记录，则不允许删除，关闭此对话框，进行消息提示</p>
+<p style="font-style:italic; color:#999">Tip：该数据已有关联记录，暂不允许删除</p>
+<p>3）若满足条件，软删除数据，关闭此对话框，进行消息提示，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：删除成功</p>
 
 <h3 id="prd-3.2.1.3">3.2.1.3 基础服务管理</h3>
@@ -1465,9 +1518,26 @@ export const prdChapters = [
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件：</p>
-<p>a.管理员提交即视为审核通过，即时生效，初始状态为已上线使用，进行消息提示，返回列表页</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：新增成功</p>
-<p>b.系统自动生成审核记录，四阶段审核流水如下：<br>①申报材料评估：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员<br>②应用技术测评：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员<br>③现场演示答辩：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员<br>④服务目录发布：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+</table>
 <p>3、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回基础服务列表页，不保存修改。</p>
 
@@ -1500,9 +1570,26 @@ export const prdChapters = [
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件：</p>
-<p>a.管理员提交即视为审核通过，即时生效，状态不变，进行消息提示，返回列表页</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：修改成功</p>
-<p>b.系统自动生成审核记录，四阶段审核流水如下：<br>①申报材料评估：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员<br>②应用技术测评：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员<br>③现场演示答辩：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员<br>④服务目录发布：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员编辑后重新提交，即时生效"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+</table>
 <p>3、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回基础服务列表页，不保存修改。</p>
 
@@ -1562,7 +1649,7 @@ export const prdChapters = [
 <tr><td>回复内容</td><td></td><td>当状态为已回复时显示回复内容，完整展示；状态为待回复时不显示</td></tr>
 </table>
 <p>4、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，返回基础服务列表页。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉。</p>
 
 <h3 id="prd-3.2.1.3.5">3.2.1.3.5 发布基础服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 基础服务管理 / 发布基础服务</p>
@@ -1577,9 +1664,26 @@ export const prdChapters = [
 <p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>2）若满足条件：</p>
-<p>a.管理员提交即视为审核通过，即时生效，状态变更为已上线使用，关闭确认弹窗，进行消息提示，刷新列表</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态变更为"已上线使用"，关闭确认弹窗，进行消息提示，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：发布成功</p>
-<p>b.系统自动生成审核记录，四阶段审核流水如下：<br>①申报材料评估：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员<br>②应用技术测评：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员<br>③现场演示答辩：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员<br>④服务目录发布：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+</table>
 
 <h3 id="prd-3.2.1.3.6">3.2.1.3.6 下线基础服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 基础服务管理 / 下线基础服务</p>
@@ -1608,7 +1712,9 @@ export const prdChapters = [
 <p>点击【确定-按钮】，判断逻辑如下：</p>
 <p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>2）若满足条件，软删除数据，关闭此对话框，进行消息提示，刷新列表</p>
+<p>2）若存在关联数据，例如该基础服务已有关联服务开通记录，则不允许删除，关闭此对话框，进行消息提示</p>
+<p style="font-style:italic; color:#999">Tip：该数据已有关联记录，暂不允许删除</p>
+<p>3）若满足条件，软删除数据，关闭此对话框，进行消息提示，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：删除成功</p>
 
 <h3 id="prd-3.2.1.4">3.2.1.4 安全服务管理</h3>
@@ -1662,6 +1768,30 @@ export const prdChapters = [
 <tr><td>已下架</td><td></td><td>详情、修改、删除</td></tr>
 </table>
 
+<p>3）若满足条件：</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
+<p style="font-style:italic; color:#999">Tip：新增成功</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+</table>
+<p>5、操作-返回</p>
+<p>点击【返回-按钮】，返回安全服务列表页，不保存修改。</p>
+
 <h3 id="prd-3.2.1.4.2">3.2.1.4.2 新增安全服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 安全服务管理 / 新增安全服务</p>
 <p><strong>功能描述：</strong>新增一个安全服务，设置基本信息、联系信息、分类标签后直接发布，管理员默认通过审核。</p>
@@ -1703,9 +1833,26 @@ export const prdChapters = [
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件：</p>
-<p>a.管理员提交即视为审核通过，即时生效，初始状态为已上线使用，进行消息提示，返回列表页</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：新增成功</p>
-<p>b.系统自动生成审核记录，四阶段审核流水如下：<br>①申报材料评估：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员<br>②应用技术测评：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员<br>③现场演示答辩：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员<br>④服务目录发布：审核状态"已通过"、审核意见"管理员代开通，即时生效"、审核时间取创建时间、操作人取当前管理员</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+</table>
 <p>5、操作-返回</p>
 <p>点击【返回-按钮】，返回安全服务列表页，不保存修改。</p>
 
@@ -1743,9 +1890,26 @@ export const prdChapters = [
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件：</p>
-<p>a.管理员提交即视为审核通过，即时生效，状态不变，进行消息提示，返回列表页</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：修改成功</p>
-<p>b.系统自动生成审核记录，四阶段审核流水如下：<br>①申报材料评估：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员<br>②应用技术测评：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员<br>③现场演示答辩：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员<br>④服务目录发布：审核状态"已通过"、审核意见"管理员编辑后重新提交，即时生效"、审核时间取创建时间、操作人取当前管理员</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员编辑后重新提交，即时生效"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+</table>
 <p>3、操作-返回</p>
 <p>点击【返回-按钮】，返回安全服务列表页，不保存修改。</p>
 
@@ -1808,7 +1972,7 @@ export const prdChapters = [
 <p>2）用户评价</p>
 <p>显示"用户评价（共 N 条）"，点击后在下方展开显示所有用户评价，10条分页，滚动加载更多。</p>
 <p>7、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，返回安全服务列表页。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉。</p>
 
 <h3 id="prd-3.2.1.4.5">3.2.1.4.5 发布安全服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 安全服务管理 / 发布安全服务</p>
@@ -1823,9 +1987,26 @@ export const prdChapters = [
 <p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>2）若满足条件：</p>
-<p>a.管理员提交即视为审核通过，即时生效，状态变更为已上线使用，关闭确认弹窗，进行消息提示，刷新列表</p>
+<p>a.管理员提交即视为审核通过，即时生效，状态变更为"已上线使用"，关闭确认弹窗，进行消息提示，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：发布成功</p>
-<p>b.系统自动生成审核记录，四阶段审核流水如下：<br>①申报材料评估：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员<br>②应用技术测评：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员<br>③现场演示答辩：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员<br>④服务目录发布：审核状态"已通过"、审核意见"管理员直接发布，默认通过审核"、审核时间取创建时间、操作人取当前管理员</p>
+<p>b.系统自动生成审核记录：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前管理员</td></tr>
+<tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，即"已通过"</td></tr>
+<tr><td>审核人</td><td></td><td>取自末尾阶段审核人，即当前管理员</td></tr>
+<tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
+</table>
+<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+</table>
 
 <h3 id="prd-3.2.1.4.6">3.2.1.4.6 下线安全服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 安全服务管理 / 下线安全服务</p>
@@ -1854,7 +2035,9 @@ export const prdChapters = [
 <p>点击【确定-按钮】，判断逻辑如下：</p>
 <p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>2）若满足条件，软删除数据，关闭此对话框，进行消息提示，刷新列表</p>
+<p>2）若存在关联数据，例如该安全服务已有关联服务开通记录，则不允许删除，关闭此对话框，进行消息提示</p>
+<p style="font-style:italic; color:#999">Tip：该数据已有关联记录，暂不允许删除</p>
+<p>3）若满足条件，软删除数据，关闭此对话框，进行消息提示，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：删除成功</p>
 
 <h3 id="prd-3.2.2">3.2.2 服务审核管理</h3>
