@@ -1,84 +1,78 @@
 import i18n from '@/i18n'
-import { Message, MessageBox, Notification, Loading } from 'element-ui'
+import { message, notification, Modal } from 'ant-design-vue'
 
-let loadingInstance;
+let loadingHide = null
 
 export default {
-  // 消息提示
   msg(content) {
-    Message.info(content)
+    message.info(content)
   },
-  // 错误消息
   msgError(content) {
-    Message.error(content)
+    message.error(content)
   },
-  // 成功消息
   msgSuccess(content) {
-    Message.success(content)
+    message.success(content)
   },
-  // 警告消息
   msgWarning(content) {
-    Message.warning(content)
+    message.warning(content)
   },
-  // 弹出提示
   alert(content) {
-    MessageBox.alert(content, i18n.t('Common.SystemTip'))
+    Modal.info({ title: i18n.global.t('Common.SystemTip'), content })
   },
-  // 错误提示
   alertError(content) {
-    MessageBox.alert(content, i18n.t('Common.SystemTip'), { type: 'error' })
+    Modal.error({ title: i18n.global.t('Common.SystemTip'), content })
   },
-  // 成功提示
   alertSuccess(content) {
-    MessageBox.alert(content, i18n.t('Common.SystemTip'), { type: 'success' })
+    Modal.success({ title: i18n.global.t('Common.SystemTip'), content })
   },
-  // 警告提示
   alertWarning(content) {
-    MessageBox.alert(content, i18n.t('Common.SystemTip'), { type: 'warning' })
+    Modal.warning({ title: i18n.global.t('Common.SystemTip'), content })
   },
-  // 通知提示
   notify(content) {
-    Notification.info(content)
+    notification.info({ message: content })
   },
-  // 错误通知
   notifyError(content) {
-    Notification.error(content);
+    notification.error({ message: content })
   },
-  // 成功通知
   notifySuccess(content) {
-    Notification.success(content)
+    notification.success({ message: content })
   },
-  // 警告通知
   notifyWarning(content) {
-    Notification.warning(content)
+    notification.warning({ message: content })
   },
-  // 确认窗体
   confirm(content) {
-    return MessageBox.confirm(content, i18n.t('Common.SystemTip'), {
-      confirmButtonText: i18n.t('Common.Confirm'),
-      cancelButtonText: i18n.t('Common.Cancel'),
-      type: "warning",
+    return new Promise((resolve, reject) => {
+      Modal.confirm({
+        title: i18n.global.t('Common.SystemTip'),
+        content,
+        okText: i18n.global.t('Common.Confirm'),
+        cancelText: i18n.global.t('Common.Cancel'),
+        onOk: () => resolve(true),
+        onCancel: () => reject(new Error('cancel'))
+      })
     })
   },
-  // 提交内容
   prompt(content) {
-    return MessageBox.prompt(content, i18n.t('Common.SystemTip'), {
-      confirmButtonText: i18n.t('Common.Confirm'),
-      cancelButtonText: i18n.t('Common.Cancel'),
-      type: "warning",
+    return new Promise((resolve, reject) => {
+      let inputValue = ''
+      Modal.confirm({
+        title: i18n.global.t('Common.SystemTip'),
+        content: () => content,
+        okText: i18n.global.t('Common.Confirm'),
+        cancelText: i18n.global.t('Common.Cancel'),
+        onOk: () => resolve(inputValue),
+        onCancel: () => reject(new Error('cancel'))
+      })
     })
   },
-  // 打开遮罩层
   loading(content) {
-    loadingInstance = Loading.service({
-      lock: true,
-      text: content,
-      spinner: "el-icon-loading",
-      background: "rgba(0, 0, 0, 0.7)",
-    })
+    if (loadingHide) loadingHide()
+    loadingHide = message.loading(content, 0)
   },
-  // 关闭遮罩层
   closeLoading() {
-    loadingInstance.close();
+    if (loadingHide) {
+      loadingHide()
+      loadingHide = null
+    }
   }
 }

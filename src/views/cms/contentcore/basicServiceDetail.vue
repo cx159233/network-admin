@@ -28,7 +28,7 @@
           <div class="detail-section">
             <div class="detail-section-title">服务信息</div>
             <div class="detail-kv">
-              <div class="kv-item"><label>云服务商</label><span>{{ serviceInfo.cloudProvider || '--' }}</span></div>
+              <div class="kv-item"><label>部署云服务商</label><span>{{ serviceInfo.cloudProvider || '--' }}</span></div>
               <div class="kv-item"><label>区域</label><span>{{ serviceInfo.region || '--' }}</span></div>
             </div>
           </div>
@@ -78,12 +78,18 @@
           </div>
           <div class="review-section">
             <div class="review-row">
-              <span class="review-label">平台评价</span>
+              <span class="review-label">平台评分</span>
               <el-rate v-model="serviceInfo.platformRating" disabled show-score />
             </div>
             <div class="review-row">
-              <span class="review-label">用户评价</span>
+              <span class="review-label">用户评分</span>
               <el-rate v-model="serviceInfo.usageRating" disabled show-score />
+            </div>
+            <div class="review-dimensions">
+              <div class="dim-item" v-for="d in dimLabels" :key="d">
+                <span class="dim-label">{{ d }}</span>
+                <span class="dim-score">{{ avgDimScores[d] }}</span>
+              </div>
             </div>
             <div class="review-row">
               <span class="review-label">评价数量</span>
@@ -94,12 +100,25 @@
       </div>
     </div>
 
-    <!-- 用户评价列表弹窗 -->
-    <el-dialog title="用户评价列表" :visible.sync="reviewDialogVisible" width="1050px" :modal-append-to-body="false">
+    <!-- 用户评分列表弹窗 -->
+    <el-dialog title="用户评分列表" :visible.sync="reviewDialogVisible" width="1050px" :modal-append-to-body="false">
       <el-table :data="reviewList" size="small" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}">
-        <el-table-column label="评分" width="80">
+        <el-table-column label="评分" width="200">
           <template slot-scope="scope">
-            <div class="stars"><span v-for="i in 5" :key="i" class="star" :class="{ full: i <= scope.row.score }">★</span></div>
+            <div class="dim-compact">
+              <div class="dim-compact-row">
+                <span class="dim-compact-label">准确性</span>
+                <span class="dim-compact-score" :class="scoreClass(scope.row.ratings['准确性'])">{{ scope.row.ratings['准确性'] }}</span>
+                <span class="dim-compact-label">稳定性</span>
+                <span class="dim-compact-score" :class="scoreClass(scope.row.ratings['稳定性'])">{{ scope.row.ratings['稳定性'] }}</span>
+              </div>
+              <div class="dim-compact-row">
+                <span class="dim-compact-label">响应时效</span>
+                <span class="dim-compact-score" :class="scoreClass(scope.row.ratings['响应时效'])">{{ scope.row.ratings['响应时效'] }}</span>
+                <span class="dim-compact-label">业务适配性</span>
+                <span class="dim-compact-score" :class="scoreClass(scope.row.ratings['业务适配性'])">{{ scope.row.ratings['业务适配性'] }}</span>
+              </div>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="服务/订单号" min-width="200">
@@ -143,6 +162,7 @@
 </template>
 
 <script>
+import emitter from "@/utils/emitter";
 export default {
   name: 'BasicServiceDetail',
   data() {
@@ -165,6 +185,7 @@ export default {
       reviewListAll: [],
       reviewList: [],
       reviewDialogVisible: false,
+      dimLabels: ['准确性', '稳定性', '响应时效', '业务适配性'],
       reviewPage: {
         currentPage: 1,
         pageSize: 10,
@@ -172,9 +193,22 @@ export default {
       }
     };
   },
+  computed: {
+    avgDimScores() {
+      const dims = { '准确性': 0, '稳定性': 0, '响应时效': 0, '业务适配性': 0 };
+      const list = this.reviewListAll;
+      if (!list.length) return dims;
+      this.dimLabels.forEach(d => {
+        let sum = 0;
+        list.forEach(r => { sum += (r.ratings && r.ratings[d]) || 0; });
+        dims[d] = (sum / list.length).toFixed(1);
+      });
+      return dims;
+    },
+  },
   watch: {
     reviewDialogVisible(val) {
-      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.2.3.4'); }
+      if (val) { emitter.emit('set-prd-anchor', 'prd-3.2.1.3.4'); }
     },
   },
   created() {
@@ -204,6 +238,11 @@ export default {
     this.loadReviewList();
   },
   methods: {
+    scoreClass(val) {
+      if (val >= 4) return 'score-high';
+      if (val >= 3) return 'score-mid';
+      return 'score-low';
+    },
     goBack() {
       this.$router.push('/portal/service/serviceCatalog');
     },
@@ -231,7 +270,7 @@ export default {
       this.reviewListAll = [
         {
           id: '1',
-          score: 5,
+          ratings: { '准确性': 5, '稳定性': 5, '响应时效': 4, '业务适配性': 5 },
           serviceName: '云存储服务',
           orderNo: 'ORD20240118001',
           orgName: '测试机构',
@@ -243,7 +282,7 @@ export default {
         },
         {
           id: '2',
-          score: 4,
+          ratings: { '准确性': 4, '稳定性': 4, '响应时效': 5, '业务适配性': 4 },
           serviceName: '云存储服务',
           orderNo: 'ORD20240115002',
           orgName: '研发部门',
@@ -255,7 +294,7 @@ export default {
         },
         {
           id: '3',
-          score: 5,
+          ratings: { '准确性': 5, '稳定性': 4, '响应时效': 5, '业务适配性': 5 },
           serviceName: '云存储服务',
           orderNo: 'ORD20240112003',
           orgName: '产品部门',
@@ -497,6 +536,37 @@ export default {
   justify-content: center;
   margin-top: 16px;
 }
+
+/* 四维度评分 */
+.review-dimensions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  padding: 8px 0 0;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 4px;
+}
+.dim-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.dim-label { color: #8c8c8c; }
+.dim-score { font-weight: 600; color: #409eff; }
+
+.dim-compact { display: flex; flex-direction: column; gap: 4px; }
+.dim-compact-row { display: flex; align-items: center; gap: 4px; }
+.dim-compact-label { font-size: 11px; color: #8c8c8c; width: 52px; flex-shrink: 0; }
+.dim-compact-score {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 22px; border-radius: 4px;
+  font-size: 12px; font-weight: 600;
+  margin-right: 4px;
+}
+.score-high { background: #ebfbee; color: #2f9e44; }
+.score-mid { background: #fff9db; color: #e67700; }
+.score-low { background: #fff5f5; color: #c92a2a; }
 
 /* 弹窗仅覆盖左侧Demo区域 */
 :deep(.el-dialog__wrapper) {

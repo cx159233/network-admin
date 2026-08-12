@@ -1,7 +1,22 @@
 <template>
   <div v-if="!item.hidden">
+    <!-- 平铺模式：机构/开发者侧边栏，一级菜单作为小字分组标题，二级菜单直接展示 -->
+    <template v-if="flatMode && hasMultipleShowingChildren(item)">
+      <div class="flat-group-title">
+        {{ item.meta && item.meta.title || item.name }}
+      </div>
+      <sidebar-item
+        v-for="child in showingChildren(item)"
+        :key="child.path"
+        :is-nest="true"
+        :item="child"
+        :base-path="resolvePath(child.path)"
+        class="nest-menu flat-child"
+      />
+    </template>
+
     <!-- 分类标题：小字展示 + 渲染子菜单 -->
-    <template v-if="item.meta && item.meta.category">
+    <template v-else-if="item.meta && item.meta.category">
       <div class="category-title">
         {{ item.meta.title }}
       </div>
@@ -51,10 +66,22 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
+.flat-group-title {
+  padding: 12px 8px 4px;
+  font-size: 11px;
+  color: #86909C;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.flat-child :deep(.el-menu-item) {
+  padding-left: 8px !important;
+}
 </style>
 
 <script>
-import pathModule from 'path'
+import { resolve as pathResolve } from '@/utils/path'
 import { isExternal } from '@/utils/validate'
 import Item from './Item'
 import AppLink from './Link'
@@ -87,12 +114,22 @@ export default {
     return {}
   },
   computed: {
+    flatMode() {
+      return this.$route.path.startsWith('/workorder')
+    },
     submenuIndex() {
       const resolved = this.resolvePath(this.item.path)
       return this.categoryPrefix ? resolved + '__' + this.categoryPrefix : resolved
     }
   },
   methods: {
+    hasMultipleShowingChildren(item) {
+      const children = (item.children || []).filter(c => !c.hidden)
+      return children.length > 1
+    },
+    showingChildren(item) {
+      return (item.children || []).filter(c => !c.hidden)
+    },
     hasOneShowingChild(children = [], parent) {
       if (!children) {
         children = [];
@@ -126,14 +163,13 @@ export default {
       }
       if (routeQuery) {
         let query = JSON.parse(routeQuery);
-        return { path: pathModule.resolve(this.basePath, routePath), query: query }
+        return { path: pathResolve(this.basePath, routePath), query: query }
       }
-      return pathModule.resolve(this.basePath, routePath)
+      return pathResolve(this.basePath, routePath)
     },
-    // For category items: skip the category's own path and resolve child from parent level
     getChildBasePath(childPath) {
       const parentBase = this.resolvePath('..')
-      return pathModule.resolve(parentBase, childPath)
+      return pathResolve(parentBase, childPath)
     }
   }
 }

@@ -1,7 +1,9 @@
 <script>
+import { h } from 'vue'
+import SvgIcon from '@/components/SvgIcon/index.vue'
+
 export default {
   name: 'MenuItem',
-  functional: true,
   props: {
     icon: {
       type: String,
@@ -12,19 +14,16 @@ export default {
       default: ''
     }
   },
-  render(h, context) {
-    const { icon, title } = context.props
+  render() {
     const vnodes = []
-
-    if (icon) {
-      vnodes.push(<svg-icon iconClass={icon}/>)
+    if (this.icon) {
+      vnodes.push(h(SvgIcon, { iconClass: this.icon }))
     }
-
-    if (title) {
-      if (title.length > 5) {
-        vnodes.push(<span slot='title' title={(title)}>{(title)}</span>)
+    if (this.title) {
+      if (this.title.length > 5) {
+        vnodes.push(h('span', { slot: 'title', title: this.title }, this.title))
       } else {
-        vnodes.push(<span slot='title'>{(title)}</span>)
+        vnodes.push(h('span', { slot: 'title' }, this.title))
       }
     }
     return vnodes

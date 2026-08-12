@@ -43,12 +43,12 @@ function fn (el, binding) {
 }
 
 const hasPermi = {
-  inserted: function (el, binding, vnode) {
+  mounted: function (el, binding, vnode) {
     el.cacheElement = el // 缓存本节点
     el.cacheParentElement = el.parentNode // 缓存父节点
     fn(el, binding)
   },
-  update: function (el, binding) {
+  updated: function (el, binding) {
     fn(el, binding)
   }
 }

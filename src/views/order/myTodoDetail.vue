@@ -1,346 +1,372 @@
 <template>
-  <div class="detail-container">
-    <!-- 顶部标题区域 -->
-    <div class="detail-header-wrap">
-      <el-button size="small" @click="goBack" class="back-btn">
-        <i class="el-icon-arrow-left"></i> 返回列表
-      </el-button>
-    </div>
+  <div class="todo-detail-page">
+    <PageHeader
+      title="待办详情 · 等保三级合规评估"
+      description="处理待办订单，查看订单基础信息、流程进度并提交处理意见"
+    >
+      <template #actions>
+        <a-button @click="goBack">
+          <template #icon><ArrowLeftOutlined /></template>
+          返回列表
+        </a-button>
+      </template>
+    </PageHeader>
 
-    <!-- 工单详情内容 -->
-    <div class="detail-content-wrap">
-      <div class="detail-left">
-        <!-- 订单基本信息 -->
-        <el-card shadow="hover" class="mb-4">
-          <div slot="header" class="clearfix">
-            <span>订单基本信息</span>
-            <span class="sb processing" style="float: right">工单流转中</span>
+    <div class="todo-detail-page__body">
+      <div class="todo-detail-page__main">
+        <CloudCard class="todo-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">订单基本信息</span>
+            <StatusDot type="processing" text="工单流转中" />
           </div>
-          <div class="detail-kv">
-            <div class="kv-item"><label>服务名称</label><span>等保三级合规评估</span></div>
-            <div class="kv-item"><label>服务规格</label><span>差距分析 + 渗透测试 + 整改报告</span></div>
-            <div class="kv-item"><label>服务类型</label><span>安全服务</span></div>
-            <div class="kv-item"><label>申请人</label><span>张三</span></div>
-            <div class="kv-item"><label>申请机构</label><span>北京市海淀区数字经济发展局</span></div>
-            <div class="kv-item"><label>申请时间</label><span class="mono">2024-03-15 14:32:00</span></div>
-            <div class="kv-item"><label>服务周期</label><span>1年（2024-03 至 2025-03）</span></div>
-            <div class="kv-item"><label>审批人</label><span><span class="av-chip"><span class="av blue">李</span> 李四 · IT管理员</span></span></div>
-            <div class="kv-item"><label>审批时间</label><span class="mono">2024-03-15 16:08:00</span></div>
-            <div class="kv-item full"><label>申请备注</label><span class="muted">本次申请等保三级评估，包含差距分析、渗透测试和整改报告，请安排专业团队对接。</span></div>
-          </div>
-        </el-card>
+          <a-descriptions :column="2" size="small" class="order-desc">
+            <a-descriptions-item label="服务名称">等保三级合规评估</a-descriptions-item>
+            <a-descriptions-item label="服务规格">差距分析 + 渗透测试 + 整改报告</a-descriptions-item>
+            <a-descriptions-item label="服务类型">
+              <span class="service-type-tag service-type-tag--security">安全服务</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="申请人">张三</a-descriptions-item>
+            <a-descriptions-item label="申请机构">北京市海淀区数字经济发展局</a-descriptions-item>
+            <a-descriptions-item label="申请时间">
+              <span class="cell-mono">2026-03-15 14:32:00</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="服务周期">1年（2026-03 至 2027-03）</a-descriptions-item>
+            <a-descriptions-item label="审批人">
+              <span class="person-chip">
+                <a-avatar size="small" class="person-chip__av person-chip__av--blue">李</a-avatar>
+                李四 · IT管理员
+              </span>
+            </a-descriptions-item>
+            <a-descriptions-item label="审批时间">
+              <span class="cell-mono">2026-03-15 16:08:00</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="申请备注" :span="2">
+              <span class="muted">本次申请等保三级评估，包含差距分析、渗透测试和整改报告，请安排专业团队对接。</span>
+            </a-descriptions-item>
+          </a-descriptions>
+        </CloudCard>
 
-        <!-- 流程进度 -->
-        <el-card shadow="hover" class="description-card">
-          <div slot="header" class="clearfix">
-            <span>流程进度</span>
+        <CloudCard class="todo-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">流程进度</span>
           </div>
-          <div class="tl">
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">提交申请</div><div class="tl-time">2024-03-15 14:32:00 · 张三</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">系统派发工单</div><div class="tl-time">2024-03-15 16:10:00 · 自动派发 → TK-0234</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot on"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title on">工单流转中</div><div class="tl-time">2024-03-15 16:15:00</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">服务交付完成</div><div class="tl-time">等待工单系统回执</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">服务评价</div><div class="tl-time">交付完成后可评价</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">订单驳回</div><div class="tl-time">工单驳回后记录驳回时间</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div></div><div class="tl-body"><div class="tl-title wait">订单取消</div><div class="tl-time">用户取消订单后记录取消时间</div></div></div>
-          </div>
-        </el-card>
+          <a-timeline class="order-timeline">
+            <a-timeline-item
+              v-for="(step, idx) in timeline"
+              :key="idx"
+              :color="step.dotColor"
+            >
+              <div :class="['tl-title', `tl-title--${step.state}`]">{{ step.title }}</div>
+              <div class="tl-time">{{ step.time }}</div>
+            </a-timeline-item>
+          </a-timeline>
+        </CloudCard>
       </div>
 
-      <div class="detail-right">
-        <!-- 关联工单 -->
-        <el-card shadow="hover" class="mb-4">
-          <div slot="header" class="clearfix">
-            <span>关联工单</span>
+      <div class="todo-detail-page__side">
+        <CloudCard class="todo-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">关联工单</span>
           </div>
-          <div style="border:1px solid #ffec99;border-left:3px solid #e67700;border-radius:8px;padding:12px;background:#fff9db">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-              <span style="font-family:'DM Mono',monospace;font-size:11px;color:#e67700;font-weight:600">TK-0234</span>
+          <div class="workorder-chip">
+            <div class="workorder-chip__id">
+              <span class="cell-mono">TK-0234</span>
             </div>
-            <div style="font-size:13px;font-weight:500;margin-bottom:5px;color:#1c2033">等保三级合规评估服务交付</div>
-            <div style="font-size:12px;color:#5c6480;line-height:1.6;margin-bottom:8px">已与申请人确认评估范围，覆盖3个核心系统，本周五启动现场评估。</div>
-            <div class="av-chip" style="font-size:11px;color:#9aa0b8"><span class="av amber">王</span> 负责人：王五（安全团队）</div>
+            <div class="workorder-chip__title">等保三级合规评估服务交付</div>
+            <div class="workorder-chip__desc">已与申请人确认评估范围，覆盖3个核心系统，本周五启动现场评估。</div>
+            <div class="workorder-chip__owner">
+              <a-avatar size="small" class="person-chip__av person-chip__av--amber">王</a-avatar>
+              负责人：王五（安全团队）
+            </div>
           </div>
-          <div style="display:flex;gap:6px;margin-top:10px">
-            <el-button plain size="small" style="width:100%">查看工单</el-button>
-          </div>
-        </el-card>
+          <a-button block style="margin-top: 12px" @click="goToWorkorder">
+            <template #icon><EyeOutlined /></template>
+            查看工单
+          </a-button>
+        </CloudCard>
 
-        <!-- 处理操作 -->
-        <el-card shadow="hover">
-          <div slot="header" class="clearfix">
-            <span>处理操作</span>
+        <CloudCard class="todo-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">处理操作</span>
           </div>
-          <div class="process-form">
-            <el-form :model="processForm" label-position="top">
-              <el-form-item label="处理结果">
-                <el-radio-group v-model="processForm.result">
-                  <el-radio label="pass">通过</el-radio>
-                  <el-radio label="reject">驳回</el-radio>
-                  <el-radio label="transfer">转交</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="处理意见">
-                <el-input
-                  v-model="processForm.comment"
-                  type="textarea"
-                  :rows="4"
-                  placeholder="请输入处理意见"
-                  maxlength="500"
-                  show-word-limit
-                />
-              </el-form-item>
-              <el-form-item v-if="processForm.result === 'transfer'" label="转交人">
-                <el-select v-model="processForm.transferTo" placeholder="请选择转交人" style="width: 100%">
-                  <el-option label="王五" value="wangwu" />
-                  <el-option label="赵六" value="zhaoliu" />
-                  <el-option label="孙七" value="sunqi" />
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" icon="el-icon-check" @click="submitProcess">提交处理</el-button>
-                <el-button @click="resetProcess">重置</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-        </el-card>
+          <a-form :model="processForm" layout="vertical" class="process-form">
+            <a-form-item label="处理结果">
+              <a-radio-group v-model:value="processForm.result">
+                <a-radio value="pass">通过</a-radio>
+                <a-radio value="reject">驳回</a-radio>
+                <a-radio value="transfer">转交</a-radio>
+              </a-radio-group>
+            </a-form-item>
+            <a-form-item label="处理意见">
+              <a-textarea
+                v-model:value="processForm.comment"
+                :rows="4"
+                placeholder="请输入处理意见"
+                :maxlength="500"
+                show-count
+              />
+            </a-form-item>
+            <a-form-item v-if="processForm.result === 'transfer'" label="转交人">
+              <a-select v-model:value="processForm.transferTo" placeholder="请选择转交人">
+                <a-select-option value="wangwu">王五</a-select-option>
+                <a-select-option value="zhaoliu">赵六</a-select-option>
+                <a-select-option value="sunqi">孙七</a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item>
+              <div class="form-actions">
+                <a-button type="primary" @click="submitProcess">
+                  <template #icon><CheckOutlined /></template>
+                  提交处理
+                </a-button>
+                <a-button @click="resetProcess">重置</a-button>
+              </div>
+            </a-form-item>
+          </a-form>
+        </CloudCard>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import {
+  ArrowLeftOutlined, EyeOutlined, CheckOutlined
+} from '@ant-design/icons-vue'
+import { Modal, message } from 'ant-design-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+
 export default {
   name: 'OrderMyTodoDetail',
+  components: {
+    PageHeader, CloudCard, StatusDot,
+    ArrowLeftOutlined, EyeOutlined, CheckOutlined
+  },
   data() {
     return {
       processForm: {
         result: 'pass',
         comment: '',
-        transferTo: ''
-      }
-    };
+        transferTo: undefined
+      },
+      timeline: [
+        { title: '提交申请', time: '2026-03-15 14:32:00 · 张三', state: 'done', dotColor: 'green' },
+        { title: '系统派发工单', time: '2026-03-15 16:10:00 · 自动派发 -> TK-0234', state: 'done', dotColor: 'green' },
+        { title: '工单流转中', time: '2026-03-15 16:15:00', state: 'on', dotColor: 'blue' },
+        { title: '服务交付完成', time: '等待工单系统回执', state: 'wait', dotColor: 'gray' },
+        { title: '服务评价', time: '交付完成后可评价', state: 'wait', dotColor: 'gray' },
+        { title: '订单驳回', time: '工单驳回后记录驳回时间', state: 'wait', dotColor: 'gray' },
+        { title: '订单取消', time: '用户取消订单后记录取消时间', state: 'wait', dotColor: 'gray' }
+      ]
+    }
   },
   methods: {
     goBack() {
-      this.$router.push('/workorder/order/myTodo');
+      this.$router.push('/workorder/order/myTodo')
+    },
+    goToWorkorder() {
+      this.$router.push({ path: '/workorder/detail', query: { workorderId: 'TK-0234' } })
     },
     submitProcess() {
-      // 提交处理
       if (!this.processForm.comment.trim()) {
-        this.$message.warning('请输入处理意见');
-        return;
+        message.warning('请输入处理意见')
+        return
       }
       if (this.processForm.result === 'transfer' && !this.processForm.transferTo) {
-        this.$message.warning('请选择转交人');
-        return;
+        message.warning('请选择转交人')
+        return
       }
-
       const resultText = {
-        'pass': '通过',
-        'reject': '驳回',
-        'transfer': '转交'
-      }[this.processForm.result];
-
-      this.$confirm({
+        pass: '通过',
+        reject: '驳回',
+        transfer: '转交'
+      }[this.processForm.result]
+      Modal.confirm({
         title: '确认提交',
-        message: `确定要${resultText}该订单吗？`,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(() => {
-        // 模拟提交处理
-        setTimeout(() => {
-          this.$message.success('处理成功');
-          // 重置表单
-          this.resetProcess();
-        }, 500);
-      }).catch(() => {});
+        content: `确定要${resultText}该订单吗？`,
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
+          setTimeout(() => {
+            message.success('处理成功')
+            this.resetProcess()
+          }, 300)
+        }
+      })
     },
     resetProcess() {
       this.processForm = {
         result: 'pass',
         comment: '',
-        transferTo: ''
-      };
+        transferTo: undefined
+      }
     }
   }
-};
+}
 </script>
 
 <style scoped>
-/* Main */
-.detail-container {
-  display: flex;
-  flex-direction: column;
-  padding: 0 !important;
-  margin: -20px;
-  min-height: calc(100vh - 50px);
-  background-color: #f2f4f8;
+.todo-detail-page {
+  padding: 4px 0;
 }
 
-.detail-header-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  margin: 0;
-  border-radius: 0;
-  height: auto;
-  flex-shrink: 0;
-}
-
-.back-btn {
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 500;
-}
-
-.back-btn:hover {
-  background-color: #ecf5ff;
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.detail-content-wrap {
-  display: flex;
-  gap: 14px;
-  padding: 16px 20px 16px;
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f2f4f8;
-}
-
-.detail-left {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.detail-left > * { min-width: 0; overflow: hidden; }
-
-.detail-right {
-  width: 272px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.detail-left .mb-4 {
-  margin-bottom: 0 !important;
-}
-
-.description-card {
-  margin-bottom: 0;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-  color: #303133;
-  font-size: 14px;
-}
-
-/* 键值对网格 */
-.detail-kv {
+.todo-detail-page__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 6px 40px;
-  overflow: hidden;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+  margin-top: 14px;
 }
 
-.kv-item {
+.todo-detail-page__main,
+.todo-detail-page__side {
   display: flex;
-  align-items: baseline;
-  font-size: 14px;
-  line-height: 2;
-}
-
-.kv-item.full {
-  grid-column: 1 / -1;
-}
-
-.kv-item label {
-  color: #8c8c8c;
-  width: 100px;
-  flex-shrink: 0;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-.kv-item span {
-  color: #262626;
-  word-break: break-all;
-  font-weight: 400;
-  font-size: 14px;
+  flex-direction: column;
+  gap: 14px;
   min-width: 0;
 }
 
-.kv-item .mono {
-  font-family: 'DM Mono', monospace;
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.card-head__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
+}
+
+.muted {
+  color: #4E5969;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.order-desc :deep(.ant-descriptions-item-label) {
+  color: #86909C;
+  font-size: 13px;
+  width: 88px;
+}
+
+.order-desc :deep(.ant-descriptions-item-content) {
+  color: rgba(0, 0, 0, 0.85);
   font-size: 13px;
 }
 
-.kv-item .muted {
-  color: #262626;
+.person-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.85);
 }
 
-/* Status badge */
-.sb{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
-.sb::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.sb.processing{background:#eef2ff;color:#3b5bdb}
-.sb.processing::before{background:#3b5bdb;animation:blink 1.5s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
-
-/* Timeline */
-.tl{display:flex;flex-direction:column;padding:8px 0}
-.tl-row{display:flex;gap:12px}
-.tl-spine{display:flex;flex-direction:column;align-items:center;width:14px;flex-shrink:0}
-.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.tl-dot.done{background:#2f9e44}
-.tl-dot.on{background:#3b5bdb;box-shadow:0 0 0 3px #c5d0fa}
-.tl-dot.wait{background:#c8cdd9}
-.tl-dot.red{background:#c92a2a}
-.tl-vl{flex:1;width:1px;background:#e3e7ef;margin:3px 0;min-height:16px}
-.tl-row:last-child .tl-vl{display:none}
-.tl-body{padding-bottom:14px;flex:1}
-.tl-title{font-size:13px;font-weight:500;margin-bottom:2px}
-.tl-title.done{color:#5c6480}
-.tl-title.on{color:#1c2033}
-.tl-title.wait{color:#9aa0b8}
-.tl-time{font-size:11px;color:#9aa0b8;font-family:'DM Mono',monospace}
-
-/* Avatar chip */
-.av-chip{display:inline-flex;align-items:center;gap:5px}
-.av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600}
-.av.blue{background:#eef2ff;color:#3b5bdb}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#c8cdd9;border-radius:3px}
-
-/* 处理操作样式 */
-.process-form {
-  padding: 8px 0;
+.person-chip__av {
+  font-size: 11px;
+  font-weight: 600;
 }
 
-.process-form .el-form-item {
-  margin-bottom: 20px;
+.person-chip__av--blue {
+  background: #E8F3FF;
+  color: #165DFF;
 }
 
-.process-form .el-radio-group {
+.person-chip__av--amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #F59E0B;
+}
+
+.person-chip__av--green {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16A34A;
+}
+
+.order-timeline {
+  padding-top: 4px;
+}
+
+.tl-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.tl-title--done { color: #4E5969; }
+.tl-title--on { color: #165DFF; font-weight: 600; }
+.tl-title--wait { color: #C9CDD4; }
+
+.tl-time {
+  font-size: 11px;
+  color: #86909C;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  letter-spacing: -0.2px;
+}
+
+.workorder-chip {
+  border: 1px solid rgba(245, 158, 11, 0.30);
+  border-left: 3px solid #F59E0B;
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.workorder-chip__id {
+  margin-bottom: 6px;
+}
+
+.workorder-chip__id .cell-mono {
+  color: #F59E0B;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.workorder-chip__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.workorder-chip__desc {
+  font-size: 12px;
+  color: #4E5969;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.workorder-chip__owner {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #86909C;
 }
 
-.process-form .el-radio {
-  margin-right: 0;
+.process-form {
+  padding-top: 4px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .todo-detail-page__body {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

@@ -1,174 +1,144 @@
 <template>
-  <div class="app-container detail-new-v1">
-    <!-- 顶部标题区域 -->
-    <div class="detail-header">
-      <div class="header-left">
-        <el-button size="small" @click="goBack" class="back-btn">
-          <i class="el-icon-arrow-left"></i> 返回列表
-        </el-button>
-      </div>
-      <div class="header-title">
-        <el-tag size="small" :type="getTagType" effect="dark" class="status-tag">
-          {{ ticketStatus === '已完成' ? 'FINISHED' : 'RUNNING' }}
-        </el-tag>
-        <span class="title-text">{{ ticket.code }} {{ ticket.title }}</span>
-      </div>
-      <div class="header-right">
-        <el-button type="primary" size="small" icon="el-icon-check" @click="handleProcess" class="process-btn">
+  <div class="todo-detail-page">
+    <PageHeader
+      :title="`工单详情 · ${ticket.code}`"
+      :description="ticket.title"
+    >
+      <template #actions>
+        <a-button @click="goBack">
+          <template #icon><ArrowLeftOutlined /></template>
+          返回列表
+        </a-button>
+        <a-button type="primary" @click="handleProcess">
+          <template #icon><CheckOutlined /></template>
           处理
-        </el-button>
+        </a-button>
+      </template>
+    </PageHeader>
+
+    <div class="todo-detail-page__body">
+      <div class="todo-detail-page__main">
+        <CloudCard class="todo-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">基本信息</span>
+            <StatusDot :type="getStatusKey(ticket.status)" :text="ticket.status" />
+          </div>
+          <a-descriptions :column="2" size="small" class="info-desc">
+            <a-descriptions-item label="工单编号">
+              <span class="cell-mono">{{ ticket.code }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="工单类型">{{ ticket.type }}</a-descriptions-item>
+            <a-descriptions-item label="申请人">{{ ticket.applicant }}</a-descriptions-item>
+            <a-descriptions-item label="所属部门">{{ ticket.department }}</a-descriptions-item>
+            <a-descriptions-item label="联系方式">
+              <span class="cell-mono">{{ ticket.contact }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="紧急程度">
+              <span :class="['priority-pill', `priority-pill--${getPriorityKey(ticket.priority)}`]">{{ ticket.priority }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="申请时间">
+              <span class="cell-mono">{{ ticket.createTime }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="工单状态">{{ ticket.status }}</a-descriptions-item>
+          </a-descriptions>
+        </CloudCard>
+
+        <CloudCard class="todo-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">工单描述</span>
+          </div>
+          <div class="ticket-description">{{ ticket.description }}</div>
+        </CloudCard>
+
+        <CloudCard ref="processCard" class="todo-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">处理操作</span>
+          </div>
+          <a-form layout="vertical" :model="processForm" class="process-form">
+            <a-form-item label="处理结果">
+              <a-radio-group v-model:value="processForm.result">
+                <a-radio value="pass">通过</a-radio>
+                <a-radio value="reject">驳回</a-radio>
+                <a-radio value="transfer">转交</a-radio>
+              </a-radio-group>
+            </a-form-item>
+            <a-form-item label="处理意见">
+              <a-textarea
+                v-model:value="processForm.comment"
+                :rows="4"
+                placeholder="请输入处理意见"
+                :maxlength="500"
+                show-count
+              />
+            </a-form-item>
+            <a-form-item v-if="processForm.result === 'transfer'" label="转交人">
+              <a-select v-model:value="processForm.transferTo" placeholder="请选择转交人">
+                <a-select-option value="wangwu">王五</a-select-option>
+                <a-select-option value="zhaoliu">赵六</a-select-option>
+                <a-select-option value="sunqi">孙七</a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item>
+              <a-space>
+                <a-button type="primary" @click="submitProcess">
+                  <template #icon><CheckOutlined /></template>
+                  提交处理
+                </a-button>
+                <a-button @click="resetProcess">重置</a-button>
+              </a-space>
+            </a-form-item>
+          </a-form>
+        </CloudCard>
       </div>
-    </div>
 
-    <!-- 工单详情内容 -->
-    <div class="detail-content">
-        <!-- 左侧基本信息 -->
-        <div class="detail-left">
-          <el-card shadow="never" class="mb-4">
-            <template #header>
-              <div class="card-header">
-                <span>基本信息</span>
-              </div>
-            </template>
-            <div class="info-grid">
-              <div class="info-item">
-                <span class="info-label">工单类型：</span>
-                <span class="info-value">{{ ticket.type }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">申请时间：</span>
-                <span class="info-value">{{ ticket.createTime }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">申请人：</span>
-                <span class="info-value">{{ ticket.applicant }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">所属部门：</span>
-                <span class="info-value">{{ ticket.department }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">联系方式：</span>
-                <span class="info-value">{{ ticket.contact }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">工单状态：</span>
-                <span class="info-value">{{ ticket.status }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">紧急程度：</span>
-                <span class="info-value">{{ ticket.priority }}</span>
-              </div>
-            </div>
-          </el-card>
+      <div class="todo-detail-page__side">
+        <CloudCard class="todo-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">处理状态</span>
+          </div>
+          <a-timeline class="process-timeline">
+            <a-timeline-item
+              v-for="(step, idx) in processSteps"
+              :key="idx"
+              :color="getTimelineColor(step.status)"
+            >
+              <div :class="['tl-title', `tl-title--${step.status}`]">{{ step.title }}</div>
+              <div class="tl-time">{{ step.time || '—' }}</div>
+              <div class="tl-handler">{{ step.handler || '—' }}</div>
+            </a-timeline-item>
+          </a-timeline>
+        </CloudCard>
 
-          <!-- 工单描述 -->
-          <el-card shadow="never" class="description-card">
-            <template #header>
-              <div class="card-header">
-                <span>工单描述</span>
-              </div>
-            </template>
-            <div class="ticket-description">
-              {{ ticket.description }}
+        <CloudCard class="todo-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">处理记录</span>
+          </div>
+          <div class="record-list">
+            <div v-for="(record, idx) in processRecords" :key="idx" class="record-item">
+              <div class="record-time cell-mono">{{ record.time }}</div>
+              <div class="record-content">{{ record.content }}</div>
+              <div class="record-handler">— {{ record.handler }}</div>
             </div>
-          </el-card>
-
-          <!-- 处理操作区域 -->
-          <el-card shadow="never" class="process-action-card">
-            <template #header>
-              <div class="card-header">
-                <span>处理操作</span>
-              </div>
-            </template>
-            <div class="process-form">
-              <el-form :model="processForm" label-position="top">
-                <el-form-item label="处理结果">
-                  <el-radio-group v-model="processForm.result">
-                    <el-radio label="pass">通过</el-radio>
-                    <el-radio label="reject">驳回</el-radio>
-                    <el-radio label="transfer">转交</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-                <el-form-item label="处理意见">
-                  <el-input
-                    v-model="processForm.comment"
-                    type="textarea"
-                    :rows="4"
-                    placeholder="请输入处理意见"
-                    maxlength="500"
-                    show-word-limit
-                  />
-                </el-form-item>
-                <el-form-item v-if="processForm.result === 'transfer'" label="转交人">
-                  <el-select v-model="processForm.transferTo" placeholder="请选择转交人" style="width: 100%">
-                    <el-option label="王五" value="wangwu" />
-                    <el-option label="赵六" value="zhaoliu" />
-                    <el-option label="孙七" value="sunqi" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" icon="el-icon-check" @click="submitProcess">提交处理</el-button>
-                  <el-button @click="resetProcess">重置</el-button>
-                </el-form-item>
-              </el-form>
-            </div>
-          </el-card>
-        </div>
-
-        <!-- 右侧处理状态 -->
-        <div class="detail-right">
-          <el-card shadow="never" class="mb-4">
-            <template #header>
-              <div class="card-header">
-                <span>处理状态</span>
-              </div>
-            </template>
-            <div class="process-steps">
-              <div
-                v-for="(step, index) in processSteps"
-                :key="index"
-                class="process-step"
-                :class="{ 'completed': step.status === 'completed', 'processing': step.status === 'processing' }"
-              >
-                <div class="step-icon">{{ index + 1 }}</div>
-                <div class="step-content">
-                  <div class="step-title">{{ step.title }}</div>
-                  <div class="step-time">{{ step.time }}</div>
-                  <div class="step-handler">{{ step.handler }}</div>
-                </div>
-              </div>
-            </div>
-          </el-card>
-
-          <!-- 处理记录 -->
-          <el-card shadow="never">
-            <template #header>
-              <div class="card-header">
-                <span>处理记录</span>
-              </div>
-            </template>
-            <div class="process-records">
-              <div
-                v-for="(record, index) in processRecords"
-                :key="index"
-                class="process-record"
-              >
-                <div class="record-time">{{ record.time }}</div>
-                <div class="record-content">{{ record.content }}</div>
-                <div class="record-handler">{{ record.handler }}</div>
-              </div>
-            </div>
-          </el-card>
-        </div>
+          </div>
+        </CloudCard>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ArrowLeftOutlined, CheckOutlined } from '@ant-design/icons-vue'
+import { Modal, message } from 'ant-design-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+
 export default {
   name: 'MyTodoDetail',
+  components: {
+    PageHeader, CloudCard, StatusDot,
+    ArrowLeftOutlined, CheckOutlined
+  },
   data() {
     return {
       ticket: {
@@ -187,500 +157,228 @@ export default {
       processForm: {
         result: 'pass',
         comment: '',
-        transferTo: ''
+        transferTo: undefined
       },
       processSteps: [
-        {
-          title: '提交申请',
-          time: '2026-04-02 10:00:00',
-          handler: '张三',
-          status: 'completed'
-        },
-        {
-          title: '部门审批',
-          time: '',
-          handler: '当前用户',
-          status: 'processing'
-        },
-        {
-          title: '网络服务配置',
-          time: '',
-          handler: '',
-          status: 'pending'
-        },
-        {
-          title: '服务交付',
-          time: '',
-          handler: '',
-          status: 'pending'
-        }
+        { title: '提交申请', time: '2026-04-02 10:00:00', handler: '张三', status: 'completed' },
+        { title: '部门审批', time: '', handler: '当前用户', status: 'processing' },
+        { title: '网络服务配置', time: '', handler: '', status: 'pending' },
+        { title: '服务交付', time: '', handler: '', status: 'pending' }
       ],
       processRecords: [
-        {
-          time: '2026-04-02 10:00:00',
-          content: '张三提交了网络服务申请工单',
-          handler: '张三'
-        }
+        { time: '2026-04-02 10:00:00', content: '张三提交了网络服务申请工单', handler: '张三' }
       ]
-    };
-  },
-  computed: {
-    getTagType() {
-      return this.ticket.status === '已完成' ? 'info' : 'success';
-    },
-    ticketStatus() {
-      return this.ticket.status;
     }
   },
   created() {
-    // 从路由参数中获取工单ID
-    const ticketId = this.$route.query.workorderId;
+    const ticketId = this.$route.query.workorderId
     if (ticketId) {
-      this.loadTicketDetail(ticketId);
+      this.loadTicketDetail(ticketId)
     }
   },
   methods: {
-    loadTicketDetail(ticketId) {
-      // 模拟API请求
-      setTimeout(() => {
-        // 这里可以根据ticketId获取真实的工单详情
-        // 现在使用模拟数据
-      }, 500);
-    },
+    loadTicketDetail() {},
     goBack() {
-      this.$router.push('/workorder/myBills/myTodo');
+      this.$router.push('/workorder/myBills/myTodo')
     },
     handleProcess() {
-      // 点击处理按钮，滚动到处理操作区域
-      const processCard = document.querySelector('.process-action-card');
-      if (processCard) {
-        processCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const el = this.$refs.processCard && this.$refs.processCard.$el
+      if (el && el.scrollIntoView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     },
     submitProcess() {
-      // 提交处理
       if (!this.processForm.comment.trim()) {
-        this.$modal.msgWarning('请输入处理意见');
-        return;
+        message.warning('请输入处理意见')
+        return
       }
       if (this.processForm.result === 'transfer' && !this.processForm.transferTo) {
-        this.$modal.msgWarning('请选择转交人');
-        return;
+        message.warning('请选择转交人')
+        return
       }
-
-      const resultText = {
-        'pass': '通过',
-        'reject': '驳回',
-        'transfer': '转交'
-      }[this.processForm.result];
-
-      this.$modal.confirm({
+      const resultText = { pass: '通过', reject: '驳回', transfer: '转交' }[this.processForm.result]
+      Modal.confirm({
         title: '确认提交',
         content: `确定要${resultText}该工单吗？`,
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(() => {
-        // 模拟提交处理
-        setTimeout(() => {
-          this.$modal.msgSuccess('处理成功');
-          // 添加处理记录
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
           this.processRecords.unshift({
-            time: new Date().toLocaleString(),
+            time: this.formatNow(),
             content: `当前用户${resultText}了工单，处理意见：${this.processForm.comment}`,
             handler: '当前用户'
-          });
-          // 更新步骤状态
-          this.processSteps[1].status = 'completed';
-          this.processSteps[1].time = new Date().toLocaleString();
-          this.processSteps[2].status = 'processing';
-          // 重置表单
-          this.resetProcess();
-        }, 500);
-      }).catch(() => {});
+          })
+          this.processSteps[1].status = 'completed'
+          this.processSteps[1].time = this.formatNow()
+          this.processSteps[2].status = 'processing'
+          message.success('处理成功')
+          this.resetProcess()
+        }
+      })
     },
     resetProcess() {
-      this.processForm = {
-        result: 'pass',
-        comment: '',
-        transferTo: ''
-      };
+      this.processForm = { result: 'pass', comment: '', transferTo: undefined }
+    },
+    formatNow() {
+      const d = new Date()
+      const pad = (n) => String(n).padStart(2, '0')
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+    },
+    getStatusKey(status) {
+      const map = { '待处理': 'processing', '处理中': 'processing', '已完成': 'done', '已关闭': 'cancelled' }
+      return map[status] || 'default'
+    },
+    getPriorityKey(priority) {
+      const map = { '紧急': 'danger', '高': 'danger', '普通': 'default', '低': 'default' }
+      return map[priority] || 'default'
+    },
+    getTimelineColor(status) {
+      const map = { completed: 'green', processing: 'blue', pending: 'gray' }
+      return map[status] || 'gray'
     }
   }
-};
+}
 </script>
 
 <style scoped>
-.detail-new-v1 {
-  display: flex;
-  flex-direction: column;
-  padding: 0 !important;
-  margin: -20px;
-}
-
-.detail-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 12px 24px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  margin: 0;
-  border-radius: 0;
-  height: auto;
-  flex-shrink: 0;
-}
-
-.header-left {
-  flex: 0 0 auto;
-}
-
-.header-right {
-  margin-left: auto;
-}
-
-.header-left {
-  flex: 0 0 auto;
-}
-
-.header-title {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  margin: 0;
-  gap: 8px;
-}
-
-.header-right {
-  margin-left: auto;
-}
-
-.back-btn {
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 500;
-}
-
-.back-btn:hover {
-  background-color: #ecf5ff;
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.process-btn {
-  border-radius: 4px;
-  padding: 8px 20px;
-  font-weight: 500;
-}
-
-
-.status-tag {
-  margin-right: 12px;
-  font-weight: 500;
-  padding: 0 10px;
-  height: 24px;
-  line-height: 22px;
-}
-
-.title-text {
-  font-weight: 600;
-  font-size: 18px;
-  color: #303133;
-}
-
-.detail-content {
-  display: flex;
-  gap: 24px;
-  padding: 20px 24px 24px;
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f2f4f8;
-}
-
-.detail-left {
-  flex: 1;
-  min-width: 0;
-}
-
-.detail-left .mb-4 {
-  margin-bottom: 16px !important;
-}
-
-.description-card {
-  margin-bottom: 16px;
-}
-
-.process-action-card {
-  margin-bottom: 16px;
-}
-
-.process-form {
-  padding: 8px 0;
-}
-
-.process-form .el-form-item {
-  margin-bottom: 20px;
-}
-
-.process-form .el-radio-group {
-  display: flex;
-  gap: 20px;
-}
-
-.process-form .el-radio {
-  margin-right: 0;
-}
-
-.detail-right {
-  width: 340px;
-  flex-shrink: 0;
-}
-
-.detail-right .mb-4 {
-  margin-bottom: 16px !important;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-  color: #409eff;
-  font-size: 15px;
+.todo-detail-page {
   padding: 4px 0;
 }
 
-.card-header::before {
-  content: '';
-  width: 4px;
-  height: 16px;
-  background-color: #409eff;
-  margin-right: 8px;
-  border-radius: 2px;
-}
-
-.info-grid {
+.todo-detail-page__body {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px 40px;
-  padding: 8px 0;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+  margin-top: 14px;
 }
 
-.info-item {
+.todo-detail-page__main,
+.todo-detail-page__side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.card-head {
   display: flex;
   align-items: center;
-  padding: 8px 0;
-  border-radius: 0;
-  transition: none;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.info-item:hover {
-  background-color: transparent;
+.card-head__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
 }
 
-.info-label {
-  color: #8c8c8c;
-  font-size: 14px;
-  width: 90px;
-  flex-shrink: 0;
-  font-weight: 400;
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
 }
 
-.info-value {
-  color: #262626;
-  font-size: 14px;
-  flex: 1;
-  font-weight: 400;
+.info-desc :deep(.ant-descriptions-item-label) {
+  color: #86909C;
+  font-size: 13px;
+  width: 88px;
 }
+
+.info-desc :deep(.ant-descriptions-item-content) {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 13px;
+}
+
+.priority-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.priority-pill--danger { background: rgba(239, 68, 68, 0.10); color: #EF4444; }
+.priority-pill--default { background: #F2F3F5; color: #4E5969; }
 
 .ticket-description {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.8;
-  color: #303133;
+  color: rgba(0, 0, 0, 0.85);
   white-space: pre-wrap;
-  padding: 12px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
+  padding: 12px 14px;
+  background: #F7F8FA;
+  border-radius: 8px;
   min-height: 80px;
 }
 
-.process-steps {
-  margin-top: 8px;
-  padding: 0 8px;
+.process-timeline {
+  padding-top: 4px;
 }
 
-.process-step {
-  display: flex;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.process-step::before {
-  content: '';
-  position: absolute;
-  left: 11px;
-  top: 24px;
-  bottom: -20px;
-  width: 2px;
-  background-color: #e4e7ed;
-  z-index: 0;
-}
-
-.process-step:last-child::before {
-  display: none;
-}
-
-.process-step.completed::before {
-  background-color: #67c23a;
-}
-
-.process-step.processing .step-icon {
-  background-color: #409eff;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(64, 158, 255, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(64, 158, 255, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(64, 158, 255, 0);
-  }
-}
-
-.step-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: #e4e7ed;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  margin-right: 14px;
-  flex-shrink: 0;
-  z-index: 1;
-  font-weight: 600;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.process-step.completed .step-icon {
-  background-color: #67c23a;
-}
-
-.step-content {
-  flex: 1;
-  z-index: 1;
-  padding-top: 2px;
-}
-
-.step-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #303133;
-  margin-bottom: 6px;
-}
-
-.step-time {
-  font-size: 12px;
-  color: #909399;
-  margin-bottom: 4px;
-}
-
-.step-handler {
-  font-size: 12px;
-  color: #606266;
+.tl-title {
+  font-size: 13px;
   font-weight: 500;
+  margin-bottom: 2px;
 }
 
-/* 处理记录样式 */
-.process-records {
-  margin-top: 8px;
-  padding: 0 8px;
+.tl-title--completed { color: #4E5969; }
+.tl-title--processing { color: #165DFF; font-weight: 600; }
+.tl-title--pending { color: #C9CDD4; }
+
+.tl-time {
+  font-size: 11px;
+  color: #86909C;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  letter-spacing: -0.2px;
+  margin-bottom: 2px;
 }
 
-.process-record {
-  margin-bottom: 16px;
-  padding: 12px 16px;
-  background-color: #f5f7fa;
+.tl-handler {
+  font-size: 11px;
+  color: #4E5969;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.record-item {
+  padding: 10px 12px;
+  background: #F7F8FA;
   border-radius: 6px;
-  border-left: 3px solid #409eff;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.process-record:hover {
-  transform: translateX(4px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.process-record:last-child {
-  margin-bottom: 0;
+  border-left: 3px solid #165DFF;
 }
 
 .record-time {
-  font-size: 12px;
-  color: #909399;
-  margin-bottom: 6px;
+  font-size: 11px;
+  color: #86909C;
+  margin-bottom: 4px;
 }
 
 .record-content {
   font-size: 13px;
-  color: #303133;
-  margin-bottom: 8px;
+  color: rgba(0, 0, 0, 0.85);
   line-height: 1.5;
+  margin-bottom: 4px;
 }
 
 .record-handler {
-  font-size: 12px;
-  color: #606266;
+  font-size: 11px;
+  color: #4E5969;
   text-align: right;
-  font-weight: 500;
 }
 
-@media (max-width: 992px) {
-  .detail-content {
-    flex-direction: column;
-  }
-
-  .detail-right {
-    width: 100%;
-  }
-
-  .info-grid {
+@media (max-width: 1100px) {
+  .todo-detail-page__body {
     grid-template-columns: 1fr;
-  }
-
-  .detail-header {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .header-title {
-    margin: 0;
-    justify-content: flex-start;
-  }
-
-  .header-right {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-  }
-}
-
-@media (max-width: 768px) {
-  .detail-header {
-    align-items: flex-start;
-  }
-
-  .header-title {
-    flex-wrap: wrap;
-  }
-
-  .title-text {
-    font-size: 16px;
   }
 }
 </style>

@@ -1,469 +1,680 @@
 <template>
-  <div>
-    <!-- 筛选条件 -->
-    <el-row :gutter="24" class="mb12">
-      <el-col :span="24">
-        <el-form
-          :model="queryParams"
-          size="small"
-          class="el-form-search"
-          :inline="true"
-        >
-          <el-form-item prop="serviceName">
-            <el-input
-              v-model="queryParams.serviceName"
-              placeholder="请输入服务名称"
-              clearable
-              style="width: 160px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item prop="orgName">
-            <el-input
-              v-model="queryParams.orgName"
-              placeholder="请输入机构名称"
-              clearable
-              style="width: 160px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item prop="serviceType">
-            <el-select
-              v-model="queryParams.serviceType"
-              placeholder="所有服务类型"
-              clearable
-              style="width: 150px"
-            >
-              <el-option label="数字应用服务" value="数字应用服务" />
-              <el-option label="能力组件服务" value="能力组件服务" />
-              <el-option label="安全服务" value="安全服务" />
-              <el-option label="基础资源服务" value="基础资源服务" />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="score">
-            <el-select
-              v-model="queryParams.score"
-              placeholder="所有评分"
-              clearable
-              style="width: 150px"
-            >
-              <el-option label="所有评分" value="" />
-              <el-option label="5星" value="5" />
-              <el-option label="4星" value="4" />
-              <el-option label="3星及以下" value="3" />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="所有状态"
-              clearable
-              style="width: 150px"
-            >
-              <el-option label="所有状态" value="" />
-              <el-option label="待回复" value="pending" />
-              <el-option label="已回复" value="replied" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button-group>
-              <el-button
-                type="primary"
-                icon="el-icon-search"
-                @click="handleQuery"
-              >搜索</el-button>
-              <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
-            </el-button-group>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
-
-    <!-- 评价列表 -->
-    <el-table
-      v-loading="loading"
-      :data="reviewList"
-      size="small"
-      style="width: 100%"
-      :header-cell-style="{background:'#f5f7fa'}"
-      class-name="small-padding fixed-width"
-    >
-      <el-table-column label="评分" width="80">
-        <template slot-scope="scope">
-          <div class="stars">
-            <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= scope.row.score }">★</span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="服务/订单号" min-width="200">
-        <template slot-scope="scope">
-          <div><div class="rv-title">{{ scope.row.serviceName || '--' }}</div><div class="rv-sub">{{ scope.row.orderNo || '--' }}</div></div>
-        </template>
-      </el-table-column>
-      <el-table-column label="服务类型" width="120">
-        <template slot-scope="scope">
-          <el-tag :type="getServiceTypeColor(scope.row.serviceType)" size="small">{{ scope.row.serviceType || '--' }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="评价机构" min-width="180">
-        <template slot-scope="scope">{{ scope.row.orgName || '--' }}</template>
-      </el-table-column>
-      <el-table-column label="评价内容" min-width="250">
-        <template slot-scope="scope"><div class="rv-content">{{ scope.row.content || '--' }}</div></template>
-      </el-table-column>
-      <el-table-column label="评价时间" width="130">
-        <template slot-scope="scope">{{ scope.row.time || '--' }}</template>
-      </el-table-column>
-      <el-table-column label="状态" width="90">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status === '已回复' ? 'success' : 'warning'" size="mini">{{ scope.row.status || '--' }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="回复内容" min-width="250">
-        <template slot-scope="scope"><div class="rv-content">{{ scope.row.reply || '--' }}</div></template>
-      </el-table-column>
-      <el-table-column label="回复时间" width="130">
-        <template slot-scope="scope">{{ scope.row.replyTime || '--' }}</template>
-      </el-table-column>
-      <el-table-column label="操作" width="100" fixed="right">
-        <template slot-scope="scope">
-          <el-link v-if="scope.row.status === '已回复'" type="primary" :underline="false" @click="handleView(scope.row)">查看</el-link>
-          <el-link v-else type="primary" :underline="false" @click="handleReply(scope.row)">回复</el-link>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="loadReviewList"
+  <div class="review-page">
+    <PageHeader
+      :title="viewMode === 'summary' ? '质量评价管理' : '评价明细'"
+      :description="viewMode === 'summary'
+        ? '查看平台服务的评价汇总数据，支持按服务名称和服务类型筛选，可点击查看评价明细'
+        : '查看该服务的用户评价明细，支持回复用户评价'"
     />
 
-    <!-- 回复对话框 -->
-    <el-dialog :title="isViewMode ? '评价详情' : '回复评价'" :visible.sync="replyDialogVisible" width="620px" top="5vh" :close-on-click-modal="false" :modal-append-to-body="false">
-      <div class="dialog-tip" v-if="!isViewMode">
-        <i class="el-icon-info"></i>
-        <span>请对用户评价进行回复，回复内容将对用户可见。</span>
-      </div>
-      <div class="review-info-box" v-if="currentReview.content">
-        <div class="form-section-title">评价信息</div>
-        <div class="detail-kv">
-          <div class="kv-item"><label>评价人</label><span>{{ currentReview.userName || '--' }}</span></div>
-          <div class="kv-item"><label>所属部门</label><span>{{ currentReview.department || '--' }}</span></div>
-          <div class="kv-item"><label>评价机构</label><span>{{ currentReview.orgName || '--' }}</span></div>
-          <div class="kv-item"><label>服务名称</label><span>{{ currentReview.serviceName || '--' }}</span></div>
-          <div class="kv-item"><label>订单号</label><span>{{ currentReview.orderNo || '--' }}</span></div>
-          <div class="kv-item"><label>评分</label><span><div class="stars-inline"><span v-for="i in 5" :key="i" class="star" :class="{ full: i <= currentReview.score }">★</span></div></span></div>
-          <div class="kv-item full"><label>评价内容</label><span>{{ currentReview.content }}</span></div>
+    <!-- 汇总视图 -->
+    <div v-if="viewMode === 'summary'" class="review-page__summary">
+      <CloudCard class="review-page__table-card">
+        <FilterBar @search="handleQuery" @reset="resetQuery">
+          <a-input v-model:value="filter.serviceName" placeholder="服务名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
+          <a-select v-model:value="filter.serviceType" placeholder="服务类型" allow-clear style="width: 150px">
+            <a-select-option value="数字应用">数字应用</a-select-option>
+            <a-select-option value="安全服务">安全服务</a-select-option>
+            <a-select-option value="能力组件">能力组件</a-select-option>
+            <a-select-option value="基础服务">基础服务</a-select-option>
+          </a-select>
+        </FilterBar>
+        <div class="review-page__divider"></div>
+
+        <div class="review-page__table-wrap">
+          <a-table
+            :columns="summaryColumns"
+            :data-source="summaryData"
+            :pagination="paginationConfig"
+            :loading="loading"
+            row-key="serviceId"
+            size="middle"
+            @change="onTableChange"
+          >
+            <template #headerCell="{ column }">
+              <template v-if="column.key === 'avgScore'">
+                <a-tooltip title="所有用户的平均分值">
+                  <span class="header-with-tip">平均用户评分 <QuestionCircleOutlined class="header-tip-icon" /></span>
+                </a-tooltip>
+              </template>
+              <template v-else-if="column.key === 'platformScore'">
+                <a-tooltip title="平台管理员赋分">
+                  <span class="header-with-tip">平台评分 <QuestionCircleOutlined class="header-tip-icon" /></span>
+                </a-tooltip>
+              </template>
+            </template>
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.dataIndex === 'serviceName'">
+                <div class="summary-service">
+                  <div class="summary-service__name">{{ record.serviceName || '--' }}</div>
+                  <div class="summary-service__id">{{ record.serviceId || '--' }}</div>
+                </div>
+              </template>
+              <template v-else-if="column.dataIndex === 'avgAccuracy'">
+                <span :class="metricClass(record.avgAccuracy, 4.5)">{{ record.avgAccuracy.toFixed(1) }}</span>
+              </template>
+              <template v-else-if="column.dataIndex === 'avgStability'">
+                <span :class="metricClass(record.avgStability, 4.0)">{{ record.avgStability.toFixed(1) }}</span>
+              </template>
+              <template v-else-if="column.dataIndex === 'avgResponseTime'">
+                <span :class="metricClass(record.avgResponseTime, 4.5)">{{ record.avgResponseTime.toFixed(1) }}</span>
+              </template>
+              <template v-else-if="column.dataIndex === 'avgBusinessFit'">
+                <span :class="metricClass(record.avgBusinessFit, 4.0)">{{ record.avgBusinessFit.toFixed(1) }}</span>
+              </template>
+              <template v-else-if="column.dataIndex === 'avgScore'">
+                <a-progress
+                  type="circle"
+                  :percent="record.avgScore * 20"
+                  :size="36"
+                  :stroke-color="scoreColor(record.avgScore)"
+                  :format="() => record.avgScore.toFixed(1)"
+                />
+              </template>
+              <template v-else-if="column.dataIndex === 'platformScore'">
+                <a-progress
+                  type="circle"
+                  :percent="record.platformScore * 20"
+                  :size="36"
+                  :stroke-color="scoreColor(record.platformScore)"
+                  :format="() => record.platformScore.toFixed(1)"
+                />
+              </template>
+              <template v-else-if="column.dataIndex === 'action'">
+                <a-space :size="0">
+                  <a-button type="link" size="small" @click="viewServiceDetail(record)">查看明细</a-button>
+                  <a-divider type="vertical" />
+                  <a-button type="link" size="small" @click="onPlatformEvaluate(record)">平台评分</a-button>
+                </a-space>
+              </template>
+              <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+            </template>
+          </a-table>
+        </div>
+      </CloudCard>
+    </div>
+
+    <!-- 明细视图 -->
+    <template v-else>
+      <div class="sticky top-0 z-30 bg-surface border-b border-border px-[24px] py-[12px] -mx-[0] mb-[12px] rounded-t-[8px]">
+        <div class="flex items-center gap-[12px]">
+          <a class="text-text-secondary hover:text-primary text-[13px] flex items-center gap-[4px]" @click="backToSummary">
+            <ArrowLeftOutlined />
+            返回
+          </a>
+          <a-divider type="vertical" />
+          <span class="text-[16px] font-semibold text-text-primary">评价明细</span>
+          <template v-if="selectedService">
+            <span class="text-[13px] text-text-tertiary">服务名称：{{ selectedService.serviceName }}</span>
+            <span class="text-[12px] text-text-tertiary">ID：{{ selectedService.serviceId }}</span>
+          </template>
         </div>
       </div>
-      <el-form
-        v-if="!isViewMode"
-        ref="replyFormRef"
-        :model="replyForm"
-        label-width="100px"
-        class="add-form"
-      >
-        <div class="form-section">
-          <div class="form-section-title">回复信息</div>
-          <el-form-item label="回复内容" prop="replyContent">
-            <el-input
-              v-model="replyForm.replyContent"
-              type="textarea"
-              :rows="5"
-              placeholder="请输入回复内容..."
-            />
-          </el-form-item>
+
+      <CloudCard class="review-page__table-card">
+        <FilterBar @search="handleDetailQuery" @reset="resetDetailQuery">
+          <a-select v-model:value="detailFilter.score" placeholder="评分" allow-clear style="width: 120px">
+            <a-select-option value="5">5 星</a-select-option>
+            <a-select-option value="4">4 星</a-select-option>
+            <a-select-option value="3">3 星及以下</a-select-option>
+          </a-select>
+          <a-select v-model:value="detailFilter.status" placeholder="状态" allow-clear style="width: 120px">
+            <a-select-option value="待回复">待回复</a-select-option>
+            <a-select-option value="已回复">已回复</a-select-option>
+          </a-select>
+          <template #suffix>
+            <ColumnSettings v-model="hiddenKeys" :columns="columns" />
+          </template>
+        </FilterBar>
+        <div class="review-page__divider"></div>
+
+        <div class="review-page__table-wrap">
+          <a-table
+            :columns="visibleColumns"
+            :data-source="filteredDetailData"
+            :pagination="paginationConfig"
+            :loading="loading"
+            row-key="id"
+            size="middle"
+            @change="onTableChange"
+          >
+            <template #headerCell="{ column }">
+              <template v-if="column.key === 'avgScore'">
+                <a-tooltip title="准确性、稳定性、响应时效、业务适配性的平均分值">
+                  <span class="header-with-tip">用户评分 <QuestionCircleOutlined class="header-tip-icon" /></span>
+                </a-tooltip>
+              </template>
+            </template>
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.dataIndex === 'dims'">
+                <div class="dim-scores">
+                  <span v-for="d in ratingKeys" :key="d" class="dim-score-item">
+                    <span class="dim-score-label">{{ d }}</span>
+                    <span class="metric" :class="scoreClass(record.ratings[d])">{{ record.ratings[d] }}</span>
+                  </span>
+                </div>
+              </template>
+              <template v-else-if="column.dataIndex === 'avgScore'">
+                <span class="metric" :class="scoreClass(itemAvgScore(record))">{{ itemAvgScore(record).toFixed(1) }}</span>
+              </template>
+              <template v-else-if="column.dataIndex === 'orderNo'">
+                <span class="cell-mono">{{ record.orderNo || '--' }}</span>
+              </template>
+              <template v-else-if="column.dataIndex === 'content'">
+                <div class="cell-ellipsis">{{ record.content || '--' }}</div>
+              </template>
+              <template v-else-if="column.dataIndex === 'replyContent'">
+                <div v-if="record.reply" class="reply-inline">
+                  <span class="reply-inline__text">{{ record.reply }}</span>
+                </div>
+                <span v-else class="text-[12px] text-text-tertiary">--</span>
+              </template>
+              <template v-else-if="column.dataIndex === 'status'">
+                <StatusDot :type="record.status === '已回复' ? 'done' : 'warning'" :text="record.status" />
+              </template>
+              <template v-else-if="column.dataIndex === 'action'">
+                <a-button v-if="record.status !== '已回复'" type="link" size="small" class="!p-0" @click="openReplyModal(record)">回复</a-button>
+                <span v-else class="text-[12px] text-text-tertiary">--</span>
+              </template>
+              <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+            </template>
+          </a-table>
         </div>
-      </el-form>
-      <div v-if="isViewMode && currentReview.reply" class="review-info-box">
-        <div class="form-section-title">客服回复</div>
-        <div class="detail-kv">
-          <div class="kv-item full"><label>回复内容</label><span>{{ currentReview.reply }}</span></div>
-          <div class="kv-item"><label>回复时间</label><span>{{ currentReview.replyTime || '--' }}</span></div>
-        </div>
+      </CloudCard>
+    </template>
+
+    <!-- 回复弹窗 -->
+    <a-modal v-model:open="replyModalVisible" title="回复评价" :width="480" :footer="null" :destroy-on-close="true">
+      <div class="mb-[14px]">
+        <div class="text-[13px] font-semibold text-text-primary mb-[6px]">回复内容</div>
+        <a-textarea v-model:value="replyForm.replyContent" :rows="4" placeholder="请输入回复内容..." />
       </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="replyDialogVisible = false">取 消</el-button>
-        <el-button v-if="!isViewMode" type="primary" @click="submitReply">提交回复</el-button>
+      <div class="review-page__divider" style="margin: 0 -24px"></div>
+      <div class="flex justify-end gap-[8px] mt-[14px]">
+        <a-button @click="replyModalVisible = false">取消</a-button>
+        <a-button type="primary" @click="submitReply">提交回复</a-button>
       </div>
-    </el-dialog>
+    </a-modal>
+
+    <!-- 平台评分弹窗 -->
+    <a-modal v-model:open="platformEvalVisible" title="平台评分" :width="480" :footer="null" :destroy-on-close="true">
+      <a-form layout="vertical">
+        <a-form-item label="综合评价">
+          <a-rate v-model:value="platformEvalForm.score" style="font-size: 24px" />
+          <span class="text-[13px] text-text-tertiary ml-[8px]">{{ platformEvalForm.score }} 星</span>
+        </a-form-item>
+        <a-form-item label="评价内容" required>
+          <a-textarea v-model:value="platformEvalForm.content" :rows="4" placeholder="请输入平台评分内容..." :maxlength="500" />
+        </a-form-item>
+      </a-form>
+      <div class="review-page__divider" style="margin: 0 -24px"></div>
+      <div class="flex justify-end gap-[8px] mt-[16px]">
+        <a-button @click="platformEvalVisible = false">取消</a-button>
+        <a-button type="primary" @click="submitPlatformEval">提交评价</a-button>
+      </div>
+    </a-modal>
   </div>
 </template>
 
 <script>
-import Pagination from '@/components/Pagination/index.vue'
+import { ArrowLeftOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import FilterBar from '@/components/cloud/FilterBar.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+import ColumnSettings from '@/components/cloud/ColumnSettings.vue'
 
 export default {
   name: 'ServiceReview',
   components: {
-    Pagination
+    PageHeader, CloudCard, FilterBar, StatusDot, ColumnSettings,
+    ArrowLeftOutlined, QuestionCircleOutlined
   },
   data() {
     return {
       loading: false,
-      total: 0,
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        serviceName: '',
-        orgName: '',
-        serviceType: '',
-        score: '',
-        status: ''
-      },
-      reviewList: [
-        {
-          id: 1,
-          score: 5,
-          serviceName: '云主机（ECS）',
-          serviceType: '基础资源服务',
-          orderNo: '#ORD-2024-0085',
-          orgName: '华能数智科技集团',
-          userName: '张三',
-          department: '技术部',
-          content: '开通非常快，3 分钟内到账，配置灵活，稳定性也很好。',
-          time: '2024-03-15 10:30',
-          status: '已回复',
-          reply: '感谢您的好评，我们会继续努力提供更好的服务！',
-          replyTime: '2024-03-15 14:20'
-        },
-        {
-          id: 2,
-          score: 2,
-          serviceName: '等保三级合规评估',
-          serviceType: '安全服务',
-          orderNo: '#ORD-2024-0071',
-          orgName: '中远云科技有限公司',
-          userName: '王总',
-          department: '信息部',
-          content: '报告交付严重超期，比承诺时间晚了 2 周，沟通也不及时，影响了我们的申报计划。',
-          time: '2024-03-14 14:20',
-          status: '待回复'
-        },
-        {
-          id: 3,
-          score: 4,
-          serviceName: '云防火墙',
-          serviceType: '安全服务',
-          orderNo: '#ORD-2024-0083',
-          orgName: '北京协和医学院',
-          userName: '李护士长',
-          department: '信息科',
-          content: '防护效果很好，配置策略专业，扣一星是因为控制台 UI 稍微复杂了一点。',
-          time: '2024-03-13 16:45',
-          status: '已回复',
-          reply: '感谢您的反馈，我们正在优化控制台 UI，预计下月会推出新版本。',
-          replyTime: '2024-03-13 18:30'
-        }
+      hiddenKeys: [],
+      viewMode: 'summary',
+      selectedService: null,
+      filter: { serviceName: '', serviceType: undefined },
+      applied: { serviceName: '', serviceType: undefined },
+      detailFilter: { score: undefined, status: undefined },
+      detailApplied: { score: undefined, status: undefined },
+      pagination: { current: 1, pageSize: 10 },
+      summaryColumns: [
+        { title: '服务名称/ID', dataIndex: 'serviceName', key: 'serviceName' },
+        { title: '平均准确性', dataIndex: 'avgAccuracy', key: 'avgAccuracy', width: 105 },
+        { title: '平均稳定性', dataIndex: 'avgStability', key: 'avgStability', width: 105 },
+        { title: '平均响应时效', dataIndex: 'avgResponseTime', key: 'avgResponseTime', width: 115 },
+        { title: '平均业务适配性', dataIndex: 'avgBusinessFit', key: 'avgBusinessFit', width: 130 },
+        { title: '用户评价', dataIndex: 'avgScore', key: 'avgScore', width: 110 },
+        { title: '平台评分', dataIndex: 'platformScore', key: 'platformScore', width: 110 },
+        { title: '操作', dataIndex: 'action', key: 'action', width: 160 },
       ],
-      viewDialogVisible: false,
-      replyDialogVisible: false,
-      isViewMode: false,
-      currentReview: {},
-      replyForm: {
-        replyContent: ''
-      },
-      replyContent: ''
+      columns: [
+        { title: '评分维度', dataIndex: 'dims', key: 'dims', width: 240 },
+        { title: '用户评分', dataIndex: 'avgScore', key: 'avgScore', width: 80 },
+        { title: '服务单号', dataIndex: 'orderNo', key: 'orderNo', width: 140 },
+        { title: '评价机构', dataIndex: 'orgName', key: 'orgName', width: 170, ellipsis: true },
+        { title: '评价内容', dataIndex: 'content', key: 'content', width: 260, ellipsis: true },
+        { title: '评价时间', dataIndex: 'time', key: 'time', width: 140 },
+        { title: '回复内容', dataIndex: 'replyContent', key: 'replyContent', width: 200, ellipsis: true },
+        { title: '回复人', dataIndex: 'replyBy', key: 'replyBy', width: 100 },
+        { title: '回复时间', dataIndex: 'replyTime', key: 'replyTime', width: 140 },
+        { title: '状态', dataIndex: 'status', key: 'status', width: 90 },
+        { title: '操作', dataIndex: 'action', key: 'action', width: 90, fixed: 'right' }
+      ],
+      reviewList: [
+        { id: 1, ratings: { '准确性': 5, '稳定性': 5, '响应时效': 5, '业务适配性': 4 }, serviceId: 'SVC001', serviceName: '云服务器ECS', serviceType: '基础服务', orderNo: '202608100085', orgName: '华能数智科技集团', userName: '张三', department: '技术部', content: '开通非常快，3 分钟内到账，配置灵活，稳定性也很好。', time: '2026-03-15 10:30', status: '已回复', reply: '感谢您的好评，我们会继续努力提供更好的服务！', replyBy: '平台管理员', replyTime: '2026-03-15 14:20' },
+        { id: 2, ratings: { '准确性': 4, '稳定性': 4, '响应时效': 4, '业务适配性': 4 }, serviceId: 'SVC001', serviceName: '云服务器ECS', serviceType: '基础服务', orderNo: '202608100090', orgName: '北京协和医学院', userName: '李四', department: '信息科', content: '性能稳定，弹性扩展方便，性价比不错。', time: '2026-03-18 09:15', status: '已回复', reply: '感谢反馈！', replyBy: '平台管理员', replyTime: '2026-03-18 11:00' },
+        { id: 3, ratings: { '准确性': 3, '稳定性': 3, '响应时效': 2, '业务适配性': 3 }, serviceId: 'SVC001', serviceName: '云服务器ECS', serviceType: '基础服务', orderNo: '202608100095', orgName: '中远云科技有限公司', userName: '王五', department: '运维部', content: '基本可用，但高峰期偶尔有延迟。', time: '2026-03-20 16:40', status: '待回复' },
+        { id: 4, ratings: { '准确性': 4, '稳定性': 2, '响应时效': 1, '业务适配性': 3 }, serviceId: 'SVC002', serviceName: '等保三级合规评估', serviceType: '安全服务', orderNo: '202608100071', orgName: '中远云科技有限公司', userName: '王总', department: '信息部', content: '报告交付严重超期，比承诺时间晚了 2 周，沟通也不及时，影响了我们的申报计划。', time: '2026-03-14 14:20', status: '待回复' },
+        { id: 5, ratings: { '准确性': 5, '稳定性': 5, '响应时效': 4, '业务适配性': 5 }, serviceId: 'SVC002', serviceName: '等保三级合规评估', serviceType: '安全服务', orderNo: '202608100078', orgName: '华能数智科技集团', userName: '赵六', department: '安全部', content: '评估报告专业详细，整改建议很有价值。', time: '2026-03-16 11:00', status: '已回复', reply: '感谢认可！', replyBy: '平台管理员', replyTime: '2026-03-16 14:30' },
+        { id: 6, ratings: { '准确性': 4, '稳定性': 4, '响应时效': 3, '业务适配性': 4 }, serviceId: 'SVC003', serviceName: '云防火墙', serviceType: '安全服务', orderNo: '202608100083', orgName: '北京协和医学院', userName: '李护士长', department: '信息科', content: '防护效果很好，配置策略专业，扣一星是因为控制台 UI 稍微复杂了一点。', time: '2026-03-13 16:45', status: '已回复', reply: '感谢您的反馈，我们正在优化控制台 UI，预计下月会推出新版本。', replyBy: '平台管理员', replyTime: '2026-03-13 18:30' },
+        { id: 7, ratings: { '准确性': 5, '稳定性': 5, '响应时效': 5, '业务适配性': 4 }, serviceId: 'SVC003', serviceName: '云防火墙', serviceType: '安全服务', orderNo: '202608100088', orgName: '海淀区数字经济发展局', userName: '钱七', department: '技术处', content: '安全防护到位，告警及时，非常好用。', time: '2026-03-19 10:20', status: '已回复', reply: '感谢支持！', replyBy: '平台管理员', replyTime: '2026-03-19 15:00' },
+        { id: 8, ratings: { '准确性': 4, '稳定性': 4, '响应时效': 4, '业务适配性': 5 }, serviceId: 'C001', serviceName: '智慧医院信息管理系统', serviceType: '数字应用', orderNo: '202608100092', orgName: '北京协和医学院', userName: '孙医生', department: '门诊办', content: '门诊流程清晰，挂号方便，建议增加医保在线结算功能。', time: '2026-03-17 14:00', status: '已回复', reply: '感谢建议，医保在线结算功能已在开发计划中。', replyBy: '平台管理员', replyTime: '2026-03-17 16:30' },
+        { id: 9, ratings: { '准确性': 5, '稳定性': 4, '响应时效': 5, '业务适配性': 5 }, serviceId: 'NLZJ202610210001', serviceName: '电子健康卡', serviceType: '能力组件', orderNo: '202608100096', orgName: '海淀区数字经济发展局', userName: '周八', department: '卫健处', content: '一码通用非常方便，居民体验很好。', time: '2026-03-21 09:30', status: '待回复' }
+      ],
+      ratingKeys: ['准确性', '稳定性', '响应时效', '业务适配性'],
+      replyModalVisible: false,
+      replyTarget: null,
+      replyForm: { replyContent: '' },
+      platformEvalVisible: false,
+      platformEvalTarget: null,
+      platformEvalForm: { score: 0, content: '' }
+    }
+  },
+  computed: {
+    visibleColumns() {
+      return this.columns.filter(c => !this.hiddenKeys.includes(c.key))
+    },
+    summaryData() {
+      const f = this.applied
+      const groupMap = {}
+      this.reviewList.forEach(item => {
+        if (f.serviceName && !(item.serviceName || '').includes(f.serviceName)) return
+        if (f.serviceType && item.serviceType !== f.serviceType) return
+        const key = item.serviceId || item.serviceName
+        if (!groupMap[key]) {
+          groupMap[key] = {
+            serviceId: item.serviceId || '--',
+            serviceName: item.serviceName,
+            serviceType: item.serviceType,
+            reviews: [],
+            accSum: 0, stabSum: 0, rtSum: 0, bizSum: 0,
+            reviewCount: 0
+          }
+        }
+        const g = groupMap[key]
+        g.reviews.push(item)
+        g.reviewCount++
+        g.accSum += item.ratings['准确性']
+        g.stabSum += item.ratings['稳定性']
+        g.rtSum += item.ratings['响应时效']
+        g.bizSum += item.ratings['业务适配性']
+      })
+      return Object.values(groupMap).map(g => ({
+        key: g.serviceId,
+        serviceId: g.serviceId,
+        serviceName: g.serviceName,
+        serviceType: g.serviceType,
+        reviews: g.reviews,
+        reviewCount: g.reviewCount,
+        avgAccuracy: g.reviewCount ? g.accSum / g.reviewCount : 0,
+        avgStability: g.reviewCount ? g.stabSum / g.reviewCount : 0,
+        avgResponseTime: g.reviewCount ? g.rtSum / g.reviewCount : 0,
+        avgBusinessFit: g.reviewCount ? g.bizSum / g.reviewCount : 0,
+        avgScore: g.reviewCount ? (g.accSum + g.stabSum + g.rtSum + g.bizSum) / (g.reviewCount * 4) : 0,
+        platformScore: +(g.reviewCount ? ((g.accSum + g.stabSum + g.rtSum + g.bizSum) / (g.reviewCount * 4) + (Math.random() * 1.2 - 0.4)) : 0).toFixed(1)
+      })).map(g => ({ ...g, platformScore: Math.min(5, Math.max(1, g.platformScore)) })).sort((a, b) => b.avgScore - a.avgScore)
+    },
+    filteredDetailData() {
+      if (!this.selectedService) return []
+      const f = this.detailApplied
+      const list = this.reviewList.filter(item => {
+        if ((item.serviceId || item.serviceName) !== (this.selectedService.serviceId || this.selectedService.serviceName)) return false
+        if (f.status && item.status !== f.status) return false
+        if (f.score) {
+          const avg = this.itemAvgScore(item)
+          const s = parseInt(f.score)
+          if (s === 3 && avg > 3) return false
+          if (s !== 3 && Math.round(avg) !== s) return false
+        }
+        return true
+      })
+      return list.map(i => ({ key: i.id, ...i, score: this.itemAvgScore(i) }))
+    },
+    paginationConfig() {
+      const total = this.viewMode === 'summary' ? this.summaryData.length : this.filteredDetailData.length
+      return {
+        current: this.pagination.current,
+        pageSize: this.pagination.pageSize,
+        total,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: ['10', '20', '50', '100'],
+        showTotal: (t) => `共 ${t} 条`
+      }
     }
   },
   created() {
-    this.loadReviewList()
+    this.checkRouteQuery()
+  },
+  watch: {
+    '$route.query'() {
+      this.checkRouteQuery()
+    }
   },
   methods: {
-    loadReviewList() {
-      this.loading = true
-      setTimeout(() => {
-        this.total = this.reviewList.length
-        this.loading = false
-      }, 500)
+    checkRouteQuery() {
+      const serviceId = this.$route.query.serviceId
+      if (serviceId) {
+        const service = this.summaryData.find(s => s.serviceId === serviceId)
+        if (service) {
+          this.viewServiceDetail(service)
+        }
+      }
     },
     handleQuery() {
-      this.queryParams.pageNum = 1
-      this.loadReviewList()
+      this.applied = { ...this.filter }
+      this.pagination.current = 1
     },
     resetQuery() {
-      this.queryParams = {
-        pageNum: 1,
-        pageSize: 10,
-        serviceName: '',
-        orgName: '',
-        serviceType: '',
-        score: '',
-        status: ''
-      }
-      this.loadReviewList()
+      this.filter = { serviceName: '', serviceType: undefined }
+      this.applied = { ...this.filter }
+      this.pagination.current = 1
     },
-    handleView(row) {
-      this.currentReview = JSON.parse(JSON.stringify(row))
-      this.isViewMode = true
-      this.replyDialogVisible = true
+    handleDetailQuery() {
+      this.detailApplied = { ...this.detailFilter }
+      this.pagination.current = 1
     },
-    handleReply(row) {
-      this.currentReview = JSON.parse(JSON.stringify(row))
-      this.replyForm = {
-        replyContent: ''
-      }
-      this.isViewMode = false
-      this.replyDialogVisible = true
+    resetDetailQuery() {
+      this.detailFilter = { score: undefined, status: undefined }
+      this.detailApplied = { ...this.detailFilter }
+      this.pagination.current = 1
+    },
+    onTableChange(pag) {
+      this.pagination.current = pag.current
+      this.pagination.pageSize = pag.pageSize
+    },
+    viewServiceDetail(service) {
+      this.selectedService = service
+      this.viewMode = 'detail'
+      this.detailFilter = { score: undefined, status: undefined }
+      this.detailApplied = { score: undefined, status: undefined }
+      this.pagination.current = 1
+    },
+    backToSummary() {
+      this.viewMode = 'summary'
+      this.selectedService = null
+      this.pagination.current = 1
+    },
+    openReplyModal(row) {
+      this.replyTarget = row
+      this.replyForm = { replyContent: '' }
+      this.replyModalVisible = true
     },
     submitReply() {
       if (!this.replyForm.replyContent) {
-        this.$message.warning('请输入回复内容')
+        message.warning('请输入回复内容')
         return
       }
-      this.currentReview.reply = this.replyForm.replyContent
-      this.currentReview.status = '已回复'
-      const index = this.reviewList.findIndex(item => item.id === this.currentReview.id)
+      const index = this.reviewList.findIndex(item => item.id === this.replyTarget.id)
       if (index > -1) {
         this.reviewList[index].status = '已回复'
         this.reviewList[index].reply = this.replyForm.replyContent
+        this.reviewList[index].replyBy = '当前用户'
+        this.reviewList[index].replyTime = '2026-03-21 16:00'
       }
-      this.replyDialogVisible = false
-      this.$message.success('回复成功')
+      this.replyModalVisible = false
+      message.success('回复成功')
     },
-    getStatusTagType(status) {
-      switch (status) {
-        case '待回复':
-          return 'warning'
-        case '已回复':
-          return 'success'
-        default:
-          return ''
-      }
+    itemAvgScore(item) {
+      const r = item.ratings
+      return (r['准确性'] + r['稳定性'] + r['响应时效'] + r['业务适配性']) / 4
     },
-    getServiceTypeColor(type) {
-      const colorMap = {
-        '数字应用服务': 'info',
-        '能力组件服务': 'success',
-        '安全服务': 'warning',
-        '基础资源服务': 'primary'
+    metricClass(value, threshold) {
+      if (value >= 4.5) return 'metric metric--good'
+      if (value >= threshold) return 'metric metric--ok'
+      return 'metric metric--bad'
+    },
+    scoreClass(val) {
+      if (val >= 4) return 'score-high'
+      if (val >= 3) return 'score-mid'
+      return 'score-low'
+    },
+    onPlatformEvaluate(record) {
+      this.platformEvalTarget = record
+      this.platformEvalForm = { score: 0, content: '' }
+      this.platformEvalVisible = true
+    },
+    submitPlatformEval() {
+      if (!this.platformEvalForm.score) {
+        message.warning('请选择评分')
+        return
       }
-      return colorMap[type] || 'info'
-    }
+      if (this.platformEvalTarget) {
+        this.platformEvalTarget.platformScore = this.platformEvalForm.score
+        this.platformEvalTarget.platformContent = this.platformEvalForm.content
+      }
+      this.platformEvalVisible = false
+      message.success('平台评分提交成功')
+    },
+    scoreColor(score) {
+      if (score >= 4.5) return '#10B981'
+      if (score >= 4.0) return '#165DFF'
+      if (score >= 3.5) return '#F59E0B'
+      return '#EF4444'
+    },
   }
 }
 </script>
 
 <style scoped>
-.mb12 {
-  margin-bottom: 12px;
+.review-page {
+  padding: 4px 0;
 }
 
-.stars {
-  display: flex;
-  gap: 2px;
+.review-page__divider {
+  height: 1px;
+  background: #F2F3F5;
+  margin: 0 16px;
 }
 
-.stars-inline {
-  display: inline-flex;
-  gap: 2px;
+.review-page__table-wrap {
+  padding: 0 16px 16px 16px;
 }
 
-.star {
+.cell-default {
+  color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
-  color: #d9d9d9;
 }
 
-.star.full {
-  color: #faad14;
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
 }
 
-/* 评价列表样式 - 与其他列表保持一致 */
-.rv-title { font-size: 12px; font-weight: 400; color: #606266; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
-.rv-sub { font-size: 12px; color: #8c8c8c; margin-top: 2px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
-.rv-content { font-size: 12px; color: #606266; line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+.cell-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+}
 
-/* 弹窗样式 */
-.dialog-tip {
+.cell-stack__primary {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.cell-stack__secondary {
+  font-size: 12px;
+  color: #86909C;
+  margin-top: 2px;
+}
+
+.cell-ellipsis {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* 汇总视图 - 服务名称 */
+.summary-service {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-service__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.summary-service__meta {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 10px 20px;
-  padding: 10px 16px;
-  background: #eef6ff;
-  border: 1px solid #d4e5ff;
-  border-radius: 2px;
-  font-size: 13px;
-  color: #3b5bdb;
 }
 
-.dialog-tip i {
-  font-size: 16px;
-  color: #3b5bdb;
-  flex-shrink: 0;
+.summary-service__id {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
 }
 
-.add-form {
-  padding: 12px 24px 20px;
-}
-
-:deep(.el-dialog__header) {
-  padding: 14px 24px 6px;
-}
-
-:deep(.el-dialog__body) {
-  padding: 0;
-}
-
-:deep(.el-dialog__footer) {
-  padding: 8px 24px 16px;
-}
-
-.form-section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #303133;
-  padding-bottom: 10px;
-  margin-bottom: 18px;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.review-info-box {
-  margin: 0 20px 10px;
-  padding: 12px 16px;
-  background: #f5f7fa;
-  border-radius: 4px;
-}
-
-/* 键值对网格 */
-.detail-kv {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 6px 40px;
-}
-
-.kv-item {
+/* 明细视图头部 */
+.detail-header {
   display: flex;
-  align-items: baseline;
-  font-size: 14px;
-  line-height: 2;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
 }
 
-.kv-item.full {
-  grid-column: 1 / -1;
-}
-
-.kv-item label {
-  color: #8c8c8c;
-  width: 80px;
-  flex-shrink: 0;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-.kv-item span {
-  color: #262626;
-  word-break: break-all;
-  font-weight: 400;
-  font-size: 14px;
+.detail-header__info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
   min-width: 0;
 }
 
-.dialog-footer {
-  text-align: right;
+.detail-header__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.detail-header__stat {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.review-page :deep(.ant-table-thead .ant-table-cell) {
+  white-space: nowrap;
+}
+
+.metric {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.metric--good { color: #10B981; }
+.metric--ok { color: #F59E0B; }
+.metric--bad { color: #EF4444; }
+
+/* ===== 回复弹窗 ===== */
+.reply-modal__info {
+  padding: 12px;
+  background: #FAFBFC;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.reply-modal__org {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 4px;
+}
+
+.reply-modal__meta {
+  font-size: 12px;
+  color: #86909C;
+  margin-bottom: 8px;
+}
+
+.reply-modal__content {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.6;
+}
+
+.header-with-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: help;
+}
+
+.header-tip-icon {
+  font-size: 12px;
+  color: #86909C;
+}
+
+/* 明细维度统一风格 */
+.dim-scores {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dim-score-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.dim-score-label {
+  color: #86909C;
+  font-size: 13px;
+}
+
+/* 评价内容+时间 */
+.content-with-time {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.content-time {
+  font-size: 12px;
+  color: #86909C;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+}
+
+/* 回复内联展示 */
+.reply-inline {
+  max-width: 220px;
+}
+
+.reply-inline__text {
+  font-size: 12px;
+  color: #86909C;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 </style>
+

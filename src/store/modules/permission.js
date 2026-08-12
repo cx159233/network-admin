@@ -5,6 +5,9 @@ import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
 
+// Vite 通过 import.meta.glob 预扫描所有 views，运行时用相对路径 key 查找动态 import 函数
+const viewModules = import.meta.glob('/src/views/**/*.vue')
+
 // 写死的完整菜单数据
 const allMenus = [
   {
@@ -18,7 +21,7 @@ const allMenus = [
         name: 'ContentManagement',
         path: 'content',
         component: 'cms/contentcore/content',
-        meta: { title: '内容管理', icon: 'content' },
+        meta: { title: '内容管理', icon: 'resource' },
         children: [
           {
             name: 'SiteManagement',
@@ -44,6 +47,12 @@ const allMenus = [
             path: 'contentManage',
             component: 'cms/contentcore/contentManage',
             meta: { title: '内容管理', icon: 'edit' }
+          },
+          {
+            name: 'FriendLinkManagement',
+            path: 'friendLink',
+            component: 'cms/link/linkGroup',
+            meta: { title: '友链管理', icon: 'link' }
           }
         ]
       },
@@ -52,13 +61,19 @@ const allMenus = [
         path: 'service',
         component: 'cms/contentcore/content',
         alwaysShow: true,
-        meta: { title: '服务目录管理（V2）', icon: 'list' },
+        meta: { title: '服务目录管理', icon: 'component' },
         children: [
           {
             name: 'DigitalAppList',
             path: 'digitalApp',
             component: 'cms/contentcore/digitalAppList',
             meta: { title: '数字应用管理', icon: 'app-log' }
+          },
+          {
+            name: 'SecurityServiceList',
+            path: 'securityService',
+            component: 'cms/contentcore/securityServiceList',
+            meta: { title: '安全服务管理', icon: 'shield' }
           },
           {
             name: 'ComponentList',
@@ -70,7 +85,7 @@ const allMenus = [
             name: 'ServiceCatalogList',
             path: 'serviceCatalog',
             component: 'cms/contentcore/serviceCatalogList',
-            meta: { title: '基础服务管理', icon: 'list' }
+            meta: { title: '基础服务管理', icon: 'server' }
           }
         ]
       },
@@ -79,33 +94,37 @@ const allMenus = [
         path: 'auditCenter',
         component: 'workorder/layout',
         alwaysShow: true,
-        meta: { title: '服务备案审核（V2）', icon: 'tree' },
+        meta: { title: '服务审核管理', icon: 'shield' },
         children: [
           {
             name: 'QualificationAudit',
             path: 'qualificationAudit',
             component: 'workorder/orgAudit/qualificationAudit',
-            meta: { title: '机构入驻审核', icon: 'form' }
+            meta: { title: '机构入驻审核', icon: 'people' }
           },
           {
             name: 'DigitalAppAudit',
-
-            
             path: 'digitalAppAudit',
             component: 'workorder/audit/digitalAppAudit',
-            meta: { title: '数字应用审核', icon: 'form' }
+            meta: { title: '数字应用审核', icon: 'checkbox' }
+          },
+          {
+            name: 'SecurityServiceAudit',
+            path: 'securityServiceAudit',
+            component: 'workorder/audit/securityServiceAudit',
+            meta: { title: '安全服务审核', icon: 'checkbox' }
           },
           {
             name: 'ComponentAudit',
             path: 'componentAudit',
             component: 'workorder/audit/componentAudit',
-            meta: { title: '能力组件审核', icon: 'form' }
+            meta: { title: '能力组件审核', icon: 'checkbox' }
           },
           {
             name: 'BasicServiceAudit',
             path: 'basicServiceAudit',
             component: 'workorder/audit/basicServiceAudit',
-            meta: { title: '基础服务审核', icon: 'form' }
+            meta: { title: '基础服务审核', icon: 'checkbox' }
           }
         ]
       },
@@ -113,35 +132,35 @@ const allMenus = [
         name: 'OrderCenterAdmin',
         path: 'order',
         component: 'order/layout',
-        redirect: '/workorder/order/list',
+        redirect: '/portal/order/list',
         alwaysShow: true,
-        meta: { title: '订单管理（V2）', icon: 'list' },
+        meta: { title: '服务开通管理', icon: 'monitor' },
         children: [
           {
             name: 'OrderList',
             path: 'list',
             component: 'order/list',
-            meta: { title: '所有订单', icon: 'list' }
+            meta: { title: '服务开通列表', icon: 'list' }
           },
           {
             name: 'ServiceReview',
             path: 'review',
             component: 'order/review',
-            meta: { title: '服务评价', icon: 'star' }
+            meta: { title: '质量评价管理', icon: 'star' }
           },
           {
             name: 'OrderMyTodo',
             path: 'myTodo',
             component: 'order/myTodo',
             hidden: true,
-            meta: { title: '我的待办', icon: 'form' }
+            meta: { title: '我的待办', icon: 'date' }
           },
           {
             name: 'OrderMyProcessed',
             path: 'myProcessed',
             component: 'order/myProcessed',
             hidden: true,
-            meta: { title: '我已处理', icon: 'form' }
+            meta: { title: '我已处理', icon: 'time' }
           },
           {
             name: 'OrderMyTodoDetail',
@@ -160,32 +179,32 @@ const allMenus = [
         ]
       },
       {
+        name: 'OrgCollaboration',
+        path: 'orgCollaboration',
+        component: 'order/layout',
+        alwaysShow: true,
+        meta: { title: '机构协同管理', icon: 'home' },
+        children: [
+          {
+            name: 'OrgCollaborationList',
+            path: 'list',
+            component: 'order/orgCollaboration',
+            meta: { title: '机构列表' }
+          }
+        ]
+      },
+      {
         name: 'DemandManagement',
         path: 'demand',
         component: 'order/layout',
         alwaysShow: true,
-        meta: { title: '需求管理（V3）', icon: 'list' },
+        meta: { title: '需求管理', icon: 'form' },
         children: [
           {
             name: 'AllDemands',
             path: 'all',
             component: 'order/allDemands',
             meta: { title: '所有需求', icon: 'list' }
-          }
-        ]
-      },
-      {
-        name: 'InteractionManagement',
-        path: 'interaction',
-        component: 'cms/contentcore/interaction',
-        alwaysShow: true,
-        meta: { title: '互动运营', icon: 'link' },
-        children: [
-          {
-            name: 'FriendLinkManagement',
-            path: 'friendLink',
-            component: 'cms/link/linkGroup',
-            meta: { title: '友链管理', icon: 'link' }
           }
         ]
       }
@@ -196,26 +215,26 @@ const allMenus = [
     path: '/workorder',
     component: 'Layout',
     alwaysShow: true,
-    meta: { title: '控制台', icon: 'form' },
+    meta: { title: '概览', icon: 'monitor' },
     children: [
       {
         name: 'ServiceDesk',
         path: 'serviceDesk',
         component: 'workorder/serviceDesk',
-        meta: { title: '服务台（V3）', icon: 'form' }
+        meta: { title: '工作台', icon: 'home' }
       },
       {
         name: 'MyBills',
         path: 'myBills',
         component: 'workorder/layout',
         hidden: true,
-        meta: { title: '我的单据', icon: 'form' },
+        meta: { title: '我的单据', icon: 'file-text' },
         children: [
           {
             name: 'MyInitiated',
             path: 'myInitiated',
             component: 'workorder/index',
-            meta: { title: '我发起的', icon: 'form' }
+            meta: { title: '我发起的', icon: 'upload' }
           }
         ]
       },
@@ -223,7 +242,7 @@ const allMenus = [
         name: 'MyApps',
         path: 'myApps',
         component: 'order/myApps',
-        meta: { title: '我的应用（V2）', icon: 'app-log' }
+        meta: { title: '服务上架', icon: 'form' }
       },
       {
         name: 'OrderCenter',
@@ -231,19 +250,19 @@ const allMenus = [
         component: 'order/layout',
         redirect: '/workorder/order/myInitiated',
         alwaysShow: true,
-        meta: { title: '我的订单（V2）', icon: 'list' },
+        meta: { title: '开通管理', icon: 'tab' },
         children: [
+          {
+            name: 'OrderMySubscriptions',
+            path: 'mySubscriptions',
+            component: 'order/mySubscriptions',
+            meta: { title: '服务订阅', icon: 'upload' }
+          },
           {
             name: 'OrderMyInitiated',
             path: 'myInitiated',
             component: 'order/myInitiated',
-            meta: { title: '我发起的', icon: 'form' }
-          },
-          {
-            name: 'OrderMyReceived',
-            path: 'myReceived',
-            component: 'order/myInitiated',
-            meta: { title: '我收到的', icon: 'form' }
+            meta: { title: '开通记录', icon: 'upload' }
           },
           {
             name: 'OrderDetail',
@@ -266,19 +285,19 @@ const allMenus = [
         path: 'myDemand',
         component: 'order/layout',
         alwaysShow: true,
-        meta: { title: '我的需求（V3）', icon: 'list' },
+        meta: { title: '需求管理', icon: 'form' },
         children: [
           {
             name: 'MyDemandInitiate',
             path: 'initiate',
             component: 'order/myDemandInitiate',
-            meta: { title: '发起需求', icon: 'form' }
+            meta: { title: '需求发起', icon: 'form' }
           },
           {
             name: 'MyDemandResponse',
             path: 'response',
             component: 'order/myDemandResponse',
-            meta: { title: '响应需求', icon: 'form' }
+            meta: { title: '需求响应', icon: 'message' }
           }
         ]
       }
@@ -292,22 +311,10 @@ const allMenus = [
     meta: { title: '系统管理', icon: 'system' },
     children: [
       {
-        name: 'SystemIndex',
-        path: '',
-        component: 'system/index',
-        meta: { title: '系统管理（V2）', icon: 'system' }
-      },
-      {
-        name: 'SystemOperLog',
-        path: 'operlog',
-        component: 'system/operlog',
-        meta: { title: '操作日志（V2）' }
-      },
-      {
-        name: 'SystemAccessLog',
-        path: 'accesslog',
-        component: 'system/accesslog',
-        meta: { title: '访问日志（V2）' }
+        name: 'SystemDict',
+        path: 'dict',
+        component: 'system/dict',
+        meta: { title: '字典管理', icon: 'dict' }
       }
     ]
   }
@@ -340,16 +347,16 @@ const permission = {
     // 生成路由 - 使用写死的菜单数据
     GenerateRoutes({ commit }) {
       return new Promise(resolve => {
-        // 使用写死的菜单数据
         const sdata = JSON.parse(JSON.stringify(allMenus))
         const rdata = JSON.parse(JSON.stringify(allMenus))
         const sidebarRoutes = filterAsyncRouter(sdata)
-        const rewriteRoutes = filterAsyncRouter(rdata, false, true)
+        const rewriteRoutes = filterAsyncRouter(rdata)
         const asyncRoutes = filterDynamicRoutes(dynamicRoutes);
-        rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
-        router.addRoutes(asyncRoutes);
+        rewriteRoutes.push({ path: '/:pathMatch(.*)*', redirect: '/404', hidden: true })
+        asyncRoutes.forEach(route => {
+          router.addRoute(route)
+        })
         commit('SET_ROUTES', rewriteRoutes)
-        // 将所有菜单原样添加到侧边栏路由，在Sidebar组件中根据当前路由过滤显示
         commit('SET_SIDEBAR_ROUTERS', sidebarRoutes)
         commit('SET_DEFAULT_ROUTES', sidebarRoutes)
         commit('SET_TOPBAR_ROUTES', sidebarRoutes)
@@ -444,12 +451,7 @@ export function filterDynamicRoutes(routes) {
 }
 
 export const loadView = (view) => {
-  if (process.env.NODE_ENV === 'development') {
-    return (resolve) => require([`@/views/${view}`], resolve)
-  } else {
-    // 使用 import 实现生产环境的路由懒加载
-    return () => import(`@/views/${view}`)
-  }
+  return () => viewModules[`/src/views/${view}.vue`]()
 }
 
 export default permission

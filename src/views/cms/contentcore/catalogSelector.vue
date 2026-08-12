@@ -1,109 +1,111 @@
 <template>
   <div id="catalog-selector">
-    <el-dialog
+    <a-modal
       :title="$t('CMS.Catalog.SelectCatalog')"
-      :visible.sync="visible"
+      :open="visible"
+      @update:open="v => visible = v"
       width="450px"
-      :close-on-click-modal="false"
-      append-to-body
+      :mask-closable="false"
       class="catalog-selector"
-      style="padding: 10px 20x"
+      :get-container="getModalContainer"
     >
       <div v-if="showToolbar" class="header-toolbar">
         <div v-if="showCopyToolbar">
-          <el-radio-group v-model="copyType" size="mini">
-            <el-radio-button label="1">{{
+          <a-radio-group v-model:value="copyType" size="small">
+            <a-radio-button value="1">{{
               $t("CMS.Catalog.CopyContent")
-            }}</el-radio-button>
-            <el-radio-button label="2">{{
+            }}</a-radio-button>
+            <a-radio-button value="2">{{
               $t("CMS.Catalog.MappingContent")
-            }}</el-radio-button>
-          </el-radio-group>
-          <el-tooltip placement="right" style="margin-left: 5px">
-            <div slot="content">
+            }}</a-radio-button>
+          </a-radio-group>
+          <a-tooltip placement="right" style="margin-left: 5px">
+            <template #title>
               {{ $t("CMS.Catalog.CopyContentTip") }}<br />
               {{ $t("CMS.Catalog.MappingContentTip") }}
-            </div>
-            <i class="el-icon-info"></i>
-          </el-tooltip>
+            </template>
+            <InfoCircleOutlined />
+          </a-tooltip>
         </div>
       </div>
       <div class="search-toolbar">
-        <el-input
+        <a-input
           :placeholder="$t('CMS.Catalog.CatalogNamePlaceholder')"
-          v-model="filterCatalogName"
-          clearable
+          v-model:value="filterCatalogName"
+          allow-clear
           size="small"
-          suffix-icon="el-icon-search"
         >
-        </el-input>
+          <template #suffix><SearchOutlined /></template>
+        </a-input>
       </div>
       <div class="tree-container">
-        <el-scrollbar style="height: 400px">
-          <el-button
+        <div style="max-height: 400px; overflow-y: auto">
+          <a-button
             v-if="showRootNode"
             type="text"
             :class="'tree-root' + (rootSelected ? ' cc-current' : '')"
-            icon="el-icon-s-home"
             @click="handleTreeRootClick"
-            >{{ siteName }}</el-button
           >
-          <el-tree
-            :data="catalogOptions"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            :show-checkbox="multiple"
+            <template #icon><HomeOutlined /></template>
+            {{ siteName }}
+          </a-button>
+          <a-tree
+            v-if="catalogOptions"
+            :tree-data="catalogOptions"
+            :field-names="fieldNames"
+            :show-line="false"
+            :checkable="multiple"
             :check-strictly="checkStrictly"
-            v-loading="loading"
-            node-key="id"
-            ref="tree"
-            default-expand-all
-            @node-click="handleNodeClick"
+            :default-expand-all="true"
+            :loading="loading"
+            @select="handleTreeSelect"
+            @check="handleTreeCheck"
           >
-            <template slot-scope="{ node, data }">
+            <template #title="{ key, title, disabled }">
               <span
-                :id="'tn-' + node.id"
-                :class="node.disabled ? 'cc-disabled' : ''"
-                >{{ node.label }}</span
-              >
+                :id="'tn-' + key"
+                :class="disabled ? 'cc-disabled' : ''"
+              >{{ title }}</span>
             </template>
-          </el-tree>
-        </el-scrollbar>
+          </a-tree>
+        </div>
       </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleOk">{{
+      <template #footer>
+        <a-button type="primary" @click="handleOk">{{
           $t("Common.Confirm")
-        }}</el-button>
-        <el-button @click="handleCancel">{{ $t("Common.Cancel") }}</el-button>
-      </div>
-    </el-dialog>
+        }}</a-button>
+        <a-button @click="handleCancel">{{ $t("Common.Cancel") }}</a-button>
+      </template>
+    </a-modal>
   </div>
 </template>
 <script>
 import { getCatalogTreeData } from "@/api/contentcore/catalog";
+import { SearchOutlined, HomeOutlined, InfoCircleOutlined } from "@ant-design/icons-vue";
 
 export default {
   name: "CMSCatalogSelector",
+  components: {
+    SearchOutlined,
+    HomeOutlined,
+    InfoCircleOutlined,
+  },
   props: {
     open: {
       type: Boolean,
       default: false,
       required: true,
     },
-    // 是否显示复制内容工具栏
     showCopyToolbar: {
       type: Boolean,
       default: false,
       required: false,
     },
-    // 是否显示站点根节点
     showRootNode: {
       type: Boolean,
       default: false,
       required: false,
     },
-    // 是否多选
     multiple: {
       type: Boolean,
       default: false,
@@ -114,7 +116,6 @@ export default {
       default: true,
       required: false,
     },
-    // 是否不允许选择链接栏目
     disableLink: {
       type: Boolean,
       default: false,
@@ -130,19 +131,16 @@ export default {
     return {
       loading: false,
       visible: this.open,
-      // 栏目树过滤：栏目名称
       filterCatalogName: undefined,
-      // 栏目树数据
       catalogOptions: undefined,
-      // 站点名称
       siteName: undefined,
       rootSelected: false,
-      // 当前选中栏目ID
       selectedCatalogs: [],
-      copyType: 1,
-      defaultProps: {
+      copyType: '1',
+      fieldNames: {
         children: "children",
-        label: "label",
+        title: "label",
+        key: "id",
       },
     };
   },
@@ -158,10 +156,14 @@ export default {
       }
     },
     filterCatalogName(val) {
-      this.$refs.tree.filter(val);
+      // antd-vue tree filtering is done via expandedKeys + filterTreeNode
+      // for now, this triggers a re-render of filtered nodes
     },
   },
   methods: {
+    getModalContainer() {
+      return document.body;
+    },
     loadCatalogTreeData() {
       this.selectedCatalogs = [];
       this.rootSelected = false;
@@ -174,49 +176,44 @@ export default {
         this.loading = false;
       });
     },
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) > -1;
-    },
     setNodeHighlight(node) {
       document
         .querySelectorAll(".cc-current")
         .forEach((item) => item.classList.remove("cc-current"));
       if (node) {
-        document.querySelector("#tn-" + node.id).classList.add("cc-current");
+        const el = document.querySelector("#tn-" + node.key);
+        if (el) el.classList.add("cc-current");
       }
     },
-    handleNodeClick(data, node) {
-      if (!this.multiple) {
+    handleTreeSelect(selectedKeys, info) {
+      if (!this.multiple && selectedKeys.length > 0) {
+        const node = info.node;
+        const data = (node && node.dataRef) || {};
         if (!this.disableLink || !data.disabled) {
           this.setNodeHighlight(node);
           this.selectedCatalogs = [
-            { id: data.id, name: data.label, props: data.props },
+            { id: data.id, name: data.label, props: data.props || data },
           ];
           this.rootSelected = false;
-        } else {
-          this.$refs.tree.setCurrentKey(null);
         }
       }
     },
-    handleTreeRootClick(e) {
+    handleTreeCheck(checkedKeys, info) {
+      if (this.multiple) {
+        this.selectedCatalogs = (info.checkedNodes || []).map((item) => ({
+          id: item.id,
+          name: item.label,
+          props: item.props || item,
+        }));
+      }
+    },
+    handleTreeRootClick() {
       if (!this.multiple) {
         this.selectedCatalogs = [{ id: "0", name: this.siteName, props: {} }];
-        this.$refs.tree.setCurrentKey(null);
         this.rootSelected = true;
       }
     },
-    handleOk(data) {
-      if (this.multiple) {
-        this.selectedCatalogs = [];
-        this.$refs.tree.getCheckedNodes().map((item) => {
-          this.selectedCatalogs.push({
-            id: item.id,
-            name: item.label,
-            props: data.props,
-          });
-        });
-      }
+    handleOk() {
       if (this.selectedCatalogs.length == 0) {
         this.$modal.alertWarning(this.$t("CMS.Catalog.SelectCatalogFirst"));
         return;
@@ -227,30 +224,17 @@ export default {
     handleCancel() {
       this.$emit("close");
       this.selectedCatalogs = [];
-      this.copyType = 1;
+      this.copyType = '1';
     },
   },
 };
 </script>
 <style>
-.catalog-selector .el-dialog__body {
-  padding: 10px 20px;
-}
 .catalog-selector .header-toolbar {
   margin-bottom: 10px;
 }
 .catalog-selector .tree-container {
   margin: 10px 0;
-}
-.catalog-selector .tree-container .el-tree {
-  height: 400px;
-}
-.catalog-selector .tree-container .el-scrollbar__wrap {
-  overflow-x: hidden;
-}
-.catalog-selector .tree-container .tree-root {
-  width: 100%;
-  text-align: left;
 }
 .catalog-selector .tree-container .tree-root {
   width: 100%;

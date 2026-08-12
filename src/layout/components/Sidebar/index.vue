@@ -51,19 +51,14 @@ export default {
     ...mapState(["settings"]),
     ...mapGetters(["sidebar", "sidebarRouters"]),
     filteredSidebarRouters() {
-      // 根据当前路由返回对应的侧边栏菜单
-      const currentPath = this.$route.path;
-      if (currentPath.startsWith('/workorder')) {
-        // 工单中心 - 只显示工单中心的菜单
-        const workorderRoute = this.sidebarRouters.find(r => r.path === '/workorder' || r.path === 'workorder');
-        return workorderRoute && workorderRoute.children ? workorderRoute.children : [];
-      } else if (currentPath.startsWith('/portal')) {
-        // 门户管理 - 只显示门户管理的菜单
+      const role = this.$store.state.app.role
+      if (role === 'admin') {
         const portalRoute = this.sidebarRouters.find(r => r.path === '/portal' || r.path === 'portal');
         return portalRoute && portalRoute.children ? portalRoute.children : [];
       }
-      // 默认返回空
-      return [];
+      // 机构用户、开发者等：显示工单中心菜单
+      const workorderRoute = this.sidebarRouters.find(r => r.path === '/workorder' || r.path === 'workorder');
+      return workorderRoute && workorderRoute.children ? workorderRoute.children : [];
     },
     activeMenu() {
       const route = this.$route;
@@ -86,12 +81,11 @@ export default {
   },
   methods: {
     getBasePath(route) {
-      // 根据当前路由确定基础路径
-      const currentPath = this.$route.path;
-      if (currentPath.startsWith('/workorder')) {
-        return '/workorder/' + route.path;
+      const role = this.$store.state.app.role
+      if (role === 'admin') {
+        return '/portal/' + route.path;
       }
-      return '/portal/' + route.path;
+      return '/workorder/' + route.path;
     }
   }
 };

@@ -1,458 +1,515 @@
 <template>
-  <div>
-    <!-- 操作按钮 + 筛选条件 -->
-    <el-row :gutter="24" class="mb12">
-      <el-col :span="12">
-        <el-row :gutter="10">
-          <el-col :span="1.5">
-            <el-button
-              type="primary"
-              icon="el-icon-plus"
-              size="mini"
-              plain
-              @click="openAddDialog"
-            >新增需求</el-button>
-          </el-col>
-        </el-row>
-      </el-col>
-      <el-col :span="12">
-        <el-form
-          :model="queryParams"
-          ref="queryForm"
-          size="small"
-          class="el-form-search"
-          style="text-align: right"
-          :inline="true"
-        >
-          <el-form-item prop="demandNo">
-            <el-input
-              v-model="queryParams.demandNo"
-              placeholder="请输入需求编号"
-              clearable
-              style="width: 160px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item prop="orgName">
-            <el-input
-              v-model="queryParams.orgName"
-              placeholder="请输入机构名称"
-              clearable
-              style="width: 160px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item prop="serviceType">
-            <el-select
-              v-model="queryParams.serviceType"
-              placeholder="所有服务类型"
-              clearable
-              style="width: 150px"
-            >
-              <el-option label="数字应用服务" value="数字应用服务" />
-              <el-option label="能力组件服务" value="能力组件服务" />
-              <el-option label="安全服务" value="安全服务" />
-              <el-option label="基础资源服务" value="基础资源服务" />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="所有状态"
-              clearable
-              style="width: 150px"
-            >
-              <el-option label="待响应" value="pending" />
-              <el-option label="已响应" value="responded" />
-              <el-option label="已完成" value="completed" />
-              <el-option label="已关闭" value="closed" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button-group>
-              <el-button
-                type="primary"
-                icon="el-icon-search"
-                @click="handleQuery"
-              >搜索</el-button>
-              <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
-            </el-button-group>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
-
-    <!-- 表格 -->
-    <el-table
-      v-loading="loading"
-      :data="demandList"
-      size="small"
-      style="width: 100%"
-      class-name="small-padding fixed-width"
-    >
-      <el-table-column prop="demandNo" label="需求编号" width="150" />
-      <el-table-column prop="demandDescription" label="需求描述" min-width="220" show-overflow-tooltip />
-      <el-table-column prop="serviceType" label="服务类型" width="120">
-        <template slot-scope="scope">
-          <el-tag :type="getServiceTypeColor(scope.row.serviceType)" size="small">{{ scope.row.serviceType }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
-        <template slot-scope="scope">
-          <el-tag :type="getStatusColor(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="publishTime" label="发布时间" width="160" />
-      <el-table-column label="操作" width="150" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="viewDetail(scope.row)">详情</el-button>
-          <el-button
-            v-if="scope.row.status === '待响应'"
-            type="text"
-            size="small"
-            @click="handleClose(scope.row)"
-          >关闭</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="loadDemandList"
+  <div class="my-demand-initiate-page">
+    <PageHeader
+      title="需求发起"
+      description="管理本机构发布的需求，支持按需求编号、申请机构、方案类型、服务类型和状态筛选"
     />
 
-    <!-- 新增需求弹窗 -->
-    <el-dialog
-      title="新增需求"
-      width="620px"
-      :visible.sync="addDialogVisible"
-      :close-on-click-modal="false"
-      :modal-append-to-body="false"
-      top="5vh"
-    >
-      <div class="dialog-tip">
-        <i class="el-icon-info"></i>
-        <span>请详细描述您的业务需求，服务供应方将根据需求内容进行响应。</span>
-      </div>
-      <el-form
-        ref="addFormRef"
-        :model="addForm"
-        :rules="addRules"
-        label-width="100px"
-        class="add-form"
-      >
-        <div class="form-section">
-          <div class="form-section-title">需求信息</div>
-          <el-form-item label="申请机构" prop="orgName">
-            <el-input v-model="addForm.orgName" placeholder="请输入申请机构名称" disabled />
-          </el-form-item>
-          <el-form-item label="服务类型" prop="serviceType">
-            <el-select v-model="addForm.serviceType" placeholder="请选择服务类型" style="width: 100%">
-              <el-option label="数字应用服务" value="数字应用服务" />
-              <el-option label="能力组件服务" value="能力组件服务" />
-              <el-option label="安全服务" value="安全服务" />
-              <el-option label="基础资源服务" value="基础资源服务" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="需求描述" prop="demandDescription">
-            <el-input
-              v-model="addForm.demandDescription"
-              type="textarea"
-              :rows="5"
-              placeholder="请详细描述您的需求，包括功能需求、性能要求、预算范围等"
-            />
-          </el-form-item>
-          <el-form-item label="期望时间" prop="expectedDate">
-            <el-date-picker
-              v-model="addForm.expectedDate"
-              type="date"
-              placeholder="请选择期望交付时间"
-              style="width: 100%"
-              value-format="yyyy-MM-dd"
-            />
-          </el-form-item>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleAddSubmit">发 布</el-button>
-      </div>
-    </el-dialog>
+    <CloudCard class="my-demand-initiate-page__table-card">
+      <FilterBar @search="handleQuery" @reset="resetQuery">
+        <template #actions>
+          <a-button type="primary" @click="openAddPage">
+            <template #icon><PlusOutlined /></template>
+            新增需求
+          </a-button>
+        </template>
+        <a-input v-model:value="filter.demandNo" placeholder="需求编号" allow-clear style="width: 180px" @pressEnter="handleQuery" />
+        <a-input v-model:value="filter.orgName" placeholder="申请机构" allow-clear style="width: 180px" @pressEnter="handleQuery" />
+        <a-select v-model:value="filter.planType" placeholder="方案类型" allow-clear style="width: 150px">
+          <a-select-option value="政务信创">政务信创</a-select-option>
+          <a-select-option value="金融合规">金融合规</a-select-option>
+          <a-select-option value="安全可控">安全可控</a-select-option>
+          <a-select-option value="科研提算">科研提算</a-select-option>
+          <a-select-option value="通用商用">通用商用</a-select-option>
+        </a-select>
+        <a-select v-model:value="filter.serviceType" placeholder="服务类型" allow-clear style="width: 150px">
+          <a-select-option value="数字应用">数字应用</a-select-option>
+          <a-select-option value="安全服务">安全服务</a-select-option>
+          <a-select-option value="能力组件">能力组件</a-select-option>
+          <a-select-option value="基础服务">基础服务</a-select-option>
+        </a-select>
+        <a-select v-model:value="filter.status" placeholder="状态" allow-clear style="width: 130px">
+          <a-select-option value="待响应">待响应</a-select-option>
+          <a-select-option value="已响应">已响应</a-select-option>
+          <a-select-option value="已完成">已完成</a-select-option>
+          <a-select-option value="已关闭">已关闭</a-select-option>
+        </a-select>
+      </FilterBar>
+      <div class="my-demand-initiate-page__divider"></div>
 
-    <!-- 关闭需求确认弹窗 -->
-    <el-dialog
+      <div class="my-demand-initiate-page__table-wrap">
+        <a-table
+          :columns="columns"
+          :data-source="filteredData"
+          :pagination="paginationConfig"
+          :loading="loading"
+          row-key="demandNo"
+          size="middle"
+          @change="onTableChange"
+        >
+          <template #bodyCell="{ column, record }">
+            <span v-if="column.dataIndex === 'demandNo'" class="cell-primary">{{ record.demandNo || '--' }}</span>
+            <template v-else-if="column.dataIndex === 'planType'">
+              <a-tag class="plan-type-tag">{{ record.planType || '--' }}</a-tag>
+            </template>
+            <template v-else-if="column.dataIndex === 'serviceItems'">
+              <a-tooltip :title="record.serviceItems" placement="topLeft">
+                <span class="cell-default">{{ record.serviceItems || '--' }}</span>
+              </a-tooltip>
+            </template>
+            <template v-else-if="column.dataIndex === 'demandDescription'">
+              <a-tooltip :title="record.demandDescription" placement="topLeft">
+                <span class="cell-default">{{ record.demandDescription || '--' }}</span>
+              </a-tooltip>
+            </template>
+            <template v-else-if="column.dataIndex === 'serviceType'">
+              <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(record.serviceType)}`]">{{ record.serviceType }}</span>
+            </template>
+            <template v-else-if="column.dataIndex === 'status'">
+              <StatusDot :type="getStatusKey(record.status)" :text="record.status" />
+            </template>
+            <template v-else-if="column.dataIndex === 'action'">
+              <a-space size="small">
+                <a-button type="link" size="small" class="!p-0" @click="viewDetail(record)">详情</a-button>
+                <a-divider v-if="record.status === '待响应'" type="vertical" class="!mx-[2px]" />
+                <a-button v-if="record.status === '待响应'" type="link" size="small" danger class="!p-0" @click="handleClose(record)">关闭</a-button>
+              </a-space>
+            </template>
+            <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+          </template>
+        </a-table>
+      </div>
+    </CloudCard>
+
+    <a-modal
+      v-model:open="closeDialogVisible"
       title="关闭需求"
       width="420px"
-      :visible.sync="closeDialogVisible"
-      :close-on-click-modal="false"
-      :modal-append-to-body="false"
-      top="15vh"
+      ok-text="确定"
+      cancel-text="取消"
+      @ok="handleCloseConfirm"
     >
-      <p style="padding: 6px 20px; font-size: 14px; color: #333;">确认关闭需求吗？关闭后不可恢复。</p>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="closeDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleCloseConfirm">确 定</el-button>
-      </div>
-    </el-dialog>
+      <p class="close-modal__text">确认关闭需求吗？关闭后不可恢复。</p>
+    </a-modal>
+
+    <!-- 详情抽屉 -->
+    <a-drawer
+      v-model:open="drawer.visible"
+      title="需求详情"
+      :width="860"
+      placement="right"
+      :body-style="{ padding: '24px' }"
+    >
+      <template v-if="drawer.record">
+        <div class="drawer-header-row">
+          <div class="drawer-header-info">
+            <div class="drawer-header-title-row">
+              <span class="drawer-header-title">{{ drawer.record.demandNo }}</span>
+              <a-tag class="plan-type-tag">{{ drawer.record.planType }}</a-tag>
+              <StatusDot :type="getStatusKey(drawer.record.status)" :text="drawer.record.status" />
+            </div>
+            <div class="drawer-header-sub">
+              <span class="drawer-header-sub__name">{{ drawer.record.planName }}</span>
+              <span class="drawer-header-sub__sep">·</span>
+              <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(drawer.record.serviceType)}`]">{{ drawer.record.serviceType }}</span>
+            </div>
+          </div>
+        </div>
+
+        <a-tabs v-model:activeKey="drawer.activeTab">
+          <a-tab-pane key="demand" tab="需求信息">
+            <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+              <a-descriptions-item label="需求编号">
+                <span class="cell-mono">{{ drawer.record.demandNo || '--' }}</span>
+              </a-descriptions-item>
+              <a-descriptions-item label="方案类型">
+                <a-tag class="plan-type-tag">{{ drawer.record.planType || '--' }}</a-tag>
+              </a-descriptions-item>
+              <a-descriptions-item label="方案名称" :span="2">{{ drawer.record.planName || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="服务项" :span="2">
+                <div class="service-item-list">
+                  <a-tag v-for="(item, idx) in getServiceItemList(drawer.record.serviceItems)" :key="idx" class="service-item-tag">{{ item }}</a-tag>
+                </div>
+              </a-descriptions-item>
+              <a-descriptions-item label="需求说明" :span="2">
+                <span class="muted">{{ drawer.record.demandDescription || '--' }}</span>
+              </a-descriptions-item>
+              <a-descriptions-item label="服务类型">
+                <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(drawer.record.serviceType)}`]">{{ drawer.record.serviceType || '--' }}</span>
+              </a-descriptions-item>
+              <a-descriptions-item label="申请机构">{{ drawer.record.orgName || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="发布时间">
+                <span class="cell-mono">{{ drawer.record.publishTime || '--' }}</span>
+              </a-descriptions-item>
+            </a-descriptions>
+          </a-tab-pane>
+          <a-tab-pane v-if="drawer.record.responseContent" key="response" tab="响应信息">
+            <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+              <a-descriptions-item label="响应机构">{{ drawer.record.respondent || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="响应时间">
+                <span class="cell-mono">{{ drawer.record.responseTime || '--' }}</span>
+              </a-descriptions-item>
+              <a-descriptions-item label="预估报价">
+                <span class="price-text">¥{{ drawer.record.estimatedPrice || '--' }}</span>
+              </a-descriptions-item>
+              <a-descriptions-item label="预计工期">{{ drawer.record.estimatedDuration || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="响应内容" :span="2">
+                <span class="muted">{{ drawer.record.responseContent || '--' }}</span>
+              </a-descriptions-item>
+            </a-descriptions>
+          </a-tab-pane>
+        </a-tabs>
+      </template>
+    </a-drawer>
   </div>
 </template>
 
 <script>
-import Pagination from '@/components/Pagination/index.vue';
+import {
+  PlusOutlined
+} from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import FilterBar from '@/components/cloud/FilterBar.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
 
 export default {
-  name: "MyDemandInitiate",
+  name: 'MyDemandInitiate',
   components: {
-    Pagination
+    PageHeader, CloudCard, FilterBar, StatusDot,
+    PlusOutlined
   },
   data() {
     return {
       loading: false,
-      total: 0,
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        demandNo: undefined,
-        orgName: undefined,
-        serviceType: undefined,
-        status: undefined
-      },
-      addDialogVisible: false,
-      closeDialogVisible: false,
-      closeTarget: {},
-      addForm: {
-        orgName: '',
-        serviceType: '',
-        demandDescription: '',
-        expectedDate: ''
-      },
-      addRules: {
-        orgName: [{ required: true, message: '请输入申请机构名称', trigger: 'blur' }],
-        serviceType: [{ required: true, message: '请选择服务类型', trigger: 'change' }],
-        demandDescription: [{ required: true, message: '请输入需求描述', trigger: 'blur' }]
-      },
+      filter: { demandNo: '', orgName: '', planType: undefined, serviceType: undefined, status: undefined },
+      applied: { demandNo: '', orgName: '', planType: undefined, serviceType: undefined, status: undefined },
+      pagination: { current: 1, pageSize: 10 },
+      drawer: { visible: false, record: null, activeTab: 'demand' },
+      columns: [
+        { title: '需求编号', dataIndex: 'demandNo', key: 'demandNo', width: 150 },
+        { title: '方案名称', dataIndex: 'planName', key: 'planName', width: 180, ellipsis: true },
+        { title: '方案类型', dataIndex: 'planType', key: 'planType', width: 120 },
+        { title: '服务项', dataIndex: 'serviceItems', key: 'serviceItems', width: 220, ellipsis: true },
+        { title: '需求说明', dataIndex: 'demandDescription', key: 'demandDescription', width: 220, ellipsis: true },
+        { title: '服务类型', dataIndex: 'serviceType', key: 'serviceType', width: 110 },
+        { title: '状态', dataIndex: 'status', key: 'status', width: 110 },
+        { title: '发布时间', dataIndex: 'publishTime', key: 'publishTime', width: 160 },
+        { title: '操作', dataIndex: 'action', key: 'action', width: 150, fixed: 'right' }
+      ],
       demandList: [
         {
-          demandNo: '#DM-2024-0012',
+          demandNo: 'DM-20260810-0012',
+          planName: '统一身份认证平台采购',
+          planType: '安全可控',
+          serviceItems: '统一身份认证平台、安全审计服务',
           demandDescription: '需要一个统一的身份认证平台，支持OAuth2.0和SAML协议，要求支持至少10万用户的并发认证，并提供SSO单点登录功能',
           serviceType: '安全服务',
           orgName: '北京市海淀区数字经济发展局',
-          applicant: '张三',
           status: '已响应',
-          publishTime: '2024-03-18 10:30:00',
+          publishTime: '2026-03-18 10:30:00',
           respondent: '北京信息安全技术有限公司',
           responseContent: '可提供统一身份认证平台方案，支持OAuth2.0/SAML协议，含SSO单点登录，支持10万+用户并发认证。',
           estimatedPrice: '280,000',
           estimatedDuration: '40个工作日',
-          responseTime: '2024-03-19 14:20:00'
+          responseTime: '2026-03-19 14:20:00'
         },
         {
-          demandNo: '#DM-2024-0011',
+          demandNo: 'DM-20260810-0011',
+          planName: '大数据分析平台建设',
+          planType: '政务信创',
+          serviceItems: '大数据分析平台、数据可视化组件',
           demandDescription: '需要部署一套大数据分析平台，支持PB级数据处理，包含数据采集、清洗、分析、可视化全流程',
-          serviceType: '数字应用服务',
+          serviceType: '数字应用',
           orgName: '北京市海淀区数字经济发展局',
-          applicant: '张三',
           status: '待响应',
-          publishTime: '2024-03-15 14:20:00'
+          publishTime: '2026-03-15 14:20:00'
         },
         {
-          demandNo: '#DM-2024-0010',
+          demandNo: 'DM-20260810-0010',
+          planName: '弹性云服务器采购',
+          planType: '通用商用',
+          serviceItems: '云服务器ECS、对象存储OSS',
           demandDescription: '需要采购弹性云服务器资源，配置不低于32核64G内存，带宽不低于100Mbps',
-          serviceType: '基础资源服务',
+          serviceType: '基础服务',
           orgName: '北京市海淀区数字经济发展局',
-          applicant: '张三',
           status: '待响应',
-          publishTime: '2024-03-10 09:00:00'
+          publishTime: '2026-03-10 09:00:00'
         }
-      ]
-    };
+      ],
+      closeDialogVisible: false,
+      closeTarget: {}
+    }
   },
-  created() {
-    this.loadDemandList();
-  },
-  watch: {
-    $route: {
-      handler: function() {
-        this.loadDemandList();
-      },
-      immediate: true
+  computed: {
+    filteredData() {
+      const f = this.applied
+      const list = this.demandList.filter(item => {
+        if (f.demandNo && !(item.demandNo || '').includes(f.demandNo)) return false
+        if (f.orgName && !(item.orgName || '').includes(f.orgName)) return false
+        if (f.planType && item.planType !== f.planType) return false
+        if (f.serviceType && item.serviceType !== f.serviceType) return false
+        if (f.status && item.status !== f.status) return false
+        return true
+      })
+      return list.map(i => ({ key: i.demandNo, ...i }))
     },
-    addDialogVisible(val) {
-      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.1.3.1.2'); }
-    },
-    closeDialogVisible(val) {
-      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.1.3.1.3'); }
+    paginationConfig() {
+      return {
+        current: this.pagination.current,
+        pageSize: this.pagination.pageSize,
+        total: this.filteredData.length,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: ['10', '20', '50', '100'],
+        showTotal: (t) => `共 ${t} 条`
+      }
     }
   },
   methods: {
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.loadDemandList();
+      this.applied = { ...this.filter }
+      this.pagination.current = 1
     },
     resetQuery() {
-      this.$refs.queryForm.resetFields();
-      this.handleQuery();
+      this.filter = { demandNo: '', orgName: '', planType: undefined, serviceType: undefined, status: undefined }
+      this.applied = { ...this.filter }
+      this.pagination.current = 1
     },
-    loadDemandList() {
-      this.loading = true;
-      setTimeout(() => {
-        this.total = this.demandList.length;
-        this.loading = false;
-      }, 500);
+    onTableChange(pag) {
+      this.pagination.current = pag.current
+      this.pagination.pageSize = pag.pageSize
     },
-    openAddDialog() {
-      this.addForm = {
-        orgName: '北京市海淀区数字经济发展局',
-        serviceType: '',
-        demandDescription: '',
-        expectedDate: ''
-      };
-      this.addDialogVisible = true;
-      this.$nextTick(() => {
-        this.$refs.addFormRef && this.$refs.addFormRef.clearValidate();
-      });
-    },
-    handleAddSubmit() {
-      this.$refs.addFormRef.validate(valid => {
-        if (!valid) return;
-        this.$modal.msgSuccess('需求发布成功');
-        this.addDialogVisible = false;
-        this.loadDemandList();
-      });
+    openAddPage() {
+      window.open('https://network-org.tssz.qzz.io/#/demand', '_blank')
     },
     viewDetail(row) {
-      this.$router.push({ path: '/workorder/myDemand/initiateDetail', query: { id: row.demandNo } });
+      this.drawer.record = row
+      this.drawer.activeTab = 'demand'
+      this.drawer.visible = true
     },
     handleClose(row) {
-      this.closeTarget = row;
-      this.closeDialogVisible = true;
+      this.closeTarget = row
+      this.closeDialogVisible = true
     },
     handleCloseConfirm() {
-      this.$modal.msgSuccess('需求已关闭');
-      this.closeDialogVisible = false;
-      this.loadDemandList();
+      message.success('需求已关闭')
+      this.closeDialogVisible = false
     },
-    getServiceTypeColor(type) {
-      const colorMap = {
-        '数字应用服务': 'info',
-        '能力组件服务': 'success',
-        '安全服务': 'warning',
-        '基础资源服务': ''
-      };
-      return colorMap[type] || 'info';
+    getServiceTypeClass(type) {
+      const map = {
+        '数字应用': 'digital',
+        '安全服务': 'security',
+        '能力组件': 'component',
+        '基础服务': 'basic'
+      }
+      return map[type] || ''
     },
-    getStatusColor(status) {
-      const colorMap = {
+    getStatusKey(status) {
+      const map = {
         '待响应': 'warning',
-        '已响应': 'info',
-        '已完成': 'success',
-        '已关闭': 'danger'
-      };
-      return colorMap[status] || 'info';
+        '已响应': 'processing',
+        '已完成': 'done',
+        '已关闭': 'cancelled'
+      }
+      return map[status] || 'default'
+    },
+    getServiceItemList(serviceItems) {
+      if (!serviceItems) return []
+      return serviceItems.split(/[、，,]/).map(s => s.trim()).filter(Boolean)
     }
   }
-};
+}
 </script>
 
 <style scoped>
-.mb12 {
-  margin-bottom: 12px;
+.my-demand-initiate-page {
+  padding: 4px 0;
 }
 
-:deep(.el-form-search) {
-  margin-bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 0;
+.my-demand-initiate-page__divider {
+  height: 1px;
+  background: #F2F3F5;
+  margin: 0 16px;
 }
 
-:deep(.el-form-search .el-form-item) {
-  margin-bottom: 0;
-  margin-right: 0;
+.my-demand-initiate-page__table-wrap {
+  padding: 0 16px 16px 16px;
+}
+
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
+}
+
+.cell-primary {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cell-default {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
 }
 
 .dialog-tip {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 10px 20px;
-  padding: 10px 16px;
-  background: #eef6ff;
-  border: 1px solid #d4e5ff;
-  border-radius: 2px;
+  margin: 0 0 16px 0;
+  padding: 10px 14px;
+  background: #E8F3FF;
+  border: 1px solid rgba(22, 93, 255, 0.20);
+  border-radius: 6px;
   font-size: 13px;
-  color: #3b5bdb;
+  color: #165DFF;
 }
 
-.dialog-tip i {
+.dialog-tip__icon {
   font-size: 16px;
-  color: #3b5bdb;
   flex-shrink: 0;
 }
 
-.add-form {
-  padding: 12px 24px 20px;
-}
-
-:deep(.el-dialog__header) {
-  padding: 14px 24px 6px;
-}
-
-:deep(.el-dialog__body) {
-  padding: 0;
-}
-
-:deep(.el-dialog__footer) {
-  padding: 8px 24px 16px;
-}
-
-.form-section-title {
+.app-form .form-section__title {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
-  padding-bottom: 10px;
-  margin-bottom: 18px;
-  border-bottom: 1px solid #ebeef5;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #F2F3F5;
 }
 
-/* 详情弹窗键值对网格 */
-.detail-kv {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 6px 40px;
-  padding: 4px 12px;
-}
-
-.kv-item {
+.app-modal__footer {
   display: flex;
-  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #F2F3F5;
+}
+
+.close-modal__text {
+  margin: 0;
+  padding: 8px 4px;
   font-size: 14px;
-  line-height: 2;
+  color: #4E5969;
 }
 
-.kv-item.full {
-  grid-column: 1 / -1;
+/* Drawer 样式 */
+.drawer-header-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 0 8px;
+  margin-bottom: 8px;
 }
 
-.kv-item label {
-  color: #8c8c8c;
-  width: 80px;
-  flex-shrink: 0;
-  font-weight: 400;
+.drawer-header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawer-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.drawer-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+}
+
+.drawer-header-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.drawer-header-sub__sep {
+  color: #C9CDD4;
+}
+
+.service-type-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 22px;
+  border: 1px solid transparent;
+  font-weight: 500;
+}
+
+.service-type-tag--digital {
+  color: #165DFF;
+  background: #E8F3FF;
+  border-color: rgba(22, 93, 255, 0.20);
+}
+
+.service-type-tag--security {
+  color: #F5222D;
+  background: #FFF1F0;
+  border-color: rgba(245, 34, 45, 0.20);
+}
+
+.service-type-tag--component {
+  color: #722ED1;
+  background: #F4ECFE;
+  border-color: rgba(114, 46, 209, 0.20);
+}
+
+.service-type-tag--basic {
+  color: #13A57D;
+  background: #E6F8F2;
+  border-color: rgba(19, 165, 125, 0.20);
+}
+
+.muted {
+  color: #4E5969;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.price-text {
+  color: #F59E0B;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+:deep(.ant-drawer .ant-table-wrapper),
+:deep(.ant-drawer .ant-table-wrapper .ant-table),
+:deep(.ant-drawer .ant-table-wrapper .ant-table-container),
+:deep(.ant-drawer .ant-table-wrapper .ant-table-thead > tr > th),
+:deep(.ant-drawer .ant-table-wrapper .ant-table-tbody > tr > td),
+:deep(.ant-drawer .ant-table-wrapper .ant-table-thead > tr:first-child > th:first-child),
+:deep(.ant-drawer .ant-table-wrapper .ant-table-tbody > tr:first-child > td:first-child),
+:deep(.ant-drawer .ant-descriptions),
+:deep(.ant-drawer .ant-descriptions-view),
+:deep(.ant-drawer .ant-descriptions-row > td),
+:deep(.ant-drawer .ant-descriptions-row > th) {
+  border-radius: 0 !important;
+}
+
+:deep(.ant-drawer .ant-table-thead .ant-table-cell) {
+  font-weight: normal !important;
+}
+
+:deep(.ant-drawer .ant-descriptions-item-label) {
+  width: 160px !important;
+  min-width: 160px !important;
+  max-width: 160px !important;
   white-space: nowrap;
 }
 
-.kv-item span {
-  color: #262626;
-  word-break: break-all;
-  font-weight: 400;
-  font-size: 14px;
-  min-width: 0;
-}
 </style>

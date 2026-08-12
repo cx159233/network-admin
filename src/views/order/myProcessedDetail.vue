@@ -1,308 +1,328 @@
 <template>
-  <div class="detail-container">
-    <!-- 顶部标题区域 -->
-    <div class="detail-header-wrap">
-      <el-button size="small" @click="goBack" class="back-btn">
-        <i class="el-icon-arrow-left"></i> 返回列表
-      </el-button>
-    </div>
+  <div class="processed-detail-page">
+    <PageHeader
+      title="已办详情 · 云主机（ECS）"
+      description="查看已处理订单的详情、流程进度及处理记录"
+    >
+      <template #actions>
+        <a-button @click="goBack">
+          <template #icon><ArrowLeftOutlined /></template>
+          返回列表
+        </a-button>
+      </template>
+    </PageHeader>
 
-    <!-- 工单详情内容 -->
-    <div class="detail-content-wrap">
-      <div class="detail-left">
-        <!-- 订单基本信息 -->
-        <el-card shadow="hover" class="mb-4">
-          <div slot="header" class="clearfix">
-            <span>订单基本信息</span>
-            <span class="sb done" style="float: right">已完成</span>
+    <div class="processed-detail-page__body">
+      <div class="processed-detail-page__main">
+        <CloudCard class="processed-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">订单基本信息</span>
+            <StatusDot type="done" text="已完成" />
           </div>
-          <div class="detail-kv">
-            <div class="kv-item"><label>服务名称</label><span>云主机（ECS）</span></div>
-            <div class="kv-item"><label>服务规格</label><span>2核4G，200G SSD</span></div>
-            <div class="kv-item"><label>服务类型</label><span>基础资源服务</span></div>
-            <div class="kv-item"><label>申请人</label><span>李四</span></div>
-            <div class="kv-item"><label>申请机构</label><span>北京市朝阳区智慧城市建设局</span></div>
-            <div class="kv-item"><label>申请时间</label><span class="mono">2024-03-14 10:20:00</span></div>
-            <div class="kv-item"><label>服务周期</label><span>1年（2024-03 至 2025-03）</span></div>
-            <div class="kv-item"><label>审批人</label><span><span class="av-chip"><span class="av blue">张</span> 张三 · 审批人</span></span></div>
-            <div class="kv-item"><label>审批时间</label><span class="mono">2024-03-14 11:30:00</span></div>
-            <div class="kv-item full"><label>申请备注</label><span class="muted">需要一台云主机用于部署业务系统，配置要求2核4G，200G SSD。</span></div>
-          </div>
-        </el-card>
+          <a-descriptions :column="2" size="small" class="order-desc">
+            <a-descriptions-item label="服务名称">云主机（ECS）</a-descriptions-item>
+            <a-descriptions-item label="服务规格">2核4G，200G SSD</a-descriptions-item>
+            <a-descriptions-item label="服务类型">
+              <span class="service-type-tag service-type-tag--basic">基础服务</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="申请人">李四</a-descriptions-item>
+            <a-descriptions-item label="申请机构">北京市朝阳区智慧城市建设局</a-descriptions-item>
+            <a-descriptions-item label="申请时间">
+              <span class="cell-mono">2026-03-14 10:20:00</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="服务周期">1年（2026-03 至 2027-03）</a-descriptions-item>
+            <a-descriptions-item label="审批人">
+              <span class="person-chip">
+                <a-avatar size="small" class="person-chip__av person-chip__av--blue">张</a-avatar>
+                张三 · 审批人
+              </span>
+            </a-descriptions-item>
+            <a-descriptions-item label="审批时间">
+              <span class="cell-mono">2026-03-14 11:30:00</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="申请备注" :span="2">
+              <span class="muted">需要一台云主机用于部署业务系统，配置要求2核4G，200G SSD。</span>
+            </a-descriptions-item>
+          </a-descriptions>
+        </CloudCard>
 
-        <!-- 流程进度 -->
-        <el-card shadow="hover" class="description-card">
-          <div slot="header" class="clearfix">
-            <span>流程进度</span>
+        <CloudCard class="processed-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">流程进度</span>
           </div>
-          <div class="tl">
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">提交申请</div><div class="tl-time">2024-03-14 10:20:00 · 李四</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">系统派发工单</div><div class="tl-time">2024-03-14 11:35:00 · 自动派发 → TK-0232</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">工单流转中</div><div class="tl-time">2024-03-14 11:40:00</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">服务交付完成</div><div class="tl-time">2024-03-14 12:05:00 · 收到工单系统交付完成回执</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">服务评价</div><div class="tl-time">2024-03-14 15:30:00 · 用户已评价：5星</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">订单驳回</div><div class="tl-time">工单驳回后记录驳回时间</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div></div><div class="tl-body"><div class="tl-title wait">订单取消</div><div class="tl-time">用户取消订单后记录取消时间</div></div></div>
-          </div>
-        </el-card>
+          <a-timeline class="order-timeline">
+            <a-timeline-item
+              v-for="(step, idx) in timeline"
+              :key="idx"
+              :color="step.dotColor"
+            >
+              <div :class="['tl-title', `tl-title--${step.state}`]">{{ step.title }}</div>
+              <div class="tl-time">{{ step.time }}</div>
+            </a-timeline-item>
+          </a-timeline>
+        </CloudCard>
       </div>
 
-      <div class="detail-right">
-        <!-- 关联工单 -->
-        <el-card shadow="hover" class="mb-4">
-          <div slot="header" class="clearfix">
-            <span>关联工单</span>
+      <div class="processed-detail-page__side">
+        <CloudCard class="processed-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">关联工单</span>
           </div>
-          <div style="border:1px solid #b2f2bb;border-left:3px solid #2f9e44;border-radius:8px;padding:12px;background:#ebfbee">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-              <span style="font-family:'DM Mono',monospace;font-size:11px;color:#2f9e44;font-weight:600">TK-0232</span>
+          <div class="workorder-chip workorder-chip--done">
+            <div class="workorder-chip__id">
+              <span class="cell-mono">TK-0232</span>
             </div>
-            <div style="font-size:13px;font-weight:500;margin-bottom:5px;color:#1c2033">云主机开通工单</div>
-            <div style="font-size:12px;color:#5c6480;line-height:1.6;margin-bottom:8px">云主机已成功开通，IP地址：192.168.1.100，已发送通知给申请人。</div>
-            <div class="av-chip" style="font-size:11px;color:#9aa0b8"><span class="av green">李</span> 负责人：李工（运维团队）</div>
+            <div class="workorder-chip__title">云主机开通工单</div>
+            <div class="workorder-chip__desc">云主机已成功开通，IP地址：192.168.1.100，已发送通知给申请人。</div>
+            <div class="workorder-chip__owner">
+              <a-avatar size="small" class="person-chip__av person-chip__av--green">李</a-avatar>
+              负责人：李工（运维团队）
+            </div>
           </div>
-          <div style="display:flex;gap:6px;margin-top:10px">
-            <el-button plain size="small" style="flex:1">查看工单</el-button>
-          </div>
-        </el-card>
+          <a-button block style="margin-top: 12px" @click="goToWorkorder">
+            <template #icon><EyeOutlined /></template>
+            查看工单
+          </a-button>
+        </CloudCard>
 
-        <!-- 处理操作（已处理状态） -->
-        <el-card shadow="hover">
-          <div slot="header" class="clearfix">
-            <span>处理操作</span>
+        <CloudCard class="processed-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">处理记录</span>
           </div>
-          <div class="process-form">
-            <el-form :model="processForm" label-position="top">
-              <el-form-item label="处理结果">
-                <el-radio-group v-model="processForm.result" disabled>
-                  <el-radio label="pass">通过</el-radio>
-                  <el-radio label="reject">驳回</el-radio>
-                  <el-radio label="transfer">转交</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="处理意见">
-                <el-input
-                  v-model="processForm.opinion"
-                  type="textarea"
-                  :rows="4"
-                  placeholder="请输入处理意见"
-                  disabled
-                />
-              </el-form-item>
-              <el-form-item label="处理人">
-                <el-input
-                  v-model="processForm.handler"
-                  placeholder="处理人"
-                  disabled
-                />
-              </el-form-item>
-              <el-form-item label="处理时间">
-                <el-input
-                  v-model="processForm.handleTime"
-                  placeholder="处理时间"
-                  disabled
-                />
-              </el-form-item>
+          <a-form :model="processForm" layout="vertical" class="process-form">
+            <a-form-item label="处理结果">
+              <a-radio-group v-model:value="processForm.result" disabled>
+                <a-radio value="pass">通过</a-radio>
+                <a-radio value="reject">驳回</a-radio>
+                <a-radio value="transfer">转交</a-radio>
+              </a-radio-group>
+            </a-form-item>
+            <a-form-item label="处理意见">
+              <a-textarea
+                v-model:value="processForm.opinion"
+                :rows="4"
+                placeholder="处理意见"
+                disabled
+              />
+            </a-form-item>
+            <a-form-item label="处理人">
+              <a-input v-model:value="processForm.handler" placeholder="处理人" disabled />
+            </a-form-item>
+            <a-form-item label="处理时间">
+              <a-input v-model:value="processForm.handleTime" placeholder="处理时间" disabled />
+            </a-form-item>
+            <a-form-item>
               <div class="form-actions">
-                <el-button type="primary" disabled>提交</el-button>
-                <el-button disabled>重置</el-button>
+                <a-button type="primary" disabled>提交</a-button>
+                <a-button disabled>重置</a-button>
               </div>
-            </el-form>
-          </div>
-        </el-card>
+            </a-form-item>
+          </a-form>
+        </CloudCard>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import {
+  ArrowLeftOutlined, EyeOutlined
+} from '@ant-design/icons-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+
 export default {
   name: 'OrderMyProcessedDetail',
+  components: {
+    PageHeader, CloudCard, StatusDot,
+    ArrowLeftOutlined, EyeOutlined
+  },
   data() {
     return {
       processForm: {
         result: 'pass',
         opinion: '同意，配置合理，符合业务需求。',
         handler: '张三',
-        handleTime: '2024-03-14 11:30:00'
-      }
-    };
+        handleTime: '2026-03-14 11:30:00'
+      },
+      timeline: [
+        { title: '提交申请', time: '2026-03-14 10:20:00 · 李四', state: 'done', dotColor: 'green' },
+        { title: '系统派发工单', time: '2026-03-14 11:35:00 · 自动派发 -> TK-0232', state: 'done', dotColor: 'green' },
+        { title: '工单流转中', time: '2026-03-14 11:40:00', state: 'done', dotColor: 'green' },
+        { title: '服务交付完成', time: '2026-03-14 12:05:00 · 收到工单系统交付完成回执', state: 'done', dotColor: 'green' },
+        { title: '服务评价', time: '2026-03-14 15:30:00 · 用户已评价：5星', state: 'done', dotColor: 'green' },
+        { title: '订单驳回', time: '工单驳回后记录驳回时间', state: 'wait', dotColor: 'gray' },
+        { title: '订单取消', time: '用户取消订单后记录取消时间', state: 'wait', dotColor: 'gray' }
+      ]
+    }
   },
   methods: {
     goBack() {
-      this.$router.push('/workorder/order/myProcessed');
+      this.$router.push('/workorder/order/myProcessed')
+    },
+    goToWorkorder() {
+      this.$router.push({ path: '/workorder/detail', query: { workorderId: 'TK-0232' } })
     }
   }
-};
+}
 </script>
 
 <style scoped>
-/* Main */
-.detail-container {
-  display: flex;
-  flex-direction: column;
-  padding: 0 !important;
-  margin: -20px;
-  min-height: calc(100vh - 50px);
-  background-color: #f2f4f8;
+.processed-detail-page {
+  padding: 4px 0;
 }
 
-.detail-header-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  margin: 0;
-  border-radius: 0;
-  height: auto;
-  flex-shrink: 0;
-}
-
-.back-btn {
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 500;
-}
-
-.back-btn:hover {
-  background-color: #ecf5ff;
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.detail-content-wrap {
-  display: flex;
-  gap: 14px;
-  padding: 16px 20px 16px;
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f2f4f8;
-}
-
-.detail-left {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.detail-left > * { min-width: 0; overflow: hidden; }
-
-.detail-right {
-  width: 272px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.detail-left .mb-4 {
-  margin-bottom: 0 !important;
-}
-
-.description-card {
-  margin-bottom: 0;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-  color: #303133;
-  font-size: 14px;
-}
-
-/* 键值对网格 */
-.detail-kv {
+.processed-detail-page__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 6px 40px;
-  overflow: hidden;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+  margin-top: 14px;
 }
 
-.kv-item {
+.processed-detail-page__main,
+.processed-detail-page__side {
   display: flex;
-  align-items: baseline;
-  font-size: 14px;
-  line-height: 2;
-}
-
-.kv-item.full {
-  grid-column: 1 / -1;
-}
-
-.kv-item label {
-  color: #8c8c8c;
-  width: 100px;
-  flex-shrink: 0;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-.kv-item span {
-  color: #262626;
-  word-break: break-all;
-  font-weight: 400;
-  font-size: 14px;
+  flex-direction: column;
+  gap: 14px;
   min-width: 0;
 }
 
-.kv-item .mono {
-  font-family: 'DM Mono', monospace;
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.card-head__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
+}
+
+.muted {
+  color: #4E5969;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.order-desc :deep(.ant-descriptions-item-label) {
+  color: #86909C;
+  font-size: 13px;
+  width: 88px;
+}
+
+.order-desc :deep(.ant-descriptions-item-content) {
+  color: rgba(0, 0, 0, 0.85);
   font-size: 13px;
 }
 
-.kv-item .muted {
-  color: #262626;
+.person-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.85);
 }
 
-/* Status badge */
-.sb{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
-.sb::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.sb.done{background:#ebfbee;color:#2f9e44}
-.sb.done::before{background:#2f9e44}
+.person-chip__av {
+  font-size: 11px;
+  font-weight: 600;
+}
 
-/* Timeline */
-.tl{display:flex;flex-direction:column;padding:8px 0}
-.tl-row{display:flex;gap:12px}
-.tl-spine{display:flex;flex-direction:column;align-items:center;width:14px;flex-shrink:0}
-.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.tl-dot.done{background:#2f9e44}
-.tl-dot.on{background:#3b5bdb;box-shadow:0 0 0 3px #c5d0fa}
-.tl-dot.wait{background:#c8cdd9}
-.tl-dot.red{background:#c92a2a}
-.tl-vl{flex:1;width:1px;background:#e3e7ef;margin:3px 0;min-height:16px}
-.tl-row:last-child .tl-vl{display:none}
-.tl-body{padding-bottom:14px;flex:1}
-.tl-title{font-size:13px;font-weight:500;margin-bottom:2px}
-.tl-title.done{color:#5c6480}
-.tl-title.on{color:#1c2033}
-.tl-title.wait{color:#9aa0b8}
-.tl-time{font-size:11px;color:#9aa0b8;font-family:'DM Mono',monospace}
+.person-chip__av--blue {
+  background: #E8F3FF;
+  color: #165DFF;
+}
 
-/* Avatar chip */
-.av-chip{display:inline-flex;align-items:center;gap:5px}
-.av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600}
-.av.blue{background:#eef2ff;color:#3b5bdb}
-.av.green{background:#ebfbee;color:#2f9e44}
+.person-chip__av--green {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16A34A;
+}
 
-/* Scrollbar */
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#c8cdd9;border-radius:3px}
+.order-timeline {
+  padding-top: 4px;
+}
 
-/* 流程表单样式 */
+.tl-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.tl-title--done { color: #4E5969; }
+.tl-title--on { color: #165DFF; font-weight: 600; }
+.tl-title--wait { color: #C9CDD4; }
+
+.tl-time {
+  font-size: 11px;
+  color: #86909C;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  letter-spacing: -0.2px;
+}
+
+.workorder-chip {
+  border: 1px solid rgba(22, 163, 74, 0.30);
+  border-left: 3px solid #16A34A;
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(22, 163, 74, 0.06);
+}
+
+.workorder-chip__id {
+  margin-bottom: 6px;
+}
+
+.workorder-chip__id .cell-mono {
+  color: #16A34A;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.workorder-chip__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.workorder-chip__desc {
+  font-size: 12px;
+  color: #4E5969;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.workorder-chip__owner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #86909C;
+}
+
 .process-form {
-  padding: 12px 0;
+  padding-top: 4px;
 }
 
 .form-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .processed-detail-page__body {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

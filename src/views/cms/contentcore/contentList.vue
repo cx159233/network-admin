@@ -1,423 +1,220 @@
 <template>
-  <div class="cms-content-list">
-    <el-row :gutter="10" class="mb12">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          plain
-          @click="handleAdd"
-          >{{ $t("Common.Add") }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
-          type="danger"
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          v-hasPermi="[$p('Catalog:DeleteContent:{0}', [catalogId])]"
-          @click="handleDelete"
-          >{{ $t("Common.Delete") }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
-          type="primary"
-          icon="el-icon-timer"
-          size="mini"
-          :disabled="multiple"
-          v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
-          @click="handleToPublish"
-          >{{ $t("CMS.ContentCore.ToPublish") }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
-          type="success"
-          icon="el-icon-s-promotion"
-          size="mini"
-          :disabled="multiple"
-          v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
-          @click="handlePublish"
-          >{{ $t("CMS.ContentCore.Publish") }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          :disabled="multiple"
-          v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
-          @click="handleOffline"
-          >{{ $t("CMS.Content.Offline") }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
-          type="primary"
-          icon="el-icon-document-copy"
-          size="mini"
-          :disabled="multiple"
-          @click="handleCopy"
-          >{{ $t("Common.Copy") }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          plain
-          type="primary"
-          icon="el-icon-right"
-          size="mini"
-          :disabled="multiple"
-          @click="handleMove"
-          >{{ $t("Common.Move") }}
-        </el-button>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-form
-        :model="queryParams"
-        ref="queryForm"
-        size="small"
-        class="el-form-search"
-        style="text-align: left"
-        :inline="true"
-      >
-        <div class="mb12">
-          <el-form-item prop="title">
-            <el-input
-              v-model="queryParams.title"
-              :placeholder="$t('CMS.Content.Placeholder.Title')"
-              clearable
-              style="width: 200px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item prop="contentType">
-            <el-select
-              v-model="queryParams.contentType"
-              :placeholder="$t('CMS.Content.ContentType')"
-              clearable
-              style="width: 125px"
-            >
-              <el-option
-                v-for="ct in contentTypeOptions"
-                :key="ct.id"
-                :label="ct.name"
-                :value="ct.id"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="status">
-            <el-select
-              v-model="queryParams.status"
-              :placeholder="$t('CMS.Content.Status')"
-              clearable
-              style="width: 110px"
-            >
-              <el-option
-                v-for="dict in dict.type.CMSContentStatus"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.raw.dictValue"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-select
-              v-model="queryParams.sorts"
-              @change="loadContentList"
-              style="width: 140px"
-            >
-              <el-option
-                value=""
-                :label="$t('CMS.Content.SortOption.Default')"
-              ></el-option>
-              <el-option
-                value="createTime#ASC"
-                :label="$t('CMS.Content.SortOption.CreateTimeAsc')"
-              ></el-option>
-              <el-option
-                value="createTime#DESC"
-                :label="$t('CMS.Content.SortOption.CreateTimeDesc')"
-              ></el-option>
-              <el-option
-                value="publishDate#ASC"
-                :label="$t('CMS.Content.SortOption.PublishDateAsc')"
-              ></el-option>
-              <el-option
-                value="publishDate#DESC"
-                :label="$t('CMS.Content.SortOption.PublishDateDesc')"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button-group>
-              <el-button
-                type="primary"
-                icon="el-icon-search"
-                @click="handleQuery"
-                >{{ $t("Common.Search") }}</el-button
-              >
-              <el-button icon="el-icon-refresh" @click="resetQuery">{{
-                $t("Common.Reset")
-              }}</el-button>
-            </el-button-group>
-          </el-form-item>
-          <el-form-item>
-            <el-button icon="el-icon-plus" @click="showSearch = !showSearch">{{
-              $t("Common.More")
-            }}</el-button>
-          </el-form-item>
-        </div>
-        <div class="mb12" v-show="showSearch">
-          <el-form-item :label="$t('Common.CreateTime')">
-            <el-date-picker
-              v-model="dateRange"
-              style="width: 386px"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              type="datetimerange"
-              range-separator="-"
-              :start-placeholder="$t('Common.BeginDate')"
-              :end-placeholder="$t('Common.EndDate')"
-            ></el-date-picker>
-          </el-form-item>
-        </div>
-      </el-form>
-    </el-row>
-
-    <el-table
-      v-loading="loading"
-      ref="tableContentList"
-      size="small"
-      :data="contentList"
-      :height="tableHeight"
-      :max-height="tableMaxHeight"
-      @row-click="handleRowClick"
-      @cell-dblclick="handleEdit"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="50" align="center" />
-      <el-table-column
-        :label="$t('CMS.Content.Title')"
-        :show-overflow-tooltip="true"
-      >
-        <template slot-scope="scope">
-          <span
-            class="content_attr"
-            v-if="scope.row.topFlag > 0"
-            :title="$t('CMS.Content.SetTop')"
-            >[<svg-icon icon-class="top" />]</span
-          >
-          <span
-            v-for="dict in dict.type.CMSContentAttribute"
-            :key="dict.value"
-            :title="dict.label"
-          >
-            <span
-              class="content_attr"
-              v-if="scope.row.attributes.indexOf(dict.value) > -1"
-              >[<svg-icon :icon-class="dict.value" />]</span
-            >
-          </span>
-          {{ scope.row.title }}
-          <!-- <el-link type="primary" @click="handleEdit(scope.row)" :title="scope.row.title" class="link-type">
-            {{ scope.row.title }}
-          </el-link> -->
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('CMS.Content.ContentType')"
-        width="110"
-        align="center"
-        prop="contentType"
-        :formatter="contentTypeFormat"
-      />
-      <el-table-column
-        :label="$t('CMS.Content.Status')"
-        align="center"
-        width="110"
-      >
-        <template slot-scope="scope">
-          <dict-tag :options="statusColumn" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('Common.CreateTime')"
-        align="center"
-        prop="createTime"
-        width="160"
-      >
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('Common.Operation')"
-        align="center"
-        width="260"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="scope">
-          <!-- <span class="btn-cell-wrap">
-            <el-button
-              size="small"
-              type="text"
-              icon="el-icon-view"
-              @click="handlePreview(scope.row)"
-              >{{ $t("CMS.ContentCore.Preview") }}</el-button
-            >
-          </span> -->
-          <span class="btn-cell-wrap">
-            <el-button
-              size="small"
-              type="text"
-              icon="el-icon-s-promotion"
-              v-hasPermi="[
-                $p('Catalog:EditContent:{0}', [scope.row.catalogId]),
-              ]"
-              @click="handlePublish(scope.row)"
-              >{{ $t("CMS.ContentCore.Publish") }}</el-button
-            >
-          </span>
-          <span class="btn-cell-wrap">
-            <el-button
-              size="small"
-              type="text"
-              icon="el-icon-timer"
-              v-hasPermi="[
-                $p('Catalog:EditContent:{0}', [scope.row.catalogId]),
-              ]"
-              @click="handleToPublish(scope.row)"
-              >{{ $t("CMS.ContentCore.ToPublish") }}</el-button
-            >
-          </span>
-          <el-dropdown size="small">
-            <el-link
-              :underline="false"
-              class="row-more-btn"
-              icon="el-icon-more"
-            ></el-link>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item
-                icon="el-icon-edit"
-                @click.native="handleEdit(scope.row)"
-                v-hasPermi="[
-                  $p('Catalog:EditContent:{0}', [scope.row.catalogId]),
-                ]"
-                >{{ $t("Common.Edit") }}</el-dropdown-item
-              >
-              <el-dropdown-item
-                icon="el-icon-delete"
-                @click.native="handleDelete(scope.row)"
-                v-hasPermi="[
-                  $p('Catalog:DeleteContent:{0}', [scope.row.catalogId]),
-                ]"
-                >{{ $t("Common.Delete") }}</el-dropdown-item
-              >
-              <!-- <el-dropdown-item
-                icon="el-icon-sort"
-                @click.native="handleSort(scope.row)"
-                v-hasPermi="[
-                  $p('Catalog:EditContent:{0}', [scope.row.catalogId]),
-                ]"
-                >{{ $t("Common.Sort") }}</el-dropdown-item
-              > -->
-              <el-dropdown-item
-                v-show="scope.row.topFlag <= 0"
-                icon="el-icon-top"
-                @click.native="handleSetTop(scope.row)"
-                v-hasPermi="[
-                  $p('Catalog:EditContent:{0}', [scope.row.catalogId]),
-                ]"
-                >{{ $t("CMS.Content.SetTop") }}</el-dropdown-item
-              >
-              <el-dropdown-item
-                v-show="scope.row.topFlag > 0"
-                icon="el-icon-bottom"
-                @click.native="handleCancelTop(scope.row)"
-                v-hasPermi="[
-                  $p('Catalog:EditContent:{0}', [scope.row.catalogId]),
-                ]"
-                >{{ $t("CMS.Content.CancelTop") }}</el-dropdown-item
-              >
-              <el-dropdown-item
-                icon="el-icon-document-copy"
-                @click.native="handleCopy(scope.row)"
-                >{{ $t("Common.Copy") }}</el-dropdown-item
-              >
-              <el-dropdown-item
-                icon="el-icon-right"
-                @click.native="handleMove(scope.row)"
-                >{{ $t("Common.Move") }}</el-dropdown-item
-              >
-              <el-dropdown-item
-                icon="el-icon-download"
-                @click.native="handleOffline(scope.row)"
-                v-hasPermi="[
-                  $p('Catalog:EditContent:{0}', [scope.row.catalogId]),
-                ]"
-                >{{ $t("CMS.Content.Offline") }}</el-dropdown-item
-              >
-              <!-- <el-dropdown-item icon="el-icon-document" @click.native="handleArchive(scope.row)">{{ $t('CMS.Content.Archive') }}</el-dropdown-item> -->
-              <!-- <el-dropdown-item
-                icon="el-icon-search"
-                @click.native="handleCreateIndex(scope.row)"
-                >{{ $t("CMS.Content.GenIndex") }}</el-dropdown-item
-              > -->
-            </el-dropdown-menu>
-          </el-dropdown>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="loadContentList"
+  <div class="p-[20px]">
+    <PageHeader
+      :title="$t('CMS.Content.Tab.ContentList')"
+      description="管理平台内容，支持新增、编辑、发布、下线、复制和移动内容"
     />
 
+    <CloudCard class="content-list-page__table-card">
+      <FilterBar @search="handleQuery" @reset="resetQuery" :showActions="false">
+        <template #actions>
+          <a-button type="primary" @click="handleAdd">
+            <template #icon><PlusOutlined /></template>
+            {{ $t("Common.Add") }}
+          </a-button>
+          <a-button
+            danger
+            :disabled="multiple"
+            v-hasPermi="[$p('Catalog:DeleteContent:{0}', [catalogId])]"
+            @click="handleDelete"
+          >
+            <template #icon><DeleteOutlined /></template>
+            {{ $t("Common.Delete") }}
+          </a-button>
+          <a-button
+            type="primary"
+            :disabled="multiple"
+            v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
+            @click="handleToPublish"
+          >
+            <template #icon><ClockCircleOutlined /></template>
+            {{ $t("CMS.ContentCore.ToPublish") }}
+          </a-button>
+          <a-button
+            type="primary"
+            :disabled="multiple"
+            v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
+            @click="handlePublish"
+          >
+            <template #icon><SendOutlined /></template>
+            {{ $t("CMS.ContentCore.Publish") }}
+          </a-button>
+          <a-button
+            :disabled="multiple"
+            v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
+            @click="handleOffline"
+          >
+            <template #icon><DownloadOutlined /></template>
+            {{ $t("CMS.Content.Offline") }}
+          </a-button>
+          <a-button
+            type="primary"
+            :disabled="multiple"
+            @click="handleCopy"
+          >
+            <template #icon><CopyOutlined /></template>
+            {{ $t("Common.Copy") }}
+          </a-button>
+          <a-button
+            type="primary"
+            :disabled="multiple"
+            @click="handleMove"
+          >
+            <template #icon><ArrowRightOutlined /></template>
+            {{ $t("Common.Move") }}
+          </a-button>
+        </template>
+        <a-input
+          v-model:value="queryParams.title"
+          :placeholder="$t('CMS.Content.Placeholder.Title')"
+          allow-clear
+          style="width: 200px"
+          @pressEnter="handleQuery"
+        />
+        <a-select
+          v-model:value="queryParams.contentType"
+          :placeholder="$t('CMS.Content.ContentType')"
+          allow-clear
+          style="width: 125px"
+        >
+          <a-select-option
+            v-for="ct in contentTypeOptions"
+            :key="ct.id"
+            :value="ct.id"
+          >{{ ct.name }}</a-select-option>
+        </a-select>
+        <a-select
+          v-model:value="queryParams.status"
+          :placeholder="$t('CMS.Content.Status')"
+          allow-clear
+          style="width: 110px"
+        >
+          <a-select-option
+            v-for="dict in dict.type.CMSContentStatus"
+            :key="dict.value"
+            :value="dict.raw.dictValue"
+          >{{ dict.label }}</a-select-option>
+        </a-select>
+        <a-select
+          v-model:value="queryParams.sorts"
+          @change="loadContentList"
+          style="width: 140px"
+        >
+          <a-select-option value="">{{ $t("CMS.Content.SortOption.Default") }}</a-select-option>
+          <a-select-option value="createTime#ASC">{{ $t("CMS.Content.SortOption.CreateTimeAsc") }}</a-select-option>
+          <a-select-option value="createTime#DESC">{{ $t("CMS.Content.SortOption.CreateTimeDesc") }}</a-select-option>
+          <a-select-option value="publishDate#ASC">{{ $t("CMS.Content.SortOption.PublishDateAsc") }}</a-select-option>
+          <a-select-option value="publishDate#DESC">{{ $t("CMS.Content.SortOption.PublishDateDesc") }}</a-select-option>
+        </a-select>
+        <template #extra>
+          <a-button @click="showSearch = !showSearch">
+            <template #icon><PlusOutlined /></template>
+            {{ $t("Common.More") }}
+          </a-button>
+        </template>
+      </FilterBar>
+      <div v-show="showSearch" class="px-[16px] pb-[12px] flex items-center gap-[8px]">
+        <span class="text-[12px] text-text-tertiary">{{ $t('Common.CreateTime') }}</span>
+        <a-range-picker
+          v-model:value="dateRange"
+          style="width: 386px"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          show-time
+          :placeholder="[$t('Common.BeginDate'), $t('Common.EndDate')]"
+        />
+      </div>
+      <div class="content-list-page__divider"></div>
+      <div class="content-list-page__table-wrap">
+        <a-spin :spinning="loading">
+          <a-table
+            ref="tableContentList"
+            size="small"
+            :columns="columns"
+            :data-source="contentList"
+            :scroll="{ y: tableHeight }"
+            row-key="contentId"
+            :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
+            :pagination="false"
+            :customRow="customRow"
+          >
+            <template #bodyCell="{ column, record }">
+              <span v-if="column.dataIndex === 'title'" class="cell-primary">
+                <span class="content_attr" v-if="record.topFlag > 0" :title="$t('CMS.Content.SetTop')">[<svg-icon icon-class="top" />]</span>
+                <span v-for="dict in dict.type.CMSContentAttribute" :key="dict.value" :title="dict.label">
+                  <span class="content_attr" v-if="record.attributes.indexOf(dict.value) > -1">[<svg-icon :icon-class="dict.value" />]</span>
+                </span>
+                {{ record.title }}
+              </span>
+              <span v-else-if="column.dataIndex === 'contentType'" class="cell-default">{{ contentTypeFormat(record) }}</span>
+              <dict-tag v-else-if="column.dataIndex === 'status'" :options="statusColumn" :value="record.status" />
+              <span v-else-if="column.dataIndex === 'createTime'" class="cell-default">{{ parseTime(record.createTime) }}</span>
+              <template v-else-if="column.dataIndex === 'action'">
+                <a-space size="small">
+                <a-button type="link" size="small" class="!p-0" v-hasPermi="[$p('Catalog:EditContent:{0}', [record.catalogId])]" @click="handlePublish(record)">{{ $t("CMS.ContentCore.Publish") }}</a-button>
+                <a-divider type="vertical" class="!mx-[2px]" />
+                <a-button type="link" size="small" class="!p-0" v-hasPermi="[$p('Catalog:EditContent:{0}', [record.catalogId])]" @click="handleToPublish(record)">{{ $t("CMS.ContentCore.ToPublish") }}</a-button>
+                <a-divider type="vertical" class="!mx-[2px]" />
+                <a-dropdown :trigger="['click']">
+                  <span class="row-more-btn"><MoreOutlined /></span>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item key="edit" v-hasPermi="[$p('Catalog:EditContent:{0}', [record.catalogId])]" @click="handleEdit(record)"><EditOutlined /> {{ $t("Common.Edit") }}</a-menu-item>
+                      <a-menu-item key="delete" v-hasPermi="[$p('Catalog:DeleteContent:{0}', [record.catalogId])]" @click="handleDelete(record)"><DeleteOutlined /> {{ $t("Common.Delete") }}</a-menu-item>
+                      <a-menu-item v-show="record.topFlag <= 0" key="setTop" v-hasPermi="[$p('Catalog:EditContent:{0}', [record.catalogId])]" @click="handleSetTop(record)"><VerticalAlignTopOutlined /> {{ $t("CMS.Content.SetTop") }}</a-menu-item>
+                      <a-menu-item v-show="record.topFlag > 0" key="cancelTop" v-hasPermi="[$p('Catalog:EditContent:{0}', [record.catalogId])]" @click="handleCancelTop(record)"><VerticalAlignBottomOutlined /> {{ $t("CMS.Content.CancelTop") }}</a-menu-item>
+                      <a-menu-item key="copy" @click="handleCopy(record)"><CopyOutlined /> {{ $t("Common.Copy") }}</a-menu-item>
+                      <a-menu-item key="move" @click="handleMove(record)"><ArrowRightOutlined /> {{ $t("Common.Move") }}</a-menu-item>
+                      <a-menu-item key="offline" v-hasPermi="[$p('Catalog:EditContent:{0}', [record.catalogId])]" @click="handleOffline(record)"><DownloadOutlined /> {{ $t("CMS.Content.Offline") }}</a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </a-space>
+              </template>
+              <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+            </template>
+          </a-table>
+        </a-spin>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="loadContentList"
+        />
+      </div>
+    </CloudCard>
+
     <!-- 置顶时间设置弹窗 -->
-    <el-dialog
+    <a-modal
       :title="$t('CMS.Content.SetTop')"
       width="400px"
-      :visible.sync="topDialogVisible"
-      :close-on-click-modal="false"
-      append-to-body
+      v-model:open="topDialogVisible"
+      :mask-closable="false"
+      :footer="null"
     >
-      <el-form ref="top_form" label-width="100px" :model="topForm">
-        <el-form-item :label="$t('CMS.Content.TopEndTime')" prop="topEndTime">
-          <el-date-picker
-            v-model="topForm.topEndTime"
-            :picker-options="topEndTimePickerOptions"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            type="datetime"
-          >
-          </el-date-picker>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleTopDialogOk">{{
+      <a-form ref="top_form" :label-col="{ style: { width: '100px' } }" :model="topForm">
+        <a-form-item :label="$t('CMS.Content.TopEndTime')" name="topEndTime">
+          <a-date-picker
+            v-model:value="topForm.topEndTime"
+            :disabled-date="disabledTopEndTime"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            show-time
+          />
+        </a-form-item>
+      </a-form>
+      <div class="dialog-footer">
+        <a-button type="primary" @click="handleTopDialogOk">{{
           $t("Common.Confirm")
-        }}</el-button>
-        <el-button @click="topDialogVisible = false">{{
+        }}</a-button>
+        <a-button @click="topDialogVisible = false">{{
           $t("Common.Cancel")
-        }}</el-button>
+        }}</a-button>
       </div>
-    </el-dialog>
+    </a-modal>
     <!-- 进度条 -->
     <cms-progress
       :title="$t('CMS.ContentCore.PublishProgressTitle')"
-      :open.sync="openProgress"
+      v-model:open="openProgress"
       :taskId="taskId"
     ></cms-progress>
     <!-- 栏目选择组件 -->
@@ -438,6 +235,22 @@
   </div>
 </template>
 <script>
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  ClockCircleOutlined,
+  SendOutlined,
+  DownloadOutlined,
+  CopyOutlined,
+  ArrowRightOutlined,
+  SearchOutlined,
+  ReloadOutlined,
+  EditOutlined,
+  MoreOutlined,
+  VerticalAlignTopOutlined,
+  VerticalAlignBottomOutlined,
+} from "@ant-design/icons-vue";
+import { message, Modal } from "ant-design-vue";
 import { getUserPreference } from "@/api/system/user";
 import { getContentTypes } from "@/api/contentcore/catalog";
 import {
@@ -456,6 +269,9 @@ import {
   addContentAttribute,
   removeContentAttribute,
 } from "@/api/contentcore/content";
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import FilterBar from '@/components/cloud/FilterBar.vue'
 import CMSCatalogSelector from "@/views/cms/contentcore/catalogSelector";
 import CMSContentSort from "@/views/cms/contentcore/contentSortDialog";
 import CMSProgress from "@/views/components/Progress";
@@ -463,6 +279,22 @@ import CMSProgress from "@/views/components/Progress";
 export default {
   name: "CMSContentList",
   components: {
+    PageHeader,
+    CloudCard,
+    FilterBar,
+    PlusOutlined,
+    DeleteOutlined,
+    ClockCircleOutlined,
+    SendOutlined,
+    DownloadOutlined,
+    CopyOutlined,
+    ArrowRightOutlined,
+    SearchOutlined,
+    ReloadOutlined,
+    EditOutlined,
+    MoreOutlined,
+    VerticalAlignTopOutlined,
+    VerticalAlignBottomOutlined,
     "cms-catalog-selector": CMSCatalogSelector,
     "cms-content-sort": CMSContentSort,
     "cms-progress": CMSProgress,
@@ -488,6 +320,7 @@ export default {
       tableHeight: 600, // 表格高度
       tableMaxHeight: 600, // 表格最大高度
       selectedRows: [], // 表格选中行
+      selectedRowKeys: [],
       single: true,
       multiple: true,
       dateRange: [],
@@ -500,14 +333,16 @@ export default {
         catalogId: undefined,
         sorts: "",
       },
+      columns: [
+        { title: this.$t('CMS.Content.Title'), dataIndex: 'title', key: 'title', ellipsis: true },
+        { title: this.$t('CMS.Content.ContentType'), dataIndex: 'contentType', key: 'contentType', width: 110 },
+        { title: this.$t('CMS.Content.Status'), dataIndex: 'status', key: 'status', width: 110 },
+        { title: this.$t('Common.CreateTime'), dataIndex: 'createTime', key: 'createTime', width: 160 },
+        { title: this.$t('Common.Operation'), dataIndex: 'action', key: 'action', width: 260, fixed: 'right' },
+      ],
       topDialogVisible: false,
       topForm: {
         topEndTime: undefined,
-      },
-      topEndTimePickerOptions: {
-        disabledDate(time) {
-          return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e7就是不可以选择今天的
-        },
       },
       openProgress: false,
       taskId: "",
@@ -578,7 +413,7 @@ export default {
         this.loading = false;
       });
     },
-    contentTypeFormat(row, column) {
+    contentTypeFormat(row) {
       var hitValue = [];
       this.contentTypeOptions.forEach((ct) => {
         if (ct.id == "" + row.contentType) {
@@ -588,19 +423,30 @@ export default {
       });
       return hitValue;
     },
-    handleSelectionChange(selection) {
-      this.selectedRows = selection;
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
+    handleSelectionChange(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys;
+      this.selectedRows = selectedRows;
+      this.single = selectedRows.length != 1;
+      this.multiple = !selectedRows.length;
     },
-    handleRowClick(currentRow) {
-      this.toggleAllCheckedRows();
-      this.$refs.tableContentList.toggleRowSelection(currentRow);
+    customRow(record) {
+      return {
+        onClick: () => {
+          this.handleRowClick(record);
+        },
+        onDblclick: () => {
+          this.handleEdit(record);
+        },
+      };
+    },
+    handleRowClick(record) {
+      this.selectedRowKeys = [record.contentId];
+      this.selectedRows = [record];
+      this.single = false;
+      this.multiple = false;
     },
     toggleAllCheckedRows() {
-      this.selectedRows.forEach((row) => {
-        this.$refs.tableContentList.toggleRowSelection(row, false);
-      });
+      this.selectedRowKeys = [];
       this.selectedRows = [];
     },
     handleQuery() {
@@ -614,7 +460,7 @@ export default {
     },
     handleAdd() {
       if (!this.catalogId) {
-        this.$modal.msgError(this.$t("CMS.Content.SelectCatalogFirst"));
+        message.error(this.$t("CMS.Content.SelectCatalogFirst"));
         return;
       }
       this.addPopoverVisible = false;
@@ -650,44 +496,44 @@ export default {
       const contentIds = row.contentId
         ? [row.contentId]
         : this.selectedRows.map((row) => row.contentId);
-      this.$modal
-        .confirm("删除后门户网站不可见，是否确认删除？")
-        .then(function () {
-          return delContent(contentIds);
-        })
-        .then(() => {
-          this.loadContentList();
-          this.$modal.msgSuccess(this.$t("Common.DeleteSuccess"));
-        })
-        .catch(function () {});
+      Modal.confirm({
+        content: "删除后门户网站不可见，是否确认删除？",
+        onOk: () => {
+          return delContent(contentIds).then(() => {
+            this.loadContentList();
+            message.success(this.$t("Common.DeleteSuccess"));
+          });
+        },
+        onCancel: () => {},
+      });
     },
     handlePublish(row) {
       const contentIds = row.contentId
         ? [row.contentId]
         : this.selectedRows.map((row) => row.contentId);
       if (contentIds.length == 0) {
-        this.$modal.msgWarning(this.$t("CMS.Content.SelectRowFirst"));
+        message.warning(this.$t("CMS.Content.SelectRowFirst"));
         return;
       }
-      const _this = this;
-      this.$modal
-        .confirm("发布后将在门户网站上显示，是否确认发布？")
-        .then(function () {
-          _this.updateArticle(contentIds);
-        });
+      Modal.confirm({
+        content: "发布后将在门户网站上显示，是否确认发布？",
+        onOk: () => {
+          this.updateArticle(contentIds);
+        },
+      });
     },
     updateArticle(contentIds) {
       console.log(contentIds);
-      this.$modal.loading("Loading...");
+      const hide = message.loading("Loading...", 0);
       publishContent(contentIds)
         .then((response) => {
-          this.$modal.closeLoading();
-          this.$modal.msgSuccess(this.$t("CMS.ContentCore.PublishSuccess"));
+          hide();
+          message.success(this.$t("CMS.ContentCore.PublishSuccess"));
           this.loadContentList();
           this.$cache.local.set("publish_flag", "true");
         })
         .catch(() => {
-          this.$modal.closeLoading();
+          hide();
         });
     },
     handlePreview(row) {
@@ -697,7 +543,7 @@ export default {
       } else if (this.selectedRows.length > 0) {
         contentId = this.selectedRows[0].contentId;
       } else {
-        this.$modal.msgWarning(this.$t("CMS.Content.SelectRowFirst"));
+        message.warning(this.$t("CMS.Content.SelectRowFirst"));
         return;
       }
       let routeData = this.$router.resolve({
@@ -712,14 +558,19 @@ export default {
       this.tableHeight = height - 330;
       this.tableMaxHeight = this.tableHeight;
     },
+    disabledTopEndTime(current) {
+      if (!current) return false;
+      return current.valueOf() < Date.now() - 8.64e7;
+    },
     handleCreateIndex(row) {
       createIndexes(row.contentId).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
       });
     },
     handleCopy(row) {
       if (row.contentId) {
         this.selectedRows = [row];
+        this.selectedRowKeys = [row.contentId];
       }
       this.isCopy = true;
       this.openCatalogSelector = true;
@@ -731,7 +582,7 @@ export default {
         copyType: copyType,
       };
       copyContent(data).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.openCatalogSelector = false;
         if (this.catalogId && data.catalogIds.indexOf(this.catalogId) > -1) {
           this.loadContentList();
@@ -741,6 +592,7 @@ export default {
     handleMove(row) {
       if (row.contentId) {
         this.selectedRows = [row];
+        this.selectedRowKeys = [row.contentId];
       }
       this.isCopy = false;
       this.openCatalogSelector = true;
@@ -751,7 +603,7 @@ export default {
         catalogId: catalogs[0].id,
       };
       moveContent(data).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.openCatalogSelector = false;
         this.loadContentList();
       });
@@ -770,35 +622,34 @@ export default {
       if (row.contentId) {
         this.toggleAllCheckedRows();
         this.selectedRows.push(row);
+        this.selectedRowKeys = [row.contentId];
       }
       this.topDialogVisible = true;
     },
     handleTopDialogOk() {
       const contentIds = this.selectedRows.map((item) => item.contentId);
       if (contentIds.length == 0) {
-        this.$modal.msgWarning(this.$t("CMS.Content.SelectRowFirst"));
+        message.warning(this.$t("CMS.Content.SelectRowFirst"));
         return;
       }
-      this.$refs["top_form"].validate((valid) => {
-        if (valid) {
-          setTopContent({
-            contentIds: contentIds,
-            topEndTime: this.topForm.topEndTime,
-          }).then((response) => {
-            this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
-            this.topDialogVisible = false;
-            this.topForm.topEndTime = undefined;
-            this.loadContentList();
-          });
-        }
-      });
+      this.$refs["top_form"].validate().then(() => {
+        setTopContent({
+          contentIds: contentIds,
+          topEndTime: this.topForm.topEndTime,
+        }).then((response) => {
+          message.success(this.$t("Common.OpSuccess"));
+          this.topDialogVisible = false;
+          this.topForm.topEndTime = undefined;
+          this.loadContentList();
+        });
+      }).catch(() => {});
     },
     handleCancelTop(row) {
       const contentIds = row.contentId
         ? [row.contentId]
         : this.selectedRows.map((item) => item.contentId);
       cancelTopContent(contentIds).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.loadContentList();
       });
     },
@@ -806,6 +657,7 @@ export default {
       if (row.contentId) {
         this.toggleAllCheckedRows();
         this.selectedRows.push(row);
+        this.selectedRowKeys = [row.contentId];
       }
       this.openContentSortDialog = true;
     },
@@ -823,47 +675,47 @@ export default {
         targetContentId: targetContentId,
       };
       sortContent(data).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.openContentSortDialog = false;
         this.loadContentList();
       });
     },
     handleOffline(row) {
-      const _this = this;
-      this.$modal
-        .confirm("下线后将在门户网站上隐藏，是否确认下线？")
-        .then(function () {
+      Modal.confirm({
+        content: "下线后将在门户网站上隐藏，是否确认下线？",
+        onOk: () => {
           const contentIds = row.contentId
             ? [row.contentId]
-            : _this.selectedRows.map((item) => item.contentId);
+            : this.selectedRows.map((item) => item.contentId);
           offlineContent(contentIds).then((response) => {
-            _this.$modal.msgSuccess(_this.$t("Common.OpSuccess"));
-            _this.loadContentList();
+            message.success(this.$t("Common.OpSuccess"));
+            this.loadContentList();
           });
-        });
+        },
+      });
     },
     handleToPublish(row) {
-      const _this = this;
-      this.$modal
-        .confirm("待发布后将在门户网站上隐藏，是否确认待发布？")
-        .then(function () {
+      Modal.confirm({
+        content: "待发布后将在门户网站上隐藏，是否确认待发布？",
+        onOk: () => {
           const contentIds = row.contentId
             ? [row.contentId]
-            : _this.selectedRows.map((item) => item.contentId);
+            : this.selectedRows.map((item) => item.contentId);
           toPublishContent(contentIds).then((response) => {
-            _this.$modal.msgSuccess(
-              _this.$t("CMS.ContentCore.ToPublishSuccess")
+            message.success(
+              this.$t("CMS.ContentCore.ToPublishSuccess")
             );
-            _this.loadContentList();
+            this.loadContentList();
           });
-        });
+        },
+      });
     },
     handleArchive(row) {
       const contentIds = row.contentId
         ? [row.contentId]
         : this.selectedRows.map((item) => item.contentId);
       archiveContent(contentIds).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.loadContentList();
       });
     },
@@ -873,7 +725,7 @@ export default {
         : this.selectedRows.map((item) => item.contentId);
       addContentAttribute({ contentIds: contentIds, attr: "recommend" }).then(
         (response) => {
-          this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+          message.success(this.$t("Common.OpSuccess"));
           this.loadContentList();
         }
       );
@@ -886,7 +738,7 @@ export default {
         contentIds: contentIds,
         attr: "recommend",
       }).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.loadContentList();
       });
     },
@@ -896,7 +748,7 @@ export default {
         : this.selectedRows.map((item) => item.contentId);
       addContentAttribute({ contentIds: contentIds, attr: "hot" }).then(
         (response) => {
-          this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+          message.success(this.$t("Common.OpSuccess"));
           this.loadContentList();
         }
       );
@@ -907,7 +759,7 @@ export default {
         : this.selectedRows.map((item) => item.contentId);
       removeContentAttribute({ contentIds: contentIds, attr: "hot" }).then(
         (response) => {
-          this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+          message.success(this.$t("Common.OpSuccess"));
           this.loadContentList();
         }
       );
@@ -916,27 +768,42 @@ export default {
 };
 </script>
 <style scoped>
-.cms-content-list .head-container .el-select .el-input {
-  width: 110px;
+.content-list-page {
+  padding: 4px 0;
 }
-.cms-content-list .el-divider {
-  margin-top: 10px;
+
+.content-list-page__divider {
+  height: 1px;
+  background: #F2F3F5;
+  margin: 0 16px;
 }
-.cms-content-list .el-tabs__header {
-  margin-bottom: 10px;
+
+.content-list-page__table-wrap {
+  padding: 0 16px 16px 16px;
 }
-.cms-content-list .pagination-container {
-  height: 30px;
-}
-.cms-content-list .row-more-btn {
+
+.row-more-btn {
   padding-left: 10px;
+  cursor: pointer;
 }
-.cms-content-list .top-icon {
-  font-weight: bold;
-  font-size: 12px;
-  color: green;
-}
-.cms-content-list .content_attr {
+
+.content_attr {
   margin-left: 2px;
+}
+
+.cell-default {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+}
+
+.cell-primary {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dialog-footer {
+  text-align: right;
+  padding-top: 12px;
 }
 </style>

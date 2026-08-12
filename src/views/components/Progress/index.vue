@@ -1,33 +1,26 @@
 <template>
-    <div class="app-container-progress">
-      <el-dialog :title="title"
-                 :visible.sync="visible"
-                 width="500px"
-                 :close-on-click-modal="false"
-                 append-to-body
-                 center>
-      <div class="percent_info">{{progressMessage}}</div>
-      <div class="err_messages" v-if="this.hasErrMessages()" v-html="formatErrMsg"></div>
-      <el-progress :text-inside="true" :stroke-width="15" :percentage="percent" :status="progressStatus"></el-progress>
-    </el-dialog>
-  </div>
+  <a-modal
+    :open="visible"
+    :title="title"
+    :width="500"
+    :mask-closable="false"
+    :centered="true"
+    :footer="null"
+    @cancel="handleCancel"
+  >
+    <div class="percent_info">{{ progressMessage }}</div>
+    <div class="err_messages" v-if="hasErrMessages()" v-html="formatErrMsg"></div>
+    <a-progress
+      :percent="percent"
+      :status="progressStatus"
+      :stroke-width="15"
+    />
+  </a-modal>
 </template>
-<style scoped>
-.percent_info {
-  padding: 10px 5px;
-  width: 450px;
-  line-height: 20px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.err_messages {
-  max-height: 100px;
-  overflow-y: scroll;
-}
-</style>
+
 <script>
 import { getTaskInfo } from "@/api/system/async";
+import { message } from 'ant-design-vue'
 
 export default {
   name: "AsyncTaskProgress",
@@ -58,11 +51,12 @@ export default {
       required: false
     }
   },
+  emits: ['update:open', 'close'],
   watch: {
-    open (newVal) {
+    open(newVal) {
       this.visible = newVal;
     },
-    visible (newVal) {
+    visible(newVal) {
       if (!newVal) {
         this.handleClose();
       } else {
@@ -75,25 +69,25 @@ export default {
       return this.hasErrMessages() ? this.errMessages.join("<br/>") : "";
     }
   },
-  data () {
+  data() {
     return {
       visible: this.open,
       progressMessage: this.$t('Component.Progress.TaskIsRunning'),
       errMessages: "",
       percent: 0,
-      progressStatus: null,
+      progressStatus: 'active',
       timer: undefined,
       resultStatus: undefined,
     };
   },
   methods: {
-    startInterval () {
+    startInterval() {
       if (this.taskId != "") {
         this.getProgressInfo();
         this.timer = setInterval(this.getProgressInfo, this.interval);
       }
     },
-    getProgressInfo () {
+    getProgressInfo() {
       if (!this.taskId || this.taskId == '') {
         return;
       }
@@ -104,7 +98,7 @@ export default {
         if (response.data.status == 'SUCCESS' || response.data.status == 'INTERRUPTED') {
           clearInterval(this.timer);
           const successMsg = response.data.progressMessage ? response.data.progressMessage : this.title + this.$t('Component.Progress.Completed');
-          this.$modal.msgSuccess(successMsg);
+          message.success(successMsg);
           this.progressStatus = "success";
           this.errMessages = response.data.errMessages;
           if (this.autoClose && !this.hasErrMessages()) {
@@ -113,18 +107,16 @@ export default {
         } else if (response.data.status == 'FAILED') {
           clearInterval(this.timer);
           this.percent = 100;
-          this.progressStatus = "exception"
+          this.progressStatus = "exception";
           this.errMessages = response.data.errMessages;
         } else {
-
         }
       });
     },
     hasErrMessages() {
       return this.errMessages && this.errMessages != null && this.errMessages.length > 0;
     },
-    // 取消按钮
-    handleClose () {
+    handleClose() {
       if (!this.visible) {
         clearInterval(this.timer);
         this.$emit('update:open', false);
@@ -132,13 +124,31 @@ export default {
         this.percent = 0;
         this.progressMessage = "";
         this.errMessages = [];
-        this.progressStatus = undefined;
+        this.progressStatus = 'active';
         this.resultStatus = undefined;
       }
+    },
+    handleCancel() {
+      this.visible = false;
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearInterval(this.timer);
   }
 };
 </script>
+
+<style scoped>
+.percent_info {
+  padding: 10px 5px;
+  width: 450px;
+  line-height: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.err_messages {
+  max-height: 100px;
+  overflow-y: scroll;
+}
+</style>

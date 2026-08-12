@@ -1,155 +1,122 @@
 <template>
-  <div class="app-container detail-new-v1">
-    <!-- 顶部标题区域 -->
-      <div class="detail-header">
-        <el-button size="small" @click="goBack" class="back-btn">
-          <i class="el-icon-arrow-left"></i> 返回列表
-        </el-button>
-        <div class="header-title">
-          <el-tag size="small" :type="getTagType" effect="dark" class="status-tag">
-            {{ ticketStatus === '已完成' ? 'FINISHED' : 'CLOSED' }}
-          </el-tag>
-          <span class="title-text">{{ ticket.code }} {{ ticket.title }}</span>
-        </div>
+  <div class="workorder-detail-page">
+    <PageHeader
+      :title="`我已审批详情 · ${ticket.code}`"
+      description="查看已审批工单的详细信息、处理结果与处理记录"
+    >
+      <template #actions>
+        <a-button @click="goBack">
+          <template #icon><ArrowLeftOutlined /></template>
+          返回列表
+        </a-button>
+      </template>
+    </PageHeader>
+
+    <div class="workorder-detail-page__body">
+      <div class="workorder-detail-page__main">
+        <CloudCard class="workorder-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">基本信息</span>
+            <StatusDot :type="getStatusKey(ticket.status)" :text="ticket.status" />
+          </div>
+          <a-descriptions :column="2" size="small" class="ticket-desc">
+            <a-descriptions-item label="工单编号">
+              <span class="cell-mono">{{ ticket.code }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="工单类型">{{ ticket.type }}</a-descriptions-item>
+            <a-descriptions-item label="申请人">{{ ticket.applicant }}</a-descriptions-item>
+            <a-descriptions-item label="所属部门">{{ ticket.department }}</a-descriptions-item>
+            <a-descriptions-item label="联系方式">
+              <span class="cell-mono">{{ ticket.contact }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="处理人">{{ ticket.handler }}</a-descriptions-item>
+            <a-descriptions-item label="申请时间">
+              <span class="cell-mono">{{ ticket.createTime }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="完成时间">
+              <span class="cell-mono">{{ ticket.finishTime }}</span>
+            </a-descriptions-item>
+          </a-descriptions>
+        </CloudCard>
+
+        <CloudCard class="workorder-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">工单描述</span>
+          </div>
+          <div class="ticket-description">{{ ticket.description }}</div>
+        </CloudCard>
+
+        <CloudCard class="workorder-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">处理结果</span>
+          </div>
+          <div class="result-list">
+            <div class="result-row">
+              <span class="result-label">处理结果</span>
+              <span :class="['result-pill', `result-pill--${processResult.type}`]">{{ processResult.text }}</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">处理意见</span>
+              <span class="result-value">{{ processResult.comment }}</span>
+            </div>
+            <div v-if="ticket.status === '已完成'" class="result-row result-row--rating">
+              <span class="result-label">满意度评价</span>
+              <div class="satisfaction-block">
+                <a-rate v-model:value="satisfaction.score" disabled />
+                <span class="satisfaction-comment">{{ satisfaction.comment }}</span>
+              </div>
+            </div>
+          </div>
+        </CloudCard>
       </div>
 
-    <!-- 工单详情内容 -->
-      <div class="detail-content">
-        <!-- 左侧基本信息 -->
-        <div class="detail-left">
-          <el-card shadow="never" class="mb-4">
-            <template #header>
-              <div class="card-header">
-                <span>基本信息</span>
-              </div>
-            </template>
-            <div class="info-grid">
-              <div class="info-item">
-                <span class="info-label">工单类型：</span>
-                <span class="info-value">{{ ticket.type }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">申请时间：</span>
-                <span class="info-value">{{ ticket.createTime }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">完成时间：</span>
-                <span class="info-value">{{ ticket.finishTime }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">申请人：</span>
-                <span class="info-value">{{ ticket.applicant }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">所属部门：</span>
-                <span class="info-value">{{ ticket.department }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">联系方式：</span>
-                <span class="info-value">{{ ticket.contact }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">工单状态：</span>
-                <span class="info-value">{{ ticket.status }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">处理人：</span>
-                <span class="info-value">{{ ticket.handler }}</span>
-              </div>
-            </div>
-          </el-card>
+      <div class="workorder-detail-page__side">
+        <CloudCard class="workorder-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">处理状态</span>
+          </div>
+          <a-timeline class="process-timeline">
+            <a-timeline-item
+              v-for="(step, idx) in processSteps"
+              :key="idx"
+              :color="getStepColor(step.status)"
+            >
+              <div :class="['tl-title', `tl-title--${step.status}`]">{{ step.title }}</div>
+              <div class="tl-time">{{ step.time || '待处理' }}</div>
+              <div class="tl-handler">处理人：{{ step.handler || '--' }}</div>
+            </a-timeline-item>
+          </a-timeline>
+        </CloudCard>
 
-          <!-- 工单描述 -->
-          <el-card shadow="never" class="description-card">
-            <template #header>
-              <div class="card-header">
-                <span>工单描述</span>
-              </div>
-            </template>
-            <div class="ticket-description">
-              {{ ticket.description }}
+        <CloudCard class="workorder-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">处理记录</span>
+          </div>
+          <div class="record-list">
+            <div v-for="(record, idx) in processRecords" :key="idx" class="record-item">
+              <div class="record-time">{{ record.time }}</div>
+              <div class="record-content">{{ record.content }}</div>
+              <div class="record-handler">- {{ record.handler }}</div>
             </div>
-          </el-card>
-
-          <!-- 处理结果 -->
-          <el-card shadow="never" class="result-card">
-            <template #header>
-              <div class="card-header">
-                <span>处理结果</span>
-              </div>
-            </template>
-            <div class="result-content">
-              <div class="result-item">
-                <span class="result-label">处理结果：</span>
-                <el-tag :type="processResult.type" size="small">{{ processResult.text }}</el-tag>
-              </div>
-              <div class="result-item">
-                <span class="result-label">处理意见：</span>
-                <span class="result-value">{{ processResult.comment }}</span>
-              </div>
-              <div class="result-item" v-if="ticket.status === '已完成'">
-                <span class="result-label">满意度评价：</span>
-                <div class="satisfaction-rating">
-                  <el-rate v-model="satisfaction.score" disabled show-score text-color="#ff9900" />
-                  <span class="satisfaction-comment">{{ satisfaction.comment }}</span>
-                </div>
-              </div>
-            </div>
-          </el-card>
-        </div>
-
-        <!-- 右侧处理状态 -->
-        <div class="detail-right">
-          <el-card shadow="never" class="mb-4">
-            <template #header>
-              <div class="card-header">
-                <span>处理状态</span>
-              </div>
-            </template>
-            <div class="process-steps">
-              <div
-                v-for="(step, index) in processSteps"
-                :key="index"
-                class="process-step"
-                :class="{ 'completed': step.status === 'completed' }"
-              >
-                <div class="step-icon">{{ index + 1 }}</div>
-                <div class="step-content">
-                  <div class="step-title">{{ step.title }}</div>
-                  <div class="step-time">{{ step.time }}</div>
-                  <div class="step-handler">{{ step.handler }}</div>
-                </div>
-              </div>
-            </div>
-          </el-card>
-
-          <!-- 处理记录 -->
-          <el-card shadow="never">
-            <template #header>
-              <div class="card-header">
-                <span>处理记录</span>
-              </div>
-            </template>
-            <div class="process-records">
-              <div
-                v-for="(record, index) in processRecords"
-                :key="index"
-                class="process-record"
-              >
-                <div class="record-time">{{ record.time }}</div>
-                <div class="record-content">{{ record.content }}</div>
-                <div class="record-handler">{{ record.handler }}</div>
-              </div>
-            </div>
-          </el-card>
-        </div>
-      </div>    </div>
+          </div>
+        </CloudCard>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { ArrowLeftOutlined } from '@ant-design/icons-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+
 export default {
   name: 'MyApprovedDetail',
+  components: {
+    PageHeader, CloudCard, StatusDot,
+    ArrowLeftOutlined
+  },
   data() {
     return {
       ticket: {
@@ -176,459 +143,243 @@ export default {
         comment: '处理速度很快，服务态度很好！'
       },
       processSteps: [
-        {
-          title: '提交申请',
-          time: '2026-04-01 14:20:00',
-          handler: '王五',
-          status: 'completed'
-        },
-        {
-          title: '部门审批',
-          time: '2026-04-01 15:00:00',
-          handler: '李四',
-          status: 'completed'
-        },
-        {
-          title: '权限配置',
-          time: '2026-04-01 16:00:00',
-          handler: '当前用户',
-          status: 'completed'
-        },
-        {
-          title: '服务交付',
-          time: '2026-04-01 16:30:00',
-          handler: '当前用户',
-          status: 'completed'
-        }
+        { title: '提交申请', time: '2026-04-01 14:20:00', handler: '王五', status: 'completed' },
+        { title: '部门审批', time: '2026-04-01 15:00:00', handler: '李四', status: 'completed' },
+        { title: '权限配置', time: '2026-04-01 16:00:00', handler: '当前用户', status: 'completed' },
+        { title: '服务交付', time: '2026-04-01 16:30:00', handler: '当前用户', status: 'completed' }
       ],
       processRecords: [
-        {
-          time: '2026-04-01 14:20:00',
-          content: '王五提交了系统权限申请工单',
-          handler: '王五'
-        },
-        {
-          time: '2026-04-01 15:00:00',
-          content: '李四审批通过了工单',
-          handler: '李四'
-        },
-        {
-          time: '2026-04-01 16:00:00',
-          content: '当前用户完成了权限配置',
-          handler: '当前用户'
-        },
-        {
-          time: '2026-04-01 16:30:00',
-          content: '工单已完成，申请人已确认',
-          handler: '当前用户'
-        }
+        { time: '2026-04-01 14:20:00', content: '王五提交了系统权限申请工单', handler: '王五' },
+        { time: '2026-04-01 15:00:00', content: '李四审批通过了工单', handler: '李四' },
+        { time: '2026-04-01 16:00:00', content: '当前用户完成了权限配置', handler: '当前用户' },
+        { time: '2026-04-01 16:30:00', content: '工单已完成，申请人已确认', handler: '当前用户' }
       ]
-    };
-  },
-  computed: {
-    getTagType() {
-      return this.ticket.status === '已完成' ? 'info' : 'danger';
-    },
-    ticketStatus() {
-      return this.ticket.status;
     }
   },
   created() {
-    // 从路由参数中获取工单ID
-    const ticketId = this.$route.query.workorderId;
+    const ticketId = this.$route.query.workorderId
     if (ticketId) {
-      this.loadTicketDetail(ticketId);
+      this.loadTicketDetail(ticketId)
     }
   },
   methods: {
-    loadTicketDetail(ticketId) {
-      // 模拟API请求
-      setTimeout(() => {
-        // 这里可以根据ticketId获取真实的工单详情
-        // 现在使用模拟数据
-      }, 500);
+    loadTicketDetail() {
+      setTimeout(() => {}, 300)
     },
     goBack() {
-      this.$router.go(-1);
+      this.$router.go(-1)
+    },
+    getStepColor(status) {
+      const map = {
+        completed: 'green',
+        processing: 'blue',
+        pending: 'gray'
+      }
+      return map[status] || 'gray'
+    },
+    getStatusKey(status) {
+      const map = {
+        '待处理': 'processing',
+        '处理中': 'processing',
+        '已完成': 'done',
+        '已关闭': 'cancelled'
+      }
+      return map[status] || 'default'
     }
   }
-};
+}
 </script>
 
 <style scoped>
-.detail-new-v1 {
+.workorder-detail-page {
+  padding: 4px 0;
+}
+
+.workorder-detail-page__body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.workorder-detail-page__main,
+.workorder-detail-page__side {
   display: flex;
   flex-direction: column;
-  padding: 0 !important;
-  margin: -20px;
+  gap: 14px;
+  min-width: 0;
 }
 
-
-
-.detail-header {
+.card-head {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 12px 24px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  margin: 0;
-  border-radius: 0;
-  height: auto;
-  flex-shrink: 0;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.back-btn {
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 500;
-}
-
-.back-btn:hover {
-  background-color: #ecf5ff;
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-}
-
-.status-tag {
-  margin-right: 12px;
-  font-weight: 500;
-  padding: 0 10px;
-  height: 24px;
-  line-height: 22px;
-}
-
-.title-text {
+.card-head__title {
+  font-size: 15px;
   font-weight: 600;
-  font-size: 18px;
-  color: #303133;
+  color: rgba(0, 0,0, 0.85);
 }
 
-.detail-content {
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
+}
+
+.ticket-desc :deep(.ant-descriptions-item-label) {
+  color: #86909C;
+  font-size: 13px;
+  width: 88px;
+}
+
+.ticket-desc :deep(.ant-descriptions-item-content) {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 13px;
+}
+
+.ticket-description {
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.85);
+  white-space: pre-wrap;
+  padding: 12px 14px;
+  background: #F7F8FA;
+  border-radius: 6px;
+}
+
+.result-list {
   display: flex;
-  gap: 24px;
-  padding: 20px 24px 24px;
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f2f4f8;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.detail-left {
+.result-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 10px 12px;
+  background: #F7F8FA;
+  border-radius: 6px;
+}
+
+.result-row--rating {
+  align-items: center;
+}
+
+.result-label {
+  color: #86909C;
+  font-size: 13px;
+  width: 80px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.result-value {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 13px;
+  flex: 1;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.result-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.result-pill--success { background: rgba(22, 163, 74, 0.10); color: #16A34A; }
+.result-pill--danger { background: rgba(239, 68, 68, 0.10); color: #EF4444; }
+.result-pill--warning { background: rgba(245, 158, 11, 0.10); color: #F59E0B; }
+
+.satisfaction-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   flex: 1;
   min-width: 0;
 }
 
-
-
-.result-card {
-  margin-top: 24px;
-}
-
-.result-content {
-  padding: 8px 0;
-}
-
-.result-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  padding: 8px 12px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-}
-
-.result-item:last-child {
-  margin-bottom: 0;
-}
-
-.result-label {
-  color: #606266;
-  font-size: 13px;
-  width: 100px;
-  flex-shrink: 0;
-  font-weight: 500;
-}
-
-.result-value {
-  color: #303133;
-  font-size: 13px;
-  flex: 1;
-  line-height: 1.5;
-}
-
-.satisfaction-rating {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .satisfaction-comment {
-  font-size: 13px;
-  color: #606266;
+  font-size: 12px;
+  color: #86909C;
   font-style: italic;
 }
 
-.detail-right {
-  width: 340px;
-  flex-shrink: 0;
+.process-timeline {
+  padding-top: 4px;
 }
 
-.detail-right .mb-4 {
-  margin-bottom: 16px !important;
-}
-
-.detail-left .mb-4 {
-  margin-bottom: 16px !important;
-}
-
-.description-card {
-  margin-bottom: 16px;
-}
-
-.process-action-card {
-  margin-bottom: 16px;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-  color: #409eff;
-  font-size: 15px;
-  padding: 4px 0;
-}
-
-.card-header::before {
-  content: '';
-  width: 4px;
-  height: 16px;
-  background-color: #409eff;
-  margin-right: 8px;
-  border-radius: 2px;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px 40px;
-  padding: 8px 0;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-.info-item:hover {
-  background-color: #ecf5ff;
-}
-
-.info-label {
-  color: #606266;
+.tl-title {
   font-size: 13px;
-  width: 90px;
-  flex-shrink: 0;
   font-weight: 500;
+  margin-bottom: 2px;
 }
 
-.info-value {
-  color: #303133;
-  font-size: 13px;
-  flex: 1;
-  font-weight: 400;
+.tl-title--completed { color: #4E5969; }
+.tl-title--processing { color: #165DFF; font-weight: 600; }
+.tl-title--pending { color: #C9CDD4; }
+
+.tl-time {
+  font-size: 11px;
+  color: #86909C;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  letter-spacing: -0.2px;
+  margin-bottom: 2px;
 }
 
-.ticket-description {
-  font-size: 14px;
-  line-height: 1.8;
-  color: #303133;
-  white-space: pre-wrap;
-  padding: 12px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-  min-height: 80px;
+.tl-handler {
+  font-size: 11px;
+  color: #86909C;
 }
 
-.process-steps {
-  margin-top: 8px;
-  padding: 0 8px;
-}
-
-.process-step {
+.record-list {
   display: flex;
-  margin-bottom: 20px;
-  position: relative;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.process-step::before {
-  content: '';
-  position: absolute;
-  left: 11px;
-  top: 24px;
-  bottom: -20px;
-  width: 2px;
-  background-color: #e4e7ed;
-  z-index: 0;
-}
-
-.process-step:last-child::before {
-  display: none;
-}
-
-.process-step.completed::before {
-  background-color: #67c23a;
-}
-
-.step-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: #e4e7ed;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  margin-right: 14px;
-  flex-shrink: 0;
-  z-index: 1;
-  font-weight: 600;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.process-step.completed .step-icon {
-  background-color: #67c23a;
-}
-
-.step-content {
-  flex: 1;
-  z-index: 1;
-  padding-top: 2px;
-}
-
-.step-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #303133;
-  margin-bottom: 6px;
-}
-
-.step-time {
-  font-size: 12px;
-  color: #909399;
-  margin-bottom: 4px;
-}
-
-.step-handler {
-  font-size: 12px;
-  color: #606266;
-  font-weight: 500;
-}
-
-/* 处理记录样式 */
-.process-records {
-  margin-top: 8px;
-  padding: 0 8px;
-}
-
-.process-record {
-  margin-bottom: 16px;
-  padding: 12px 16px;
-  background-color: #f5f7fa;
+.record-item {
+  padding: 10px 12px;
+  background: #F7F8FA;
   border-radius: 6px;
-  border-left: 3px solid #409eff;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.process-record:hover {
-  transform: translateX(4px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.process-record:last-child {
-  margin-bottom: 0;
+  border-left: 3px solid #165DFF;
 }
 
 .record-time {
-  font-size: 12px;
-  color: #909399;
-  margin-bottom: 6px;
+  font-size: 11px;
+  color: #86909C;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  letter-spacing: -0.2px;
+  margin-bottom: 4px;
 }
 
 .record-content {
   font-size: 13px;
-  color: #303133;
-  margin-bottom: 8px;
+  color: rgba(0, 0, 0, 0.85);
   line-height: 1.5;
+  margin-bottom: 4px;
 }
 
 .record-handler {
-  font-size: 12px;
-  color: #606266;
+  font-size: 11px;
+  color: #86909C;
   text-align: right;
-  font-weight: 500;
 }
 
-@media (max-width: 992px) {
-  .detail-content {
-  display: flex;
-  gap: 24px;
-  padding: 0 24px 24px;
-  flex: 1;
-  overflow-y: auto;
-}
-
-  .detail-right {
-  width: 340px;
-  flex-shrink: 0;
-}
-
-.detail-right .mb-4 {
-  margin-bottom: 16px !important;
-}
-
-.detail-left .mb-4 {
-  margin-bottom: 16px !important;
-}
-
-.description-card {
-  margin-bottom: 16px;
-}
-
-.process-action-card {
-  margin-bottom: 16px;
-}
-
-  .info-grid {
+@media (max-width: 1100px) {
+  .workorder-detail-page__body {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .detail-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .header-title {
-    margin-left: 0;
-    flex-wrap: wrap;
-  }
-
-  .title-text {
-    font-size: 16px;
   }
 }
 </style>

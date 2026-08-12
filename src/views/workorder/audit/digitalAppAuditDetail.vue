@@ -1,115 +1,197 @@
 <template>
-  <div class="detail-container">
-    <div class="detail-header-wrap">
-      <el-button size="small" @click="goBack" class="back-btn">
-        <i class="el-icon-arrow-left"></i> 返回列表
-      </el-button>
-    </div>
+  <div class="app-audit-detail-page">
+    <PageHeader
+      :title="`数字应用审核 · ${appInfo.appName}`"
+      description="查看应用申请详情、资质材料及审核记录，并通过或驳回本次申请"
+    >
+      <template #actions>
+        <a-button @click="goBack">
+          <template #icon><ArrowLeftOutlined /></template>
+          返回列表
+        </a-button>
+      </template>
+    </PageHeader>
 
-    <div class="detail-content-wrap">
-      <div class="detail-left">
-        <!-- 应用基本信息 -->
-        <el-card shadow="hover" class="mb-4">
-          <div slot="header" class="clearfix">
-            <span>应用基本信息</span>
-            <span class="sb pending" style="float: right">待审核</span>
+    <div class="app-audit-detail-page__body">
+      <div class="app-audit-detail-page__main">
+        <CloudCard class="app-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">应用基本信息</span>
           </div>
+          <a-descriptions :column="2" size="small" class="info-desc">
+            <a-descriptions-item label="应用名称">{{ appInfo.appName }}</a-descriptions-item>
+            <a-descriptions-item label="系统地址">
+              <span class="cell-mono">{{ appInfo.systemUrl }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="提交时间">
+              <span class="cell-mono">{{ appInfo.submitTime }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="应用架构">{{ appInfo.appArchitecture }}</a-descriptions-item>
+            <a-descriptions-item label="面向对象" :span="2">{{ appInfo.targetObjectStr }}</a-descriptions-item>
+            <a-descriptions-item label="部署云服务商" :span="2">{{ appInfo.cloudProviderStr }}</a-descriptions-item>
+            <a-descriptions-item label="应用覆盖范围" :span="2">{{ appInfo.appScope }}</a-descriptions-item>
+            <a-descriptions-item label="应用描述" :span="2">
+              <span class="muted">{{ appInfo.description }}</span>
+            </a-descriptions-item>
+          </a-descriptions>
+        </CloudCard>
 
-          <div class="detail-section">
-            <div class="detail-section-title">应用信息</div>
-            <div class="detail-kv">
-              <div class="kv-item"><label>应用名称</label><span>{{ appInfo.appName }}</span></div>
-              <div class="kv-item"><label>系统地址</label><span>{{ appInfo.systemUrl }}</span></div>
-              <div class="kv-item"><label>应用LOGO</label><span><img v-if="appInfo.logo" :src="appInfo.logo" class="logo-thumb" /><template v-else>未上传</template></span></div>
-              <div class="kv-item"><label>提交时间</label><span>{{ appInfo.submitTime }}</span></div>
-              <div class="kv-item full"><label>应用描述</label><span>{{ appInfo.description }}</span></div>
-            </div>
+        <CloudCard class="app-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">服务商信息</span>
           </div>
+          <a-descriptions :column="2" size="small" class="info-desc">
+            <a-descriptions-item label="服务商名称">{{ appInfo.serviceProvider }}</a-descriptions-item>
+            <a-descriptions-item label="合作伙伴">{{ appInfo.cooperativeEnterprise || '--' }}</a-descriptions-item>
+            <a-descriptions-item label="联系人1">{{ appInfo.contact1Name }}</a-descriptions-item>
+            <a-descriptions-item label="联系电话1">
+              <span class="cell-mono">{{ appInfo.contact1Phone }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="联系人2">{{ appInfo.contact2Name || '--' }}</a-descriptions-item>
+            <a-descriptions-item label="联系电话2">
+              <span class="cell-mono">{{ appInfo.contact2Phone || '--' }}</span>
+            </a-descriptions-item>
+          </a-descriptions>
+        </CloudCard>
 
-          <div class="detail-section">
-            <div class="detail-section-title">服务商信息</div>
-            <div class="detail-kv">
-              <div class="kv-item"><label>服务商名称</label><span>{{ appInfo.serviceProvider }}</span></div>
-              <div class="kv-item"><label>合作伙伴</label><span>{{ appInfo.cooperativeEnterprise }}</span></div>
-              <div class="kv-item"><label>联系人1</label><span>{{ appInfo.contact1Name }}</span></div>
-              <div class="kv-item"><label>联系电话1</label><span>{{ appInfo.contact1Phone }}</span></div>
-              <div class="kv-item"><label>联系人2</label><span>{{ appInfo.contact2Name || '--' }}</span></div>
-              <div class="kv-item"><label>联系电话2</label><span>{{ appInfo.contact2Phone || '--' }}</span></div>
-            </div>
+        <CloudCard class="app-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">资质材料</span>
           </div>
+          <a-list :data-source="appInfo.materials" class="material-list">
+            <template #renderItem="{ item }">
+              <a-list-item>
+                <a-list-item-meta>
+                  <template #avatar>
+                    <div class="material-icon"><FileOutlined /></div>
+                  </template>
+                  <template #title>
+                    <span class="material-name">{{ item.name }}</span>
+                  </template>
+                  <template #description>
+                    <span class="material-size">{{ item.size }}</span>
+                  </template>
+                </a-list-item-meta>
+                <template #actions>
+                  <a-button type="link" size="small" @click="downloadMaterial(item)">
+                    <template #icon><DownloadOutlined /></template>
+                    下载
+                  </a-button>
+                </template>
+              </a-list-item>
+            </template>
+          </a-list>
+        </CloudCard>
 
-          <div class="detail-section">
-            <div class="detail-section-title">分类标签</div>
-            <div class="detail-kv">
-              <div class="kv-item"><label>面向对象</label><span>{{ appInfo.targetObjectStr }}</span></div>
-              <div class="kv-item"><label>应用架构</label><span>{{ appInfo.appArchitecture }}</span></div>
-              <div class="kv-item"><label>部署云服务商</label><span>{{ appInfo.cloudProviderStr }}</span></div>
-              <div class="kv-item"><label>应用覆盖范围</label><span>{{ appInfo.appScope }}</span></div>
-            </div>
+        <CloudCard class="app-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">审核记录</span>
           </div>
-
-          <!-- 附件材料 - 暂时注释
-          <div class="detail-section">
-            <div class="detail-section-title">附件材料</div>
-            <div class="detail-kv">
-              <div class="kv-item full">
-                <a v-for="(m, i) in appInfo.materials" :key="i" class="file-link" href="javascript:void(0)" @click="downloadMaterial(m)">{{ m.name }}</a>
+          <a-table
+            :columns="auditColumns"
+            :data-source="auditRecords"
+            :pagination="false"
+            row-key="id"
+            size="middle"
+            :expand-icon-column-index="0"
+            @expand="onExpand"
+          >
+            <template #expandedRowRender="{ record }">
+              <div v-if="getRecordPipeline(record.id).length > 0" class="audit-pipeline">
+                <div
+                  v-for="(step, si) in getRecordPipeline(record.id)"
+                  :key="si"
+                  class="pipeline-step"
+                  :class="'pipeline-step--' + step.statusKey"
+                >
+                  <div class="pipeline-step__dot" :class="'pipeline-step__dot--' + step.statusKey">
+                    <CheckOutlined v-if="step.statusKey === 'done'" />
+                    <CloseOutlined v-else-if="step.statusKey === 'rejected'" />
+                    <span v-else>{{ si + 1 }}</span>
+                  </div>
+                  <div class="pipeline-step__label">{{ step.title }}</div>
+                  <div class="pipeline-step__tag" :class="'pipeline-step__tag--' + step.statusKey">{{ step.statusText }}</div>
+                  <div v-if="si < 3" class="pipeline-step__connector" :class="'pipeline-step__connector--' + step.statusKey"></div>
+                </div>
               </div>
+              <a-empty v-else description="暂无审核流水" :image-style="{ height: '40px' }" />
+            </template>
+            <template #bodyCell="{ column, record }">
+              <StatusDot v-if="column.dataIndex === 'status'" :type="getAuditStatusKey(record.status)" :text="getAuditStatusText(record.status)" />
+              <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+            </template>
+          </a-table>
+        </CloudCard>
+      </div>
+
+      <div class="app-audit-detail-page__side">
+        <CloudCard class="app-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">审核操作</span>
+          </div>
+          <a-textarea
+            v-model:value="auditForm.opinion"
+            :rows="5"
+            :maxlength="200"
+            show-count
+            placeholder="填写审核意见（通过/驳回时必填）"
+            class="audit-textarea"
+          />
+          <div class="action-list">
+            <a-button block type="primary" @click="approve">
+              <template #icon><CheckOutlined /></template>
+              审核通过
+            </a-button>
+            <a-button block danger @click="reject">
+              <template #icon><CloseOutlined /></template>
+              驳回申请
+            </a-button>
+          </div>
+        </CloudCard>
+
+        <CloudCard class="app-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">联系信息</span>
+          </div>
+          <div class="contact-list">
+            <div class="contact-item">
+              <span class="contact-label">服务商</span>
+              <span class="contact-value">{{ appInfo.serviceProvider }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">联系人</span>
+              <span class="contact-value">{{ appInfo.contact1Name }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">电话</span>
+              <span class="contact-value cell-mono">{{ appInfo.contact1Phone }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">系统地址</span>
+              <span class="contact-value cell-mono">{{ appInfo.systemUrl }}</span>
             </div>
           </div>
-          -->
-        </el-card>
-
-        <!-- 审核记录 -->
-        <el-card shadow="hover">
-          <div slot="header" class="clearfix">
-            <span>审核记录</span>
-          </div>
-          <el-table :data="auditRecords" size="small" class="audit-table" :header-cell-style="{background:'#f5f7fa'}">
-            <el-table-column prop="submitTime" label="提交时间" width="150" />
-            <el-table-column prop="status" label="审核状态" width="100">
-              <template slot-scope="scope">
-                <el-tag :type="getAuditStatusType(scope.row.status)" size="mini" effect="dark">{{ getAuditStatusText(scope.row.status) }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="auditor" label="审核人" width="110" />
-            <el-table-column prop="auditTime" label="审核时间" width="150" />
-            <el-table-column prop="opinion" label="审核意见" min-width="200" show-overflow-tooltip />
-          </el-table>
-        </el-card>
-      </div>
-
-      <div class="detail-right">
-        <!-- 审核操作 -->
-        <el-card shadow="hover">
-          <div slot="header" class="clearfix">
-            <span>审核操作</span>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 8px">
-            <textarea
-              v-model="auditForm.opinion"
-              class="rf-textarea"
-              style="min-height: 72px; margin-bottom: 0"
-              placeholder="填写审核意见（通过/驳回时必填）..."
-            ></textarea>
-            <button class="btn btn-success" style="width: 100%; justify-content: center" @click="approve">
-              ✓ 审核通过
-            </button>
-            <button class="btn btn-danger" style="width: 100%; justify-content: center" @click="reject">
-              ✕ 驳回申请
-            </button>
-          </div>
-        </el-card>
-
+        </CloudCard>
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
+import {
+  ArrowLeftOutlined, CheckOutlined, CloseOutlined, DownloadOutlined, FileOutlined
+} from '@ant-design/icons-vue'
+import { Modal, message } from 'ant-design-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+
 export default {
-  name: "DigitalAppAuditDetail",
+  name: 'DigitalAppAuditDetail',
+  components: {
+    PageHeader, CloudCard, StatusDot,
+    ArrowLeftOutlined, CheckOutlined, CloseOutlined, DownloadOutlined, FileOutlined
+  },
   data() {
     return {
       appInfo: {
@@ -142,341 +224,357 @@ export default {
         { id: 3, submitTime: '2024-02-15 11:00', status: 'approved', auditor: '平台管理员', auditTime: '2024-02-16 10:30', opinion: '材料已补齐，审核通过。' },
         { id: 4, submitTime: '2024-03-01 14:00', status: 'pending', auditor: '', auditTime: '', opinion: '' }
       ],
-      auditForm: { opinion: '' }
-    };
+      auditForm: { opinion: '' },
+      expandedRowKeys: [],
+      auditSteps: [
+        { key: 1, title: '申报材料评估' },
+        { key: 2, title: '应用技术测评' },
+        { key: 3, title: '现场演示答辩' },
+        { key: 4, title: '服务目录发布' }
+      ],
+      auditPipelineData: {
+        1: { currentStep: 4, auditStatus: 20, steps: { 1: { status: 'approved' }, 2: { status: 'approved' }, 3: { status: 'approved' }, 4: { status: 'approved' } } },
+        2: { currentStep: 3, auditStatus: 30, steps: { 1: { status: 'approved' }, 2: { status: 'approved' }, 3: { status: 'rejected' }, 4: { status: 'pending' } } },
+        3: { currentStep: 4, auditStatus: 20, steps: { 1: { status: 'approved' }, 2: { status: 'approved' }, 3: { status: 'approved' }, 4: { status: 'approved' } } },
+        4: { currentStep: 1, auditStatus: 10, steps: { 1: { status: 'processing' }, 2: { status: 'pending' }, 3: { status: 'pending' }, 4: { status: 'pending' } } }
+      },
+      auditColumns: [
+        { title: '提交时间', dataIndex: 'submitTime', key: 'submitTime', width: 150 },
+        { title: '审核状态', dataIndex: 'status', key: 'status', width: 100 },
+        { title: '审核人', dataIndex: 'auditor', key: 'auditor', width: 110 },
+        { title: '审核时间', dataIndex: 'auditTime', key: 'auditTime', width: 150 },
+        { title: '审核意见', dataIndex: 'opinion', key: 'opinion', ellipsis: true }
+      ]
+    }
   },
   created() {
-    const appId = this.$route.query.id;
+    const appId = this.$route.query.id
     if (appId) {
-      this.loadAppDetail(appId);
+      this.loadAppDetail(appId)
     }
   },
   methods: {
-    loadAppDetail(appId) {},
+    loadAppDetail() {},
     goBack() {
-      this.$router.push('/portal/auditCenter/digitalAppAudit');
+      this.$router.push('/portal/auditCenter/digitalAppAudit')
     },
     approve() {
       if (!this.auditForm.opinion.trim()) {
-        this.$message.error('请填写审核意见');
-        return;
+        message.warning('请填写审核意见')
+        return
       }
-      this.$confirm('确定要通过该应用的审核吗？', '确认通过', {
-        confirmButtonText: '确定', cancelButtonText: '取消', type: 'success'
-      }).then(() => {
-        this.$message.success('审核通过，应用已激活');
-        this.goBack();
-      }).catch(() => {});
+      Modal.confirm({
+        title: '确认通过',
+        content: '确定要通过该应用的审核吗？',
+        okText: '确定',
+        cancelText: '取消',
+        okType: 'primary',
+        onOk: () => {
+          message.success('审核通过，应用已激活')
+          this.goBack()
+        }
+      })
     },
     reject() {
       if (!this.auditForm.opinion.trim()) {
-        this.$message.error('请填写驳回原因');
-        return;
+        message.warning('请填写驳回原因')
+        return
       }
-      this.$confirm('确定要拒绝该应用的审核吗？', '确认拒绝', {
-        confirmButtonText: '确定', cancelButtonText: '取消', type: 'error'
-      }).then(() => {
-        this.$message.success('审核已拒绝');
-        this.goBack();
-      }).catch(() => {});
-    },
-    sendNotice() {
-      this.$message.success('补充材料通知已发送');
+      Modal.confirm({
+        title: '确认驳回',
+        content: '确定要拒绝该应用的审核吗？',
+        okText: '确定',
+        cancelText: '取消',
+        okType: 'danger',
+        onOk: () => {
+          message.success('审核已拒绝')
+          this.goBack()
+        }
+      })
     },
     downloadMaterial(material) {
-      this.$message.success('下载附件：' + material.name);
+      message.success('下载附件：' + material.name)
     },
-    getAuditStatusType(status) {
-      const map = { approved: 'success', rejected: 'danger', pending: 'warning' };
-      return map[status] || 'info';
+    getAuditStatusKey(status) {
+      const map = { approved: 'done', rejected: 'rejected', pending: 'processing' }
+      return map[status] || 'default'
     },
     getAuditStatusText(status) {
-      const map = { approved: '已通过', rejected: '已驳回', pending: '待审核' };
-      return map[status] || '未知';
+      const map = { approved: '已通过', rejected: '已驳回', pending: '待审核' }
+      return map[status] || '未知'
+    },
+    // 审核流水：根据审核记录ID返回4阶段流水数据
+    getRecordPipeline(recordId) {
+      const pdata = this.auditPipelineData[recordId]
+      if (!pdata) return []
+      return this.auditSteps.map((step, idx) => {
+        const s = (pdata.steps && pdata.steps[step.key]) || { status: 'pending' }
+        const statusMap = {
+          approved: { statusKey: 'done', statusText: '已通过' },
+          rejected: { statusKey: 'rejected', statusText: '已驳回' },
+          processing: { statusKey: 'active', statusText: '审核中' },
+          pending: { statusKey: 'pending', statusText: '待审核' }
+        }
+        const mapped = statusMap[s.status] || statusMap.pending
+        return {
+          title: step.title,
+          statusKey: mapped.statusKey,
+          statusText: mapped.statusText
+        }
+      })
+    },
+    onExpand(expanded, record) {
+      if (expanded) {
+        this.expandedRowKeys.push(record.id)
+      } else {
+        this.expandedRowKeys = this.expandedRowKeys.filter(k => k !== record.id)
+      }
     }
   }
-};
+}
 </script>
 
 <style scoped>
-.detail-container {
+.app-audit-detail-page {
+  padding: 4px 0;
+}
+
+.app-audit-detail-page__body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.app-audit-detail-page__main,
+.app-audit-detail-page__side {
   display: flex;
   flex-direction: column;
-  padding: 0 !important;
-  margin: -20px;
-  min-height: calc(100vh - 50px);
-  background-color: #f2f4f8;
-}
-
-.detail-header-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  margin: 0;
-  border-radius: 0;
-  height: auto;
-  flex-shrink: 0;
-}
-
-.back-btn {
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 500;
-}
-
-.back-btn:hover {
-  background-color: #ecf5ff;
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.detail-content-wrap {
-  display: flex;
   gap: 14px;
-  padding: 20px 20px 24px;
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f2f4f8;
-}
-
-.detail-left {
-  flex: 1;
   min-width: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
-.detail-right {
-  width: 272px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.card-header {
+.card-head {
   display: flex;
   align-items: center;
-  font-weight: 600;
-  color: #303133;
-  font-size: 14px;
-}
-
-.logo-thumb {
-  height: 22px;
-  border-radius: 3px;
-  vertical-align: middle;
-}
-
-/* 分组 */
-.detail-section {
-  margin-bottom: 20px;
-}
-
-.detail-section:last-child {
-  margin-bottom: 0;
-}
-
-.detail-section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #303133;
+  justify-content: space-between;
   margin-bottom: 14px;
 }
 
-/* 键值对网格 */
-.detail-kv {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 6px 40px;
+.card-head__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
 }
 
-.kv-item {
-  display: flex;
-  align-items: baseline;
+.cell-default {
+  color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
-  line-height: 2;
 }
 
-.kv-item.full {
-  grid-column: 1 / -1;
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
 }
 
-.kv-item label {
-  color: #8c8c8c;
+.muted {
+  color: #86909C;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.info-desc :deep(.ant-descriptions-item-label) {
+  color: #86909C;
+  font-size: 13px;
   width: 100px;
-  flex-shrink: 0;
-  font-weight: 400;
-  white-space: nowrap;
 }
 
-.kv-item span {
-  color: #262626;
+.info-desc :deep(.ant-descriptions-item-content) {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 13px;
+}
+
+.material-list :deep(.ant-list-item) {
+  padding: 10px 0;
+}
+
+.material-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #E8F3FF;
+  color: #165DFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.material-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.material-size {
+  font-size: 11px;
+  color: #86909C;
+}
+
+.audit-textarea {
+  margin-bottom: 12px;
+}
+
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.contact-label {
+  color: #86909C;
+  font-size: 12px;
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.contact-value {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 13px;
+  flex: 1;
   word-break: break-all;
-  font-weight: 400;
   min-width: 0;
 }
 
-.kv-item .mono {
-  font-family: 'DM Mono', monospace;
-  font-size: 13px;
+@media (max-width: 1100px) {
+  .app-audit-detail-page__body {
+    grid-template-columns: 1fr;
+  }
 }
 
-.file-link {
-  display: inline-block;
-  margin: 2px 16px 2px 0;
-  font-size: 13px;
-  color: #3b5bdb;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
+/* ===== 审核流水（展开行） ===== */
+.audit-pipeline {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 16px 16px;
+  gap: 0;
 }
 
-.file-link:hover {
-  color: #2f3ea5;
-}
-
-/* 按钮 */
-.btn {
-  display: inline-flex;
+.pipeline-step {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  transition: all 0.12s;
-  font-family: 'DM Sans', sans-serif;
-  white-space: nowrap;
+  position: relative;
+  flex: 1;
+  min-width: 0;
 }
 
-.btn-success {
-  background: #ebfbee;
-  color: #2f9e44;
-  border: 1px solid #b2f2bb;
-}
-
-.btn-success:hover { background: #b2f2bb; }
-
-.btn-danger {
-  background: #fff5f5;
-  color: #c92a2a;
-  border: 1px solid #ffc9c9;
-}
-
-.btn-danger:hover { background: #ffc9c9; }
-
-.btn-ghost {
-  background: transparent;
-  color: #5c6480;
-  border: 1px solid #c8cdd9;
-}
-
-.btn-ghost:hover {
-  background: #f7f8fa;
-  color: #1c2033;
-}
-
-/* 状态标签 */
-.sb {
-  display: inline-flex;
+.pipeline-step__dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: 20px;
+  justify-content: center;
   font-size: 11px;
   font-weight: 600;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.pipeline-step__dot--pending {
+  color: #86909C;
+  background: #FFFFFF;
+  border: 1.5px solid #C9CDD4;
+}
+
+.pipeline-step__dot--active {
+  color: #FFFFFF;
+  background: #165DFF;
+  border-color: #165DFF;
+  box-shadow: 0 2px 6px rgba(22, 93, 255, 0.35);
+}
+
+.pipeline-step__dot--done {
+  color: #FFFFFF;
+  background: #16A34A;
+  border-color: #16A34A;
+}
+
+.pipeline-step__dot--rejected {
+  color: #FFFFFF;
+  background: #EF4444;
+  border-color: #EF4444;
+}
+
+.pipeline-step__label {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-top: 6px;
+  text-align: center;
   white-space: nowrap;
 }
 
-.sb::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.pipeline-step--active .pipeline-step__label {
+  color: #165DFF;
+  font-weight: 600;
 }
 
-.sb.pending { background: #fff9db; color: #e67700; }
-.sb.pending::before { background: #e67700; }
-.sb.approved { background: #ebfbee; color: #2f9e44; }
-.sb.approved::before { background: #2f9e44; }
-
-/* 时间线 */
-.tl { display: flex; flex-direction: column; padding: 8px 0; }
-.tl-row { display: flex; gap: 12px; }
-.tl-spine { display: flex; flex-direction: column; align-items: center; width: 14px; flex-shrink: 0; }
-.tl-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-.tl-dot.done { background: #2f9e44; }
-.tl-dot.on { background: #3b5bdb; box-shadow: 0 0 0 3px #c5d0fa; }
-.tl-dot.wait { background: #c8cdd9; }
-.tl-dot.red { background: #c92a2a; }
-.tl-vl { flex: 1; width: 1px; background: #e3e7ef; margin: 3px 0; min-height: 16px; }
-.tl-row:last-child .tl-vl { display: none; }
-.tl-body { padding-bottom: 14px; flex: 1; }
-.tl-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
-.tl-title.done { color: #5c6480; }
-.tl-title.on { color: #1c2033; }
-.tl-title.wait { color: #9aa0b8; }
-.tl-title.red { color: #c92a2a; }
-.tl-time { font-size: 11px; color: #9aa0b8; font-family: 'DM Mono', monospace; }
-
-/* 文本框 */
-.rf-textarea {
-  width: 100%;
-  background: #fff;
-  border: 1px solid #e3e7ef;
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: #1c2033;
-  font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  outline: none;
-  resize: vertical;
-  min-height: 80px;
-  line-height: 1.6;
-  transition: border-color 0.12s;
+.pipeline-step__tag {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 3px;
+  margin-top: 4px;
 }
 
-.rf-textarea:focus { border-color: #3b5bdb; }
-
-/* 审核记录表格 */
-.audit-table {
-  min-height: auto !important;
+.pipeline-step__tag--pending {
+  background: #F2F3F5;
+  color: #86909C;
 }
 
-.audit-table :deep(.el-table) {
-  --el-table-row-height: 32px !important;
+.pipeline-step__tag--active {
+  background: #E8F3FF;
+  color: #165DFF;
 }
 
-.audit-table :deep(.el-table__row) {
-  height: 32px !important;
-  line-height: 32px !important;
+.pipeline-step__tag--done {
+  background: #E9F9EF;
+  color: #16A34A;
 }
 
-.audit-table :deep(.el-table__header-wrapper) {
-  padding: 0 !important;
-  margin: 0 !important;
+.pipeline-step__tag--rejected {
+  background: #FFEDEC;
+  color: #EF4444;
 }
 
-.audit-table :deep(.el-table__body-wrapper) {
-  padding: 0 !important;
-  margin: 0 !important;
+.pipeline-step__connector {
+  position: absolute;
+  top: 12px;
+  left: calc(50% + 16px);
+  width: calc(100% - 32px);
+  height: 2px;
+  background: #E5E6EB;
+  z-index: 0;
 }
 
-.audit-table :deep(.el-table td),
-.audit-table :deep(.el-table th) {
-  padding: 6px 12px !important;
+.pipeline-step__connector--done {
+  background: #16A34A;
 }
-
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #c8cdd9; border-radius: 3px; }
 </style>

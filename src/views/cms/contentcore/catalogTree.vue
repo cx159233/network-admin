@@ -1,153 +1,143 @@
 <template>
   <div class="catalog-tree">
     <div class="head-container">
-      <el-dropdown
+      <a-dropdown
         v-if="showNewBtn"
-        placement="bottom-start"
+        placement="bottomLeft"
         style="margin-top: 2px"
       >
-        <el-button type="text" @click="handleAdd" icon="el-icon-plus">
-          {{ $t("CMS.Catalog.AddCatalog")
-          }}<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="handleAdd">{{
-            $t("CMS.Catalog.AddCatalog")
-          }}</el-dropdown-item>
-          <el-dropdown-item @click.native="handleBatchAdd">{{
-            $t("CMS.Catalog.BatchAddCatalog")
-          }}</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-input
+        <a-button type="link" @click="handleAdd">
+          <template #icon><PlusOutlined /></template>
+          {{ $t("CMS.Catalog.AddCatalog") }}
+          <DownOutlined />
+        </a-button>
+        <template #overlay>
+          <a-menu>
+            <a-menu-item @click="handleAdd">{{
+              $t("CMS.Catalog.AddCatalog")
+            }}</a-menu-item>
+            <a-menu-item @click="handleBatchAdd">{{
+              $t("CMS.Catalog.BatchAddCatalog")
+            }}</a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
+      <a-input
         :placeholder="$t('CMS.Catalog.CatalogNamePlaceholder')"
-        v-model="filterCatalogName"
-        clearable
+        v-model:value="filterCatalogName"
+        allow-clear
         size="small"
-        suffix-icon="el-icon-search"
       >
-      </el-input>
+        <template #suffix><SearchOutlined /></template>
+      </a-input>
     </div>
     <div class="tree-container">
-      <el-button
+      <a-button
         :loading="loading"
         :title="siteName"
-        type="text"
+        type="link"
         class="tree-header"
-        icon="el-icon-s-home"
         @click="handleTreeRootClick"
-        >{{ siteName }}</el-button
       >
-      <el-tree
-        :data="catalogOptions"
-        :props="defaultProps"
-        :expand-on-click-node="false"
-        :default-expanded-keys="treeExpandedKeys"
-        :filter-node-method="filterNode"
-        :accordion="expandMode == 'accordion'"
-        node-key="id"
-        ref="tree"
-        highlight-current
-        @node-click="handleNodeClick"
+        <template #icon><HomeOutlined /></template>
+        {{ siteName }}
+      </a-button>
+      <a-tree
+        :tree-data="filteredCatalogOptions"
+        :field-names="{ children: 'children', title: 'label', key: 'id' }"
+        :expanded-keys="expandedKeys"
+        :selected-keys="selectedKeys"
+        :show-line="false"
+        @select="handleNodeSelect"
+        @expand="handleExpand"
       >
-        <span class="tree-node" slot-scope="{ node, data }">
-          <span class="node-text" :title="node.label">{{ node.label }}</span>
-          <span class="node-tool">
-            <el-dropdown size="small" type="primary">
-              <el-link
-                :underline="false"
-                class="row-more-btn"
-                icon="el-icon-more"
-              ></el-link>
-              <el-dropdown-menu slot="dropdown">
-                <!-- <el-dropdown-item @click.native="handlePreview(data)"><svg-icon icon-class="eye-open" class="mr5"></svg-icon>{{ $t('CMS.ContentCore.Preview') }}</el-dropdown-item> -->
-                <el-dropdown-item
-                  icon="el-icon-s-promotion"
-                  @click.native="handlePublish(data)"
-                  v-hasPermi="[$p('Catalog:Publish:{0}', [data.catalogId])]"
-                  >{{ $t("CMS.ContentCore.Publish") }}</el-dropdown-item
-                >
-                <el-dropdown-item
-                  icon="el-icon-sort-up"
-                  @click.native="handleSortUp(data)"
-                  v-hasPermi="[$p('Catalog:Sort:{0}', [data.catalogId])]"
-                  >{{ $t("CMS.Catalog.SortUp") }}</el-dropdown-item
-                >
-                <el-dropdown-item
-                  icon="el-icon-sort-down"
-                  @click.native="handleSortDown(data)"
-                  v-hasPermi="[$p('Catalog:Sort:{0}', [data.catalogId])]"
-                  >{{ $t("CMS.Catalog.SortDown") }}</el-dropdown-item
-                >
-              </el-dropdown-menu>
-            </el-dropdown>
+        <template #title="nodeData">
+          <span class="tree-node">
+            <span class="node-text" :title="nodeData.label">{{ nodeData.label }}</span>
+            <span class="node-tool">
+              <a-dropdown :trigger="['hover']" placement="bottomRight">
+                <a-button type="link" class="row-more-btn" size="small">
+                  <MoreOutlined />
+                </a-button>
+                <template #overlay>
+                  <a-menu>
+                    <a-menu-item
+                      v-hasPermi="[$p('Catalog:Publish:{0}', [nodeData.catalogId])]"
+                      @click="handlePublish(nodeData)"
+                    >
+                      <SendOutlined /> {{ $t("CMS.ContentCore.Publish") }}
+                    </a-menu-item>
+                    <a-menu-item
+                      v-hasPermi="[$p('Catalog:Sort:{0}', [nodeData.catalogId])]"
+                      @click="handleSortUp(nodeData)"
+                    >
+                      <SortAscendingOutlined /> {{ $t("CMS.Catalog.SortUp") }}
+                    </a-menu-item>
+                    <a-menu-item
+                      v-hasPermi="[$p('Catalog:Sort:{0}', [nodeData.catalogId])]"
+                      @click="handleSortDown(nodeData)"
+                    >
+                      <SortDescendingOutlined /> {{ $t("CMS.Catalog.SortDown") }}
+                    </a-menu-item>
+                  </a-menu>
+                </template>
+              </a-dropdown>
+            </span>
           </span>
-        </span>
-      </el-tree>
+        </template>
+      </a-tree>
     </div>
     <!-- 添加栏目对话框 -->
-    <el-dialog
+    <a-modal
       :title="$t('CMS.Catalog.AddCatalog')"
-      :visible.sync="diagOpen"
-      :close-on-click-modal="false"
+      v-model:open="diagOpen"
+      :mask-closable="false"
       width="600px"
-      append-to-body
     >
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-form-item :label="$t('CMS.Catalog.ParentCatalog')" prop="parentId">
+      <a-form ref="form" :model="form" :rules="rules" :label-col="{ style: { width: '120px' } }">
+        <a-form-item :label="$t('CMS.Catalog.ParentCatalog')" name="parentId">
           <treeselect v-model="form.parentId" :options="catalogOptions" />
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.Name')" prop="name">
-          <el-input v-model="form.name" @blur="handleNameBlur" />
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.Alias')" prop="alias">
-          <el-input v-model="form.alias" />
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.Path')" prop="path">
-          <el-input v-model="form.path" />
-        </el-form-item>
-        <!-- <el-form-item :label="$t('CMS.Catalog.CatalogType')" prop="catalogType">
-          <el-select v-model="form.catalogType">
-            <el-option
-              v-for="ct in catalogTypeOptions"
-              :key="ct.id"
-              :label="ct.name"
-              :value="ct.id"
-            />
-          </el-select>
-        </el-form-item> -->
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleAddSave">{{
-          $t("Common.Confirm")
-        }}</el-button>
-        <el-button @click="cancel">{{ $t("Common.Cancel") }}</el-button>
-      </div>
-    </el-dialog>
+        </a-form-item>
+        <a-form-item :label="$t('CMS.Catalog.Name')" name="name">
+          <a-input v-model:value="form.name" @blur="handleNameBlur" />
+        </a-form-item>
+        <a-form-item :label="$t('CMS.Catalog.Alias')" name="alias">
+          <a-input v-model:value="form.alias" />
+        </a-form-item>
+        <a-form-item :label="$t('CMS.Catalog.Path')" name="path">
+          <a-input v-model:value="form.path" />
+        </a-form-item>
+      </a-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <a-button type="primary" @click="handleAddSave">{{
+            $t("Common.Confirm")
+          }}</a-button>
+          <a-button @click="cancel">{{ $t("Common.Cancel") }}</a-button>
+        </div>
+      </template>
+    </a-modal>
 
-    <el-dialog
+    <a-modal
       :title="$t('CMS.Catalog.BatchAddCatalog')"
-      :visible.sync="openBatchAdd"
-      :close-on-click-modal="false"
-      :loading="loading"
+      v-model:open="openBatchAdd"
+      :mask-closable="false"
       width="500px"
       style="padding-top: 0; padding-bottom: 0"
-      append-to-body
     >
-      <el-form
+      <a-form
         ref="formBatch"
         :model="formBatch"
         :rules="rulesBatch"
-        label-position="top"
-        label-width="70px"
+        layout="vertical"
       >
-        <el-form-item :label="$t('CMS.Catalog.ParentCatalog')" prop="parentId">
+        <a-form-item :label="$t('CMS.Catalog.ParentCatalog')" name="parentId">
           <treeselect v-model="formBatch.parentId" :options="catalogOptions" />
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.CatalogTree')" prop="catalogs">
-          <el-input v-model="formBatch.catalogs" type="textarea" :rows="10" />
-        </el-form-item>
-      </el-form>
+        </a-form-item>
+        <a-form-item :label="$t('CMS.Catalog.CatalogTree')" name="catalogs">
+          <a-textarea v-model:value="formBatch.catalogs" :rows="10" />
+        </a-form-item>
+      </a-form>
       <div
         style="
           background-color: #f4f4f5;
@@ -157,44 +147,48 @@
           padding-left: 10px;
         "
       >
-        <i class="el-icon-info mr5"></i>{{ $t("CMS.Catalog.BatchAddTip") }}
+        <InfoCircleOutlined class="mr5" />{{ $t("CMS.Catalog.BatchAddTip") }}
       </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleBatchAddSave">{{
-          $t("Common.Confirm")
-        }}</el-button>
-        <el-button @click="openBatchAdd = false">{{
-          $t("Common.Cancel")
-        }}</el-button>
-      </div>
-    </el-dialog>
+      <template #footer>
+        <div class="dialog-footer">
+          <a-button type="primary" :loading="loading" @click="handleBatchAddSave">{{
+            $t("Common.Confirm")
+          }}</a-button>
+          <a-button @click="openBatchAdd = false">{{
+            $t("Common.Cancel")
+          }}</a-button>
+        </div>
+      </template>
+    </a-modal>
 
-    <el-dialog
+    <a-modal
       :title="$t('CMS.Catalog.PublishDialogTitle')"
-      :visible.sync="publishDialogVisible"
+      v-model:open="publishDialogVisible"
       width="500px"
       class="publish-dialog"
     >
       <div>
         <p>{{ $t("Common.Tips") }}</p>
         <p>{{ $t("CMS.Catalog.PublishTips") }}</p>
-        <el-checkbox v-model="publishChild">{{
+        <a-checkbox v-model:checked="publishChild">{{
           $t("CMS.Catalog.ContainsChildren")
-        }}</el-checkbox>
+        }}</a-checkbox>
       </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="publishDialogVisible = false">{{
-          $t("Common.Cancel")
-        }}</el-button>
-        <el-button type="primary" @click="handleDoPublish">{{
-          $t("Common.Confirm")
-        }}</el-button>
-      </span>
-    </el-dialog>
+      <template #footer>
+        <div class="dialog-footer">
+          <a-button @click="publishDialogVisible = false">{{
+            $t("Common.Cancel")
+          }}</a-button>
+          <a-button type="primary" @click="handleDoPublish">{{
+            $t("Common.Confirm")
+          }}</a-button>
+        </div>
+      </template>
+    </a-modal>
     <!-- 进度条 -->
     <cms-progress
       :title="$t('CMS.Catalog.PublishProgressTitle')"
-      :open.sync="openProgress"
+      v-model:open="openProgress"
       :taskId="taskId"
       @close="handleCloseProgress"
     ></cms-progress>
@@ -213,12 +207,33 @@ import {
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import CMSProgress from "@/views/components/Progress";
+import { message } from "ant-design-vue";
+import {
+  PlusOutlined,
+  DownOutlined,
+  SearchOutlined,
+  HomeOutlined,
+  MoreOutlined,
+  SendOutlined,
+  SortAscendingOutlined,
+  SortDescendingOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons-vue";
 
 export default {
   name: "CMSCatalogTree",
   components: {
     Treeselect,
     "cms-progress": CMSProgress,
+    PlusOutlined,
+    DownOutlined,
+    SearchOutlined,
+    HomeOutlined,
+    MoreOutlined,
+    SendOutlined,
+    SortAscendingOutlined,
+    SortDescendingOutlined,
+    InfoCircleOutlined,
   },
   props: {
     newBtn: {
@@ -230,6 +245,9 @@ export default {
   computed: {
     theme() {
       return this.$store.state.settings.theme;
+    },
+    filteredCatalogOptions() {
+      return this.filterNodes(this.filterCatalogName, this.catalogOptions);
     },
   },
   data() {
@@ -251,10 +269,8 @@ export default {
       // 当前选中栏目ID
       selectedCatalogId: "",
       treeExpandedKeys: [],
-      defaultProps: {
-        children: "children",
-        label: "label",
-      },
+      expandedKeys: [],
+      selectedKeys: [],
       // 新增栏目表单参数
       form: {},
       // 表单校验
@@ -269,7 +285,6 @@ export default {
         alias: [
           {
             required: true,
-            // pattern: "^[A-Za-z0-9_]+$",
             message: "请输入栏目别名",
             trigger: "blur",
           },
@@ -282,13 +297,6 @@ export default {
             trigger: "blur",
           },
         ],
-        // catalogType: [
-        //   {
-        //     required: true,
-        //     message: this.$t("CMS.Catalog.RuleTips.CatalogType"),
-        //     trigger: "blur",
-        //   },
-        // ],
       },
       openBatchAdd: false,
       formBatch: {},
@@ -307,11 +315,6 @@ export default {
       openProgress: false,
       taskId: "",
     };
-  },
-  watch: {
-    filterCatalogName(val) {
-      this.$refs.tree.filter(val);
-    },
   },
   created() {
     this.loadCatalogTreeData();
@@ -336,33 +339,69 @@ export default {
           this.selectedCatalogId = this.$cache.local.get(
             "LastSelectedCatalogId"
           );
-          if (this.selectedCatalogId && this.$refs.tree) {
-            this.$refs.tree.setCurrentKey(this.selectedCatalogId);
+          if (this.selectedCatalogId && this.catalogOptions.length > 0) {
+            this.selectedKeys = [this.selectedCatalogId];
             this.treeExpandedKeys = [this.selectedCatalogId];
-            this.$emit("node-click", this.$refs.tree.getCurrentNode());
+            this.expandedKeys = [this.selectedCatalogId];
+            const node = this.findNodeById(
+              this.selectedCatalogId,
+              this.catalogOptions
+            );
+            this.$emit("node-click", node);
           } else {
+            this.selectedKeys = [];
             this.$emit("node-click", null);
           }
         });
       });
     },
+    findNodeById(id, nodes) {
+      if (!nodes) return null;
+      for (const n of nodes) {
+        if (n.id == id) return n;
+        if (n.children && n.children.length > 0) {
+          const found = this.findNodeById(id, n.children);
+          if (found) return found;
+        }
+      }
+      return null;
+    },
+    filterNodes(value, nodes) {
+      if (!value) return nodes || [];
+      const result = [];
+      if (!nodes) return result;
+      nodes.forEach((n) => {
+        const filteredChildren = this.filterNodes(value, n.children);
+        const matches = this.filterNode(value, n);
+        if (matches || filteredChildren.length > 0) {
+          result.push({ ...n, children: filteredChildren });
+        }
+      });
+      return result;
+    },
     // 筛选节点
     filterNode(value, data) {
       if (!value) return true;
-      return data.label.indexOf(value) > -1;
+      return data.label && data.label.indexOf(value) > -1;
     },
     // 根节点点击事件
     handleTreeRootClick() {
       this.selectedCatalogId = undefined;
       this.$cache.local.remove("LastSelectedCatalogId");
-      this.$refs.tree.setCurrentKey(null);
+      this.selectedKeys = [];
       this.$emit("node-click", null);
     },
     // 节点单击事件
-    handleNodeClick(data) {
-      this.selectedCatalogId = data.id;
-      this.$cache.local.set("LastSelectedCatalogId", this.selectedCatalogId);
-      this.$emit("node-click", data);
+    handleNodeSelect(selectedKeys, info) {
+      if (info.selectedNodes && info.selectedNodes.length > 0) {
+        const data = info.selectedNodes[0];
+        this.selectedCatalogId = data.id;
+        this.$cache.local.set("LastSelectedCatalogId", this.selectedCatalogId);
+        this.$emit("node-click", data);
+      }
+    },
+    handleExpand(keys) {
+      this.expandedKeys = keys;
     },
     // 取消按钮
     cancel() {
@@ -409,8 +448,9 @@ export default {
     },
     /** 新增栏目提交 */
     handleAddSave: function () {
-      this.$refs["form"].validate((valid) => {
-        if (valid) {
+      this.$refs["form"]
+        .validate()
+        .then(() => {
           if (!this.selectedCatalogId) {
             this.form.parentId = 0;
           }
@@ -420,28 +460,29 @@ export default {
               response.data.catalogId
             );
             this.diagOpen = false;
-            this.$modal.msgSuccess(this.$t("Common.AddSuccess"));
+            message.success(this.$t("Common.AddSuccess"));
             this.loadCatalogTreeData();
           });
-        }
-      });
+        })
+        .catch(() => {});
     },
     handleBatchAdd() {
       this.formBatch = { parentId: this.selectedCatalogId };
       this.openBatchAdd = true;
     },
     handleBatchAddSave() {
-      this.$refs["formBatch"].validate((valid) => {
-        if (valid) {
+      this.$refs["formBatch"]
+        .validate()
+        .then(() => {
           this.loading = true;
           batchAddCatalog(this.formBatch).then((response) => {
             this.openBatchAdd = false;
             this.loading = false;
-            this.$modal.msgSuccess(this.$t("Common.AddSuccess"));
+            message.success(this.$t("Common.AddSuccess"));
             this.loadCatalogTreeData();
           });
-        }
-      });
+        })
+        .catch(() => {});
     },
     handlePreview(data) {
       let routeData = this.$router.resolve({
@@ -453,14 +494,14 @@ export default {
     handleSortUp(nodeData) {
       let data = { catalogId: nodeData.id, sort: -1 };
       sortCatalog(data).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.loadCatalogTreeData();
       });
     },
     handleSortDown(nodeData) {
       let data = { catalogId: nodeData.id, sort: 1 };
       sortCatalog(data).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.loadCatalogTreeData();
       });
     },
@@ -528,7 +569,7 @@ export default {
 .catalog-tree .tree-node:hover .node-tool {
   display: inline-block;
 }
-.catalog-tree .tree-node .node-tool .el-button {
+.catalog-tree .tree-node .node-tool .ant-btn {
   font-size: 14px;
 }
 </style>

@@ -56,17 +56,40 @@
           <div slot="header" class="clearfix">
             <span>审核记录</span>
           </div>
-          <el-table :data="auditRecords" size="small" class="audit-table" :header-cell-style="{background:'#f5f7fa'}">
-            <el-table-column prop="submitTime" label="提交时间" width="150" />
-            <el-table-column prop="status" label="审核状态" width="100">
-              <template slot-scope="scope">
-                <el-tag :type="getAuditStatusType(scope.row.status)" size="mini" effect="dark">{{ getAuditStatusText(scope.row.status) }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="auditor" label="审核人" width="110" />
-            <el-table-column prop="auditTime" label="审核时间" width="150" />
-            <el-table-column prop="opinion" label="审核意见" min-width="200" show-overflow-tooltip />
-          </el-table>
+          <a-table
+            :columns="auditColumns"
+            :data-source="auditRecords"
+            :pagination="false"
+            row-key="id"
+            size="middle"
+            :expand-icon-column-index="0"
+            @expand="onExpand"
+          >
+            <template #expandedRowRender="{ record }">
+              <div v-if="getRecordPipeline(record.id).length > 0" class="audit-pipeline">
+                <div
+                  v-for="(step, si) in getRecordPipeline(record.id)"
+                  :key="si"
+                  class="pipeline-step"
+                  :class="'pipeline-step--' + step.statusKey"
+                >
+                  <div class="pipeline-step__dot" :class="'pipeline-step__dot--' + step.statusKey">
+                    <CheckOutlined v-if="step.statusKey === 'done'" />
+                    <CloseOutlined v-else-if="step.statusKey === 'rejected'" />
+                    <span v-else>{{ si + 1 }}</span>
+                  </div>
+                  <div class="pipeline-step__label">{{ step.title }}</div>
+                  <div class="pipeline-step__tag" :class="'pipeline-step__tag--' + step.statusKey">{{ step.statusText }}</div>
+                  <div v-if="si < 3" class="pipeline-step__connector" :class="'pipeline-step__connector--' + step.statusKey"></div>
+                </div>
+              </div>
+              <a-empty v-else description="暂无审核流水" :image-style="{ height: '40px' }" />
+            </template>
+            <template #bodyCell="{ column, record }">
+              <StatusDot v-if="column.dataIndex === 'status'" :type="getAuditStatusKey(record.status)" :text="getAuditStatusText(record.status)" />
+              <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+            </template>
+          </a-table>
         </el-card>
       </div>
 
@@ -78,12 +101,18 @@
           </div>
           <div class="review-section">
             <div class="review-row">
-              <span class="review-label">平台评价</span>
+              <span class="review-label">平台评分</span>
               <el-rate v-model="appInfo.platformRating" disabled show-score />
             </div>
             <div class="review-row">
-              <span class="review-label">用户评价</span>
+              <span class="review-label">用户评分</span>
               <el-rate v-model="appInfo.usageRating" disabled show-score />
+            </div>
+            <div class="review-dimensions">
+              <div class="dim-item" v-for="d in dimLabels" :key="d">
+                <span class="dim-label">{{ d }}</span>
+                <span class="dim-score">{{ avgDimScores[d] }}</span>
+              </div>
             </div>
             <div class="review-row">
               <span class="review-label">评价数量</span>
@@ -95,12 +124,25 @@
       </div>
     </div>
 
-    <!-- 用户评价列表弹窗 -->
-    <el-dialog title="用户评价列表" :visible.sync="reviewDialogVisible" width="1050px" :modal-append-to-body="false">
+    <!-- 用户评分列表弹窗 -->
+    <el-dialog title="用户评分列表" :visible.sync="reviewDialogVisible" width="1050px" :modal-append-to-body="false">
       <el-table :data="reviewList" size="small" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}">
-        <el-table-column label="评分" width="80">
+        <el-table-column label="评分" width="200">
           <template slot-scope="scope">
-            <div class="stars"><span v-for="i in 5" :key="i" class="star" :class="{ full: i <= scope.row.score }">★</span></div>
+            <div class="dim-compact">
+              <div class="dim-compact-row">
+                <span class="dim-compact-label">准确性</span>
+                <span class="dim-compact-score" :class="scoreClass(scope.row.ratings['准确性'])">{{ scope.row.ratings['准确性'] }}</span>
+                <span class="dim-compact-label">稳定性</span>
+                <span class="dim-compact-score" :class="scoreClass(scope.row.ratings['稳定性'])">{{ scope.row.ratings['稳定性'] }}</span>
+              </div>
+              <div class="dim-compact-row">
+                <span class="dim-compact-label">响应时效</span>
+                <span class="dim-compact-score" :class="scoreClass(scope.row.ratings['响应时效'])">{{ scope.row.ratings['响应时效'] }}</span>
+                <span class="dim-compact-label">业务适配性</span>
+                <span class="dim-compact-score" :class="scoreClass(scope.row.ratings['业务适配性'])">{{ scope.row.ratings['业务适配性'] }}</span>
+              </div>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="服务/订单号" min-width="200">
@@ -149,7 +191,14 @@
             <div class="rv-detail-name">{{ currentReview.userName }} · {{ currentReview.department }}</div>
             <div class="rv-detail-org">{{ currentReview.orgName }}</div>
           </div>
-          <div class="stars"><span v-for="i in 5" :key="i" class="star" :class="{ full: i <= currentReview.score }">★</span></div>
+          <div class="rv-detail-rating">
+            <div class="rv-dim-grid">
+              <div class="rv-dim-cell" v-for="d in dimLabels" :key="d">
+                <span class="rv-dim-name">{{ d }}</span>
+                <span class="rv-dim-val" :class="scoreClass(currentReview.ratings[d])">{{ currentReview.ratings[d] }}</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="rv-detail-body">{{ currentReview.content }}</div>
         <div v-if="currentReview.reply" class="rv-detail-reply">
@@ -163,8 +212,16 @@
 </template>
 
 <script>
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons-vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+
 export default {
   name: 'CMSDigitalAppDetail',
+  components: {
+    StatusDot,
+    CheckOutlined,
+    CloseOutlined
+  },
   data() {
     return {
       appInfo: {
@@ -197,6 +254,7 @@ export default {
       },
       reviewDialogVisible: false,
       reviewDetailVisible: false,
+      dimLabels: ['准确性', '稳定性', '响应时效', '业务适配性'],
       currentReview: {},
       reviewList: [],
       reviewPage: {
@@ -205,17 +263,50 @@ export default {
         total: 0
       },
       reviewListAll: [
-        { id: 1, score: 5, serviceName: '智能办公系统', orderNo: '#ORD-2024-0085', orgName: '华能数智科技集团', userName: '张三', department: '技术部', content: '系统非常稳定，功能齐全，满足我们日常办公需求，响应速度也很快。', time: '2024-03-15 10:30', status: '已回复', reply: '感谢您的好评，我们会继续努力提供更好的服务！' },
-        { id: 2, score: 4, serviceName: '智能办公系统', orderNo: '#ORD-2024-0071', orgName: '中远云科技有限公司', userName: '王经理', department: '信息部', content: '整体不错，协同办公功能很好用，希望后续能增加移动端适配。', time: '2024-03-14 14:20', status: '已回复', reply: '感谢您的建议，移动端适配已在规划中，预计下个版本上线。' },
-        { id: 3, score: 3, serviceName: '智能办公系统', orderNo: '#ORD-2024-0063', orgName: '北京协和医学院', userName: '李护士长', department: '信息科', content: '文档管理功能基本满足需求，但批量操作效率有待提升。', time: '2024-03-13 16:45', status: '待回复' }
+        { id: 1, ratings: { '准确性': 5, '稳定性': 5, '响应时效': 4, '业务适配性': 5 }, serviceName: '智能办公系统', orderNo: '#ORD-2024-0085', orgName: '华能数智科技集团', userName: '张三', department: '技术部', content: '系统非常稳定，功能齐全，满足我们日常办公需求，响应速度也很快。', time: '2024-03-15 10:30', status: '已回复', reply: '感谢您的好评，我们会继续努力提供更好的服务！' },
+        { id: 2, ratings: { '准确性': 4, '稳定性': 4, '响应时效': 5, '业务适配性': 4 }, serviceName: '智能办公系统', orderNo: '#ORD-2024-0071', orgName: '中远云科技有限公司', userName: '王经理', department: '信息部', content: '整体不错，协同办公功能很好用，希望后续能增加移动端适配。', time: '2024-03-14 14:20', status: '已回复', reply: '感谢您的建议，移动端适配已在规划中，预计下个版本上线。' },
+        { id: 3, ratings: { '准确性': 3, '稳定性': 4, '响应时效': 3, '业务适配性': 3 }, serviceName: '智能办公系统', orderNo: '#ORD-2024-0063', orgName: '北京协和医学院', userName: '李护士长', department: '信息科', content: '文档管理功能基本满足需求，但批量操作效率有待提升。', time: '2024-03-13 16:45', status: '待回复' }
       ],
       auditRecords: [
         { id: 1, submitTime: '2024-01-01 10:00', submitUser: '张经理', status: 'approved', auditor: '平台管理员', auditTime: '2024-01-02 14:30', opinion: '审核通过，应用符合上架标准。' },
         { id: 2, submitTime: '2024-02-10 09:00', submitUser: '张经理', status: 'rejected', auditor: '平台管理员', auditTime: '2024-02-11 16:00', opinion: '安全评估报告不完整，请补充后重新提交。' },
         { id: 3, submitTime: '2024-02-15 11:00', submitUser: '张经理', status: 'approved', auditor: '平台管理员', auditTime: '2024-02-16 10:30', opinion: '材料已补齐，审核通过。' },
         { id: 4, submitTime: '2024-03-01 14:00', submitUser: '张经理', status: 'pending', auditor: '', auditTime: '', opinion: '' }
+      ],
+      expandedRowKeys: [],
+      auditSteps: [
+        { key: 1, title: '申报材料评估' },
+        { key: 2, title: '应用技术测评' },
+        { key: 3, title: '现场演示答辩' },
+        { key: 4, title: '服务目录发布' }
+      ],
+      auditPipelineData: {
+        1: { currentStep: 4, auditStatus: 20, steps: { 1: { status: 'approved' }, 2: { status: 'approved' }, 3: { status: 'approved' }, 4: { status: 'approved' } } },
+        2: { currentStep: 3, auditStatus: 30, steps: { 1: { status: 'approved' }, 2: { status: 'approved' }, 3: { status: 'rejected' }, 4: { status: 'pending' } } },
+        3: { currentStep: 4, auditStatus: 20, steps: { 1: { status: 'approved' }, 2: { status: 'approved' }, 3: { status: 'approved' }, 4: { status: 'approved' } } },
+        4: { currentStep: 1, auditStatus: 10, steps: { 1: { status: 'processing' }, 2: { status: 'pending' }, 3: { status: 'pending' }, 4: { status: 'pending' } } }
+      },
+      auditColumns: [
+        { title: '提交时间', dataIndex: 'submitTime', key: 'submitTime', width: 150 },
+        { title: '审核状态', dataIndex: 'status', key: 'status', width: 100 },
+        { title: '审核人', dataIndex: 'auditor', key: 'auditor', width: 110 },
+        { title: '审核时间', dataIndex: 'auditTime', key: 'auditTime', width: 150 },
+        { title: '审核意见', dataIndex: 'opinion', key: 'opinion', ellipsis: true }
       ]
     };
+  },
+  computed: {
+    avgDimScores() {
+      const dims = { '准确性': 0, '稳定性': 0, '响应时效': 0, '业务适配性': 0 };
+      const list = this.reviewListAll;
+      if (!list.length) return dims;
+      this.dimLabels.forEach(d => {
+        let sum = 0;
+        list.forEach(r => { sum += (r.ratings && r.ratings[d]) || 0; });
+        dims[d] = (sum / list.length).toFixed(1);
+      });
+      return dims;
+    },
   },
   watch: {
     reviewDialogVisible(val) {
@@ -251,6 +342,11 @@ export default {
     }
   },
   methods: {
+    scoreClass(val) {
+      if (val >= 4) return 'score-high';
+      if (val >= 3) return 'score-mid';
+      return 'score-low';
+    },
     goBack() {
       this.$router.push('/portal/service/digitalApp');
     },
@@ -281,6 +377,10 @@ export default {
     downloadMaterial(material) {
       this.$message.success('下载附件：' + material.name);
     },
+    getAuditStatusKey(status) {
+      const map = { approved: 'done', rejected: 'rejected', pending: 'processing' };
+      return map[status] || 'default';
+    },
     getAuditStatusType(status) {
       const map = { approved: 'success', rejected: 'danger', pending: 'warning' };
       return map[status] || 'info';
@@ -302,6 +402,32 @@ export default {
         draft: '草稿', pending_review: '待审核', published: '已发布', rejected: '已驳回', offline: '已下线'
       };
       return map[status] || status || '--';
+    },
+    getRecordPipeline(recordId) {
+      const pdata = this.auditPipelineData[recordId]
+      if (!pdata) return []
+      return this.auditSteps.map((step) => {
+        const s = (pdata.steps && pdata.steps[step.key]) || { status: 'pending' }
+        const statusMap = {
+          approved: { statusKey: 'done', statusText: '已通过' },
+          rejected: { statusKey: 'rejected', statusText: '已驳回' },
+          processing: { statusKey: 'active', statusText: '审核中' },
+          pending: { statusKey: 'pending', statusText: '待审核' }
+        }
+        const mapped = statusMap[s.status] || statusMap.pending
+        return {
+          title: step.title,
+          statusKey: mapped.statusKey,
+          statusText: mapped.statusText
+        }
+      })
+    },
+    onExpand(expanded, record) {
+      if (expanded) {
+        this.expandedRowKeys.push(record.id)
+      } else {
+        this.expandedRowKeys = this.expandedRowKeys.filter(k => k !== record.id)
+      }
     },
   }
 };
@@ -573,6 +699,47 @@ export default {
 .sb.offline { background: #f0f0f0; color: #999; }
 .sb.offline::before { background: #999; }
 
+/* 四维度评分 */
+.review-dimensions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  padding: 8px 0 0;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 4px;
+}
+.dim-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.dim-label { color: #8c8c8c; }
+.dim-score { font-weight: 600; color: #409eff; }
+
+.dim-compact { display: flex; flex-direction: column; gap: 4px; }
+.dim-compact-row { display: flex; align-items: center; gap: 4px; }
+.dim-compact-label { font-size: 11px; color: #8c8c8c; width: 52px; flex-shrink: 0; }
+.dim-compact-score {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 22px; border-radius: 4px;
+  font-size: 12px; font-weight: 600;
+  margin-right: 4px;
+}
+.score-high { background: #ebfbee; color: #2f9e44; }
+.score-mid { background: #fff9db; color: #e67700; }
+.score-low { background: #fff5f5; color: #c92a2a; }
+
+.rv-detail-rating { margin-bottom: 12px; }
+.rv-dim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+.rv-dim-cell { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; background: #f7f8fa; border-radius: 6px; }
+.rv-dim-name { font-size: 13px; color: #5c6480; }
+.rv-dim-val {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 32px; height: 24px; border-radius: 4px;
+  font-size: 13px; font-weight: 600; padding: 0 8px;
+}
+
 /* 弹窗仅覆盖左侧Demo区域 */
 :deep(.el-dialog__wrapper) {
   position: absolute !important;
@@ -585,4 +752,120 @@ export default {
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ===== 审核流水（展开行） ===== */
+.audit-pipeline {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 16px 16px;
+  gap: 0;
+}
+
+.pipeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.pipeline-step__dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.pipeline-step__dot--pending {
+  color: #86909C;
+  background: #FFFFFF;
+  border: 1.5px solid #C9CDD4;
+}
+
+.pipeline-step__dot--active {
+  color: #FFFFFF;
+  background: #165DFF;
+  border-color: #165DFF;
+  box-shadow: 0 2px 6px rgba(22, 93, 255, 0.35);
+}
+
+.pipeline-step__dot--done {
+  color: #FFFFFF;
+  background: #16A34A;
+  border-color: #16A34A;
+}
+
+.pipeline-step__dot--rejected {
+  color: #FFFFFF;
+  background: #EF4444;
+  border-color: #EF4444;
+}
+
+.pipeline-step__label {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-top: 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pipeline-step--active .pipeline-step__label {
+  color: #165DFF;
+  font-weight: 600;
+}
+
+.pipeline-step__tag {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 3px;
+  margin-top: 4px;
+}
+
+.pipeline-step__tag--pending {
+  background: #F2F3F5;
+  color: #86909C;
+}
+
+.pipeline-step__tag--active {
+  background: #E8F3FF;
+  color: #165DFF;
+}
+
+.pipeline-step__tag--done {
+  background: #E9F9EF;
+  color: #16A34A;
+}
+
+.pipeline-step__tag--rejected {
+  background: #FFEDEC;
+  color: #EF4444;
+}
+
+.pipeline-step__connector {
+  position: absolute;
+  top: 12px;
+  left: calc(50% + 16px);
+  width: calc(100% - 32px);
+  height: 2px;
+  background: #E5E6EB;
+  z-index: 0;
+}
+
+.pipeline-step__connector--done {
+  background: #16A34A;
+}
+
+.cell-default {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+}
 </style>

@@ -1,432 +1,153 @@
 <template>
-  <div class="cms-content-list">
-    <!-- 操作按钮 -->
-    <el-row :gutter="24" class="mb12">
-      <el-col :span="12">
-        <el-row :gutter="10">
-          <el-col :span="1.5">
-            <el-button
-              type="primary"
-              icon="el-icon-plus"
-              size="mini"
-              plain
-              @click="handleAdd"
-              >{{ $t("Common.Add") }}
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="success"
-              icon="el-icon-edit"
-              size="mini"
-              plain
-              :disabled="single"
-              v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
-              @click="handleEdit()"
-              >修改</el-button
-            >
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              plain
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              v-hasPermi="[$p('Catalog:DeleteContent:{0}', [catalogId])]"
-              @click="handleDelete"
-              >{{ $t("Common.Delete") }}
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              plain
-              type="success"
-              icon="el-icon-s-promotion"
-              size="mini"
-              :disabled="multiple"
-              v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
-              @click="handlePublish"
-              >{{ $t("CMS.ContentCore.Publish") }}
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              plain
-              type="warning"
-              icon="el-icon-download"
-              size="mini"
-              :disabled="multiple"
-              v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
-              @click="handleOffline"
-              >{{ $t("CMS.Content.Offline") }}
-            </el-button>
-          </el-col>
-        </el-row>
-      </el-col>
-      <!-- 筛选条件 -->
-      <el-col :span="12">
-        <el-form
-          :model="queryParams"
-          ref="queryForm"
-          size="small"
-          class="el-form-search"
-          style="text-align: right"
-          :inline="true"
-        >
-          <el-form-item prop="title">
-            <el-input
-              v-model="queryParams.title"
-              placeholder="请输入应用名称"
-              clearable
-              style="width: 200px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item prop="cover">
-            <el-select
-              v-model="queryParams.cover"
-              placeholder="请选择应用覆盖范围"
-              clearable
-              style="width: 150px"
-            >
-              <el-option
-                v-for="item in appScopeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="target">
-            <el-select
-              v-model="queryParams.target"
-              placeholder="请选择面向对象"
-              clearable
-              style="width: 150px"
-            >
-              <el-option
-                v-for="item in targetObjectOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="请选择状态"
-              clearable
-              style="width: 110px"
-            >
-              <el-option label="已发布" value="10" />
-              <el-option label="已下线" value="40" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button-group>
-              <el-button
-                type="primary"
-                icon="el-icon-search"
-                @click="handleQuery"
-                >搜索</el-button
-              >
-              <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
-            </el-button-group>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
-
-    <!-- 表格 -->
-    <el-table
-      v-loading="loading"
-      ref="tableContentList"
-      size="small"
-      :data="contentList"
-      :height="tableHeight"
-      :max-height="tableMaxHeight"
-      @row-click="handleRowClick"
-      @cell-dblclick="handleEdit"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="50" align="center" />
-      <el-table-column
-        label="应用名称"
-        :show-overflow-tooltip="true"
-        min-width="180"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="应用ID"
-        width="120"
-        align="center"
-        prop="appId"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.appId || scope.row.contentId }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="面向对象"
-        width="120"
-        align="center"
-        prop="targetObject"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.targetObject || '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="应用覆盖范围"
-        width="200"
-        align="center"
-        prop="appScope"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.cover ? scope.row.cover.map(item => item.value).join(';') : '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="状态"
-        align="center"
-        width="80"
-      >
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status === 10 ? 'success' : scope.row.status === 40 ? 'danger' : 'info'">
-            {{ scope.row.status === 10 ? '已发布' : scope.row.status === 40 ? '已下线' : '未知' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="应用服务商"
-        :show-overflow-tooltip="true"
-        min-width="150"
-        prop="serviceProvider"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.serviceProvider || '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="合作企业"
-        :show-overflow-tooltip="true"
-        min-width="150"
-        prop="cooperativeEnterprise"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.cooperativeEnterprise || '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="云服务商"
-        :show-overflow-tooltip="true"
-        min-width="150"
-        prop="cloudProvider"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.cloudProvider || '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="平台评价" width="90" align="center">
-        <template slot-scope="scope">
-          <span @click="handleDetail(scope.row)" class="rating-star">{{ scope.row.platformRating || 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="用户评价" width="90" align="center">
-        <template slot-scope="scope">
-          <span @click="handleDetail(scope.row)" class="rating-star">{{ scope.row.usageRating || 0 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-        width="200"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="scope">
-          <span class="btn-cell-wrap">
-            <el-button
-              size="small"
-              type="text"
-              icon="el-icon-view"
-              @click.stop="handleDetail(scope.row)"
-              >详情</el-button
-            >
-          </span>
-          <span class="btn-cell-wrap">
-            <el-button
-              size="small"
-              type="text"
-              icon="el-icon-edit"
-              v-hasPermi="[
-                $p('Catalog:EditContent:{0}', [scope.row.catalogId]),
-              ]"
-              @click="handleEdit(scope.row)"
-              >修改</el-button
-            >
-          </span>
-          <span class="btn-cell-wrap">
-            <el-button
-              size="small"
-              type="text"
-              icon="el-icon-delete"
-              v-hasPermi="[
-                $p('Catalog:DeleteContent:{0}', [scope.row.catalogId]),
-              ]"
-              @click="handleDelete(scope.row)"
-              >删除</el-button
-            >
-          </span>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="loadContentList"
+  <div class="digital-app-list-page">
+    <PageHeader
+      title="数字应用管理"
     />
 
-    <!-- 新增弹窗 -->
-    <el-dialog
-      title="新增数字应用"
-      width="920px"
-      :visible.sync="addDialogVisible"
-      :close-on-click-modal="false"
-      :modal-append-to-body="false"
-      top="5vh"
-    >
-      <el-form ref="addForm" :model="addForm" :rules="rules" label-width="130px" class="add-form">
-        <div class="form-section">
-          <div class="form-section-title">基本信息</div>
-        <el-form-item label="应用名称" prop="title" required>
-          <el-input v-model="addForm.title" placeholder="请输入应用名称" />
-        </el-form-item>
-        <el-form-item label="上传LOGO">
-          <div class="upload-logo">
-            <el-upload
-              class="el-upload--text"
-              action="#"
-              :auto-upload="false"
-              :on-change="handleLogoUpload"
-              :limit="1"
-              :accept="'image/png,image/jpeg,image/jpg,image/bmp'"
-            >
-              <div class="el-upload-dragger">
-                <i class="el-icon-upload" v-if="!addForm.logo"></i>
-                <img v-else :src="addForm.logo" class="avatar" />
-                <div class="el-upload__text">
-                  建议上传图片尺寸为640*640，大小不超过1M支持jpg、jpeg、png、bmp图片格式
-                </div>
-              </div>
-            </el-upload>
-            <div class="el-upload__tip">
-              只能上传 image/png, image/jpeg,image/jpg,image/bmp 文件，且不超过 1 MB
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item label="应用描述" prop="description" required>
-          <el-input
-            v-model="addForm.description"
-            type="textarea"
-            rows="4"
-            placeholder="请输入应用描述"
-          />
-        </el-form-item>
-        <el-form-item label="系统地址">
-          <el-input v-model="addForm.systemUrl" placeholder="请输入系统地址" />
-        </el-form-item>
-        <el-form-item label="显示顺序">
-          <el-input-number
-            v-model="addForm.sortOrder"
-            :min="0"
-            controls-position="right"
-          />
-        </el-form-item>
-        </div>
-
-        <div class="form-section">
-          <div class="form-section-title">联系信息</div>
-        <el-form-item label="服务商名称" prop="serviceProvider" required>
-          <el-input v-model="addForm.serviceProvider" placeholder="请输入服务商名称" />
-        </el-form-item>
-        <el-form-item label="合作伙伴名称">
-          <el-input v-model="addForm.cooperativeEnterprise" placeholder="请输入合作伙伴全称，多个合作伙伴请通过；分隔" />
-        </el-form-item>
-        <el-form-item label="联系方式1" required>
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="addForm.contactName1" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="addForm.contactPhone1" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        <el-form-item label="联系方式2">
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="addForm.contactName2" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="addForm.contactPhone2" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        </div>
-
-        <div class="form-section">
-          <div class="form-section-title">分类标签</div>
-        <el-form-item label="面向对象" prop="targetObject" required>
-          <el-checkbox-group v-model="addForm.targetObject">
-            <el-checkbox v-for="opt in flatTargetObjectAdd" :key="opt" :label="opt">{{ opt }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="应用架构">
-          <el-checkbox-group v-model="addForm.appArchitecture">
-            <el-checkbox v-for="opt in flatArchAdd" :key="opt" :label="opt">{{ opt }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="部署云服务商" prop="cloudProvider" required>
-          <div>
-            <el-checkbox-group v-model="addForm.cloudProvider">
-              <el-checkbox v-for="opt in flatCloudAdd" :key="opt" :label="opt">{{ opt }}</el-checkbox>
-            </el-checkbox-group>
-            <div v-if="addForm.targetObject.includes('基层医疗卫生机构')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">基层应用覆盖范围</div>
-              <el-checkbox-group v-model="addForm.coverBase">
-                <el-checkbox v-for="item in coverBaseOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <div v-if="addForm.targetObject.includes('公立医院')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">公立应用覆盖范围</div>
-              <el-checkbox-group v-model="addForm.coverPublic">
-                <el-checkbox v-for="item in coverPublicOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <div v-if="addForm.targetObject.includes('医技护人员')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">医技应用覆盖范围</div>
-              <el-checkbox-group v-model="addForm.coverTech">
-                <el-checkbox v-for="item in coverTechOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-          </div>
-        </el-form-item>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleAddSubmit">直接发布</el-button>
-        <el-button @click="addDialogVisible = false">取消</el-button>
+    <CloudCard class="digital-app-list-page__table-card">
+      <FilterBar @search="handleQuery" @reset="resetQuery">
+        <template #actions>
+          <a-button type="primary" @click="handleAdd">
+            <template #icon><PlusOutlined /></template>
+            {{ $t("Common.Add") }}
+          </a-button>
+          <a-button
+            type="primary"
+            :disabled="single"
+            v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
+            @click="handleEdit()"
+          >
+            <template #icon><EditOutlined /></template>
+            修改
+          </a-button>
+          <a-button
+            type="primary"
+            danger
+            :disabled="multiple"
+            v-hasPermi="[$p('Catalog:DeleteContent:{0}', [catalogId])]"
+            @click="handleDelete"
+          >
+            <template #icon><DeleteOutlined /></template>
+            {{ $t("Common.Delete") }}
+          </a-button>
+          <a-button
+            type="primary"
+            :disabled="multiple"
+            v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
+            @click="handlePublish"
+          >
+            <template #icon><SendOutlined /></template>
+            {{ $t("CMS.ContentCore.Publish") }}
+          </a-button>
+          <a-button
+            type="primary"
+            :disabled="multiple"
+            v-hasPermi="[$p('Catalog:EditContent:{0}', [catalogId])]"
+            @click="handleOffline"
+          >
+            <template #icon><DownloadOutlined /></template>
+            {{ $t("CMS.Content.Offline") }}
+          </a-button>
+        </template>
+        <a-input
+          v-model:value="queryParams.title"
+          placeholder="数字应用名称"
+          allow-clear
+          style="width: 160px"
+          @pressEnter="handleQuery"
+        />
+        <a-input
+          v-model:value="queryParams.appId"
+          placeholder="数字应用ID"
+          allow-clear
+          style="width: 160px"
+          @pressEnter="handleQuery"
+        />
+        <a-input
+          v-model:value="queryParams.serviceProvider"
+          placeholder="服务商名称"
+          allow-clear
+          style="width: 160px"
+          @pressEnter="handleQuery"
+        />
+        <a-select
+          v-model:value="queryParams.cover"
+          placeholder="应用覆盖范围"
+          allow-clear
+          style="width: 150px"
+        >
+          <a-select-option
+            v-for="item in appScopeOptions"
+            :key="item.value"
+            :value="item.value"
+          >{{ item.label }}</a-select-option>
+        </a-select>
+        <a-select
+          v-model:value="queryParams.target"
+          placeholder="面向对象"
+          allow-clear
+          style="width: 150px"
+        >
+          <a-select-option
+            v-for="item in targetObjectOptions"
+            :key="item.value"
+            :value="item.value"
+          >{{ item.label }}</a-select-option>
+        </a-select>
+        <a-select
+          v-model:value="queryParams.status"
+          placeholder="状态"
+          allow-clear
+          style="width: 110px"
+        >
+          <a-select-option value="10">已上线使用</a-select-option>
+          <a-select-option value="40">已下架</a-select-option>
+        </a-select>
+      </FilterBar>
+      <div class="digital-app-list-page__divider"></div>
+      <div class="digital-app-list-page__table-wrap">
+        <a-table
+          ref="tableContentList"
+          :columns="columns"
+          :data-source="contentList"
+          :loading="loading"
+          :pagination="paginationConfig"
+          :row-key="(record) => record.contentId"
+          :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
+          :scroll="{ y: tableHeight }"
+          :custom-row="(record) => ({ onDblclick: () => handleEdit(record) })"
+          @change="onTableChange"
+        >
+        <template #bodyCell="{ column, record }">
+          <span v-if="column.dataIndex === 'title'" class="cell-name">
+            <span class="cell-name__title">{{ record.title }}</span>
+            <span class="cell-name__id">{{ record.appId || '--' }}</span>
+          </span>
+          <span v-else-if="column.dataIndex === 'cover'" class="cell-default">{{ formatCover(record.cover) }}</span>
+          <a-badge v-else-if="column.dataIndex === 'status'" :status="record.status === 10 ? 'success' : record.status === 40 ? 'error' : 'default'" :text="record.status === 10 ? '已上线使用' : record.status === 40 ? '已下架' : '未知'" />
+          <span v-else-if="column.dataIndex === 'platformRating'" @click="goToReview(record)" class="rating-star">{{ record.platformRating || 0 }}</span>
+          <span v-else-if="column.dataIndex === 'usageRating'" @click="goToReview(record)" class="rating-star">{{ record.usageRating || 0 }}</span>
+          <template v-else-if="column.dataIndex === 'action'">
+            <a-space size="small">
+              <a-button type="link" size="small" class="!p-0" @click.stop="handleDetail(record)">详情</a-button>
+              <a-divider type="vertical" class="!mx-[2px]" />
+              <a-button type="link" size="small" class="!p-0" v-hasPermi="[$p('Catalog:EditContent:{0}', [record.catalogId])]" @click="handleEdit(record)">修改</a-button>
+              <a-divider type="vertical" class="!mx-[2px]" />
+              <a-button type="link" size="small" danger class="!p-0" v-hasPermi="[$p('Catalog:DeleteContent:{0}', [record.catalogId])]" @click="handleDelete(record)">删除</a-button>
+            </a-space>
+          </template>
+          <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+        </template>
+        </a-table>
       </div>
-    </el-dialog>
+    </CloudCard>
 
     <!-- 详情弹窗 -->
-    <el-dialog
+    <a-modal
       title="详情"
       width="800px"
-      :visible.sync="detailDialogVisible"
-      :close-on-click-modal="false"
-      append-to-body
+      v-model:open="detailDialogVisible"
+      :mask-closable="false"
     >
       <div class="dialog-body">
         <!-- 应用信息 -->
@@ -455,8 +176,8 @@
           <span>{{ detailForm.description || '--' }}</span>
         </div>
 
-        <!-- 服务商信息 -->
-        <p class="pt-24 fz-16">服务商信息</p>
+        <!-- 联系信息 -->
+        <p class="pt-24 fz-16">联系信息</p>
         <div class="gird">
           <div class="content">
             <span>服务商名称</span>
@@ -497,170 +218,46 @@
           </div>
         </div>
       </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detailDialogVisible = false">关闭</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 编辑弹窗 -->
-    <el-dialog
-      title="编辑数字应用"
-      width="920px"
-      :visible.sync="editDialogVisible"
-      :close-on-click-modal="false"
-      :modal-append-to-body="false"
-      top="5vh"
-    >
-      <el-form ref="editForm" :model="editForm" :rules="rules" label-width="130px" class="add-form">
-        <div class="form-section">
-          <div class="form-section-title">基本信息</div>
-        <el-form-item label="应用名称" prop="title" required>
-          <el-input v-model="editForm.title" placeholder="请输入应用名称" />
-        </el-form-item>
-        <el-form-item label="上传LOGO">
-          <div class="upload-logo">
-            <el-upload
-              class="el-upload--text"
-              action="#"
-              :auto-upload="false"
-              :on-change="handleLogoUpload"
-              :limit="1"
-              :accept="'image/png,image/jpeg,image/jpg,image/bmp'"
-            >
-              <div class="el-upload-dragger">
-                <i class="el-icon-upload" v-if="!editForm.logo"></i>
-                <img v-else :src="editForm.logo" class="avatar" />
-                <div class="el-upload__text">
-                  建议上传图片尺寸为640*640，大小不超过1M支持jpg、jpeg、png、bmp图片格式
-                </div>
-              </div>
-            </el-upload>
-            <div class="el-upload__tip">
-              只能上传 image/png, image/jpeg,image/jpg,image/bmp 文件，且不超过 1 MB
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item label="应用描述" prop="description" required>
-          <el-input
-            v-model="editForm.description"
-            type="textarea"
-            rows="4"
-            placeholder="请输入应用描述"
-          />
-        </el-form-item>
-        <el-form-item label="系统地址">
-          <el-input v-model="editForm.systemUrl" placeholder="请输入系统地址" />
-        </el-form-item>
-        <el-form-item label="显示顺序">
-          <el-input-number
-            v-model="editForm.sortOrder"
-            :min="0"
-            controls-position="right"
-          />
-        </el-form-item>
+      <template #footer>
+        <div class="dialog-footer">
+          <a-button @click="detailDialogVisible = false">关闭</a-button>
         </div>
-
-        <div class="form-section">
-          <div class="form-section-title">联系信息</div>
-        <el-form-item label="服务商名称" prop="serviceProvider" required>
-          <el-input v-model="editForm.serviceProvider" placeholder="请输入服务商名称" />
-        </el-form-item>
-        <el-form-item label="合作伙伴名称">
-          <el-input v-model="editForm.cooperativeEnterprise" placeholder="请输入合作伙伴全称，多个合作伙伴请通过；分隔" />
-        </el-form-item>
-        <el-form-item label="联系方式1" required>
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="editForm.contactName1" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="editForm.contactPhone1" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        <el-form-item label="联系方式2">
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="editForm.contactName2" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="editForm.contactPhone2" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        </div>
-
-        <div class="form-section">
-          <div class="form-section-title">分类标签</div>
-        <el-form-item label="面向对象" prop="targetObject" required>
-          <el-checkbox-group v-model="editForm.targetObject">
-            <el-checkbox v-for="opt in flatTargetObjectEdit" :key="opt" :label="opt">{{ opt }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="应用架构">
-          <el-checkbox-group v-model="editForm.appArchitecture">
-            <el-checkbox v-for="opt in flatArchEdit" :key="opt" :label="opt">{{ opt }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="部署云服务商" prop="cloudProvider" required>
-          <div>
-            <el-checkbox-group v-model="editForm.cloudProvider">
-              <el-checkbox v-for="opt in flatCloudEdit" :key="opt" :label="opt">{{ opt }}</el-checkbox>
-            </el-checkbox-group>
-            <div v-if="editForm.targetObject.includes('基层医疗卫生机构')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">基层应用覆盖范围</div>
-              <el-checkbox-group v-model="editForm.coverBase">
-                <el-checkbox v-for="item in coverBaseOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <div v-if="editForm.targetObject.includes('公立医院')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">公立应用覆盖范围</div>
-              <el-checkbox-group v-model="editForm.coverPublic">
-                <el-checkbox v-for="item in coverPublicOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <div v-if="editForm.targetObject.includes('医技护人员')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">医技应用覆盖范围</div>
-              <el-checkbox-group v-model="editForm.coverTech">
-                <el-checkbox v-for="item in coverTechOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-          </div>
-        </el-form-item>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleEditSubmit">直接发布</el-button>
-        <el-button @click="editDialogVisible = false">取消</el-button>
-      </div>
-    </el-dialog>
+      </template>
+    </a-modal>
 
     <!-- 置顶时间设置弹窗 -->
-    <el-dialog
+    <a-modal
       :title="$t('CMS.Content.SetTop')"
       width="400px"
-      :visible.sync="topDialogVisible"
-      :close-on-click-modal="false"
-      append-to-body
+      v-model:open="topDialogVisible"
+      :mask-closable="false"
     >
-      <el-form ref="top_form" label-width="100px" :model="topForm">
-        <el-form-item :label="$t('CMS.Content.TopEndTime')" prop="topEndTime">
-          <el-date-picker
-            v-model="topForm.topEndTime"
-            :picker-options="topEndTimePickerOptions"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            type="datetime"
-          >
-          </el-date-picker>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleTopDialogOk">{{
-          $t("Common.Confirm")
-        }}</el-button>
-        <el-button @click="topDialogVisible = false">{{
-          $t("Common.Cancel")
-        }}</el-button>
-      </div>
-    </el-dialog>
+      <a-form ref="top_form" :label-col="{ style: { width: '100px' } }" :model="topForm">
+        <a-form-item :label="$t('CMS.Content.TopEndTime')" name="topEndTime">
+          <a-date-picker
+            v-model:value="topForm.topEndTime"
+            :disabled-date="topEndTimePickerOptions.disabledDate"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            show-time
+            style="width: 100%"
+          />
+        </a-form-item>
+      </a-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <a-button type="primary" @click="handleTopDialogOk">{{
+            $t("Common.Confirm")
+          }}</a-button>
+          <a-button @click="topDialogVisible = false">{{
+            $t("Common.Cancel")
+          }}</a-button>
+        </div>
+      </template>
+    </a-modal>
     <!-- 进度条 -->
     <cms-progress
       :title="$t('CMS.ContentCore.PublishProgressTitle')"
-      :open.sync="openProgress"
+      v-model:open="openProgress"
       :taskId="taskId"
     ></cms-progress>
     <!-- 栏目选择组件 -->
@@ -673,73 +270,258 @@
     ></cms-catalog-selector>
 
     <!-- 评价弹窗 -->
-    <el-dialog
+    <a-modal
       title="应用评价"
       width="920px"
-      :visible.sync="ratingDialogVisible"
-      :close-on-click-modal="false"
-      append-to-body
-      top="5vh"
+      v-model:open="ratingDialogVisible"
+      :mask-closable="false"
     >
       <div class="add-form">
-        <el-tabs v-model="activeTab">
-          <el-tab-pane label="平台评价" name="platform">
-            <el-form ref="ratingForm" :model="ratingForm" label-width="80px">
-              <el-form-item label="评分">
+        <a-tabs v-model:activeKey="activeTab">
+          <a-tab-pane key="platform" tab="平台评分">
+            <a-form ref="ratingForm" :model="ratingForm" :label-col="{ style: { width: '80px' } }">
+              <a-form-item label="评分">
                 <div class="stars">
                   <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= ratingForm.score }" @click="ratingForm.score = i">★</span>
                 </div>
                 <span class="score-text">{{ ratingForm.score }}分</span>
-              </el-form-item>
-              <el-form-item label="评价描述">
-                <el-input v-model="ratingForm.description" type="textarea" rows="4" placeholder="请输入评价描述" />
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-          <el-tab-pane label="用户评价" name="user">
-            <el-table :data="usageRatings" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}" class-name="small-padding fixed-width">
-              <el-table-column label="评分" width="80">
-                <template slot-scope="scope">
-                  <div class="stars">
-                    <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= scope.row.score }">★</span>
+              </a-form-item>
+              <a-form-item label="评价描述">
+                <a-textarea v-model:value="ratingForm.description" :rows="4" placeholder="请输入评价描述" />
+              </a-form-item>
+            </a-form>
+          </a-tab-pane>
+          <a-tab-pane key="user" tab="用户评分">
+            <a-table
+              :columns="ratingColumns"
+              :data-source="usageRatings"
+              :pagination="false"
+              size="small"
+              style="width: 100%"
+              :row-key="(record, index) => index"
+            >
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.dataIndex === 'score'">
+                  <div class="dim-compact">
+                    <div class="dim-compact-row">
+                      <span class="dim-compact-label">准确性</span>
+                      <span class="dim-compact-score" :class="scoreClass(record.ratings['准确性'])">{{ record.ratings['准确性'] }}</span>
+                      <span class="dim-compact-label">稳定性</span>
+                      <span class="dim-compact-score" :class="scoreClass(record.ratings['稳定性'])">{{ record.ratings['稳定性'] }}</span>
+                    </div>
+                    <div class="dim-compact-row">
+                      <span class="dim-compact-label">响应时效</span>
+                      <span class="dim-compact-score" :class="scoreClass(record.ratings['响应时效'])">{{ record.ratings['响应时效'] }}</span>
+                      <span class="dim-compact-label">业务适配性</span>
+                      <span class="dim-compact-score" :class="scoreClass(record.ratings['业务适配性'])">{{ record.ratings['业务适配性'] }}</span>
+                    </div>
                   </div>
                 </template>
-              </el-table-column>
-              <el-table-column label="服务/订单号" width="200">
-                <template slot-scope="scope">
+                <template v-else-if="column.dataIndex === 'service'">
                   <div>
-                    <div class="review-service">{{ scope.row.serviceName }}</div>
-                    <div class="review-order">{{ scope.row.orderNo }}</div>
+                    <div class="review-service">{{ record.serviceName }}</div>
+                    <div class="review-order">{{ record.orderNo }}</div>
                   </div>
                 </template>
-              </el-table-column>
-              <el-table-column label="评价机构" width="200">
-                <template slot-scope="scope">
+                <template v-else-if="column.dataIndex === 'org'">
                   <div>
-                    <div class="review-org">{{ scope.row.orgName }}</div>
-                    <div class="review-user">{{ scope.row.userName }} · {{ scope.row.department }}</div>
+                    <div class="review-org">{{ record.orgName }}</div>
+                    <div class="review-user">{{ record.userName }} · {{ record.department }}</div>
                   </div>
                 </template>
-              </el-table-column>
-              <el-table-column label="评价内容" min-width="160" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row.content }}
+                <template v-else-if="column.dataIndex === 'content'">
+                  {{ record.content }}
                 </template>
-              </el-table-column>
-              <el-table-column label="评价时间" width="140">
-                <template slot-scope="scope">
-                  {{ scope.row.time }}
+                <template v-else-if="column.dataIndex === 'time'">
+                  {{ formatTime(record.time) }}
                 </template>
-              </el-table-column>
-            </el-table>
-          </el-tab-pane>
-        </el-tabs>
+              </template>
+            </a-table>
+          </a-tab-pane>
+        </a-tabs>
       </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button v-if="activeTab === 'platform'" type="primary" @click="handleRatingSubmit">提交</el-button>
-        <el-button @click="ratingDialogVisible = false">关闭</el-button>
-      </div>
-    </el-dialog>
+      <template #footer>
+        <div class="dialog-footer">
+          <a-button v-if="activeTab === 'platform'" type="primary" @click="handleRatingSubmit">提交</a-button>
+          <a-button @click="ratingDialogVisible = false">关闭</a-button>
+        </div>
+      </template>
+    </a-modal>
+
+    <!-- 详情抽屉 -->
+    <a-drawer
+      v-model:open="drawer.visible"
+      title="数字应用详情"
+      :width="860"
+      placement="right"
+      :body-style="{ padding: '24px' }"
+    >
+      <template v-if="drawer.record">
+        <div class="drawer-header-row">
+          <div class="drawer-header-icon">
+            <img v-if="drawer.record.logo" :src="drawer.record.logo" class="drawer-header-logo" alt="" />
+            <RobotOutlined v-else class="drawer-header-fallback" />
+          </div>
+          <div class="drawer-header-info">
+            <div class="drawer-header-title-row">
+              <span class="drawer-header-title">{{ drawer.record.title || '--' }}</span>
+              <a-badge :status="drawerStatusBadge(drawer.record.status)" :text="getStatusText(drawer.record.status)" />
+            </div>
+            <div class="drawer-header-sub">
+              <span>ID：{{ drawer.record.appId || drawer.record.contentId || '--' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <a-tabs v-model:activeKey="drawer.activeTab" class="mvp-detail-tabs">
+          <a-tab-pane key="overview" tab="概览">
+            <div class="overview-section__title">基本信息</div>
+            <a-descriptions :column="2" bordered size="small" class="mb-[16px]">
+              <a-descriptions-item label="系统地址" :span="2">
+                {{ drawer.record.systemUrl || '--' }}
+              </a-descriptions-item>
+              <a-descriptions-item label="显示顺序" :span="2">
+                {{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}
+              </a-descriptions-item>
+              <a-descriptions-item label="应用描述" :span="2">
+                {{ drawer.record.description || '--' }}
+              </a-descriptions-item>
+            </a-descriptions>
+            <div class="overview-section__title">联系信息</div>
+            <a-descriptions :column="2" bordered size="small" class="mb-[16px]">
+              <a-descriptions-item label="服务商名称">{{ drawer.record.serviceProvider || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="合作伙伴">{{ drawer.record.cooperativeEnterprise || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="联系方式1">
+                {{ drawer.record.contactName1 || '--' }} {{ drawer.record.contactPhone1 || '' }}
+              </a-descriptions-item>
+              <a-descriptions-item label="联系方式2">
+                {{ drawer.record.contactName2 || '--' }} {{ drawer.record.contactPhone2 || '' }}
+              </a-descriptions-item>
+            </a-descriptions>
+            <div class="overview-section__title">分类标签</div>
+            <a-descriptions :column="2" bordered size="small">
+              <a-descriptions-item label="面向对象" :span="2">{{ formatArray(drawer.record.targetObject) }}</a-descriptions-item>
+              <a-descriptions-item label="应用架构" :span="2">{{ formatArray(drawer.record.appArchitecture) }}</a-descriptions-item>
+              <a-descriptions-item label="部署云服务商" :span="2">{{ formatArray(drawer.record.cloudProvider) }}</a-descriptions-item>
+              <a-descriptions-item v-if="drawer.record.targetObject && drawer.record.targetObject.includes('基层医疗卫生机构')" label="基层应用覆盖范围" :span="2">{{ formatArray(drawer.record.coverBase) }}</a-descriptions-item>
+              <a-descriptions-item v-if="drawer.record.targetObject && drawer.record.targetObject.includes('公立医院')" label="公立应用覆盖范围" :span="2">{{ formatArray(drawer.record.coverPublic) }}</a-descriptions-item>
+              <a-descriptions-item v-if="drawer.record.targetObject && drawer.record.targetObject.includes('医技护人员')" label="医技应用覆盖范围" :span="2">{{ formatArray(drawer.record.coverTech) }}</a-descriptions-item>
+            </a-descriptions>
+          </a-tab-pane>
+          <a-tab-pane key="audit" tab="审核信息">
+            <div class="overview-section__title">审核记录</div>
+            <a-table
+              :columns="auditVersionColumns"
+              :data-source="auditVersionRows"
+              :pagination="false"
+              size="small"
+              row-key="versionKey"
+              :expanded-row-keys="expandedRowKeys"
+              @expand="onExpand"
+            >
+              <template #expandedRowRender="{ record }">
+                <div class="audit-pipeline">
+                  <div
+                    v-for="(step, idx) in auditSteps"
+                    :key="step.key"
+                    class="pipeline-step"
+                    :class="getPipelineStepClass(record, idx)"
+                  >
+                    <div class="pipeline-step__dot" :class="getPipelineDotClass(record, idx)">
+                      <CheckOutlined v-if="getPipelineStepStatus(record, idx) === 'done'" />
+                      <CloseOutlined v-else-if="getPipelineStepStatus(record, idx) === 'rejected'" />
+                      <span v-else>{{ idx + 1 }}</span>
+                    </div>
+                    <div class="pipeline-step__content">
+                      <div class="pipeline-step__title">阶段 {{ idx + 1 }}：{{ step.title }}</div>
+                      <div class="pipeline-step__tag" :class="getPipelineTagClass(record, idx)">{{ getPipelineTagText(record, idx) }}</div>
+                      <div v-if="getPipelineStepDetail(record, idx)" class="pipeline-step__detail">
+                        <div class="pipeline-step__opinion">{{ getPipelineStepDetail(record, idx).opinion }}</div>
+                        <div class="pipeline-step__meta">
+                          <div class="pipeline-step__auditor">{{ getPipelineStepDetail(record, idx).auditor }}</div>
+                          <div class="pipeline-step__audit-time">{{ getPipelineStepDetail(record, idx).auditTime }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="idx < auditSteps.length - 1" class="pipeline-step__connector" :class="getPipelineConnectorClass(record, idx)"></div>
+                  </div>
+                </div>
+              </template>
+              <template #bodyCell="{ column, record }">
+                <span v-if="column.dataIndex === 'submittedAt'" class="cell-num">{{ formatTime(record.submittedAt) }}</span>
+                <a-tag v-else-if="column.dataIndex === 'status'" :color="auditStatusColor(record.status)" class="!m-0 !text-[11px]">{{ record.status }}</a-tag>
+                <span v-else-if="column.dataIndex === 'auditTime'" class="cell-num">{{ formatTime(record.auditTime) }}</span>
+                <span v-else-if="column.dataIndex === 'opinion'" class="cell-opinion">{{ record.opinion || '--' }}</span>
+                <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+              </template>
+            </a-table>
+          </a-tab-pane>
+          <a-tab-pane key="rating" tab="评价信息">
+            <div class="overview-section">
+              <div class="overview-section__title">评分概览</div>
+              <div class="rating-overview">
+                <div class="rating-overview__item">
+                  <div class="rating-overview__label">平台评分</div>
+                  <div class="rating-overview__body">
+                    <span class="rating-overview__num">{{ drawer.record.platformRating || 0 }}</span>
+                    <span class="rating-overview__unit">分</span>
+                    <span class="rating-overview__stars">
+                      <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= (drawer.record.platformRating || 0) }">★</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="rating-overview__item">
+                  <div class="rating-overview__label">用户评分</div>
+                  <div class="rating-overview__body">
+                    <span class="rating-overview__num">{{ drawer.record.usageRating || 0 }}</span>
+                    <span class="rating-overview__unit">分</span>
+                    <span class="rating-overview__stars">
+                      <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= (drawer.record.usageRating || 0) }">★</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="overview-section">
+              <div class="overview-section__head">
+                <span class="overview-section__title">用户评分</span>
+                <span class="overview-section__count">共 {{ drawerUsageRatings.length }} 条</span>
+              </div>
+              <div class="rating-list">
+                <div v-for="(item, idx) in drawerUsageRatings" :key="idx" class="rating-card">
+                  <div class="rating-card__avatar">{{ (item.userName || '匿').charAt(0) }}</div>
+                  <div class="rating-card__body">
+                    <div class="rating-card__row">
+                      <span class="rating-card__name">{{ item.userName || '匿名用户' }}</span>
+                    </div>
+                    <div class="rating-card__dims">
+                      <span v-for="d in dimLabels" :key="d" class="rating-card__dim">
+                        <span class="rating-card__dim-label">{{ d }}</span>
+                        <span class="rating-card__dim-stars">
+                          <span v-for="i in 5" :key="i" class="star-sm" :class="{ full: i <= item.ratings[d] }">★</span>
+                        </span>
+                        <span class="rating-card__dim-num">{{ item.ratings[d] }}</span>
+                      </span>
+                    </div>
+                    <div class="rating-card__meta">
+                      <span>{{ item.orgName || '--' }}</span>
+                      <span class="rating-card__sep">·</span>
+                      <span class="rating-card__order">{{ item.orderNo }}</span>
+                    </div>
+                    <div class="rating-card__content">{{ item.content }}</div>
+                    <div class="rating-card__time">{{ formatTime(item.time) }}</div>
+                    <div v-if="item.reply" class="rating-card__reply">
+                      <strong>开发者回复：</strong>{{ item.reply }}
+                    </div>
+                  </div>
+                </div>
+                <div v-if="!drawerUsageRatings.length" class="rating-empty">暂无评价</div>
+              </div>
+            </div>
+          </a-tab-pane>
+        </a-tabs>
+      </template>
+    </a-drawer>
   </div>
 </template>
 <script>
@@ -763,14 +545,46 @@ import {
 } from "@/api/contentcore/content";
 import CMSCatalogSelector from "@/views/cms/contentcore/catalogSelector";
 import CMSProgress from "@/views/components/Progress";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+  ReloadOutlined,
+  DownloadOutlined,
+  SendOutlined,
+  EyeOutlined,
+  RobotOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from "@ant-design/icons-vue";
+import { message, Modal } from "ant-design-vue";
+import PageHeader from "@/components/cloud/PageHeader.vue";
+import CloudCard from "@/components/cloud/CloudCard.vue";
+import FilterBar from "@/components/cloud/FilterBar.vue";
+import StatusDot from "@/components/cloud/StatusDot.vue";
 
 export default {
   name: "CMSDigitalAppList",
   components: {
     "cms-catalog-selector": CMSCatalogSelector,
     "cms-progress": CMSProgress,
+    PageHeader,
+    CloudCard,
+    FilterBar,
+    StatusDot,
+    PlusOutlined,
+    EditOutlined,
+    DeleteOutlined,
+    SearchOutlined,
+    ReloadOutlined,
+    DownloadOutlined,
+    SendOutlined,
+    EyeOutlined,
+    RobotOutlined,
+    CheckOutlined,
+    CloseOutlined,
   },
-  dicts: ["CMSContentStatus", "CMSContentAttribute"],
   props: {
     cid: {
       type: String,
@@ -782,28 +596,19 @@ export default {
     return {
       // 遮罩层
       loading: false,
+      // 详情抽屉
+      drawer: { visible: false, record: null, activeTab: 'overview' },
+      expandedRowKeys: [],
       addPopoverVisible: false,
       showSearch: false,
       contentTypeOptions: [],
       // 应用覆盖范围选项
       appScopeOptions: [
-        { value: '医院信息系统（HIS）', label: '医院信息系统（HIS）' },
-        { value: '实验室信息管理系统（LIS）', label: '实验室信息管理系统（LIS）' },
-        { value: '影像归档和通信系统（PACS）', label: '影像归档和通信系统（PACS）' },
-        { value: '心电', label: '心电' },
-        { value: '医养结合一体化', label: '医养结合一体化' },
-        { value: '智慧管理平台（HRP）', label: '智慧管理平台（HRP）' },
-        { value: '药店应用管理', label: '药店应用管理' },
-        { value: '智能外呼', label: '智能外呼' },
-        { value: '临床专病库', label: '临床专病库' },
-        { value: '医共体信息平台', label: '医共体信息平台' },
-        { value: '妇幼健康', label: '妇幼健康' },
         { value: '基本公共卫生服务', label: '基本公共卫生服务' },
+        { value: '医院信息系统（HIS）', label: '医院信息系统（HIS）' },
         { value: '家庭医生签约', label: '家庭医生签约' },
-        { value: '村卫生室管理', label: '村卫生室管理' },
-        { value: '辅助诊疗', label: '辅助诊疗' },
-        { value: '区域综合', label: '区域综合' },
-        { value: '基本公共卫生服务绩效评价', label: '基本公共卫生服务绩效评价' }
+        { value: '实验室信息管理系统（LIS）', label: '实验室信息管理系统（LIS）' },
+        { value: '影像归档和通信系统（PACS）', label: '影像归档和通信系统（PACS）' }
       ],
       // 面向对象选项
       targetObjectOptions: [
@@ -811,15 +616,13 @@ export default {
         { value: '公立医院', label: '公立医院' },
         { value: '医技护人员', label: '医技护人员' }
       ],
-      coverBaseOptions: ['基本公共卫生服务', '医院信息系统（HIS）', '实验室信息管理系统（LIS）', '影像归档和通信系统（PACS）', '智慧管理平台（HRP）', '心电', '家庭医生签约', '村卫生室管理', '药店应用管理', '智能外呼', '辅助诊疗', '临床专病库', '区域综合', '基本公共卫生服务绩效评价', '妇幼健康'],
-      coverPublicOptions: ['医院信息系统（HIS）', '实验室信息管理系统（LIS）', '影像归档和通信系统（PACS）', '心电', '医养结合一体化', '智慧管理平台（HRP）', '药店应用管理', '智能外呼', '临床专病库', '医共体信息平台', '妇幼健康'],
-      coverTechOptions: [],
       catalogId: this.cid || '603612031287365',
-      contentList: null,
+      contentList: [],
       total: 0,
       tableHeight: 600, // 表格高度
       tableMaxHeight: 600, // 表格最大高度
       selectedRows: [], // 表格选中行
+      selectedRowKeys: [],
       single: true,
       multiple: true,
       dateRange: [],
@@ -827,6 +630,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
         title: undefined,
+        appId: undefined,
+        serviceProvider: undefined,
         contentType: undefined,
         status: undefined,
         cover: undefined,
@@ -834,49 +639,26 @@ export default {
         catalogId: undefined,
         sorts: "",
       },
-      // 新增弹窗
-      addDialogVisible: false,
-      addForm: {
-        title: '',
-        logo: '',
-        description: '',
-        systemUrl: '',
-        sortOrder: 0,
-        serviceProvider: '',
-        cooperativeEnterprise: '',
-        contactName1: '',
-        contactPhone1: '',
-        contactName2: '',
-        contactPhone2: '',
-        targetObject: [],
-        appArchitecture: [],
-        cloudProvider: [],
-        coverBase: [],
-        coverPublic: [],
-        coverTech: []
-      },
-      // 编辑弹窗
-      editDialogVisible: false,
-      editForm: {
-        id: '',
-        title: '',
-        logo: '',
-        description: '',
-        systemUrl: '',
-        sortOrder: 0,
-        serviceProvider: '',
-        cooperativeEnterprise: '',
-        contactName1: '',
-        contactPhone1: '',
-        contactName2: '',
-        contactPhone2: '',
-        targetObject: [],
-        appArchitecture: [],
-        cloudProvider: [],
-        coverBase: [],
-        coverPublic: [],
-        coverTech: []
-      },
+      columns: [
+        { title: '数字应用名称/ID', dataIndex: 'title', key: 'title', width: 220 },
+
+        { title: '面向对象', dataIndex: 'targetObject', key: 'targetObject', width: 120 },
+        { title: '应用覆盖范围', dataIndex: 'cover', key: 'cover', width: 200 },
+        { title: '服务商名称', dataIndex: 'serviceProvider', key: 'serviceProvider', ellipsis: true, width: 150 },
+        { title: '合作企业', dataIndex: 'cooperativeEnterprise', key: 'cooperativeEnterprise', ellipsis: true, width: 150 },
+        { title: '部署云服务商', dataIndex: 'cloudProvider', key: 'cloudProvider', ellipsis: true, width: 150 },
+        { title: '状态', dataIndex: 'status', key: 'status', width: 80 },
+        { title: '平台评分', dataIndex: 'platformRating', key: 'platformRating', width: 90 },
+        { title: '用户评分', dataIndex: 'usageRating', key: 'usageRating', width: 90 },
+        { title: '操作', dataIndex: 'action', key: 'action', width: 200, fixed: 'right' }
+      ],
+      ratingColumns: [
+        { title: '评分', dataIndex: 'score', key: 'score', width: 200 },
+        { title: '服务/订单号', dataIndex: 'service', key: 'service', width: 200 },
+        { title: '评价机构', dataIndex: 'org', key: 'org', width: 200 },
+        { title: '评价内容', dataIndex: 'content', key: 'content', ellipsis: true },
+        { title: '评价时间', dataIndex: 'time', key: 'time', width: 140 }
+      ],
       // 详情弹窗
       detailDialogVisible: false,
       detailForm: {
@@ -896,59 +678,13 @@ export default {
         cloudProvider: [],
         appScope: ''
       },
-      // 分类标签子分组配置（新增弹窗）
-      targetObjectSubgroupsAdd: [
-        { key: 'org', title: '机构类', options: ['基层医疗卫生机构', '公立医院'] },
-        { key: 'person', title: '人员类', options: ['医技护人员'] }
-      ],
-      archSubgroupsAdd: [
-        { key: 'web', title: 'Web架构', options: ['B/S'] },
-        { key: 'client', title: '客户端架构', options: ['C/S架构', 'B/S+C/S'] },
-        { key: 'standalone', title: '独立部署', options: ['单机', '其他'] }
-      ],
-      cloudSubgroupsAdd: [
-        { key: 'carrier', title: '运营商云', options: ['电信云', '移动云', '联通云'] },
-        { key: 'independent', title: '独立云厂商', options: ['浪潮云', '紫光云', '影像云'] }
-      ],
-      // 分类标签子分组配置（编辑弹窗）
-      targetObjectSubgroupsEdit: [
-        { key: 'org', title: '机构类', options: ['基层医疗卫生机构', '公立医院'] },
-        { key: 'person', title: '人员类', options: ['医护人员', '市民'] },
-        { key: 'org2', title: '组织类', options: ['企业'] }
-      ],
-      archSubgroupsEdit: [
-        { key: 'deploy', title: '部署方式', options: ['云端部署', '本地部署'] }
-      ],
-      cloudSubgroupsEdit: [
-        { key: 'carrier', title: '运营商云', options: ['电信云', '移动云', '联通云'] },
-        { key: 'platform', title: '云平台厂商', options: ['阿里云', '腾讯云', '华为云'] },
-        { key: 'independent', title: '独立云厂商', options: ['紫光云'] }
-      ],
-      // 表单验证规则
-      rules: {
-        title: [
-          { required: true, message: '请输入应用名称', trigger: 'blur' }
-        ],
-        description: [
-          { required: true, message: '请输入应用描述', trigger: 'blur' }
-        ],
-        serviceProvider: [
-          { required: true, message: '请输入服务商名称', trigger: 'blur' }
-        ],
-        targetObject: [
-          { required: true, message: '请选择面向对象', trigger: 'change' }
-        ],
-        cloudProvider: [
-          { required: true, message: '请选择部署云服务商', trigger: 'change' }
-        ]
-      },
       topDialogVisible: false,
       topForm: {
         topEndTime: undefined,
       },
       topEndTimePickerOptions: {
-        disabledDate(time) {
-          return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e7就是不可以选择今天的
+        disabledDate(current) {
+          return current && current.valueOf() < Date.now() - 8.64e7; //如果没有后面的-8.64e7就是不可以选择今天的
         },
       },
       openProgress: false,
@@ -958,7 +694,6 @@ export default {
       isCopy: false,
       openContentSortDialog: false, // 内容选择弹窗
       openEditorW: true,
-      statusColumn: [],
       // 评价弹窗
       ratingDialogVisible: false,
       activeTab: 'platform',
@@ -966,27 +701,81 @@ export default {
         score: 0,
         description: ''
       },
+      dimLabels: ['准确性', '稳定性', '响应时效', '业务适配性'],
       currentApp: null,
+      auditVersionColumns: [
+        { title: '提交审核时间', dataIndex: 'submittedAt', key: 'submittedAt', width: 160 },
+        { title: '提交人', dataIndex: 'submitter', key: 'submitter', width: 140 },
+        { title: '审核状态', dataIndex: 'status', key: 'status', width: 100 },
+        { title: '审核人', dataIndex: 'auditor', key: 'auditor', width: 120 },
+        { title: '审核时间', dataIndex: 'auditTime', key: 'auditTime', width: 160 },
+        { title: '审核意见', dataIndex: 'opinion', key: 'opinion', ellipsis: true }
+      ],
+      auditSteps: [
+        { key: 1, title: '申报材料评估' },
+        { key: 2, title: '应用技术测评' },
+        { key: 3, title: '现场演示答辩' },
+        { key: 4, title: '服务目录发布' }
+      ],
+      // 版本审核流水数据（按阶段记录最终审核结果）
+      versionAuditMock: {
+        V1: {
+          1: { statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2024-03-18 15:30', opinion: '材料完整、信息有效，本阶段通过' },
+          2: { statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2024-03-21 14:00', opinion: '功能完整性、性能指标、安全合规均达到标准' },
+          3: { statusKey: 'done', statusText: '已通过', auditor: '张主任', auditTime: '2024-04-01 16:00', opinion: '核心功能演示完整，数据同步逻辑清晰，答辩通过' },
+          4: { statusKey: 'done', statusText: '已通过', auditor: '赵管理员', auditTime: '2024-04-05 10:00', opinion: '服务信息完整，发布至服务目录' }
+        },
+        V2: {
+          1: { statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2024-05-20 10:00', opinion: '修改后的材料完整合规，本阶段通过' },
+          2: { statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2024-05-25 16:00', opinion: '功能完整、性能达标，技术测评通过' },
+          3: { statusKey: 'processing', statusText: '进行中' },
+          4: { statusKey: 'pending', statusText: '未开始' }
+        },
+        V3: {
+          1: { statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2024-06-08 09:30', opinion: '申报材料齐全、资质真实有效，本阶段通过' },
+          2: { statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2024-06-14 11:00', opinion: '应用功能完整、性能指标达标，技术测评通过' },
+          3: { statusKey: 'rejected', statusText: '已驳回', auditor: '张主任', auditTime: '2024-06-20 15:00', opinion: '现场演示未能体现核心业务闭环，数据安全方案存在明显缺陷' },
+          4: { statusKey: 'pending', statusText: '未开始' }
+        },
+        V4: {
+          1: { statusKey: 'done', statusText: '已通过', auditor: '刘经理', auditTime: '2024-07-02 10:00', opinion: '材料齐全，资质审核通过' },
+          2: { statusKey: 'rejected', statusText: '已驳回', auditor: '陈工程师', auditTime: '2024-07-08 14:00', opinion: '应用性能测试不达标，并发处理能力不足，需优化后重新提交' },
+          3: { statusKey: 'pending', statusText: '未开始' },
+          4: { statusKey: 'pending', statusText: '未开始' }
+        },
+        V5: {
+          1: { statusKey: 'done', statusText: '已通过', auditor: '刘经理', auditTime: '2024-08-12 09:00', opinion: '优化后材料重新提交，申报材料评估通过' },
+          2: { statusKey: 'done', statusText: '已通过', auditor: '陈工程师', auditTime: '2024-08-18 16:00', opinion: '性能优化后各项指标达标，技术测评通过' },
+          3: { statusKey: 'done', statusText: '已通过', auditor: '周主任', auditTime: '2024-08-25 14:00', opinion: '现场演示完整，答辩通过' },
+          4: { statusKey: 'processing', statusText: '进行中' }
+        },
+        V6: {
+          1: { statusKey: 'rejected', statusText: '已驳回', auditor: '孙主管', auditTime: '2024-09-05 11:00', opinion: '申报材料关键资质缺失，请补充法人证书及等保测评报告' },
+          2: { statusKey: 'pending', statusText: '未开始' },
+          3: { statusKey: 'pending', statusText: '未开始' },
+          4: { statusKey: 'pending', statusText: '未开始' }
+        }
+      },
       usageRatings: [
         {
-          score: 5,
+          ratings: { '准确性': 5, '稳定性': 5, '响应时效': 4, '业务适配性': 5 },
           serviceName: '智慧园区综合管理平台',
           orderNo: '#ORD-2024-0089',
           orgName: '北京市海淀区数字经济发展局',
           userName: '张三',
           department: '技术部',
           content: '平台运行稳定，功能齐全，售后服务响应及时，整体体验很好。',
-          time: '2024-03-15 14:32'
+          time: '2024-03-15 14:32:00'
         },
         {
-          score: 4,
+          ratings: { '准确性': 4, '稳定性': 4, '响应时效': 5, '业务适配性': 4 },
           serviceName: '统一身份认证组件',
           orderNo: '#ORD-2024-0090',
           orgName: '北京市朝阳区卫健委',
           userName: '李四',
           department: '信息科',
           content: '组件集成方便，文档完善，基本满足需求，部分场景适配需优化。',
-          time: '2024-03-12 09:15'
+          time: '2024-03-12 09:15:00'
         }
       ],
     };
@@ -998,59 +787,49 @@ export default {
     catalogId(newVal) {
       this.loadContentList();
     },
-    addDialogVisible(val) {
-      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.2.1.2'); }
-    },
-    editDialogVisible(val) {
-      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.2.1.3'); }
-    },
-    "dict.type.CMSContentStatus": {
-      handler(val) {
-        let arr = [];
-        val.forEach((i) => {
-          arr.push({
-            label: i.label,
-            value: i.raw.dictValue,
-            raw: {
-              listClass:
-                i.raw.dictValue === "30"
-                  ? "success"
-                  : i.raw.dictValue === "40"
-                  ? "danger"
-                  : "default",
-            },
-          });
-        });
-        this.statusColumn = arr;
-      },
-      deep: true,
-    },
   },
   computed: {
-    flatTargetObjectAdd() {
-      return this.targetObjectSubgroupsAdd.flatMap(sg => sg.options);
+    paginationConfig() {
+      return {
+        current: this.queryParams.pageNum,
+        pageSize: this.queryParams.pageSize,
+        total: this.total,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: ['10', '20', '30', '50'],
+        showTotal: (t) => `共 ${t} 条`
+      };
     },
-    flatArchAdd() {
-      return this.archSubgroupsAdd.flatMap(sg => sg.options);
+    auditVersionRows() {
+      if (!this.drawer.record) return []
+      const s = (key) => this.versionAuditMock[key][4] || {}
+      return [
+        { versionKey: 'V1', versionLabel: 'V1', submittedAt: '2026-01-10 09:05:00', submitter: '影像云科技有限公司', status: '已通过', auditor: s('V1').auditor || '', auditTime: s('V1').auditTime || '', opinion: s('V1').opinion || '' },
+        { versionKey: 'V2', versionLabel: 'V2', submittedAt: '2026-03-18 10:30:00', submitter: '影像云科技有限公司', status: '审核中', auditor: s('V2').auditor || '', auditTime: s('V2').auditTime || '', opinion: s('V2').opinion || '' },
+        { versionKey: 'V3', versionLabel: 'V3', submittedAt: '2026-04-08 14:00:00', submitter: '影像云科技有限公司', status: '已驳回', auditor: s('V3').auditor || '', auditTime: s('V3').auditTime || '', opinion: s('V3').opinion || '' },
+        { versionKey: 'V4', versionLabel: 'V4', submittedAt: '2026-05-20 08:30:00', submitter: '影像云科技有限公司', status: '已驳回', auditor: s('V4').auditor || '', auditTime: s('V4').auditTime || '', opinion: s('V4').opinion || '' },
+        { versionKey: 'V5', versionLabel: 'V5', submittedAt: '2026-06-15 09:00:00', submitter: '影像云科技有限公司', status: '审核中', auditor: s('V5').auditor || '', auditTime: s('V5').auditTime || '', opinion: s('V5').opinion || '' },
+        { versionKey: 'V6', versionLabel: 'V6', submittedAt: '2026-07-20 16:00:00', submitter: '影像云科技有限公司', status: '已驳回', auditor: s('V6').auditor || '', auditTime: s('V6').auditTime || '', opinion: s('V6').opinion || '' }
+      ]
     },
-    flatCloudAdd() {
-      return this.cloudSubgroupsAdd.flatMap(sg => sg.options);
-    },
-    flatTargetObjectEdit() {
-      return this.targetObjectSubgroupsEdit.flatMap(sg => sg.options);
-    },
-    flatArchEdit() {
-      return this.archSubgroupsEdit.flatMap(sg => sg.options);
-    },
-    flatCloudEdit() {
-      return this.cloudSubgroupsEdit.flatMap(sg => sg.options);
-    },
+    drawerUsageRatings() {
+      const rec = this.drawer.record
+      if (!rec) return []
+      const appName = rec.title || '数字应用'
+      return [
+        { ratings: { '准确性': 5, '稳定性': 5, '响应时效': 4, '业务适配性': 5 }, serviceName: appName, orderNo: '#ORD-2026-0089', orgName: '重庆医科大学附属第一医院', userName: '张三', department: '信息科', content: '平台运行稳定，功能齐全，售后服务响应及时，整体体验很好。', time: '2026-03-15 14:32:00', reply: '感谢您的认可与支持，我们将持续优化平台功能！', replyTime: '2026-03-15 16:00:00' },
+        { ratings: { '准确性': 4, '稳定性': 4, '响应时效': 5, '业务适配性': 4 }, serviceName: appName, orderNo: '#ORD-2026-0090', orgName: '重庆市人民医院', userName: '李四', department: '信息科', content: '组件集成方便，文档完善，基本满足需求，部分场景适配需优化。', time: '2026-03-12 09:15:00' },
+        { ratings: { '准确性': 4, '稳定性': 4, '响应时效': 4, '业务适配性': 4 }, serviceName: appName, orderNo: '#ORD-2026-0092', orgName: '重庆大学附属肿瘤医院', userName: '王五', department: '信息中心', content: '使用体验良好，功能基本满足业务需求。', time: '2026-03-10 16:20:00' }
+      ]
+    }
   },
   created() {
     this.changeTableHeight();
     getContentTypes().then((response) => {
       this.contentTypeOptions = response.data;
-      this.addContentType = this.contentTypeOptions[0].id;
+      if (this.contentTypeOptions && this.contentTypeOptions.length > 0) {
+        this.addContentType = this.contentTypeOptions[0].id;
+      }
     });
     if (this.catalogId && this.catalogId > 0) {
       this.loadContentList();
@@ -1093,19 +872,23 @@ export default {
       });
       return hitValue;
     },
-    handleSelectionChange(selection) {
-      this.selectedRows = selection;
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
+    handleSelectionChange(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys;
+      this.selectedRows = selectedRows;
+      this.single = selectedRows.length != 1;
+      this.multiple = !selectedRows.length;
     },
     handleRowClick(currentRow) {
       // 不执行任何操作，避免影响按钮的点击事件
     },
     toggleAllCheckedRows() {
-      this.selectedRows.forEach((row) => {
-        this.$refs.tableContentList.toggleRowSelection(row, false);
-      });
+      this.selectedRowKeys = [];
       this.selectedRows = [];
+    },
+    onTableChange(pag) {
+      this.queryParams.pageNum = pag.current;
+      this.queryParams.pageSize = pag.pageSize;
+      this.loadContentList();
     },
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -1117,141 +900,123 @@ export default {
       this.handleQuery();
     },
     handleAdd() {
-      this.addDialogVisible = true;
-    },
-    handleLogoUpload(file) {
-      // 这里可以处理文件上传逻辑
-      console.log('上传的文件:', file);
-      // 模拟上传成功，设置logo路径
-      this.addForm.logo = URL.createObjectURL(file.raw);
-    },
-    handleAddSubmit() {
-      // 表单验证
-      this.$refs.addForm.validate((valid) => {
-        if (valid) {
-          // 这里可以处理表单提交逻辑
-          console.log('表单数据:', this.addForm);
-          // 模拟提交成功
-          this.$modal.msgSuccess('保存成功');
-          this.addDialogVisible = false;
-          // 重置表单
-          this.resetForm('addForm');
-          // 重新加载列表
-          this.loadContentList();
-        }
-      });
+      this.$router.push({ path: '/portal/service/digitalAppForm', query: { cid: this.catalogId } });
     },
     handleDetail(row) {
-      this.$router.push({
-        path: '/portal/service/digitalAppDetail',
-        query: {
-          title: row.title || '--',
-          status: row.status || '--',
-          serviceProvider: row.serviceProvider || '--',
-          systemUrl: row.systemUrl || '--',
-          description: row.description || '--',
-          deployServiceProviderView: row.cooperativeEnterprise || '--',
-          contactName1: row.contactName1 || '--',
-          contactPhone1: row.contactPhone1 || '--',
-          targetView: Array.isArray(row.targetObject) ? row.targetObject.join('、') : (row.targetObject || '--'),
-          coverView: Array.isArray(row.cover) ? row.cover.map(item => item.value || item).join('、') : (row.coverView || '--'),
-          cloudProviderStr: Array.isArray(row.cloudProvider) ? row.cloudProvider.join('、') : (row.cloudProviderStr || row.cloudProvider || '--'),
-          sortOrder: row.sortOrder,
-          platformRating: row.platformRating || 0,
-          usageRating: row.usageRating || 0
-        }
+      this.drawer.record = row;
+      this.drawer.activeTab = '';
+      this.drawer.visible = true;
+      this.$nextTick(() => {
+        this.drawer.activeTab = 'overview';
       });
+    },
+    scoreClass(val) {
+      if (val >= 4) return 'score-high';
+      if (val >= 3) return 'score-mid';
+      return 'score-low';
+    },
+    goToReview(row) {
+      this.$router.push({ path: '/portal/order/review', query: { serviceId: row.contentId } });
+    },
+    getStatusKey(status) {
+      const map = {
+        10: 'done',
+        40: 'cancelled',
+        20: 'warning'
+      };
+      return map[status] || 'default';
+    },
+    drawerStatusBadge(status) {
+      const text = this.getStatusText(status);
+      if (text === '已上线使用') return 'success';
+      if (text === '已下架') return 'warning';
+      if (text === '待审核') return 'processing';
+      return 'default';
+    },
+    getStatusText(status) {
+      const map = {
+        10: '已上线使用',
+        40: '已下架',
+        20: '待审核'
+      };
+      return map[status] || '未知';
+    },
+    formatArray(arr) {
+      if (Array.isArray(arr)) return arr.join('、') || '--';
+      return arr || '--';
+    },
+    formatCover(cover) {
+      if (Array.isArray(cover)) return cover.map(item => item.value || item).join('、') || '--';
+      return cover || '--';
+    },
+    formatTime(time) {
+      if (!time) return '--';
+      // 统一转为 yyyy-MM-dd HH:mm:ss
+      const d = new Date(time);
+      if (isNaN(d.getTime())) return time;
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     },
     handleTestDetail() {
       console.log('handleTestDetail called');
       this.handleDetail({});
     },
     handleEdit(row) {
-      // 填充编辑表单数据
-      this.editForm = {
-        id: row.id,
-        title: row.title || '',
-        logo: row.logo || '',
-        description: row.description || '',
-        systemUrl: row.systemUrl || '',
-        sortOrder: row.sortOrder || 0,
-        serviceProvider: row.serviceProvider || '',
-        cooperativeEnterprise: row.cooperativeEnterprise || '',
-        contactName1: row.contactName1 || '',
-        contactPhone1: row.contactPhone1 || '',
-        contactName2: row.contactName2 || '',
-        contactPhone2: row.contactPhone2 || '',
-        targetObject: row.targetObject || [],
-        appArchitecture: row.appArchitecture || [],
-        cloudProvider: row.cloudProvider || [],
-        coverBase: Array.isArray(row.coverBase) ? row.coverBase : [],
-        coverPublic: Array.isArray(row.coverPublic) ? row.coverPublic : [],
-        coverTech: Array.isArray(row.coverTech) ? row.coverTech : [],
-        appScope: row.appScope || ''
-      };
-      console.log('editForm set:', this.editForm);
-      // 使用setTimeout确保异步更新
-      setTimeout(() => {
-        this.editDialogVisible = true;
-        console.log('editDialogVisible set to:', this.editDialogVisible);
-      }, 0);
-    },
-    handleEditSubmit() {
-      // 表单验证
-      this.$refs.editForm.validate((valid) => {
-        if (valid) {
-          // 这里可以处理表单提交逻辑
-          console.log('表单数据:', this.editForm);
-          // 模拟提交成功
-          this.$modal.msgSuccess('保存成功');
-          this.editDialogVisible = false;
-          // 重新加载列表
-          this.loadContentList();
-        }
-      });
+      const editRow = row || (this.selectedRows && this.selectedRows[0]);
+      if (!editRow) return;
+      this.$router.push({ path: '/portal/service/digitalAppForm', query: { id: editRow.contentId, cid: this.catalogId } });
     },
     handleDelete(row) {
-      const contentIds = row.contentId
-        ? [row.contentId]
-        : this.selectedRows.map((row) => row.contentId);
-      this.$modal
-        .confirm("是否确认删除？")
-        .then(function () {
-          return delContent(contentIds);
-        })
-        .then(() => {
-          this.loadContentList();
-          this.$modal.msgSuccess(this.$t("Common.DeleteSuccess"));
-        })
-        .catch(function () {});
+      const safeRow = row || {};
+      const contentIds = safeRow.contentId
+        ? [safeRow.contentId]
+        : this.selectedRows.map((r) => r.contentId);
+      if (contentIds.length === 0) {
+        message.warning(this.$t("CMS.Content.SelectRowFirst"));
+        return;
+      }
+      Modal.confirm({
+        title: this.$t("Common.SystemTip"),
+        content: "是否确认删除？",
+        onOk: () => {
+          return delContent(contentIds).then(() => {
+            this.loadContentList();
+            message.success(this.$t("Common.DeleteSuccess"));
+          });
+        },
+        onCancel: () => {},
+      });
     },
     handlePublish(row) {
-      const contentIds = row.contentId
-        ? [row.contentId]
-        : this.selectedRows.map((row) => row.contentId);
+      const safeRow = row || {};
+      const contentIds = safeRow.contentId
+        ? [safeRow.contentId]
+        : this.selectedRows.map((r) => r.contentId);
       if (contentIds.length == 0) {
-        this.$modal.msgWarning(this.$t("CMS.Content.SelectRowFirst"));
+        message.warning(this.$t("CMS.Content.SelectRowFirst"));
         return;
       }
       const _this = this;
-      this.$modal
-        .confirm("发布后将在门户网站上显示，是否确认发布？")
-        .then(function () {
+      Modal.confirm({
+        title: this.$t("Common.SystemTip"),
+        content: "发布后将在门户网站上显示，是否确认发布？",
+        onOk: () => {
           _this.updateArticle(contentIds);
-        });
+        },
+      });
     },
     updateArticle(contentIds) {
       console.log(contentIds);
-      this.$modal.loading("Loading...");
+      const hide = message.loading("Loading...", 0);
       publishContent(contentIds)
         .then((response) => {
-          this.$modal.closeLoading();
-          this.$modal.msgSuccess(this.$t("CMS.ContentCore.PublishSuccess"));
+          hide();
+          message.success(this.$t("CMS.ContentCore.PublishSuccess"));
           this.loadContentList();
           this.$cache.local.set("publish_flag", "true");
         })
         .catch(() => {
-          this.$modal.closeLoading();
+          hide();
         });
     },
     handlePreview(row) {
@@ -1261,7 +1026,7 @@ export default {
       } else if (this.selectedRows.length > 0) {
         contentId = this.selectedRows[0].contentId;
       } else {
-        this.$modal.msgWarning(this.$t("CMS.Content.SelectRowFirst"));
+        message.warning(this.$t("CMS.Content.SelectRowFirst"));
         return;
       }
       let routeData = this.$router.resolve({
@@ -1278,7 +1043,7 @@ export default {
     },
     handleCreateIndex(row) {
       createIndexes(row.contentId).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
       });
     },
     handleCopy(row) {
@@ -1295,7 +1060,7 @@ export default {
         copyType: copyType,
       };
       copyContent(data).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.openCatalogSelector = false;
         if (this.catalogId && data.catalogIds.indexOf(this.catalogId) > -1) {
           this.loadContentList();
@@ -1315,7 +1080,7 @@ export default {
         catalogId: catalogs[0].id,
       };
       moveContent(data).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.openCatalogSelector = false;
         this.loadContentList();
       });
@@ -1340,29 +1105,27 @@ export default {
     handleTopDialogOk() {
       const contentIds = this.selectedRows.map((item) => item.contentId);
       if (contentIds.length == 0) {
-        this.$modal.msgWarning(this.$t("CMS.Content.SelectRowFirst"));
+        message.warning(this.$t("CMS.Content.SelectRowFirst"));
         return;
       }
-      this.$refs["top_form"].validate((valid) => {
-        if (valid) {
-          setTopContent({
-            contentIds: contentIds,
-            topEndTime: this.topForm.topEndTime,
-          }).then((response) => {
-            this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
-            this.topDialogVisible = false;
-            this.topForm.topEndTime = undefined;
-            this.loadContentList();
-          });
-        }
-      });
+      this.$refs.top_form.validate().then(() => {
+        setTopContent({
+          contentIds: contentIds,
+          topEndTime: this.topForm.topEndTime,
+        }).then((response) => {
+          message.success(this.$t("Common.OpSuccess"));
+          this.topDialogVisible = false;
+          this.topForm.topEndTime = undefined;
+          this.loadContentList();
+        });
+      }).catch(() => {});
     },
     handleCancelTop(row) {
       const contentIds = row.contentId
         ? [row.contentId]
         : this.selectedRows.map((item) => item.contentId);
       cancelTopContent(contentIds).then((response) => {
-        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
+        message.success(this.$t("Common.OpSuccess"));
         this.loadContentList();
       });
     },
@@ -1395,101 +1158,143 @@ export default {
       this.ratingForm.description = '';
       this.ratingDialogVisible = true;
     },
+    auditStatusColor(status) {
+      if (status === '已通过') return 'success';
+      if (status === '已驳回') return 'error';
+      return 'processing';
+    },
+    // ===== 审核流水展开方法 =====
+    onExpand(expanded, record) {
+      this.expandedRowKeys = expanded ? [record.versionKey] : []
+    },
+    getPipelineStepStatus(record, idx) {
+      const stepData = this.versionAuditMock[record.versionKey] && this.versionAuditMock[record.versionKey][idx + 1]
+      return stepData ? stepData.statusKey : 'pending'
+    },
+    getPipelineStepClass(record, idx) {
+      return `pipeline-step--${this.getPipelineStepStatus(record, idx)}`
+    },
+    getPipelineDotClass(record, idx) {
+      return `pipeline-step__dot--${this.getPipelineStepStatus(record, idx)}`
+    },
+    getPipelineTagClass(record, idx) {
+      return `pipeline-step__tag--${this.getPipelineStepStatus(record, idx)}`
+    },
+    getPipelineTagText(record, idx) {
+      const stepData = this.versionAuditMock[record.versionKey] && this.versionAuditMock[record.versionKey][idx + 1]
+      return stepData ? stepData.statusText : '待审核'
+    },
+    getPipelineStepDetail(record, idx) {
+      const stepData = this.versionAuditMock[record.versionKey] && this.versionAuditMock[record.versionKey][idx + 1]
+      if (!stepData || !stepData.auditor) return null
+      return stepData
+    },
+    getPipelineConnectorClass(record, idx) {
+      return this.getPipelineStepStatus(record, idx) === 'done' ? 'pipeline-step__connector--done' : ''
+    },
     handleRatingSubmit() {
-      // 提交平台评价
-      this.$modal.msgSuccess('评价成功');
+      // 提交平台评分
+      message.success('评价成功');
       this.ratingDialogVisible = false;
       // 模拟更新评分
       this.currentApp.platformRating = this.ratingForm.score;
     },
     handleOffline(row) {
       const _this = this;
-      this.$modal
-        .confirm("下线后将在门户网站上隐藏，是否确认下线？")
-        .then(function () {
-          const contentIds = row.contentId
-            ? [row.contentId]
-            : _this.selectedRows.map((item) => item.contentId);
+      const safeRow = row || {};
+      const contentIds = safeRow.contentId
+        ? [safeRow.contentId]
+        : _this.selectedRows.map((item) => item.contentId);
+      if (contentIds.length === 0) {
+        message.warning(this.$t("CMS.Content.SelectRowFirst"));
+        return;
+      }
+      Modal.confirm({
+        title: this.$t("Common.SystemTip"),
+        content: "下线后将在门户网站上隐藏，是否确认下线？",
+        onOk: () => {
           offlineContent(contentIds).then((response) => {
-            _this.$modal.msgSuccess(_this.$t("Common.OpSuccess"));
+            message.success(_this.$t("Common.OpSuccess"));
             _this.loadContentList();
           });
-        });
+        },
+      });
     },
     handleToPublish(row) {
       const _this = this;
-      this.$modal
-        .confirm("待发布后将在门户网站上隐藏，是否确认待发布？")
-        .then(function () {
-          const contentIds = row.contentId
-            ? [row.contentId]
-            : _this.selectedRows.map((item) => item.contentId);
+      const safeRow = row || {};
+      const contentIds = safeRow.contentId
+        ? [safeRow.contentId]
+        : _this.selectedRows.map((item) => item.contentId);
+      if (contentIds.length === 0) {
+        message.warning(this.$t("CMS.Content.SelectRowFirst"));
+        return;
+      }
+      Modal.confirm({
+        title: this.$t("Common.SystemTip"),
+        content: "待发布后将在门户网站上隐藏，是否确认待发布？",
+        onOk: () => {
           toPublishContent(contentIds).then((response) => {
-            _this.$modal.msgSuccess(
+            message.success(
               _this.$t("CMS.ContentCore.ToPublishSuccess")
             );
             _this.loadContentList();
           });
-        });
+        },
+      });
     },
   },
 };
 </script>
 <style scoped>
-.cms-content-list .head-container .el-select .el-input {
-  width: 110px;
+.digital-app-list-page {
+  padding: 4px 0;
 }
-.cms-content-list .el-divider {
-  margin-top: 10px;
+
+.digital-app-list-page__divider {
+  height: 1px;
+  background: #F2F3F5;
+  margin: 0 16px;
 }
-.cms-content-list .el-tabs__header {
-  margin-bottom: 10px;
+
+.digital-app-list-page__table-wrap {
+  padding: 0 16px 16px 16px;
 }
-.cms-content-list .pagination-container {
-  height: 30px;
+
+.cell-default {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
 }
-.cms-content-list .row-more-btn {
-  padding-left: 10px;
+
+.cell-primary {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  font-weight: 500;
 }
-.cms-content-list .top-icon {
-  font-weight: bold;
+
+.cell-name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cell-name__title {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cell-name__id {
+  color: rgba(0, 0, 0, 0.45);
   font-size: 12px;
-  color: green;
 }
-.cms-content-list .content_attr {
-  margin-left: 2px;
+
+/* 列表状态列文字统一 0.65（色点不变） */
+:deep(.ant-badge-status-text) {
+  color: rgba(0, 0, 0, 0.65) !important;
 }
 
 /* 新增/编辑弹窗样式 */
-:deep(.el-dialog) {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-:deep(.el-dialog__header) {
-  padding: 14px 24px 6px;
-  border-bottom: 1px solid #ebeef5;
-  background: #fafbfc;
-}
-
-:deep(.el-dialog__title) {
-  font-size: 16px;
-  font-weight: 600;
-  color: #303133;
-}
-
-:deep(.el-dialog__body) {
-  padding: 0;
-  max-height: 62vh;
-  overflow-y: auto;
-}
-
-:deep(.el-dialog__footer) {
-  padding: 14px 24px;
-  border-top: 1px solid #ebeef5;
-  background: #fafbfc;
-}
-
 .add-form {
   padding: 4px 24px 20px;
 }
@@ -1509,16 +1314,6 @@ export default {
   margin-bottom: 16px;
   padding-bottom: 10px;
   border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-form-item) {
-  margin-bottom: 18px;
-}
-
-:deep(.el-form-item__label) {
-  color: #606266;
-  font-weight: 500;
-  font-size: 13px;
 }
 
 /* 详情弹窗样式 */
@@ -1560,9 +1355,9 @@ export default {
 }
 /* 评分样式 */
 .rating-star {
-  color: #409EFF;
+  color: #165DFF;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 400;
 }
 
 .rating-star:hover {
@@ -1627,11 +1422,548 @@ export default {
   -webkit-box-orient: vertical;
 }
 
-/* 弹窗仅覆盖左侧Demo区域 */
-:deep(.el-dialog__wrapper) {
-  position: absolute !important;
+/* Drawer 样式 */
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
 }
-:deep(.v-modal) {
-  position: absolute !important;
+
+.drawer-header-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 0 8px;
+  margin-bottom: 8px;
+}
+
+.drawer-header-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #165DFF 0%, #4096ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.drawer-header-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.drawer-header-fallback {
+  font-size: 28px;
+  color: #fff;
+}
+
+.drawer-header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawer-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.drawer-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.drawer-header-sub {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.muted {
+  color: #4E5969;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.overview-section {
+  margin-bottom: 16px;
+}
+
+.overview-section:last-child {
+  margin-bottom: 0;
+}
+
+.overview-section__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.rating-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.rating-overview__item {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #FFF7E6 0%, #FFFBF2 100%);
+  border: 1px solid #FFE7BA;
+  border-radius: 8px;
+}
+
+.rating-overview__label {
+  font-size: 13px;
+  color: #4E5969;
+  margin-bottom: 8px;
+}
+
+.rating-overview__body {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.rating-overview__num {
+  font-size: 28px;
+  font-weight: 400;
+  color: #FA8C16;
+  line-height: 1;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-overview__unit {
+  font-size: 13px;
+  color: #86909C;
+}
+
+.rating-overview__stars {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 8px;
+}
+
+.rating-overview__stars .star {
+  color: #E5E6EB;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.rating-overview__stars .star.full {
+  color: #FAAD14;
+}
+
+.link-text {
+  color: #165DFF;
+  cursor: pointer;
+}
+
+.link-text:hover {
+  color: #4096FF;
+}
+
+.overview-section__head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.overview-section__head .overview-section__title {
+  margin-bottom: 0;
+}
+
+.overview-section__count {
+  font-size: 12px;
+  color: #86909C;
+}
+
+.rating-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rating-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #FAFBFC;
+  border: 1px solid #F2F3F5;
+  border-radius: 8px;
+}
+
+.rating-card__avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #165DFF, #4096FF);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+}
+
+.rating-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.rating-card__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.rating-card__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.rating-card__dims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-bottom: 8px;
+}
+
+.rating-card__dim {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rating-card__dim-label {
+  font-size: 11px;
+  color: #8c8c8c;
+}
+
+.rating-card__dim-stars {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.star-sm {
+  font-size: 13px;
+  color: #E5E6EB;
+  line-height: 1;
+}
+
+.star-sm.full {
+  color: #FAAD14;
+}
+
+.rating-card__dim-num {
+  font-size: 11px;
+  font-weight: 600;
+  color: #FAAD14;
+  min-width: 12px;
+}
+
+/* 弹窗内四维度评分 */
+.dim-compact { display: flex; flex-direction: column; gap: 4px; }
+.dim-compact-row { display: flex; align-items: center; gap: 4px; }
+.dim-compact-label { font-size: 11px; color: #8c8c8c; width: 52px; flex-shrink: 0; }
+.dim-compact-score {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 22px; border-radius: 4px;
+  font-size: 12px; font-weight: 600;
+  margin-right: 4px;
+}
+
+.rating-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #86909C;
+  margin-bottom: 6px;
+}
+
+.rating-card__sep {
+  color: #C9CDD4;
+}
+
+.rating-card__order {
+  color: #86909C;
+}
+
+.rating-card__content {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.75);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.rating-card__time {
+  font-size: 12px;
+  color: #C9CDD4;
+}
+
+.rating-card__reply {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-left: 2px solid rgba(22, 93, 255, 0.4);
+  font-size: 12px;
+  color: #86909C;
+  line-height: 1.5;
+}
+
+.rating-card__reply strong {
+  color: #165DFF;
+}
+
+.rating-empty {
+  padding: 40px 0;
+  text-align: center;
+  color: #C9CDD4;
+  font-size: 13px;
+}
+
+/* 审核记录时间字段：等宽数字 */
+.cell-num {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", "Roboto Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.2px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.cell-opinion {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.5;
+}
+</style>
+
+<style>
+/* 抽屉内 antd 组件样式覆盖（unscoped，因 a-drawer teleport 到 body，scoped + :deep 不生效） */
+.ant-drawer .ant-table-wrapper,
+.ant-drawer .ant-table-wrapper .ant-table,
+.ant-drawer .ant-table-wrapper .ant-table-container,
+.ant-drawer .ant-table-wrapper .ant-table-thead > tr > th,
+.ant-drawer .ant-table-wrapper .ant-table-tbody > tr > td,
+.ant-drawer .ant-table-wrapper .ant-table-thead > tr:first-child > th:first-child,
+.ant-drawer .ant-table-wrapper .ant-table-tbody > tr:first-child > td:first-child,
+.ant-drawer .ant-descriptions,
+.ant-drawer .ant-descriptions-bordered,
+.ant-drawer .ant-descriptions-view,
+.ant-drawer .ant-descriptions-view table,
+.ant-drawer .ant-descriptions-row,
+.ant-drawer .ant-descriptions-row > td,
+.ant-drawer .ant-descriptions-row > th,
+.ant-drawer .ant-descriptions-item-container,
+.ant-drawer .ant-descriptions-item-label,
+.ant-drawer .ant-descriptions-item-content {
+  border-radius: 0 !important;
+}
+
+.ant-drawer .ant-table-thead .ant-table-cell {
+  font-weight: normal !important;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.ant-drawer .ant-descriptions-item-label {
+  width: 160px !important;
+  min-width: 160px !important;
+  max-width: 160px !important;
+  text-align: left !important;
+  white-space: nowrap;
+}
+
+.ant-drawer .ant-descriptions-item-content {
+  width: auto;
+}
+
+/* MVP 详情抽屉描述列表：表头/表体与 a-table 规范统一 */
+.mvp-detail-tabs .ant-descriptions-item-label {
+  background: #FAFBFC !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-feature-settings: "tnum" !important;
+}
+
+.mvp-detail-tabs .ant-descriptions-item-content {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: rgba(0, 0, 0, 0.65) !important;
+  font-feature-settings: "tnum" !important;
+}
+
+/* ===== 审核流水面板 ===== */
+.audit-pipeline {
+  display: flex;
+  gap: 0;
+  padding: 16px 20px;
+  background: #FAFBFC;
+  border: 1px solid #F2F3F5;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.pipeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 140px;
+  position: relative;
+  padding: 0 6px;
+}
+
+.pipeline-step__dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  color: #86909C;
+  background: #FFFFFF;
+  border: 1.5px solid #C9CDD4;
+  z-index: 1;
+}
+
+.pipeline-step__dot--done {
+  color: #FFFFFF;
+  background: #16A34A;
+  border-color: #16A34A;
+}
+
+.pipeline-step__dot--processing {
+  color: #FFFFFF;
+  background: #165DFF;
+  border-color: #165DFF;
+  box-shadow: 0 2px 6px rgba(22, 93, 255, 0.35);
+}
+
+.pipeline-step__dot--rejected {
+  color: #FFFFFF;
+  background: #EF4444;
+  border-color: #EF4444;
+}
+
+.pipeline-step__dot--pending {
+  color: #86909C;
+  background: #FFFFFF;
+  border-color: #C9CDD4;
+}
+
+.pipeline-step__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 10px;
+  gap: 4px;
+}
+
+.pipeline-step__title {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+}
+
+.pipeline-step--processing .pipeline-step__title {
+  font-weight: 600;
+  color: #165DFF;
+}
+
+.pipeline-step__tag {
+  display: inline-block;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+.pipeline-step__tag--pending {
+  background: #F2F3F5;
+  color: #86909C;
+}
+
+.pipeline-step__tag--processing {
+  background: #E8F3FF;
+  color: #165DFF;
+}
+
+.pipeline-step__tag--done {
+  background: #E9F9EF;
+  color: #16A34A;
+}
+
+.pipeline-step__tag--rejected {
+  background: #FFEDEC;
+  color: #EF4444;
+}
+
+.pipeline-step__detail {
+  background: #F2F3F5;
+  border-radius: 6px;
+  padding: 10px 12px;
+  max-width: 200px;
+  margin-top: 4px;
+}
+
+.pipeline-step__opinion {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pipeline-step__meta {
+  margin-top: 6px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.pipeline-step__auditor,
+.pipeline-step__audit-time {
+  font-size: 12px;
+  color: #86909C;
+  white-space: nowrap;
+}
+
+.pipeline-step__connector {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #E5E6EB;
+  z-index: 0;
+}
+
+.pipeline-step__connector--done {
+  background: #16A34A;
 }
 </style>

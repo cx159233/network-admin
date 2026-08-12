@@ -23,7 +23,7 @@
               <div class="info-item"><div class="info-label">服务名称</div><div class="info-value">{{ serviceInfo.serviceName }}</div></div>
               <div class="info-item"><div class="info-label">服务ID</div><div class="info-value">{{ serviceInfo.serviceId }}</div></div>
               <div class="info-item"><div class="info-label">服务类型</div><div class="info-value">{{ serviceInfo.serviceType }}</div></div>
-              <div class="info-item"><div class="info-label">云服务商</div><div class="info-value">{{ serviceInfo.cloudProvider }}</div></div>
+              <div class="info-item"><div class="info-label">部署云服务商</div><div class="info-value">{{ serviceInfo.cloudProvider }}</div></div>
               <div class="info-item"><div class="info-label">区域</div><div class="info-value">{{ serviceInfo.region }}</div></div>
               <div class="info-item full"><div class="info-label">服务描述</div><div class="info-value muted">{{ serviceInfo.description }}</div></div>
             </div>

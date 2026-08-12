@@ -1,977 +1,1333 @@
 <template>
-  <div class="app-container">
-    <!-- 操作按钮 + 筛选条件 -->
-    <el-row :gutter="24" class="mb12">
-      <el-col :span="12">
-        <el-row :gutter="10">
-          <el-col :span="1.5">
-            <el-button
-              type="primary"
-              icon="el-icon-plus"
-              size="mini"
-              plain
-              @click="handleAdd"
-            >新增</el-button>
-          </el-col>
-        </el-row>
-      </el-col>
-      <el-col :span="12">
-        <el-form
-          :model="queryParams"
-          ref="queryForm"
-          size="small"
-          class="el-form-search"
-          style="text-align: right"
-          :inline="true"
-        >
-          <el-form-item prop="title">
-            <el-input
-              v-model="queryParams.title"
-              placeholder="请输入应用名称"
-              clearable
-              style="width: 200px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item prop="cover">
-            <el-select
-              v-model="queryParams.cover"
-              placeholder="请选择应用覆盖范围"
-              clearable
-              style="width: 150px"
-            >
-              <el-option
-                v-for="item in appScopeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="target">
-            <el-select
-              v-model="queryParams.target"
-              placeholder="请选择面向对象"
-              clearable
-              style="width: 150px"
-            >
-              <el-option
-                v-for="item in targetObjectOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="请选择状态"
-              clearable
-              style="width: 110px"
-            >
-              <el-option label="草稿" value="draft" />
-              <el-option label="待审核" value="pending_review" />
-              <el-option label="已发布" value="published" />
-              <el-option label="已驳回" value="rejected" />
-              <el-option label="已下线" value="offline" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button-group>
-              <el-button
-                type="primary"
-                icon="el-icon-search"
-                @click="handleQuery"
-                >搜索</el-button
-              >
-              <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
-            </el-button-group>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
-
-    <!-- 表格 -->
-    <el-table
-      v-loading="loading"
-      :data="appList"
-      ref="tableAppList"
-      size="small"
-      style="width: 100%"
-      class-name="small-padding fixed-width"
-    >
-      <el-table-column label="应用名称" :show-overflow-tooltip="true" min-width="180">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column label="应用ID" width="120" align="center" prop="appId">
-        <template slot-scope="scope">
-          {{ scope.row.appId || scope.row.id }}
-        </template>
-      </el-table-column>
-      <el-table-column label="面向对象" width="120" align="center" prop="targetObject">
-        <template slot-scope="scope">
-          {{ scope.row.targetObject || '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="应用覆盖范围" width="200" align="center" prop="appScope">
-        <template slot-scope="scope">
-          {{ scope.row.cover ? scope.row.cover.map(item => item.value).join(';') : '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" align="center" width="80">
-        <template slot-scope="scope">
-          <el-tag :type="getStatusTag(scope.row.status)" size="small">{{ getStatusText(scope.row.status) }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="应用服务商" :show-overflow-tooltip="true" min-width="150" prop="serviceProvider">
-        <template slot-scope="scope">
-          {{ scope.row.serviceProvider || '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="合作企业" :show-overflow-tooltip="true" min-width="150" prop="cooperativeEnterprise">
-        <template slot-scope="scope">
-          {{ scope.row.cooperativeEnterprise || '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="云服务商" :show-overflow-tooltip="true" min-width="150" prop="cloudProvider">
-        <template slot-scope="scope">
-          {{ scope.row.cloudProvider || '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="平台评价" width="90" align="center">
-        <template slot-scope="scope">
-          <span class="rating-star" @click="goToDetail(scope.row)">{{ scope.row.platformRating || 0 }}分</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="用户评价" width="90" align="center">
-        <template slot-scope="scope">
-          <span class="rating-star" @click="goToDetail(scope.row)">{{ scope.row.usageRating || 0 }}分</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="260" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <span class="btn-cell-wrap">
-            <el-button size="small" type="text" icon="el-icon-view" @click.stop="goToDetail(scope.row)">详情</el-button>
-          </span>
-          <span class="btn-cell-wrap" v-if="scope.row.status !== 'pending_review' && scope.row.status !== 20">
-            <el-button size="small" type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">修改</el-button>
-          </span>
-          <span class="btn-cell-wrap" v-if="scope.row.status !== 'pending_review' && scope.row.status !== 20">
-            <el-button size="small" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
-          </span>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="loadAppList"
+  <div class="my-apps-page">
+    <PageHeader
+      title="服务上架"
+      description="管理已上架的服务，支持新增、修改、删除及提交审核"
     />
 
-    <!-- 新增数字应用弹窗 -->
-    <el-dialog
-      title="新增数字应用"
-      width="920px"
-      :visible.sync="addDialogVisible"
-      :modal-append-to-body="false"
-      :close-on-click-modal="false"
-      top="5vh"
+    <CloudCard class="my-apps-page__table-card">
+      <FilterBar @search="handleQuery" @reset="resetQuery">
+        <template #actions>
+          <a-button type="primary" @click="showTypeSelector = true">
+            <template #icon><PlusOutlined /></template>
+            新增服务
+          </a-button>
+        </template>
+        <a-select v-model:value="filter.serviceType" placeholder="服务类型" allow-clear style="width: 140px">
+          <a-select-option value="数字应用">数字应用</a-select-option>
+          <a-select-option value="安全服务">安全服务</a-select-option>
+          <a-select-option value="能力组件">能力组件</a-select-option>
+          <a-select-option value="基础服务">基础服务</a-select-option>
+        </a-select>
+        <a-input v-model:value="filter.title" placeholder="服务名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
+        <a-input v-model:value="filter.serviceId" placeholder="服务ID" allow-clear style="width: 160px" @pressEnter="handleQuery" />
+        <a-select v-model:value="filter.status" placeholder="状态" allow-clear style="width: 130px">
+          <a-select-option value="draft">草稿</a-select-option>
+          <a-select-option value="pending_review">待审核</a-select-option>
+          <a-select-option value="published">已上线使用</a-select-option>
+          <a-select-option value="rejected">已驳回</a-select-option>
+          <a-select-option value="offline">已下架</a-select-option>
+        </a-select>
+      </FilterBar>
+      <div class="my-apps-page__divider"></div>
+
+      <div class="my-apps-page__table-wrap">
+        <a-table
+          :columns="columns"
+          :data-source="filteredData"
+          :pagination="paginationConfig"
+          :loading="loading"
+          row-key="id"
+          size="middle"
+          @change="onTableChange"
+        >
+          <template #bodyCell="{ column, record }">
+            <span v-if="column.dataIndex === 'title'" class="cell-name">
+              <span class="cell-name__title">{{ record.title || '--' }}</span>
+              <span class="cell-name__id">{{ record.appId || '--' }}</span>
+            </span>
+            <template v-else-if="column.dataIndex === 'serviceType'">
+              <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(record.serviceType)}`]">{{ record.serviceType }}</span>
+            </template>
+            <template v-else-if="column.dataIndex === 'createTime'">
+              <span class="cell-mono">{{ formatTime(record.createTime) }}</span>
+            </template>
+            <template v-else-if="column.dataIndex === 'status'">
+              <StatusDot :type="getStatusKey(record.status)" :text="getStatusText(record.status)" />
+            </template>
+            <template v-else-if="column.dataIndex === 'action'">
+              <a-space size="small">
+                <a-button type="link" size="small" class="!p-0" @click="goToDetail(record)">详情</a-button>
+                <a-divider v-if="canEdit(record.status)" type="vertical" class="!mx-[2px]" />
+                <a-button v-if="canEdit(record.status)" type="link" size="small" class="!p-0" @click="handleEdit(record)">修改</a-button>
+                <a-divider v-if="canEdit(record.status)" type="vertical" class="!mx-[2px]" />
+                <a-button v-if="canEdit(record.status)" type="link" size="small" danger class="!p-0" @click="handleDelete(record)">删除</a-button>
+              </a-space>
+            </template>
+            <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+          </template>
+        </a-table>
+      </div>
+    </CloudCard>
+
+    <!-- 服务类型选择弹窗 -->
+    <a-modal
+      v-model:open="showTypeSelector"
+      title="选择服务类型"
+      width="520px"
+      :footer="null"
+      :mask-closable="false"
     >
-      <el-form ref="addForm" :model="addForm" :rules="rules" label-width="130px" class="add-form">
-        <div class="form-section">
-          <div class="form-section-title">基本信息</div>
-        <el-form-item label="应用名称" prop="title" required>
-          <el-input v-model="addForm.title" placeholder="请输入应用名称" />
-        </el-form-item>
-        <el-form-item label="上传LOGO">
-          <div class="upload-logo">
-            <el-upload
-              class="el-upload--text"
-              action="#"
-              :auto-upload="false"
-              :on-change="handleLogoUpload"
-              :limit="1"
-              :accept="'image/png,image/jpeg,image/jpg,image/bmp'"
+      <div class="type-selector-grid">
+        <div
+          v-for="opt in serviceTypeOptions"
+          :key="opt.value"
+          class="type-selector-card"
+          @click="onSelectType(opt.value)"
+        >
+          <div class="type-selector-card__icon">
+            <AppstoreOutlined v-if="opt.value === '数字应用'" />
+            <SafetyOutlined v-else-if="opt.value === '安全服务'" />
+            <BlockOutlined v-else-if="opt.value === '能力组件'" />
+            <CloudServerOutlined v-else />
+          </div>
+          <div class="type-selector-card__title">{{ opt.label }}</div>
+          <div class="type-selector-card__desc">{{ opt.desc }}</div>
+        </div>
+      </div>
+    </a-modal>
+
+    <a-modal
+      v-model:open="deleteDialogVisible"
+      title="删除确认"
+      width="420px"
+      :ok-text="'确定'"
+      :cancel-text="'取消'"
+      ok-type="danger"
+      @ok="confirmDelete"
+    >
+      <div class="delete-modal__body">
+        <ExclamationCircleFilled class="delete-modal__icon" />
+        <p class="delete-modal__text">是否确认删除该服务？删除后不可恢复。</p>
+      </div>
+    </a-modal>
+
+    <!-- 应用详情抽屉 -->
+    <a-drawer
+      v-model:open="drawer.visible"
+      :title="drawerTitle"
+      :width="860"
+      placement="right"
+      :body-style="{ padding: '24px' }"
+    >
+      <template v-if="drawer.record">
+        <div class="drawer-header-row">
+          <div class="drawer-header-icon" :class="`drawer-header-icon--${getServiceTypeClass(drawer.record.serviceType)}`">
+            <img v-if="drawer.record.logo" :src="drawer.record.logo" class="drawer-header-logo" alt="" />
+            <component :is="getServiceTypeIcon(drawer.record.serviceType)" v-else class="drawer-header-fallback" />
+          </div>
+          <div class="drawer-header-info">
+            <div class="drawer-header-title-row">
+              <span class="drawer-header-title">{{ drawer.record.title || '--' }}</span>
+              <StatusDot :type="getStatusKey(drawer.record.status)" :text="getStatusText(drawer.record.status)" />
+            </div>
+            <div class="drawer-header-sub">
+              <span>服务ID：{{ drawer.record.appId || drawer.record.contentId || '--' }}</span>
+              <span class="drawer-header-sub__sep">·</span>
+              <span>{{ drawer.record.serviceType || '--' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <a-tabs v-model:activeKey="drawer.activeTab" class="mvp-detail-tabs">
+          <a-tab-pane key="overview" tab="概览">
+            <!-- 数字应用 / 安全服务 -->
+            <template v-if="['数字应用', '安全服务'].includes(drawer.record.serviceType)">
+              <div class="overview-section">
+                <div class="overview-section__title">基本信息</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="系统地址" :span="2">{{ drawer.record.systemUrl || '--' }}</a-descriptions-item>
+                  <a-descriptions-item label="显示顺序" :span="2">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</a-descriptions-item>
+                  <a-descriptions-item label="应用描述" :span="2">{{ drawer.record.description || '--' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
+              <div class="overview-section">
+                <div class="overview-section__title">联系信息</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="服务商名称">{{ drawer.record.serviceProvider || '--' }}</a-descriptions-item>
+                  <a-descriptions-item label="合作伙伴">{{ drawer.record.cooperativeEnterprise || '--' }}</a-descriptions-item>
+                  <a-descriptions-item label="联系方式1">{{ drawer.record.contactName1 || '--' }} {{ drawer.record.contactPhone1 || '' }}</a-descriptions-item>
+                  <a-descriptions-item label="联系方式2">{{ drawer.record.contactName2 || '--' }} {{ drawer.record.contactPhone2 || '' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
+              <div class="overview-section">
+                <div class="overview-section__title">分类标签</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="面向对象" :span="2">{{ formatArray(drawer.record.targetObject) }}</a-descriptions-item>
+                  <a-descriptions-item label="应用架构" :span="2">{{ formatArray(drawer.record.appArchitecture) }}</a-descriptions-item>
+                  <a-descriptions-item label="部署云服务商" :span="2">{{ formatArray(drawer.record.cloudProvider) }}</a-descriptions-item>
+                  <a-descriptions-item v-if="drawer.record.targetObject && drawer.record.targetObject.includes('基层医疗卫生机构')" label="基层应用覆盖范围" :span="2">{{ formatArray(drawer.record.coverBase) }}</a-descriptions-item>
+                  <a-descriptions-item v-if="drawer.record.targetObject && drawer.record.targetObject.includes('公立医院')" label="公立应用覆盖范围" :span="2">{{ formatArray(drawer.record.coverPublic) }}</a-descriptions-item>
+                  <a-descriptions-item v-if="drawer.record.targetObject && drawer.record.targetObject.includes('医技护人员')" label="医技应用覆盖范围" :span="2">{{ formatArray(drawer.record.coverTech) }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
+            </template>
+
+            <!-- 能力组件 -->
+            <template v-else-if="drawer.record.serviceType === '能力组件'">
+              <div class="overview-section">
+                <div class="overview-section__title">基本信息</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="显示顺序" :span="2">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</a-descriptions-item>
+                  <a-descriptions-item label="组件描述" :span="2">{{ drawer.record.description || '--' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
+              <div class="overview-section">
+                <div class="overview-section__title">联系信息</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="服务商名称" :span="2">{{ drawer.record.serviceProvider || '--' }}</a-descriptions-item>
+                  <a-descriptions-item label="联系方式1">{{ drawer.record.contactName1 || '--' }} {{ drawer.record.contactPhone1 || '' }}</a-descriptions-item>
+                  <a-descriptions-item label="联系方式2">{{ drawer.record.contactName2 || '--' }} {{ drawer.record.contactPhone2 || '' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
+              <div class="overview-section">
+                <div class="overview-section__title">分类标签</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="部署云服务商">{{ formatArray(drawer.record.cloudProvider) }}</a-descriptions-item>
+                  <a-descriptions-item label="开放范围">{{ drawer.record.coverView || '--' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
+            </template>
+
+            <!-- 基础服务 -->
+            <template v-else-if="drawer.record.serviceType === '基础服务'">
+              <div class="overview-section">
+                <div class="overview-section__title">基本信息</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="显示顺序" :span="2">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</a-descriptions-item>
+                  <a-descriptions-item label="服务描述" :span="2">{{ drawer.record.description || '--' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
+              <div class="overview-section">
+                <div class="overview-section__title">联系信息</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="服务商名称" :span="2">{{ drawer.record.serviceProvider || '--' }}</a-descriptions-item>
+                  <a-descriptions-item label="联系方式1">{{ drawer.record.contactPhone1 || '--' }}</a-descriptions-item>
+                  <a-descriptions-item label="联系方式2">{{ drawer.record.contactPhone2 || '--' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
+              <div class="overview-section">
+                <div class="overview-section__title">分类标签</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="部署云服务商">{{ formatArray(drawer.record.cloudProvider) }}</a-descriptions-item>
+                  <a-descriptions-item label="服务子类">{{ drawer.record.serviceSubType || '--' }}</a-descriptions-item>
+                  <a-descriptions-item label="区域" :span="2">{{ drawer.record.region || '--' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
+            </template>
+          </a-tab-pane>
+
+          <a-tab-pane key="audit" tab="审核信息">
+            <div class="overview-section__title">审核记录</div>
+            <a-table
+              :columns="auditColumns"
+              :data-source="auditVersionRows"
+              row-key="versionKey"
+              size="middle"
+              :pagination="false"
+              :expanded-row-keys="expandedRowKeys"
+              @expand="onExpand"
             >
-              <div class="el-upload-dragger">
-                <i class="el-icon-upload" v-if="!addForm.logo"></i>
-                <img v-else :src="addForm.logo" class="avatar" />
-                <div class="el-upload__text">
-                  建议上传图片尺寸为640*640，大小不超过1M支持jpg、jpeg、png、bmp图片格式
+              <template #expandedRowRender="{ record }">
+                <div class="audit-pipeline">
+                  <div
+                    v-for="(step, idx) in auditSteps"
+                    :key="step.key"
+                    class="pipeline-step"
+                    :class="getPipelineStepClass(record, idx)"
+                  >
+                    <div class="pipeline-step__dot" :class="getPipelineDotClass(record, idx)">
+                      <CheckOutlined v-if="getPipelineStepStatus(record, idx) === 'done'" />
+                      <CloseOutlined v-else-if="getPipelineStepStatus(record, idx) === 'rejected'" />
+                      <span v-else>{{ idx + 1 }}</span>
+                    </div>
+                    <div class="pipeline-step__content">
+                      <div class="pipeline-step__title">阶段 {{ idx + 1 }}：{{ step.title }}</div>
+                      <div class="pipeline-step__tag" :class="getPipelineTagClass(record, idx)">{{ getPipelineTagText(record, idx) }}</div>
+                      <div v-if="getPipelineStepDetail(record, idx)" class="pipeline-step__detail">
+                        <div class="pipeline-step__opinion">{{ getPipelineStepDetail(record, idx).opinion }}</div>
+                        <div class="pipeline-step__meta">
+                          <div class="pipeline-step__auditor">{{ getPipelineStepDetail(record, idx).auditor }}</div>
+                          <div class="pipeline-step__audit-time">{{ getPipelineStepDetail(record, idx).auditTime }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="idx < auditSteps.length - 1" class="pipeline-step__connector" :class="getPipelineConnectorClass(record, idx)"></div>
+                  </div>
+                </div>
+              </template>
+              <template #bodyCell="{ column, record }">
+                <span v-if="column.dataIndex === 'submittedAt'" class="cell-mono">{{ record.submittedAt || '--' }}</span>
+                <template v-else-if="column.dataIndex === 'status'">
+                  <StatusDot :type="getAuditStatusKey(record.status)" :text="getAuditStatusText(record.status)" />
+                </template>
+                <template v-else-if="column.dataIndex === 'auditTime'">
+                  <span class="cell-mono">{{ record.auditTime || '--' }}</span>
+                </template>
+                <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+              </template>
+            </a-table>
+          </a-tab-pane>
+
+          <a-tab-pane key="rating" tab="评价信息">
+            <div class="overview-section">
+              <div class="overview-section__title">评分概览</div>
+              <div class="rating-overview">
+                <div class="rating-overview__item">
+                  <div class="rating-overview__label">平台评分</div>
+                  <div class="rating-overview__body">
+                    <span class="rating-overview__num">{{ drawer.record.platformRating || 0 }}</span>
+                    <span class="rating-overview__unit">分</span>
+                    <span class="rating-overview__stars">
+                      <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= (drawer.record.platformRating || 0) }">★</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="rating-overview__item">
+                  <div class="rating-overview__label">用户评价</div>
+                  <div class="rating-overview__body">
+                    <span class="rating-overview__num">{{ drawer.record.usageRating || 0 }}</span>
+                    <span class="rating-overview__unit">分</span>
+                    <span class="rating-overview__stars">
+                      <span v-for="i in 5" :key="i" class="star" :class="{ full: i <= (drawer.record.usageRating || 0) }">★</span>
+                    </span>
+                  </div>
                 </div>
               </div>
-            </el-upload>
-            <div class="el-upload__tip">
-              只能上传 image/png, image/jpeg,image/jpg,image/bmp 文件，且不超过 1 MB
             </div>
-          </div>
-        </el-form-item>
-        <el-form-item label="应用描述" prop="description" required>
-          <el-input
-            v-model="addForm.description"
-            type="textarea"
-            rows="4"
-            placeholder="请输入应用描述"
-          />
-        </el-form-item>
-        <el-form-item label="系统地址">
-          <el-input v-model="addForm.systemUrl" placeholder="请输入系统地址" />
-        </el-form-item>
-        </div>
-
-        <div class="form-section">
-          <div class="form-section-title">联系信息</div>
-        <el-form-item label="服务商名称" prop="serviceProvider" required>
-          <el-input v-model="addForm.serviceProvider" placeholder="请输入服务商名称" />
-        </el-form-item>
-        <el-form-item label="合作伙伴名称">
-          <el-input v-model="addForm.cooperativeEnterprise" placeholder="请输入合作伙伴全称，多个合作伙伴请通过；分隔" />
-        </el-form-item>
-        <el-form-item label="联系方式1" required>
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="addForm.contactName1" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="addForm.contactPhone1" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        <el-form-item label="联系方式2">
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="addForm.contactName2" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="addForm.contactPhone2" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        </div>
-
-        <div class="form-section">
-          <div class="form-section-title">分类标签</div>
-        <el-form-item label="面向对象" prop="targetObject" required>
-          <el-checkbox-group v-model="addForm.targetObject">
-            <el-checkbox label="基层医疗卫生机构">基层医疗卫生机构</el-checkbox>
-            <el-checkbox label="公立医院">公立医院</el-checkbox>
-            <el-checkbox label="医技护人员">医技护人员</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="应用架构">
-          <el-checkbox-group v-model="addForm.appArchitecture">
-            <el-checkbox label="B/S">B/S</el-checkbox>
-            <el-checkbox label="C/S架构">C/S架构</el-checkbox>
-            <el-checkbox label="B/S+C/S">B/S+C/S</el-checkbox>
-            <el-checkbox label="单机">单机</el-checkbox>
-            <el-checkbox label="其他">其他</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="部署云服务商" prop="cloudProvider" required>
-          <div>
-            <el-checkbox-group v-model="addForm.cloudProvider">
-              <el-checkbox label="电信云">电信云</el-checkbox>
-              <el-checkbox label="移动云">移动云</el-checkbox>
-              <el-checkbox label="联通云">联通云</el-checkbox>
-              <el-checkbox label="浪潮云">浪潮云</el-checkbox>
-              <el-checkbox label="紫光云">紫光云</el-checkbox>
-              <el-checkbox label="影像云">影像云</el-checkbox>
-            </el-checkbox-group>
-            <div v-if="addForm.targetObject.includes('基层医疗卫生机构')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">基层应用覆盖范围</div>
-              <el-checkbox-group v-model="addForm.coverBase">
-                <el-checkbox v-for="item in coverBaseOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <div v-if="addForm.targetObject.includes('公立医院')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">公立应用覆盖范围</div>
-              <el-checkbox-group v-model="addForm.coverPublic">
-                <el-checkbox v-for="item in coverPublicOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <div v-if="addForm.targetObject.includes('医技护人员')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">医技应用覆盖范围</div>
-              <el-checkbox-group v-model="addForm.coverTech">
-                <el-checkbox v-for="item in coverTechOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-          </div>
-        </el-form-item>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="handleAddSubmit('draft')">保存草稿</el-button>
-        <el-button type="primary" @click="handleAddSubmit('pending_review')">提交审核</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 修改数字应用弹窗 -->
-    <el-dialog
-      title="编辑数字应用"
-      width="920px"
-      :visible.sync="editDialogVisible"
-      :modal-append-to-body="false"
-      :close-on-click-modal="false"
-      top="5vh"
-    >
-      <el-form ref="editForm" :model="editForm" :rules="rules" label-width="130px" class="add-form">
-        <div class="form-section">
-          <div class="form-section-title">基本信息</div>
-        <el-form-item label="应用名称" prop="title" required>
-          <el-input v-model="editForm.title" placeholder="请输入应用名称" />
-        </el-form-item>
-        <el-form-item label="上传LOGO">
-          <div class="upload-logo">
-            <el-upload
-              class="el-upload--text"
-              action="#"
-              :auto-upload="false"
-              :on-change="handleEditLogoUpload"
-              :limit="1"
-              :accept="'image/png,image/jpeg,image/jpg,image/bmp'"
-            >
-              <div class="el-upload-dragger">
-                <i class="el-icon-upload" v-if="!editForm.logo"></i>
-                <img v-else :src="editForm.logo" class="avatar" />
-                <div class="el-upload__text">
-                  建议上传图片尺寸为640*640，大小不超过1M支持jpg、jpeg、png、bmp图片格式
-                </div>
+            <div class="overview-section">
+              <div class="overview-section__head">
+                <span class="overview-section__title">用户评价</span>
+                <span class="overview-section__count">共 {{ drawerUsageRatings.length }} 条</span>
               </div>
-            </el-upload>
-            <div class="el-upload__tip">
-              只能上传 image/png, image/jpeg,image/jpg,image/bmp 文件，且不超过 1 MB
+              <div class="rating-list">
+                <div v-for="(item, idx) in drawerUsageRatings" :key="idx" class="rating-card">
+                  <div class="rating-card__avatar">{{ (item.userName || '匿').charAt(0) }}</div>
+                  <div class="rating-card__body">
+                    <div class="rating-card__row">
+                      <span class="rating-card__name">{{ item.userName || '匿名用户' }}</span>
+                    </div>
+                    <div class="rating-card__dims">
+                      <span v-for="d in dimLabels" :key="d" class="rating-card__dim">
+                        <span class="rating-card__dim-label">{{ d }}</span>
+                        <span class="rating-card__dim-stars">
+                          <span v-for="i in 5" :key="i" class="star-sm" :class="{ full: i <= item.ratings[d] }">★</span>
+                        </span>
+                        <span class="rating-card__dim-num">{{ item.ratings[d] }}</span>
+                      </span>
+                    </div>
+                    <div class="rating-card__meta">
+                      <span>{{ item.orgName || '--' }}</span>
+                      <span class="rating-card__sep">·</span>
+                      <span class="rating-card__order">{{ item.orderNo }}</span>
+                    </div>
+                    <div class="rating-card__content">{{ item.content }}</div>
+                    <div class="rating-card__time">{{ item.time }}</div>
+                    <div v-if="item.reply" class="rating-card__reply">
+                      <strong>开发者回复：</strong>{{ item.reply }}
+                    </div>
+                  </div>
+                </div>
+                <div v-if="!drawerUsageRatings.length" class="rating-empty">暂无评价</div>
+              </div>
             </div>
-          </div>
-        </el-form-item>
-        <el-form-item label="应用描述" prop="description" required>
-          <el-input
-            v-model="editForm.description"
-            type="textarea"
-            rows="4"
-            placeholder="请输入应用描述"
-          />
-        </el-form-item>
-        <el-form-item label="系统地址">
-          <el-input v-model="editForm.systemUrl" placeholder="请输入系统地址" />
-        </el-form-item>
-        </div>
-
-        <div class="form-section">
-          <div class="form-section-title">联系信息</div>
-        <el-form-item label="服务商名称" prop="serviceProvider" required>
-          <el-input v-model="editForm.serviceProvider" placeholder="请输入服务商名称" />
-        </el-form-item>
-        <el-form-item label="合作伙伴名称">
-          <el-input v-model="editForm.cooperativeEnterprise" placeholder="请输入合作伙伴全称，多个合作伙伴请通过；分隔" />
-        </el-form-item>
-        <el-form-item label="联系方式1" required>
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="editForm.contactName1" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="editForm.contactPhone1" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        <el-form-item label="联系方式2">
-          <div style="display: flex; align-items: center;">
-            <el-input v-model="editForm.contactName2" placeholder="请输入联系人姓名" style="width: 200px" />
-            <span style="margin: 0 16px;">-</span>
-            <el-input v-model="editForm.contactPhone2" placeholder="请输入联系人手机号" style="width: 200px" />
-          </div>
-        </el-form-item>
-        </div>
-
-        <div class="form-section">
-          <div class="form-section-title">分类标签</div>
-        <el-form-item label="面向对象" prop="targetObject" required>
-          <el-checkbox-group v-model="editForm.targetObject">
-            <el-checkbox label="基层医疗卫生机构">基层医疗卫生机构</el-checkbox>
-            <el-checkbox label="公立医院">公立医院</el-checkbox>
-            <el-checkbox label="医技护人员">医技护人员</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="应用架构">
-          <el-checkbox-group v-model="editForm.appArchitecture">
-            <el-checkbox label="B/S">B/S</el-checkbox>
-            <el-checkbox label="C/S架构">C/S架构</el-checkbox>
-            <el-checkbox label="B/S+C/S">B/S+C/S</el-checkbox>
-            <el-checkbox label="单机">单机</el-checkbox>
-            <el-checkbox label="其他">其他</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="部署云服务商" prop="cloudProvider" required>
-          <div>
-            <el-checkbox-group v-model="editForm.cloudProvider">
-              <el-checkbox label="电信云">电信云</el-checkbox>
-              <el-checkbox label="移动云">移动云</el-checkbox>
-              <el-checkbox label="联通云">联通云</el-checkbox>
-              <el-checkbox label="浪潮云">浪潮云</el-checkbox>
-              <el-checkbox label="紫光云">紫光云</el-checkbox>
-              <el-checkbox label="影像云">影像云</el-checkbox>
-            </el-checkbox-group>
-            <div v-if="editForm.targetObject.includes('基层医疗卫生机构')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">基层应用覆盖范围</div>
-              <el-checkbox-group v-model="editForm.coverBase">
-                <el-checkbox v-for="item in coverBaseOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <div v-if="editForm.targetObject.includes('公立医院')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">公立应用覆盖范围</div>
-              <el-checkbox-group v-model="editForm.coverPublic">
-                <el-checkbox v-for="item in coverPublicOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <div v-if="editForm.targetObject.includes('医技护人员')" style="margin-top:12px">
-              <div style="font-weight:500;margin-bottom:6px;color:#606266;font-size:13px">医技应用覆盖范围</div>
-              <el-checkbox-group v-model="editForm.coverTech">
-                <el-checkbox v-for="item in coverTechOptions" :key="item" :label="item">{{ item }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
-          </div>
-        </el-form-item>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="handleEditSubmit('draft')">保存草稿</el-button>
-        <el-button type="primary" @click="handleEditSubmit('pending_review')">提交审核</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 删除确认弹窗 -->
-    <el-dialog title="提示" :visible.sync="deleteDialogVisible" width="420px" :modal-append-to-body="false" :close-on-click-modal="false">
-      <div style="text-align:center;padding:8px 0 24px">
-        <i class="el-icon-warning" style="font-size:48px;color:#f56c6c"></i>
-        <p style="margin-top:16px;font-size:14px;color:#606266">是否确认删除该数字应用？删除后不可恢复。</p>
-      </div>
-      <div slot="footer" class="dialog-footer" style="text-align:center">
-        <el-button @click="deleteDialogVisible = false">取消</el-button>
-        <el-button type="danger" @click="confirmDelete">确定</el-button>
-      </div>
-    </el-dialog>
-
+          </a-tab-pane>
+        </a-tabs>
+      </template>
+    </a-drawer>
   </div>
 </template>
 
 <script>
-import Pagination from '@/components/Pagination/index.vue';
-import { getContentList } from "@/api/contentcore/content";
+import {
+  PlusOutlined, ExclamationCircleFilled,
+  AppstoreOutlined, SafetyOutlined,
+  BlockOutlined, CloudServerOutlined,
+  CheckOutlined, CloseOutlined
+} from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import FilterBar from '@/components/cloud/FilterBar.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+import { getContentList } from '@/api/contentcore/content'
+
+const SERVICE_TYPE_ICONS = {
+  '数字应用': AppstoreOutlined,
+  '安全服务': SafetyOutlined,
+  '能力组件': BlockOutlined,
+  '基础服务': CloudServerOutlined
+}
 
 export default {
-  name: "OrderMyApps",
+  name: 'OrderMyApps',
   components: {
-    Pagination
+    PageHeader, CloudCard, FilterBar, StatusDot,
+    PlusOutlined, ExclamationCircleFilled,
+    AppstoreOutlined, SafetyOutlined,
+    BlockOutlined, CloudServerOutlined,
+    CheckOutlined, CloseOutlined
   },
   data() {
     return {
       loading: false,
-      appList: null,
-      total: 0,
-      appScopeOptions: [
-        { value: '医院信息系统（HIS）', label: '医院信息系统（HIS）' },
-        { value: '实验室信息管理系统（LIS）', label: '实验室信息管理系统（LIS）' },
-        { value: '影像归档和通信系统（PACS）', label: '影像归档和通信系统（PACS）' },
-        { value: '心电', label: '心电' },
-        { value: '医养结合一体化', label: '医养结合一体化' },
-        { value: '智慧管理平台（HRP）', label: '智慧管理平台（HRP）' },
-        { value: '药店应用管理', label: '药店应用管理' },
-        { value: '智能外呼', label: '智能外呼' },
-        { value: '临床专病库', label: '临床专病库' },
-        { value: '医共体信息平台', label: '医共体信息平台' },
-        { value: '妇幼健康', label: '妇幼健康' },
-        { value: '基本公共卫生服务', label: '基本公共卫生服务' },
-        { value: '家庭医生签约', label: '家庭医生签约' },
-        { value: '村卫生室管理', label: '村卫生室管理' },
-        { value: '辅助诊疗', label: '辅助诊疗' },
-        { value: '区域综合', label: '区域综合' },
-        { value: '基本公共卫生服务绩效评价', label: '基本公共卫生服务绩效评价' }
+      filter: { title: '', serviceId: '', serviceType: undefined, status: undefined },
+      applied: { title: '', serviceId: '', serviceType: undefined, status: undefined },
+      pagination: { current: 1, pageSize: 10 },
+      showTypeSelector: false,
+      serviceTypeOptions: [
+        { value: '数字应用', label: '数字应用', desc: '面向基层医疗的数字应用服务' },
+        { value: '安全服务', label: '安全服务', desc: '数据加密、安全审计等安全服务' },
+        { value: '能力组件', label: '能力组件', desc: '可复用的技术能力组件' },
+        { value: '基础服务', label: '基础服务', desc: '云基础资源与服务' }
       ],
-      targetObjectOptions: [
-        { value: '基层医疗卫生机构', label: '基层医疗卫生机构' },
-        { value: '公立医院', label: '公立医院' },
-        { value: '医技护人员', label: '医技护人员' }
+      columns: [
+        { title: '服务名称/ID', dataIndex: 'title', key: 'title', width: 240 },
+        { title: '服务类型', dataIndex: 'serviceType', key: 'serviceType', width: 100 },
+        { title: '服务商名称', dataIndex: 'serviceProvider', key: 'serviceProvider', width: 180, ellipsis: true },
+        { title: '部署云服务商', dataIndex: 'cloudProvider', key: 'cloudProvider', width: 130, ellipsis: true },
+        { title: '创建时间', dataIndex: 'createTime', key: 'createTime', width: 160 },
+        { title: '状态', dataIndex: 'status', key: 'status', width: 100 },
+        { title: '操作', dataIndex: 'action', key: 'action', width: 200, fixed: 'right' }
       ],
-      coverBaseOptions: ['基本公共卫生服务', '医院信息系统（HIS）', '实验室信息管理系统（LIS）', '影像归档和通信系统（PACS）', '智慧管理平台（HRP）', '心电', '家庭医生签约', '村卫生室管理', '药店应用管理', '智能外呼', '辅助诊疗', '临床专病库', '区域综合', '基本公共卫生服务绩效评价', '妇幼健康'],
-      coverPublicOptions: ['医院信息系统（HIS）', '实验室信息管理系统（LIS）', '影像归档和通信系统（PACS）', '心电', '医养结合一体化', '智慧管理平台（HRP）', '药店应用管理', '智能外呼', '临床专病库', '医共体信息平台', '妇幼健康'],
-      coverTechOptions: [],
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        title: undefined,
-        cover: undefined,
-        target: undefined,
-        status: undefined,
-      },
-      addDialogVisible: false,
-      addForm: {
-        title: '',
-        logo: '',
-        description: '',
-        systemUrl: '',
-        sortOrder: 0,
-        serviceProvider: '',
-        cooperativeEnterprise: '',
-        contactName1: '',
-        contactPhone1: '',
-        contactName2: '',
-        contactPhone2: '',
-        targetObject: [],
-        appArchitecture: [],
-        cloudProvider: [],
-        coverBase: [],
-        coverPublic: [],
-        coverTech: []
-      },
-      editDialogVisible: false,
+      appList: [],
       deleteDialogVisible: false,
       deleteTargetId: null,
-      editForm: {
-        id: '',
-        title: '',
-        logo: '',
-        description: '',
-        systemUrl: '',
-        sortOrder: 0,
-        serviceProvider: '',
-        cooperativeEnterprise: '',
-        contactName1: '',
-        contactPhone1: '',
-        contactName2: '',
-        contactPhone2: '',
-        targetObject: [],
-        appArchitecture: [],
-        cloudProvider: [],
-        coverBase: [],
-        coverPublic: [],
-        coverTech: []
+      drawer: { visible: false, record: null, activeTab: 'info' },
+      expandedRowKeys: [],
+      auditColumns: [
+        { title: '提交审核时间', dataIndex: 'submittedAt', key: 'submittedAt', width: 160 },
+        { title: '提交人', dataIndex: 'submitter', key: 'submitter', width: 140 },
+        { title: '审核状态', dataIndex: 'status', key: 'status', width: 100, align: 'center' },
+        { title: '审核人', dataIndex: 'auditor', key: 'auditor', width: 120 },
+        { title: '审核时间', dataIndex: 'auditTime', key: 'auditTime', width: 160 },
+        { title: '审核意见', dataIndex: 'opinion', key: 'opinion', ellipsis: true }
+      ],
+      auditSteps: [
+        { key: 1, title: '申报材料评估' },
+        { key: 2, title: '应用技术测评' },
+        { key: 3, title: '现场演示答辩' },
+        { key: 4, title: '服务目录发布' }
+      ],
+      // 版本审核流水数据（按阶段记录最终审核结果）
+      versionAuditMock: {
+        V1: {
+          1: { statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-01-02 15:30', opinion: '材料完整、信息有效，本阶段通过' },
+          2: { statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-01-05 14:00', opinion: '功能完整性、性能指标、安全合规均达到标准' },
+          3: { statusKey: 'done', statusText: '已通过', auditor: '张主任', auditTime: '2026-01-10 16:00', opinion: '核心功能演示完整，数据同步逻辑清晰，答辩通过' },
+          4: { statusKey: 'done', statusText: '已通过', auditor: '赵管理员', auditTime: '2026-01-12 10:00', opinion: '服务信息完整，发布至服务目录' }
+        },
+        V2: {
+          1: { statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-02-11 10:00', opinion: '修改后的材料完整合规，本阶段通过' },
+          2: { statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-02-13 16:00', opinion: '功能完整、性能达标，技术测评通过' },
+          3: { statusKey: 'processing', statusText: '进行中' },
+          4: { statusKey: 'pending', statusText: '未开始' }
+        },
+        V3: {
+          1: { statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-02-16 09:30', opinion: '申报材料齐全、资质真实有效，本阶段通过' },
+          2: { statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-02-18 11:00', opinion: '应用功能完整、性能指标达标，技术测评通过' },
+          3: { statusKey: 'rejected', statusText: '已驳回', auditor: '张主任', auditTime: '2026-02-20 15:00', opinion: '现场演示未能体现核心业务闭环，数据安全方案存在明显缺陷' },
+          4: { statusKey: 'pending', statusText: '未开始' }
+        },
+        V4: {
+          1: { statusKey: 'done', statusText: '已通过', auditor: '刘经理', auditTime: '2026-03-02 10:00', opinion: '材料齐全，资质审核通过' },
+          2: { statusKey: 'rejected', statusText: '已驳回', auditor: '陈工程师', auditTime: '2026-03-05 14:00', opinion: '应用性能测试不达标，并发处理能力不足，需优化后重新提交' },
+          3: { statusKey: 'pending', statusText: '未开始' },
+          4: { statusKey: 'pending', statusText: '未开始' }
+        }
       },
-      rules: {
-        title: [
-          { required: true, message: '请输入应用名称', trigger: 'blur' }
-        ],
-        description: [
-          { required: true, message: '请输入应用描述', trigger: 'blur' }
-        ],
-        serviceProvider: [
-          { required: true, message: '请输入服务商名称', trigger: 'blur' }
-        ],
-        targetObject: [
-          { required: true, message: '请选择面向对象', trigger: 'change' }
-        ],
-        cloudProvider: [
-          { required: true, message: '请选择部署云服务商', trigger: 'change' }
-        ]
-      }
-    };
-  },
-  created() {
-    this.loadAppList();
-  },
-  watch: {
-    addDialogVisible(val) {
-      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.1.1.2'); }
-    },
-    editDialogVisible(val) {
-      if (val) { this.$root.$emit('set-prd-anchor', 'prd-3.1.1.3'); }
+      dimLabels: ['准确性', '稳定性', '响应时效', '业务适配性'],
+      ratingKeys: ['准确性', '稳定性', '响应时效', '业务适配性']
     }
   },
+  computed: {
+    drawerTitle() {
+      const type = this.drawer.record?.serviceType
+      return type ? `${type}详情` : '服务详情'
+    },
+    filteredData() {
+      const f = this.applied
+      const list = this.appList.filter(item => {
+        if (f.title && !(item.title || '').includes(f.title)) return false
+        if (f.serviceId && !(item.appId || '').includes(f.serviceId)) return false
+        if (f.serviceType && item.serviceType !== f.serviceType) return false
+        if (f.status && String(item.status) !== f.status && this.getStatusText(item.status) !== this.getStatusText(f.status)) return false
+        return true
+      })
+      return list.map(i => ({ key: i.id, ...i }))
+    },
+    drawerUsageRatings() {
+      const rec = this.drawer.record
+      if (!rec) return []
+      const svc = rec.title || '服务'
+      return [
+        { ratings: { '准确性': 5, '稳定性': 5, '响应时效': 4, '业务适配性': 5 }, serviceName: svc, orderNo: '#202608100089', orgName: '重庆医科大学附属第一医院', userName: '张三', content: '服务运行稳定，功能齐全，整体体验很好。', time: '2026-03-15 14:32', reply: '感谢您的认可与支持！' },
+        { ratings: { '准确性': 4, '稳定性': 4, '响应时效': 5, '业务适配性': 4 }, serviceName: svc, orderNo: '#202608100090', orgName: '重庆市人民医院', userName: '李四', content: '集成方便，文档完善，基本满足需求。', time: '2026-03-12 09:15' }
+      ]
+    },
+    auditVersionRows() {
+      if (!this.drawer.record) return []
+      const s = (key) => this.versionAuditMock[key][4] || {}
+      const submitter = this.drawer.record.serviceProvider || '服务提供商'
+      return [
+        { versionKey: 'V1', versionLabel: 'V1', submittedAt: '2026-01-01 10:00:00', submitter, status: '已通过', auditor: s('V1').auditor || '', auditTime: s('V1').auditTime || '', opinion: s('V1').opinion || '' },
+        { versionKey: 'V2', versionLabel: 'V2', submittedAt: '2026-02-10 09:00:00', submitter, status: '审核中', auditor: s('V2').auditor || '', auditTime: s('V2').auditTime || '', opinion: s('V2').opinion || '' },
+        { versionKey: 'V3', versionLabel: 'V3', submittedAt: '2026-02-15 11:00:00', submitter, status: '已驳回', auditor: s('V3').auditor || '', auditTime: s('V3').auditTime || '', opinion: s('V3').opinion || '' },
+        { versionKey: 'V4', versionLabel: 'V4', submittedAt: '2026-03-01 14:00:00', submitter, status: '已驳回', auditor: s('V4').auditor || '', auditTime: s('V4').auditTime || '', opinion: s('V4').opinion || '' }
+      ]
+    },
+    paginationConfig() {
+      return {
+        current: this.pagination.current,
+        pageSize: this.pagination.pageSize,
+        total: this.filteredData.length,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: ['10', '20', '50', '100'],
+        showTotal: (t) => `共 ${t} 条`
+      }
+    }
+  },
+  created() {
+    this.loadAppList()
+  },
   methods: {
+    formatCover(val) {
+      if (!val) return '--'
+      if (Array.isArray(val)) return val.join('、')
+      return val
+    },
+    formatArray(arr) {
+      if (Array.isArray(arr)) return arr.join('、') || '--'
+      return arr || '--'
+    },
     loadAppList() {
-      this.loading = true;
-      getContentList({
-        ...this.queryParams,
-        catalogId: '603612031287365',
-      }).then((response) => {
-        this.appList = response.data.rows.map(item => ({
+      this.loading = true
+      getContentList({ pageNum: 1, pageSize: 50, catalogId: '603612031287365' }).then((response) => {
+        this.appList = (response.data.rows || []).slice(0, 8).map((item, idx) => ({
           ...item,
+          serviceType: ['数字应用', '安全服务', '能力组件', '基础服务'][idx % 4],
+          orderNo: this.generateOrderNo(idx),
+          createTime: '2026-0' + (3 + idx % 3) + '-' + (10 + idx) + ' 10:00',
           platformRating: parseFloat((Math.random() * 4 + 1).toFixed(1)),
           usageRating: parseFloat((Math.random() * 4 + 1).toFixed(1))
-        }));
-        this.total = parseInt(response.data.total);
-        this.loading = false;
+        }))
+        this.loading = false
       }).catch(() => {
-        this.loading = false;
-        // 如果API调用失败，使用mock数据
         this.appList = [
-          {
-            id: '1', title: '智慧医院信息管理系统', appId: 'APP001',
-            targetObject: '基层医疗卫生机构',
-            cover: [{ value: '门诊管理' }, { value: '住院管理' }, { value: '药房管理' }],
-            status: 'published', serviceProvider: '北京健康科技有限公司',
-            cooperativeEnterprise: '无', cloudProvider: '浪潮云',
-            createTime: '2024-01-15 10:30', platformRating: 4.5, usageRating: 4.3
-          },
-          {
-            id: '2', title: '远程医疗会诊平台', appId: 'APP002',
-            targetObject: '公立医院',
-            cover: [{ value: '远程会诊' }, { value: '医学影像' }, { value: '专家咨询' }],
-            status: 'published', serviceProvider: '上海数字医疗科技有限公司',
-            cooperativeEnterprise: '无', cloudProvider: '电信云',
-            createTime: '2024-02-20 14:15', platformRating: 4.2, usageRating: 4.6
-          },
-          {
-            id: '3', title: '健康档案管理系统', appId: 'APP003',
-            targetObject: '医技护人员',
-            cover: [{ value: '电子病历' }, { value: '健康档案' }, { value: '数据分析' }],
-            status: 'draft', serviceProvider: '广州智慧健康科技有限公司',
-            cooperativeEnterprise: '无', cloudProvider: '移动云',
-            createTime: '2024-03-05 09:00', platformRating: 4.8, usageRating: 4.1
-          },
-          {
-            id: '4', title: '医疗设备管理系统', appId: 'APP004',
-            targetObject: '基层医疗卫生机构',
-            cover: [{ value: '设备管理' }, { value: '维护保养' }, { value: '耗材管理' }],
-            status: 'offline', serviceProvider: '深圳医疗信息化有限公司',
-            cooperativeEnterprise: '无', cloudProvider: '联通云',
-            createTime: '2024-01-10 16:45', platformRating: 4.0, usageRating: 3.9
-          },
-          {
-            id: '5', title: '医学影像处理系统', appId: 'APP005',
-            targetObject: '公立医院',
-            cover: [{ value: '影像存储' }, { value: '影像分析' }, { value: 'AI辅助诊断' }],
-            status: 'pending_review', serviceProvider: '杭州医学影像科技有限公司',
-            cooperativeEnterprise: '无', cloudProvider: '影像云',
-            createTime: '2024-02-28 11:20', platformRating: 4.6, usageRating: 4.5
-          }
-        ];
-        this.total = this.appList.length;
-      });
+          { id: '1', title: '智慧医院信息管理系统', appId: 'APP001', orderNo: '202608100001', serviceType: '数字应用', status: 'published', serviceProvider: '北京健康科技有限公司', cloudProvider: '浪潮云', createTime: '2026-03-10 10:00', platformRating: 4.5, usageRating: 4.3 },
+          { id: '2', title: '数据加密传输组件', appId: 'APP002', orderNo: '202608100002', serviceType: '安全服务', status: 'published', serviceProvider: '上海安全技术有限公司', cloudProvider: '电信云', createTime: '2026-03-09 14:00', platformRating: 4.2, usageRating: 4.6 },
+          { id: '3', title: '统一身份认证组件', appId: 'APP003', orderNo: '202608100003', serviceType: '能力组件', status: 'draft', serviceProvider: '广州智慧健康科技有限公司', cloudProvider: '移动云', createTime: '2026-03-08 09:00', platformRating: 4.8, usageRating: 4.1 },
+          { id: '4', title: '云数据库服务', appId: 'APP004', orderNo: '202608100004', serviceType: '基础服务', status: 'offline', serviceProvider: '深圳云计算有限公司', cloudProvider: '联通云', createTime: '2026-03-07 16:00', platformRating: 4.0, usageRating: 3.9 },
+          { id: '5', title: '医学影像处理系统', appId: 'APP005', orderNo: '202608100005', serviceType: '数字应用', status: 'pending_review', serviceProvider: '杭州医学影像科技有限公司', cloudProvider: '影像云', createTime: '2026-03-06 11:00', platformRating: 4.6, usageRating: 4.5 },
+          { id: '6', title: '安全审计平台', appId: 'APP006', orderNo: '202608100006', serviceType: '安全服务', status: 'published', serviceProvider: '深圳安全科技有限公司', cloudProvider: '紫光云', createTime: '2026-03-05 08:00', platformRating: 4.3, usageRating: 4.2 }
+        ]
+        this.loading = false
+      })
     },
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.loadAppList();
+      this.applied = { ...this.filter }
+      this.pagination.current = 1
     },
     resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.filter = { title: '', serviceId: '', serviceType: undefined, status: undefined }
+      this.applied = { ...this.filter }
+      this.pagination.current = 1
     },
-    handleAdd() {
-      this.addForm = {
-        title: '',
-        logo: '',
-        description: '',
-        systemUrl: '',
-        sortOrder: 0,
-        serviceProvider: '',
-        cooperativeEnterprise: '',
-        contactName1: '',
-        contactPhone1: '',
-        contactName2: '',
-        contactPhone2: '',
-        targetObject: [],
-        appArchitecture: [],
-        cloudProvider: [],
-        coverBase: [],
-        coverPublic: [],
-        coverTech: []
-      };
-      this.addDialogVisible = true;
-      this.$nextTick(() => {
-        this.$refs.addForm && this.$refs.addForm.clearValidate();
-      });
+    onTableChange(pag) {
+      this.pagination.current = pag.current
+      this.pagination.pageSize = pag.pageSize
     },
-    handleLogoUpload(file) {
-      if (file.size > 1 * 1024 * 1024) {
-        this.$modal.msgError('图片大小不能超过1MB');
-        return;
+    onSelectType(type) {
+      this.showTypeSelector = false
+      const routeMap = {
+        '数字应用': '/portal/service/digitalAppForm',
+        '安全服务': '/portal/service/securityServiceForm',
+        '能力组件': '/portal/service/componentForm',
+        '基础服务': '/portal/service/serviceCatalogForm'
       }
-      this.addForm.logo = URL.createObjectURL(file.raw);
-    },
-    handleEditLogoUpload(file) {
-      if (file.size > 1 * 1024 * 1024) {
-        this.$modal.msgError('图片大小不能超过1MB');
-        return;
+      const path = routeMap[type]
+      if (path) {
+        this.$router.push({ path, query: { cid: '603612031287365' } })
       }
-      this.editForm.logo = URL.createObjectURL(file.raw);
-    },
-    handleAddSubmit(status) {
-      this.$refs.addForm.validate((valid) => {
-        if (valid) {
-          const msg = status === 'draft' ? '草稿已保存' : '已提交审核';
-          this.$modal.msgSuccess(msg);
-          this.addDialogVisible = false;
-          this.loadAppList();
-        }
-      });
-    },
-    handlePublish(row) {
-      const isOffline = row.status === 'offline' || row.status === 40;
-      const msg = isOffline ? '确认重新发布该应用？将重新提交审核。' : '确认发布该应用？将提交审核。';
-      this.$modal.confirm(msg).then(() => {
-        this.$modal.msgSuccess('已提交审核');
-        this.loadAppList();
-      }).catch(() => {});
-    },
-    handleOffline(row) {
-      this.$modal.confirm('确认下线应用 ' + row.title + ' 吗？').then(() => {
-        this.$modal.msgSuccess('应用已下线');
-        this.loadAppList();
-      }).catch(() => {});
     },
     handleEdit(row) {
-      const data = row;
-      if (!data) return;
-      this.editForm = {
-        id: data.id || data.contentId,
-        title: data.title || '',
-        logo: data.logo || '',
-        description: data.description || '',
-        systemUrl: data.systemUrl || '',
-        sortOrder: data.sortOrder || 0,
-        serviceProvider: data.serviceProvider || '',
-        cooperativeEnterprise: data.cooperativeEnterprise || '',
-        contactName1: data.contactName1 || '',
-        contactPhone1: data.contactPhone1 || '',
-        contactName2: data.contactName2 || '',
-        contactPhone2: data.contactPhone2 || '',
-        targetObject: Array.isArray(data.targetObject) ? data.targetObject : (data.targetObject ? data.targetObject.split('、') : []),
-        appArchitecture: data.appArchitecture || [],
-        cloudProvider: Array.isArray(data.cloudProvider) ? data.cloudProvider : (data.cloudProvider ? data.cloudProvider.split('、') : []),
-        coverBase: Array.isArray(data.coverBase) ? data.coverBase : [],
-        coverPublic: Array.isArray(data.coverPublic) ? data.coverPublic : [],
-        coverTech: Array.isArray(data.coverTech) ? data.coverTech : []
-      };
-      this.editDialogVisible = true;
+      const type = row.serviceType || '数字应用'
+      const id = row.id || row.contentId
+      const routeMap = {
+        '数字应用': '/portal/service/digitalAppForm',
+        '安全服务': '/portal/service/securityServiceForm',
+        '能力组件': '/portal/service/componentForm',
+        '基础服务': '/portal/service/serviceCatalogForm'
+      }
+      const path = routeMap[type]
+      if (path) {
+        this.$router.push({ path, query: { id, cid: '603612031287365' } })
+      }
     },
-    handleEditSubmit(status) {
-      this.$refs.editForm.validate((valid) => {
-        if (valid) {
-          const msg = status === 'draft' ? '草稿已保存' : '已提交审核';
-          this.$modal.msgSuccess(msg);
-          this.editDialogVisible = false;
-          this.loadAppList();
-        }
-      });
+    handleDelete(row) {
+      this.deleteTargetId = row.id || row.contentId
+      this.deleteDialogVisible = true
     },
-    getStatusTag(status) {
+    confirmDelete() {
+      this.deleteDialogVisible = false
+      message.success('删除成功')
+      this.loadAppList()
+    },
+    canEdit(status) {
+      return status !== 'pending_review' && status !== 20
+    },
+    getStatusKey(status) {
       const map = {
-        0: 'info',
-        10: 'success',
-        20: 'warning',
-        30: 'danger',
-        40: 'danger',
-        'draft': 'info',
-        'pending_review': 'warning',
-        'published': 'success',
-        'rejected': 'danger',
-        'offline': 'danger'
-      };
-      return map[status] || 'info';
+        0: 'default', 10: 'done', 20: 'processing', 30: 'rejected', 40: 'cancelled',
+        draft: 'default', pending_review: 'processing', published: 'done', rejected: 'rejected', offline: 'cancelled'
+      }
+      return map[status] || 'default'
     },
     getStatusText(status) {
       const map = {
-        0: '草稿',
-        10: '已发布',
-        20: '待审核',
-        30: '已驳回',
-        40: '已下线',
-        'draft': '草稿',
-        'pending_review': '待审核',
-        'published': '已发布',
-        'rejected': '已驳回',
-        'offline': '已下线'
-      };
-      return map[status] || status;
-    },
-    handleDelete(row) {
-      const id = row.id || row.contentId;
-      if (!id) return;
-      this.deleteTargetId = id;
-      this.$root.$emit('set-prd-anchor', 'prd-3.1.1.5');
-      this.deleteDialogVisible = true;
-    },
-    confirmDelete() {
-      this.deleteDialogVisible = false;
-      this.$modal.msgSuccess('删除成功');
-      this.loadAppList();
+        0: '草稿', 10: '已上线使用', 20: '待审核', 30: '已驳回', 40: '已下架',
+        draft: '草稿', pending_review: '待审核', published: '已上线使用', rejected: '已驳回', offline: '已下架'
+      }
+      return map[status] || status
     },
     goToDetail(row) {
-      this.$router.push({
-        path: '/workorder/myAppsDetail',
-        query: {
-          title: row.title || '--',
-          status: row.status || '--',
-          serviceProvider: row.serviceProvider || '--',
-          systemUrl: row.systemUrl || '--',
-          description: row.description || '--',
-          deployServiceProviderView: row.cooperativeEnterprise || '--',
-          contactName1: row.contactName1 || '--',
-          contactPhone1: row.contactPhone1 || '--',
-          contactName2: row.contactName2 || '--',
-          contactPhone2: row.contactPhone2 || '--',
-          targetView: Array.isArray(row.targetObject) ? row.targetObject.join('、') : (row.targetObject || '--'),
-          coverView: Array.isArray(row.cover) ? row.cover.map(item => item.value || item).join('、') : (row.appScope || '--'),
-          cloudProviderStr: Array.isArray(row.cloudProvider) ? row.cloudProvider.join('、') : (row.cloudProvider || '--'),
-          platformRating: row.platformRating || 0,
-          usageRating: row.usageRating || 0
-        }
-      });
-    }
-  },
-};
+      this.drawer.record = row
+      this.drawer.activeTab = 'overview'
+      this.drawer.visible = true
+    },
+    getAuditStatusKey(status) {
+      const map = { '已通过': 'done', '已驳回': 'rejected', '审核中': 'processing', approved: 'done', rejected: 'rejected', pending: 'processing' }
+      return map[status] || 'default'
+    },
+    getAuditStatusText(status) {
+      const map = { '已通过': '已通过', '已驳回': '已驳回', '审核中': '审核中', approved: '已通过', rejected: '已驳回', pending: '待审核' }
+      return map[status] || '未知'
+    },
+    // ===== 审核流水展开方法 =====
+    onExpand(expanded, record) {
+      this.expandedRowKeys = expanded ? [record.versionKey] : []
+    },
+    getPipelineStepStatus(record, idx) {
+      const stepData = this.versionAuditMock[record.versionKey] && this.versionAuditMock[record.versionKey][idx + 1]
+      return stepData ? stepData.statusKey : 'pending'
+    },
+    getPipelineStepClass(record, idx) {
+      return `pipeline-step--${this.getPipelineStepStatus(record, idx)}`
+    },
+    getPipelineDotClass(record, idx) {
+      return `pipeline-step__dot--${this.getPipelineStepStatus(record, idx)}`
+    },
+    getPipelineTagClass(record, idx) {
+      return `pipeline-step__tag--${this.getPipelineStepStatus(record, idx)}`
+    },
+    getPipelineTagText(record, idx) {
+      const stepData = this.versionAuditMock[record.versionKey] && this.versionAuditMock[record.versionKey][idx + 1]
+      return stepData ? stepData.statusText : '待审核'
+    },
+    getPipelineStepDetail(record, idx) {
+      const stepData = this.versionAuditMock[record.versionKey] && this.versionAuditMock[record.versionKey][idx + 1]
+      if (!stepData || !stepData.auditor) return null
+      return stepData
+    },
+    getPipelineConnectorClass(record, idx) {
+      return this.getPipelineStepStatus(record, idx) === 'done' ? 'pipeline-step__connector--done' : ''
+    },
+    getServiceTypeClass(type) {
+      const map = { '数字应用': 'digital', '安全服务': 'security', '能力组件': 'component', '基础服务': 'basic' }
+      return map[type] || 'default'
+    },
+    getServiceTypeIcon(type) {
+      return SERVICE_TYPE_ICONS[type] || AppstoreOutlined
+    },
+    formatTime(time) {
+      if (!time) return '--'
+      const d = new Date(time)
+      if (isNaN(d.getTime())) return time
+      const pad = (n) => String(n).padStart(2, '0')
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+    },
+    generateOrderNo(seq) {
+      const now = new Date()
+      const pad = (n) => String(n).padStart(2, '0')
+      const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`
+      const seqPart = String(seq + 1).padStart(4, '0')
+      return `${datePart}${seqPart}`
+    },
+  }
+}
 </script>
 
 <style scoped>
-.app-container {
-  padding: 20px;
-  background-color: #ffffff;
-  min-height: 100%;
-  box-sizing: border-box;
+.my-apps-page {
+  padding: 4px 0;
+}
+
+.my-apps-page__divider {
+  height: 1px;
+  background: #F2F3F5;
+  margin: 0 16px;
+}
+
+.my-apps-page__table-wrap {
+  padding: 0 16px 16px 16px;
+}
+
+.cell-name {
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
-.el-form-search {
-  margin-bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 0;
-}
-
-.el-form-search .el-form-item:last-child {
-  margin-right: 0;
-}
-
-.el-form-search .el-form-item {
-  margin-bottom: 0;
-  margin-right: 0;
-}
-
-.mb12 {
-  margin-bottom: 12px;
-}
-
-.rating-star {
-  color: #409EFF;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.rating-star:hover {
-  text-decoration: underline;
-}
-
-/* 弹窗样式 */
-:deep(.el-dialog) {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-:deep(.el-dialog__header) {
-  padding: 14px 24px 6px;
-  border-bottom: 1px solid #ebeef5;
-  background: #fafbfc;
-}
-
-:deep(.el-dialog__title) {
-  font-size: 16px;
-  font-weight: 600;
-  color: #303133;
-}
-
-:deep(.el-dialog__body) {
-  padding: 0;
-  max-height: 62vh;
-  overflow-y: auto;
-}
-
-:deep(.el-dialog__footer) {
-  padding: 14px 24px;
-  border-top: 1px solid #ebeef5;
-  background: #fafbfc;
-}
-
-.add-form {
-  padding: 4px 24px 20px;
-}
-
-.form-section {
-  margin-bottom: 24px;
-}
-
-.form-section:last-child {
-  margin-bottom: 0;
-}
-
-.form-section-title {
+.cell-name__title {
+  color: rgba(0, 0, 0, 0.85);
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #ebeef5;
 }
 
-:deep(.el-form-item) {
+.cell-name__id {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}
+
+.service-type-tag {
+  display: inline-block;
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  border-radius: 3px;
+  border: 1px solid;
+  vertical-align: middle;
+}
+
+.service-type-tag--digital { color: #165DFF; background: #E8F3FF; border-color: rgba(22, 93, 255, 0.20); }
+.service-type-tag--security { color: #F53F3F; background: #FFF0ED; border-color: rgba(245, 63, 63, 0.20); }
+.service-type-tag--component { color: #D97000; background: #FFF3E8; border-color: rgba(217, 112, 0, 0.20); }
+.service-type-tag--basic { color: #16A34A; background: rgba(22, 163, 74, 0.10); border-color: rgba(22, 163, 74, 0.20); }
+
+.cell-primary {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cell-default {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+}
+
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
+}
+
+.cell-text {
+  font-size: 14px;
+  color: #4E5969;
+}
+
+
+.delete-modal__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0 8px;
+}
+
+.delete-modal__icon {
+  font-size: 40px;
+  color: #F59E0B;
+}
+
+.delete-modal__text {
+  margin: 0;
+  font-size: 14px;
+  color: #4E5969;
+  text-align: center;
+}
+
+/* Drawer 样式 */
+.drawer-header-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 0 8px;
+  margin-bottom: 8px;
+}
+
+.drawer-header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawer-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.drawer-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.drawer-header-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.drawer-header-sub__sep {
+  color: #C9CDD4;
+}
+
+.info-section {
   margin-bottom: 18px;
 }
 
-:deep(.el-form-item__label) {
-  color: #606266;
-  font-weight: 500;
+.info-section:last-child {
+  margin-bottom: 0;
+}
+
+.info-section__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4E5969;
+  margin-bottom: 10px;
+}
+
+.muted {
+  color: #4E5969;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* 评价评分概览 */
+.overview-section {
+  margin-bottom: 16px;
+}
+
+.overview-section:last-child {
+  margin-bottom: 0;
+}
+
+.overview-section__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.overview-section__head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.overview-section__head .overview-section__title {
+  margin-bottom: 0;
+}
+
+.overview-section__count {
+  font-size: 12px;
+  color: #86909C;
+}
+
+.rating-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.rating-overview__item {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #FFF7E6 0%, #FFFBF2 100%);
+  border: 1px solid #FFE7BA;
+  border-radius: 8px;
+}
+
+.rating-overview__label {
+  font-size: 13px;
+  color: #4E5969;
+  margin-bottom: 8px;
+}
+
+.rating-overview__body {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.rating-overview__num {
+  font-size: 28px;
+  font-weight: 400;
+  color: #FA8C16;
+  line-height: 1;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-overview__unit {
+  font-size: 13px;
+  color: #86909C;
+}
+
+.rating-overview__stars {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 8px;
+}
+
+.rating-overview__stars .star {
+  color: #E5E6EB;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.rating-overview__stars .star.full {
+  color: #FAAD14;
+}
+
+/* 用户评价卡片 */
+.rating-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rating-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #FAFBFC;
+  border: 1px solid #F2F3F5;
+  border-radius: 8px;
+}
+
+.rating-card__avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #165DFF, #4096FF);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+}
+
+.rating-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.rating-card__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.rating-card__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.rating-card__dims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-bottom: 8px;
+}
+
+.rating-card__dim {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rating-card__dim-label {
+  font-size: 11px;
+  color: #8c8c8c;
+}
+
+.rating-card__dim-stars {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.star-sm {
+  font-size: 13px;
+  color: #E5E6EB;
+  line-height: 1;
+}
+
+.star-sm.full {
+  color: #FAAD14;
+}
+
+.rating-card__dim-num {
+  font-size: 11px;
+  font-weight: 600;
+  color: #FAAD14;
+  min-width: 12px;
+}
+
+.rating-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #86909C;
+  margin-bottom: 6px;
+}
+
+.rating-card__sep {
+  color: #C9CDD4;
+}
+
+.rating-card__order {
+  color: #86909C;
+}
+
+.rating-card__content {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.75);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.rating-card__time {
+  font-size: 12px;
+  color: #C9CDD4;
+}
+
+.rating-card__reply {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-left: 2px solid rgba(22, 93, 255, 0.4);
+  font-size: 12px;
+  color: #86909C;
+  line-height: 1.5;
+}
+
+.rating-card__reply strong {
+  color: #165DFF;
+}
+
+.rating-empty {
+  padding: 40px 0;
+  text-align: center;
+  color: #C9CDD4;
   font-size: 13px;
 }
 
-/* 上传LOGO */
-.upload-logo .el-upload--text {
-  width: 100%;
-  border: 0;
+/* 类型选择器 */
+.type-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
-.upload-logo .el-upload-dragger {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: auto;
-  min-height: 90px;
-  border: 1px dashed #d9d9d9;
-  border-radius: 4px;
+.type-selector-card {
+  padding: 20px;
+  border: 1px solid #F2F3F5;
+  border-radius: 8px;
   cursor: pointer;
-  padding: 16px;
-  background: #fafbfc;
+  transition: all 0.2s;
+  text-align: center;
 }
 
-.upload-logo .el-upload-dragger:hover {
-  border-color: #409EFF;
-  background: #ecf5ff;
+.type-selector-card:hover {
+  border-color: #165DFF;
+  background: rgba(22, 93, 255, 0.04);
 }
 
-.upload-logo .el-upload-dragger i {
-  font-size: 28px;
-  color: #8c939d;
+.type-selector-card__icon {
+  font-size: 32px;
+  color: #165DFF;
+  margin-bottom: 10px;
 }
 
-.upload-logo .el-upload-dragger .avatar {
+.type-selector-card__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 4px;
+}
+
+.type-selector-card__desc {
+  font-size: 12px;
+  color: #86909C;
+}
+
+/* 抽屉头部图标 */
+.drawer-header-icon {
   width: 56px;
   height: 56px;
-  border-radius: 4px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  color: #fff;
+}
+
+.drawer-header-icon--digital { background: linear-gradient(135deg, #165DFF 0%, #4096ff 100%); }
+.drawer-header-icon--security { background: linear-gradient(135deg, #F53F3F 0%, #ff7a7a 100%); }
+.drawer-header-icon--component { background: linear-gradient(135deg, #D97000 0%, #ffa940 100%); }
+.drawer-header-icon--basic { background: linear-gradient(135deg, #16A34A 0%, #52c41a 100%); }
+.drawer-header-icon--default { background: linear-gradient(135deg, #86909C 0%, #a0a4ab 100%); }
+
+.drawer-header-logo {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.upload-logo .el-upload__text {
+.drawer-header-fallback {
+  font-size: 28px;
+  color: #fff;
+}
+
+.drawer-header-sub__sep {
+  color: #C9CDD4;
+  margin: 0 4px;
+}
+
+/* ===== 审核流水面板 ===== */
+.audit-pipeline {
+  display: flex;
+  gap: 0;
+  padding: 16px 20px;
+  background: #FAFBFC;
+  border: 1px solid #F2F3F5;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.pipeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 140px;
+  position: relative;
+  padding: 0 6px;
+}
+
+.pipeline-step__dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
-  color: #8c939d;
-  margin-top: 4px;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  color: #86909C;
+  background: #FFFFFF;
+  border: 1.5px solid #C9CDD4;
+  z-index: 1;
+}
+
+.pipeline-step__dot--done {
+  color: #FFFFFF;
+  background: #16A34A;
+  border-color: #16A34A;
+}
+
+.pipeline-step__dot--processing {
+  color: #FFFFFF;
+  background: #165DFF;
+  border-color: #165DFF;
+  box-shadow: 0 2px 6px rgba(22, 93, 255, 0.35);
+}
+
+.pipeline-step__dot--rejected {
+  color: #FFFFFF;
+  background: #EF4444;
+  border-color: #EF4444;
+}
+
+.pipeline-step__dot--pending {
+  color: #86909C;
+  background: #FFFFFF;
+  border-color: #C9CDD4;
+}
+
+.pipeline-step__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  line-height: 1.5;
+  margin-top: 10px;
+  gap: 4px;
 }
 
-.upload-logo .el-upload__tip {
+.pipeline-step__title {
   font-size: 12px;
-  color: #909399;
-  margin-top: 4px;
-  line-height: 1.5;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
 }
 
-/* 弹窗仅覆盖左侧Demo区域 */
-:deep(.el-dialog__wrapper) {
-  position: absolute !important;
+.pipeline-step--processing .pipeline-step__title {
+  font-weight: 600;
+  color: #165DFF;
 }
-:deep(.v-modal) {
-  position: absolute !important;
+
+.pipeline-step__tag {
+  display: inline-block;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+.pipeline-step__tag--pending { background: #F2F3F5; color: #86909C; }
+.pipeline-step__tag--processing { background: #E8F3FF; color: #165DFF; }
+.pipeline-step__tag--done { background: #E9F9EF; color: #16A34A; }
+.pipeline-step__tag--rejected { background: #FFEDEC; color: #EF4444; }
+
+.pipeline-step__detail {
+  background: #F2F3F5;
+  border-radius: 6px;
+  padding: 10px 12px;
+  max-width: 200px;
+  margin-top: 4px;
+}
+
+.pipeline-step__opinion {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pipeline-step__meta {
+  margin-top: 6px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.pipeline-step__auditor,
+.pipeline-step__audit-time {
+  font-size: 12px;
+  color: #86909C;
+  white-space: nowrap;
+}
+
+.pipeline-step__connector {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #E5E6EB;
+  z-index: 0;
+}
+
+.pipeline-step__connector--done {
+  background: #16A34A;
+}
+
+</style>
+
+<style>
+/* 抽屉内 antd 组件样式覆盖（unscoped，因 a-drawer teleport 到 body，scoped + :deep 不生效） */
+.ant-drawer .ant-table-wrapper,
+.ant-drawer .ant-table-wrapper .ant-table,
+.ant-drawer .ant-table-wrapper .ant-table-container,
+.ant-drawer .ant-table-wrapper .ant-table-thead > tr > th,
+.ant-drawer .ant-table-wrapper .ant-table-tbody > tr > td,
+.ant-drawer .ant-table-wrapper .ant-table-thead > tr:first-child > th:first-child,
+.ant-drawer .ant-table-wrapper .ant-table-tbody > tr:first-child > td:first-child,
+.ant-drawer .ant-descriptions,
+.ant-drawer .ant-descriptions-bordered,
+.ant-drawer .ant-descriptions-view,
+.ant-drawer .ant-descriptions-view table,
+.ant-drawer .ant-descriptions-row,
+.ant-drawer .ant-descriptions-row > td,
+.ant-drawer .ant-descriptions-row > th,
+.ant-drawer .ant-descriptions-item-container,
+.ant-drawer .ant-descriptions-item-label,
+.ant-drawer .ant-descriptions-item-content {
+  border-radius: 0 !important;
+}
+
+.ant-drawer .ant-table-thead .ant-table-cell {
+  font-weight: normal !important;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.ant-drawer .ant-descriptions-item-label {
+  width: 160px !important;
+  min-width: 160px !important;
+  max-width: 160px !important;
+  text-align: left !important;
+  white-space: nowrap;
+}
+
+.ant-drawer .ant-descriptions-item-content {
+  width: auto;
+}
+
+/* MVP 详情抽屉描述列表：表头/表体与 a-table 规范统一 */
+.mvp-detail-tabs .ant-descriptions-item-label {
+  background: #FAFBFC !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-feature-settings: "tnum" !important;
+}
+
+.mvp-detail-tabs .ant-descriptions-item-content {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: rgba(0, 0, 0, 0.65) !important;
+  font-feature-settings: "tnum" !important;
+}
+
+.mvp-detail-tabs .ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+.mvp-detail-tabs .ant-tabs-tab {
+  padding: 8px 0;
 }
 </style>

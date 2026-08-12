@@ -1,95 +1,158 @@
 <template>
-  <div class="detail-container">
-    <div class="detail-header-wrap">
-      <el-button size="small" @click="goBack" class="back-btn">
-        <i class="el-icon-arrow-left"></i> 返回列表
-      </el-button>
-    </div>
+  <div class="service-audit-detail-page">
+    <PageHeader
+      :title="`基础服务审核 · ${serviceInfo.serviceName}`"
+      description="查看服务申请详情、资质材料及审核记录，并通过或驳回本次申请"
+    >
+      <template #actions>
+        <a-button @click="goBack">
+          <template #icon><ArrowLeftOutlined /></template>
+          返回列表
+        </a-button>
+      </template>
+    </PageHeader>
 
-    <div class="detail-content-wrap">
-      <div class="detail-left">
-        <!-- 服务基本信息 -->
-        <el-card shadow="hover" class="mb-4">
-          <div slot="header" class="clearfix">
-            <span>服务基本信息</span>
-            <span class="sb pending" style="float: right">待审核</span>
+    <div class="service-audit-detail-page__body">
+      <div class="service-audit-detail-page__main">
+        <CloudCard class="service-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">服务基本信息</span>
           </div>
+          <a-descriptions :column="2" size="small" class="info-desc">
+            <a-descriptions-item label="服务名称">{{ serviceInfo.serviceName }}</a-descriptions-item>
+            <a-descriptions-item label="服务ID">
+              <span class="cell-mono">{{ serviceInfo.serviceId }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="部署云服务商">{{ serviceInfo.cloudProvider }}</a-descriptions-item>
+            <a-descriptions-item label="服务类型">{{ serviceInfo.serviceType }}</a-descriptions-item>
+            <a-descriptions-item label="服务商名称">{{ serviceInfo.vendor }}</a-descriptions-item>
+            <a-descriptions-item label="服务等级">{{ serviceInfo.serviceLevel }}</a-descriptions-item>
+            <a-descriptions-item label="提交时间">
+              <span class="cell-mono">{{ serviceInfo.submitTime }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="服务范围">{{ serviceInfo.serviceScope }}</a-descriptions-item>
+            <a-descriptions-item label="服务描述" :span="2">
+              <span class="muted">{{ serviceInfo.description }}</span>
+            </a-descriptions-item>
+          </a-descriptions>
+        </CloudCard>
 
-          <div class="detail-section">
-            <div class="detail-section-title">服务信息</div>
-            <div class="detail-kv">
-              <div class="kv-item"><label>服务名称</label><span>{{ serviceInfo.serviceName }}</span></div>
-              <div class="kv-item"><label>服务ID</label><span>{{ serviceInfo.serviceId }}</span></div>
-              <div class="kv-item"><label>云服务商</label><span>{{ serviceInfo.cloudProvider }}</span></div>
-              <div class="kv-item"><label>服务类型</label><span>{{ serviceInfo.serviceType }}</span></div>
-              <div class="kv-item"><label>服务商名称</label><span>{{ serviceInfo.vendor }}</span></div>
-              <div class="kv-item"><label>提交时间</label><span>{{ serviceInfo.submitTime }}</span></div>
-              <div class="kv-item"><label>服务范围</label><span>{{ serviceInfo.serviceScope }}</span></div>
-              <div class="kv-item"><label>服务等级</label><span>{{ serviceInfo.serviceLevel }}</span></div>
-              <div class="kv-item full"><label>服务描述</label><span>{{ serviceInfo.description }}</span></div>
-            </div>
+        <CloudCard class="service-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">资质材料</span>
           </div>
+          <a-list :data-source="serviceInfo.materials" class="material-list">
+            <template #renderItem="{ item }">
+              <a-list-item>
+                <a-list-item-meta>
+                  <template #avatar>
+                    <div class="material-icon"><FileOutlined /></div>
+                  </template>
+                  <template #title>
+                    <span class="material-name">{{ item.name }}</span>
+                  </template>
+                  <template #description>
+                    <span class="material-size">{{ item.size }}</span>
+                  </template>
+                </a-list-item-meta>
+                <template #actions>
+                  <a-button type="link" size="small" @click="downloadMaterial(item)">
+                    <template #icon><DownloadOutlined /></template>
+                    下载
+                  </a-button>
+                </template>
+              </a-list-item>
+            </template>
+          </a-list>
+        </CloudCard>
 
-          <!-- 附件材料 - 暂时注释
-          <div class="detail-section">
-            <div class="detail-section-title">附件材料</div>
-            <div class="detail-kv">
-              <div class="kv-item full">
-                <a v-for="(m, i) in serviceInfo.materials" :key="i" class="file-link" href="javascript:void(0)" @click="downloadMaterial(m)">{{ m.name }}</a>
-              </div>
-            </div>
+        <CloudCard class="service-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">审核记录</span>
           </div>
-          -->
-        </el-card>
-
-        <!-- 审核记录 -->
-        <el-card shadow="hover">
-          <div slot="header" class="clearfix">
-            <span>审核记录</span>
-          </div>
-          <el-table :data="auditRecords" size="small" class="audit-table" :header-cell-style="{background:'#f5f7fa'}">
-            <el-table-column prop="submitTime" label="提交时间" width="150" />
-            <el-table-column prop="status" label="审核状态" width="100">
-              <template slot-scope="scope">
-                <el-tag :type="getAuditStatusType(scope.row.status)" size="mini" effect="dark">{{ getAuditStatusText(scope.row.status) }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="auditor" label="审核人" width="110" />
-            <el-table-column prop="auditTime" label="审核时间" width="150" />
-            <el-table-column prop="opinion" label="审核意见" min-width="200" show-overflow-tooltip />
-          </el-table>
-        </el-card>
+          <a-table
+            :columns="auditColumns"
+            :data-source="auditRecords"
+            :pagination="false"
+            row-key="id"
+            size="middle"
+          >
+            <template #bodyCell="{ column, record }">
+              <StatusDot v-if="column.dataIndex === 'status'" :type="getAuditStatusKey(record.status)" :text="getAuditStatusText(record.status)" />
+              <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+            </template>
+          </a-table>
+        </CloudCard>
       </div>
 
-      <div class="detail-right">
-        <!-- 审核操作 -->
-        <el-card shadow="hover">
-          <div slot="header" class="clearfix">
-            <span>审核操作</span>
+      <div class="service-audit-detail-page__side">
+        <CloudCard class="service-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">审核操作</span>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 8px">
-            <textarea
-              v-model="auditForm.opinion"
-              class="rf-textarea"
-              style="min-height: 72px; margin-bottom: 0"
-              placeholder="填写审核意见（通过/驳回时必填）..."
-            ></textarea>
-            <button class="btn btn-success" style="width: 100%; justify-content: center" @click="approve">
-              ✓ 审核通过
-            </button>
-            <button class="btn btn-danger" style="width: 100%; justify-content: center" @click="reject">
-              ✕ 驳回申请
-            </button>
+          <a-textarea
+            v-model:value="auditForm.opinion"
+            :rows="5"
+            :maxlength="200"
+            show-count
+            placeholder="填写审核意见（通过/驳回时必填）"
+            class="audit-textarea"
+          />
+          <div class="action-list">
+            <a-button block type="primary" @click="approve">
+              <template #icon><CheckOutlined /></template>
+              审核通过
+            </a-button>
+            <a-button block danger @click="reject">
+              <template #icon><CloseOutlined /></template>
+              驳回申请
+            </a-button>
           </div>
-        </el-card>
+        </CloudCard>
+
+        <CloudCard class="service-audit-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">服务商信息</span>
+          </div>
+          <div class="contact-list">
+            <div class="contact-item">
+              <span class="contact-label">服务商</span>
+              <span class="contact-value">{{ serviceInfo.vendor }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">部署云服务商</span>
+              <span class="contact-value">{{ serviceInfo.cloudProvider }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">服务等级</span>
+              <span class="contact-value">{{ serviceInfo.serviceLevel }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">服务范围</span>
+              <span class="contact-value">{{ serviceInfo.serviceScope }}</span>
+            </div>
+          </div>
+        </CloudCard>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import {
+  ArrowLeftOutlined, CheckOutlined, CloseOutlined, DownloadOutlined, FileOutlined
+} from '@ant-design/icons-vue'
+import { Modal, message } from 'ant-design-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+
 export default {
-  name: "BasicServiceAuditDetail",
+  name: 'BasicServiceAuditDetail',
+  components: {
+    PageHeader, CloudCard, StatusDot,
+    ArrowLeftOutlined, CheckOutlined, CloseOutlined, DownloadOutlined, FileOutlined
+  },
   data() {
     return {
       serviceInfo: {
@@ -108,343 +171,212 @@ export default {
           { name: '安全合规认证.pdf', size: '1.5 MB' },
           { name: '服务等级协议SLA.pdf', size: '920 KB' },
           { name: '厂商资质证明.pdf', size: '1.1 MB' }
-        ],
-        processSteps: [
-          { title: '提交申请', time: '2024-03-01 10:00', handler: '浪潮云信息技术有限公司', statusClass: 'done' },
-          { title: '人工审核', time: '进行中', handler: '等待审核', statusClass: 'on' },
-          { title: '审核结果通知', time: '等待审核结果', handler: '', statusClass: 'wait' }
         ]
       },
       auditForm: { opinion: '' },
       auditRecords: [
         { id: 1, submitTime: '2024-03-01 10:00', status: 'approved', auditor: '平台管理员', auditTime: '2024-03-02 09:30', opinion: '服务符合上架标准，审核通过。' },
         { id: 2, submitTime: '2024-03-05 11:00', status: 'pending', auditor: '', auditTime: '', opinion: '' }
+      ],
+      auditColumns: [
+        { title: '提交时间', dataIndex: 'submitTime', key: 'submitTime', width: 150 },
+        { title: '审核状态', dataIndex: 'status', key: 'status', width: 100 },
+        { title: '审核人', dataIndex: 'auditor', key: 'auditor', width: 110 },
+        { title: '审核时间', dataIndex: 'auditTime', key: 'auditTime', width: 150 },
+        { title: '审核意见', dataIndex: 'opinion', key: 'opinion', ellipsis: true }
       ]
-    };
+    }
   },
   created() {
-    const serviceId = this.$route.query.id;
+    const serviceId = this.$route.query.id
     if (serviceId) {
-      this.loadServiceDetail(serviceId);
+      this.loadServiceDetail(serviceId)
     }
   },
   methods: {
-    loadServiceDetail(serviceId) {},
+    loadServiceDetail() {},
     goBack() {
-      this.$router.push('/portal/auditCenter/basicServiceAudit');
+      this.$router.push('/portal/auditCenter/basicServiceAudit')
     },
     approve() {
       if (!this.auditForm.opinion.trim()) {
-        this.$message.error('请填写审核意见');
-        return;
+        message.warning('请填写审核意见')
+        return
       }
-      this.$confirm('确定要通过该服务的审核吗？', '确认通过', {
-        confirmButtonText: '确定', cancelButtonText: '取消', type: 'success'
-      }).then(() => {
-        this.$message.success('审核通过，服务已上架');
-        this.goBack();
-      }).catch(() => {});
+      Modal.confirm({
+        title: '确认通过',
+        content: '确定要通过该服务的审核吗？',
+        okText: '确定',
+        cancelText: '取消',
+        okType: 'primary',
+        onOk: () => {
+          message.success('审核通过，服务已上架')
+          this.goBack()
+        }
+      })
     },
     reject() {
       if (!this.auditForm.opinion.trim()) {
-        this.$message.error('请填写驳回原因');
-        return;
+        message.warning('请填写驳回原因')
+        return
       }
-      this.$confirm('确定要拒绝该服务的审核吗？', '确认拒绝', {
-        confirmButtonText: '确定', cancelButtonText: '取消', type: 'error'
-      }).then(() => {
-        this.$message.success('审核已拒绝');
-        this.goBack();
-      }).catch(() => {});
+      Modal.confirm({
+        title: '确认驳回',
+        content: '确定要拒绝该服务的审核吗？',
+        okText: '确定',
+        cancelText: '取消',
+        okType: 'danger',
+        onOk: () => {
+          message.success('审核已拒绝')
+          this.goBack()
+        }
+      })
     },
     downloadMaterial(material) {
-      this.$message.success('下载附件：' + material.name);
+      message.success('下载附件：' + material.name)
     },
-    getAuditStatusType(status) {
-      const map = { approved: 'success', rejected: 'danger', pending: 'warning' };
-      return map[status] || 'info';
+    getAuditStatusKey(status) {
+      const map = { approved: 'done', rejected: 'rejected', pending: 'processing' }
+      return map[status] || 'default'
     },
     getAuditStatusText(status) {
-      const map = { approved: '已通过', rejected: '已驳回', pending: '待审核' };
-      return map[status] || '未知';
+      const map = { approved: '已通过', rejected: '已驳回', pending: '待审核' }
+      return map[status] || '未知'
     }
   }
-};
+}
 </script>
 
 <style scoped>
-.detail-container {
+.service-audit-detail-page {
+  padding: 4px 0;
+}
+
+.service-audit-detail-page__body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.service-audit-detail-page__main,
+.service-audit-detail-page__side {
   display: flex;
   flex-direction: column;
-  padding: 0 !important;
-  margin: -20px;
-  min-height: calc(100vh - 50px);
-  background-color: #f2f4f8;
-}
-
-.detail-header-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  margin: 0;
-  border-radius: 0;
-  height: auto;
-  flex-shrink: 0;
-}
-
-.back-btn {
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 500;
-}
-
-.back-btn:hover {
-  background-color: #ecf5ff;
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.detail-content-wrap {
-  display: flex;
   gap: 14px;
-  padding: 20px 20px 24px;
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f2f4f8;
-}
-
-.detail-left {
-  flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
-.detail-right {
-  width: 272px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.detail-left .mb-4 {
-  margin-bottom: 0 !important;
-}
-
-.card-header {
+.card-head {
   display: flex;
   align-items: center;
-  font-weight: 600;
-  color: #303133;
-  font-size: 14px;
-}
-
-/* 分组 */
-.detail-section {
-  margin-bottom: 20px;
-}
-
-.detail-section:last-child {
-  margin-bottom: 0;
-}
-
-.detail-section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #303133;
+  justify-content: space-between;
   margin-bottom: 14px;
 }
 
-/* 键值对网格 */
-.detail-kv {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 40px;
+.card-head__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
 }
 
-.kv-item {
-  display: flex;
-  align-items: baseline;
+.cell-default {
+  color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
-  line-height: 2;
 }
 
-.kv-item.full {
-  grid-column: 1 / -1;
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
 }
 
-.kv-item label {
-  color: #8c8c8c;
+.muted {
+  color: #86909C;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.info-desc :deep(.ant-descriptions-item-label) {
+  color: #86909C;
+  font-size: 13px;
   width: 100px;
-  flex-shrink: 0;
-  font-weight: 400;
-  white-space: nowrap;
 }
 
-.kv-item span {
-  color: #262626;
-  word-break: break-all;
-  font-weight: 400;
-}
-
-.kv-item .mono {
-  font-family: 'DM Mono', monospace;
+.info-desc :deep(.ant-descriptions-item-content) {
+  color: rgba(0, 0, 0, 0.85);
   font-size: 13px;
 }
 
-/* 附件链接 */
-.file-link {
-  display: inline-block;
-  margin: 2px 16px 2px 0;
-  font-size: 13px;
-  color: #3b5bdb;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
+.material-list :deep(.ant-list-item) {
+  padding: 10px 0;
 }
 
-.file-link:hover {
-  color: #2f3ea5;
-}
-
-/* 按钮 */
-.btn {
-  display: inline-flex;
+.material-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #E8F3FF;
+  color: #165DFF;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: 8px;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.material-name {
   font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
-  border: none;
-  transition: all 0.12s;
-  font-family: 'DM Sans', sans-serif;
-  white-space: nowrap;
+  color: rgba(0, 0, 0, 0.85);
 }
 
-.btn-success {
-  background: #ebfbee;
-  color: #2f9e44;
-  border: 1px solid #b2f2bb;
-}
-
-.btn-success:hover { background: #b2f2bb; }
-
-.btn-danger {
-  background: #fff5f5;
-  color: #c92a2a;
-  border: 1px solid #ffc9c9;
-}
-
-.btn-danger:hover { background: #ffc9c9; }
-
-/* 状态标签 */
-.sb {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: 20px;
+.material-size {
   font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
+  color: #86909C;
 }
 
-.sb::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+.audit-textarea {
+  margin-bottom: 12px;
+}
+
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.contact-label {
+  color: #86909C;
+  font-size: 12px;
+  width: 64px;
   flex-shrink: 0;
 }
 
-.sb.pending { background: #fff9db; color: #e67700; }
-.sb.pending::before { background: #e67700; }
-
-/* 审核记录表格 */
-.audit-table {
-  min-height: auto !important;
-}
-
-.audit-table :deep(.el-table) {
-  --el-table-row-height: 32px !important;
-}
-
-.audit-table :deep(.el-table__row) {
-  height: 32px !important;
-  line-height: 32px !important;
-}
-
-.audit-table :deep(.el-table__header-wrapper) {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-.audit-table :deep(.el-table__body-wrapper) {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-.audit-table :deep(.el-table td),
-.audit-table :deep(.el-table th) {
-  padding: 6px 12px !important;
-}
-
-/* 文本框 */
-.rf-textarea {
-  width: 100%;
-  background: #fff;
-  border: 1px solid #e3e7ef;
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: #1c2033;
+.contact-value {
+  color: rgba(0, 0, 0, 0.85);
   font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  outline: none;
-  resize: vertical;
-  min-height: 80px;
-  line-height: 1.6;
-  transition: border-color 0.12s;
+  flex: 1;
+  word-break: break-all;
+  min-width: 0;
 }
 
-.rf-textarea:focus { border-color: #3b5bdb; }
-
-/* 审核记录表格 */
-.audit-table {
-  min-height: auto !important;
+@media (max-width: 1100px) {
+  .service-audit-detail-page__body {
+    grid-template-columns: 1fr;
+  }
 }
-
-.audit-table :deep(.el-table) {
-  --el-table-row-height: 32px !important;
-}
-
-.audit-table :deep(.el-table__row) {
-  height: 32px !important;
-  line-height: 32px !important;
-}
-
-.audit-table :deep(.el-table__header-wrapper) {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-.audit-table :deep(.el-table__body-wrapper) {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-.audit-table :deep(.el-table td),
-.audit-table :deep(.el-table th) {
-  padding: 6px 12px !important;
-}
-
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #c8cdd9; border-radius: 3px; }
 </style>

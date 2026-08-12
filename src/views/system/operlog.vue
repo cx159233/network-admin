@@ -9,7 +9,7 @@
               <el-option label="数字应用" value="数字应用" />
               <el-option label="能力组件" value="能力组件" />
               <el-option label="机构审核" value="机构审核" />
-              <el-option label="服务评价" value="服务评价" />
+              <el-option label="质量评价管理" value="质量评价管理" />
               <el-option label="订单管理" value="订单管理" />
               <el-option label="系统管理" value="系统管理" />
             </el-select>
@@ -95,7 +95,7 @@ export default {
         { time: '2024-03-20 09:15:00', module: '能力组件', operator: '李主管', operatorOrg: '阿里云计算有限公司', type: '修改', content: '更新组件描述和接口文档', target: '统一身份认证组件', ip: '192.168.1.105', result: '成功' },
         { time: '2024-03-19 16:45:30', module: '数字应用', operator: '系统', operatorOrg: '系统', type: '上架', content: '版本 v1.1.0 审核通过，系统自动上架', target: '数据分析平台', ip: 'system', result: '成功' },
         { time: '2024-03-19 14:20:00', module: '机构审核', operator: '管理员', operatorOrg: '平台运营中心', type: '审核驳回', content: '资质证明材料不完整，请补充后重新提交', target: '锐途智能科技有限公司', ip: '10.0.0.1', result: '成功' },
-        { time: '2024-03-19 11:10:22', module: '服务评价', operator: '管理员', operatorOrg: '平台运营中心', type: '审核通过', content: '审核通过评价内容', target: '评价#20240315-001', ip: '10.0.0.2', result: '成功' },
+        { time: '2024-03-19 11:10:22', module: '质量评价管理', operator: '管理员', operatorOrg: '平台运营中心', type: '审核通过', content: '审核通过评价内容', target: '评价#20240315-001', ip: '10.0.0.2', result: '成功' },
         { time: '2024-03-18 10:05:00', module: '数字应用', operator: '王经理', operatorOrg: '百度网络技术有限公司', type: '新增', content: '新增数字应用"电子病历管理系统"', target: '电子病历管理系统', ip: '192.168.1.200', result: '成功' },
         { time: '2024-03-18 09:30:45', module: '能力组件', operator: '系统', operatorOrg: '系统', type: '下架', content: '管理员手动下架', target: '消息推送组件', ip: 'system', result: '成功' },
         { time: '2024-03-17 15:20:10', module: '订单管理', operator: '赵科长', operatorOrg: '朝阳区卫生健康委', type: '删除', content: '取消订单', target: '订单#ORD-2024-0092', ip: '10.0.4.30', result: '成功' },

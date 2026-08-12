@@ -1,127 +1,133 @@
 <template>
   <div class="catalog-extend-container">
-    <el-row :gutter="10" class="mb12">
-      <el-col :span="1.5">
-        <el-button 
-          plain
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
+    <a-row :gutter="10" class="mb12">
+      <a-col :span="1.5">
+        <a-button
+          type="primary"
+          size="small"
           :disabled="!this.catalogId"
           v-hasPermi="[ $p('Catalog:Edit:{0}', [ catalogId ]) ]"
-          @click="handleSaveExtends">{{ $t("Common.Save") }}</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button 
-          plain 
-          type="primary" 
-          icon="el-icon-bottom-right" 
-          size="mini"
+          @click="handleSaveExtends"
+        >
+          <template #icon><EditOutlined /></template>
+          {{ $t("Common.Save") }}
+        </a-button>
+      </a-col>
+      <a-col :span="1.5">
+        <a-button
+          type="primary"
+          size="small"
           :disabled="!this.catalogId"
           v-hasPermi="[ $p('Catalog:Edit:{0}', [ catalogId ]) ]"
-          @click="handleApplyAllToCatalog()">{{ $t('CMS.Catalog.ApplyToChildren') }}</el-button>
-      </el-col>
-    </el-row>
-    <el-form 
-      class="catalog-extend-form"
-      ref="form_extend"
-      :model="form_extend"
-      v-loading="loading"
-      :disabled="!this.catalogId"
-      label-width="160px">
-      <el-card shadow="hover">
-        <div slot="header" class="clearfix">
-          <span>{{ $t('CMS.Catalog.Extend.Basic') }}</span>
-        </div>
-        <el-form-item :label="$t('CMS.Catalog.Extend.EnableIndex')" prop="EnableIndex">
-          <el-switch
-            v-model="form_extend.EnableIndex"
-            :active-text="$t('Common.Yes')"
-            :inactive-text="$t('Common.No')"
-            active-value="Y"
-            inactive-value="N">
-          </el-switch>
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.Extend.CatalogExModel')" prop="CatalogExtendModel">
-          <el-select 
-            class="mr5"
-            v-model="form_extend.CatalogExtendModel" 
-            filterable 
-            clearable >
-            <el-option
-              v-for="item in exmodelOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-          <el-button 
-            class="btn-apply-child"
-            icon="el-icon-finished" 
-            type="primary" 
-            plain 
-            @click="handleApplyToCatalog('CatalogExtendModel')">{{ $t('CMS.ContentCore.ApplyToCatalog') }}</el-button>
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.Extend.ContentExModel')" prop="ContentExtendModel">
-          <el-select 
-            class="mr5"
-            v-model="form_extend.ContentExtendModel" 
-            filterable 
-            clearable>
-            <el-option
-              v-for="item in exmodelOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-          <el-button 
-            class="btn-apply-child"
-            icon="el-icon-finished" 
-            type="primary" 
-            plain 
-            @click="handleApplyToCatalog('ContentExtendModel')">{{ $t('CMS.ContentCore.ApplyToCatalog') }}</el-button>
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Catalog.Extend.CatalogPageSize')" prop="CatalogPageSize">
-          <el-input-number v-model="form_extend.CatalogPageSize" controls-position="right" :min="0"></el-input-number>
-          <div style="color: #909399;font-size:12px;line-height: 30px;">
-            <i class="el-icon-info mr5"></i>{{ $t('CMS.Catalog.Extend.CatalogPageSizeTip') }}
-          </div>
-        </el-form-item>
-      </el-card>
-      <el-card shadow="hover">
-        <div slot="header" class="clearfix">
-          <span>{{ $t('CMS.Catalog.Extend.ContentConfig') }}</span>
-        </div>
-        <!-- <el-form-item 
-          label="文章正文图片尺寸">
-          宽：<el-input v-model="form_extend.ArticleImageWidth" style="width:100px"></el-input>
-          高：<el-input v-model="form_extend.ArticleImageHeight" style="width:100px"></el-input>
-        </el-form-item> -->
-        <el-form-item :label="$t('CMS.Catalog.Extend.EnableContribute')" prop="EnableContribute">
-          <el-switch
-            v-model="form_extend.EnableContribute"
-            :active-text="$t('Common.Yes')"
-            :inactive-text="$t('Common.No')"
-            active-value="Y"
-            inactive-value="N">
-          </el-switch>
-        </el-form-item>
-      </el-card>
-      <el-card shadow="hover">
-        <div slot="header" class="clearfix">
-          <span>{{ $t('CMS.Catalog.Extend.WordConfig') }}</span>
-        </div>
-        <el-form-item :label="$t('CMS.Catalog.Extend.HotWordGroup')" prop="HotWordGroups">
-          <el-checkbox-group v-model="form_extend.HotWordGroups">
-            <el-checkbox v-for="group in hotWordGroups" :label="group.code" :key="group.code">{{ group.name }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-      </el-card>
-    </el-form>
+          @click="handleApplyAllToCatalog()"
+        >
+          <template #icon><ArrowDownOutlined /></template>
+          {{ $t('CMS.Catalog.ApplyToChildren') }}
+        </a-button>
+      </a-col>
+    </a-row>
+    <a-spin :spinning="loading">
+      <a-form
+        class="catalog-extend-form"
+        ref="form_extend"
+        :model="form_extend"
+        :disabled="!this.catalogId"
+        :label-col="{ style: { width: '160px' } }">
+        <a-card class="info-card">
+          <template #title>
+            <span>{{ $t('CMS.Catalog.Extend.Basic') }}</span>
+          </template>
+          <a-form-item :label="$t('CMS.Catalog.Extend.EnableIndex')" name="EnableIndex">
+            <a-switch
+              v-model:checked="form_extend.EnableIndex"
+              :checked-children="$t('Common.Yes')"
+              :un-checked-children="$t('Common.No')"
+              checked-value="Y"
+              un-checked-value="N">
+            </a-switch>
+          </a-form-item>
+          <a-form-item :label="$t('CMS.Catalog.Extend.CatalogExModel')" name="CatalogExtendModel">
+            <a-select
+              class="mr5"
+              v-model:value="form_extend.CatalogExtendModel"
+              show-search
+              allow-clear>
+              <a-select-option
+                v-for="item in exmodelOptions"
+                :key="item.value"
+                :value="item.value"
+                :label="item.label">
+                {{ item.label }}
+              </a-select-option>
+            </a-select>
+            <a-button
+              class="btn-apply-child"
+              type="primary"
+              @click="handleApplyToCatalog('CatalogExtendModel')"
+            >
+              <template #icon><CheckSquareOutlined /></template>
+              {{ $t('CMS.ContentCore.ApplyToCatalog') }}
+            </a-button>
+          </a-form-item>
+          <a-form-item :label="$t('CMS.Catalog.Extend.ContentExModel')" name="ContentExtendModel">
+            <a-select
+              class="mr5"
+              v-model:value="form_extend.ContentExtendModel"
+              show-search
+              allow-clear>
+              <a-select-option
+                v-for="item in exmodelOptions"
+                :key="item.value"
+                :value="item.value"
+                :label="item.label">
+                {{ item.label }}
+              </a-select-option>
+            </a-select>
+            <a-button
+              class="btn-apply-child"
+              type="primary"
+              @click="handleApplyToCatalog('ContentExtendModel')"
+            >
+              <template #icon><CheckSquareOutlined /></template>
+              {{ $t('CMS.ContentCore.ApplyToCatalog') }}
+            </a-button>
+          </a-form-item>
+          <a-form-item :label="$t('CMS.Catalog.Extend.CatalogPageSize')" name="CatalogPageSize">
+            <a-input-number v-model:value="form_extend.CatalogPageSize" :min="0"></a-input-number>
+            <div style="color: #909399;font-size:12px;line-height: 30px;">
+              <InfoCircleOutlined class="mr5" />{{ $t('CMS.Catalog.Extend.CatalogPageSizeTip') }}
+            </div>
+          </a-form-item>
+        </a-card>
+        <a-card class="info-card">
+          <template #title>
+            <span>{{ $t('CMS.Catalog.Extend.ContentConfig') }}</span>
+          </template>
+          <a-form-item :label="$t('CMS.Catalog.Extend.EnableContribute')" name="EnableContribute">
+            <a-switch
+              v-model:checked="form_extend.EnableContribute"
+              :checked-children="$t('Common.Yes')"
+              :un-checked-children="$t('Common.No')"
+              checked-value="Y"
+              un-checked-value="N">
+            </a-switch>
+          </a-form-item>
+        </a-card>
+        <a-card class="info-card">
+          <template #title>
+            <span>{{ $t('CMS.Catalog.Extend.WordConfig') }}</span>
+          </template>
+          <a-form-item :label="$t('CMS.Catalog.Extend.HotWordGroup')" name="HotWordGroups">
+            <a-checkbox-group v-model:value="form_extend.HotWordGroups">
+              <a-checkbox v-for="group in hotWordGroups" :value="group.code" :key="group.code">{{ group.name }}</a-checkbox>
+            </a-checkbox-group>
+          </a-form-item>
+        </a-card>
+      </a-form>
+    </a-spin>
     <!-- 栏目选择组件 -->
     <cms-catalog-selector
-      :open.sync="openCatalogSelector"
+      v-model:open="openCatalogSelector"
       multiple
       @ok="doApplyToCatalog"
       @close="handleCatalogSelectorClose"></cms-catalog-selector>
@@ -132,11 +138,22 @@ import { getCatalogExtends, saveCatalogExtends, applyConfigPropsToChildren } fro
 import { getHotWordGroupOptions } from "@/api/contentcore/word";
 import { listXModelOptions } from "@/api/contentcore/exmodel";
 import CMSCatalogSelector from "@/views/cms/contentcore/catalogSelector";
+import { message } from "ant-design-vue";
+import {
+  EditOutlined,
+  ArrowDownOutlined,
+  CheckSquareOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons-vue";
 
 export default {
   name: "CMSCatalogExtend",
   components: {
-    'cms-catalog-selector': CMSCatalogSelector
+    "cms-catalog-selector": CMSCatalogSelector,
+    EditOutlined,
+    ArrowDownOutlined,
+    CheckSquareOutlined,
+    InfoCircleOutlined,
   },
   props: {
     cid: {
@@ -160,7 +177,7 @@ export default {
     };
   },
   watch: {
-    cid(newVal) { 
+    cid(newVal) {
       this.catalogId = newVal;
     },
     catalogId(newVal) {
@@ -199,32 +216,30 @@ export default {
       });
     },
     handleSaveExtends () {
-      console.log("handleSaveExtends", 1)
-      this.$refs["form_extend"].validate(valid => {
-        if (valid) {
-          const data = {};
-          Object.keys(this.form_extend).forEach(key => {
-            if (typeof this.form_extend[key] == 'object') {
+      console.log("handleSaveExtends", 1);
+      this.$refs["form_extend"].validate().then(() => {
+        const data = {};
+        Object.keys(this.form_extend).forEach(key => {
+          if (typeof this.form_extend[key] == 'object') {
             data[key] = JSON.stringify(this.form_extend[key]);
-            } else {
-              data[key] = this.form_extend[key];
-            }
-          })
-          saveCatalogExtends(this.catalogId, data).then(response => {
-            this.$modal.msgSuccess(this.$t('Common.SaveSuccess'));
-          });
-        }
-      });
+          } else {
+            data[key] = this.form_extend[key];
+          }
+        });
+        saveCatalogExtends(this.catalogId, data).then(response => {
+          message.success(this.$t('Common.SaveSuccess'));
+        });
+      }).catch(() => {});
     },
     handleApplyAllToCatalog() {
-      const data = { 
+      const data = {
         catalogId: this.catalogId,
         allExtends: true
       }
       this.$modal.loading("Loading...");
       applyConfigPropsToChildren(data).then(res => {
         this.$modal.closeLoading();
-        this.$modal.msgSuccess(res.msg);
+        message.success(res.msg);
       });
     },
     handleApplyToCatalog(propKey) {
@@ -232,13 +247,13 @@ export default {
       this.applyConfigPropKey = propKey;
     },
     doApplyToCatalog (catalogs) {
-      const data = { 
+      const data = {
         catalogId: this.catalogId,
         toCatalogIds: catalogs.map(c => c.id),
         configPropKeys: [ this.applyConfigPropKey ]
       }
       applyConfigPropsToChildren(data).then(res => {
-        this.$modal.msgSuccess(res.msg);
+        message.success(res.msg);
         this.openCatalogSelector = false;
       });
     },
@@ -250,18 +265,19 @@ export default {
 };
 </script>
 <style scoped>
-.catalog-extend-form .el-form-item {
+.catalog-extend-form .ant-form-item {
   margin-bottom: 12px;
   width: 700px;
 }
-.catalog-extend-form .el-card {
+.catalog-extend-form .info-card {
   margin-bottom: 10px;
 }
-.catalog-extend-form .el-input, .el-select, 
-.catalog-extend-form .el-input-number  {
+.catalog-extend-form :deep(.ant-input),
+.catalog-extend-form :deep(.ant-select),
+.catalog-extend-form :deep(.ant-input-number) {
   width: 301.5px;
 }
-.catalog-extend-form .el-upload-list {
+.catalog-extend-form :deep(.ant-upload-list) {
   width: 300px;
 }
 .catalog-extend-form .btn-apply-child {

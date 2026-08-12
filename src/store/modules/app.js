@@ -7,7 +7,8 @@ const state = {
     hide: false
   },
   device: 'desktop',
-  size: Cookies.get('size') || 'medium'
+  size: Cookies.get('size') || 'medium',
+  role: Cookies.get('currentRole') || 'admin'
 }
 
 const mutations = {
@@ -37,6 +38,10 @@ const mutations = {
   },
   SET_SIDEBAR_HIDE: (state, status) => {
     state.sidebar.hide = status
+  },
+  SET_ROLE: (state, role) => {
+    state.role = role
+    Cookies.set('currentRole', role)
   }
 }
 
@@ -55,6 +60,9 @@ const actions = {
   },
   toggleSideBarHide({ commit }, status) {
     commit('SET_SIDEBAR_HIDE', status)
+  },
+  switchRole({ commit }, role) {
+    commit('SET_ROLE', role)
   }
 }
 

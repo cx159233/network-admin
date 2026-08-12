@@ -1,165 +1,165 @@
 <template>
-  <div class="detail-container">
-    <div class="detail-header-wrap">
-      <el-button size="small" @click="goBack" class="back-btn">
-        <i class="el-icon-arrow-left"></i> 返回列表
-      </el-button>
-    </div>
+  <div class="app-detail-page">
+    <PageHeader
+      :title="`应用详情 · ${appInfo.appName}`"
+      description="查看应用基本信息、审核记录及用户评价"
+    >
+      <template #actions>
+        <a-button @click="goBack">
+          <template #icon><ArrowLeftOutlined /></template>
+          返回列表
+        </a-button>
+      </template>
+    </PageHeader>
 
-    <div class="detail-content-wrap">
-      <div class="detail-left">
-        <!-- 应用基本信息 -->
-        <el-card shadow="hover" class="mb-4">
-          <div slot="header" class="clearfix">
-            <span>应用基本信息</span>
-            <span :class="['sb', getStatusClass(appInfo.status)]" style="float: right">{{ getStatusText(appInfo.status) }}</span>
+    <div class="app-detail-page__body">
+      <div class="app-detail-page__main">
+        <CloudCard class="app-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">应用基本信息</span>
+            <StatusDot :type="getStatusKey(appInfo.status)" :text="getStatusText(appInfo.status)" />
           </div>
 
-          <div class="detail-section">
-            <div class="detail-section-title">基本信息</div>
-            <div class="detail-kv">
-              <div class="kv-item"><label>应用名称</label><span>{{ appInfo.appName || '--' }}</span></div>
-              <div class="kv-item"><label>应用ID</label><span>{{ appInfo.applicationId || '--' }}</span></div>
-              <div class="kv-item"><label>系统地址</label><span>{{ appInfo.systemUrl || '--' }}</span></div>
-              <div class="kv-item"><label>应用LOGO</label><span><img v-if="appInfo.logo" :src="appInfo.logo" class="logo-thumb" /><template v-else>--</template></span></div>
-              <div class="kv-item full"><label>应用描述</label><span>{{ appInfo.description || '--' }}</span></div>
-            </div>
+          <div class="info-section">
+            <div class="info-section__title">基本信息</div>
+            <a-descriptions :column="2" size="small" class="app-desc">
+              <a-descriptions-item label="应用名称">{{ appInfo.appName || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="应用ID">
+                <span class="cell-mono">{{ appInfo.applicationId || '--' }}</span>
+              </a-descriptions-item>
+              <a-descriptions-item label="系统地址">{{ appInfo.systemUrl || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="应用LOGO">
+                <img v-if="appInfo.logo" :src="appInfo.logo" class="logo-thumb" />
+                <template v-else>--</template>
+              </a-descriptions-item>
+              <a-descriptions-item label="应用描述" :span="2">
+                <span class="muted">{{ appInfo.description || '--' }}</span>
+              </a-descriptions-item>
+            </a-descriptions>
           </div>
 
-          <div class="detail-section">
-            <div class="detail-section-title">联系信息</div>
-            <div class="detail-kv">
-              <div class="kv-item"><label>服务商名称</label><span>{{ appInfo.serviceProvider || '--' }}</span></div>
-              <div class="kv-item"><label>合作伙伴</label><span>{{ appInfo.deployServiceProviderView || '--' }}</span></div>
-              <div class="kv-item"><label>联系人1</label><span>{{ appInfo.contactName1 || '--' }}</span></div>
-              <div class="kv-item"><label>联系电话1</label><span>{{ appInfo.contactPhone1 || '--' }}</span></div>
-              <div class="kv-item"><label>联系人2</label><span>{{ appInfo.contactName2 || '--' }}</span></div>
-              <div class="kv-item"><label>联系电话2</label><span>{{ appInfo.contactPhone2 || '--' }}</span></div>
-            </div>
+          <div class="info-section">
+            <div class="info-section__title">联系信息</div>
+            <a-descriptions :column="2" size="small" class="app-desc">
+              <a-descriptions-item label="服务商名称">{{ appInfo.serviceProvider || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="合作伙伴">{{ appInfo.deployServiceProviderView || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="联系人1">{{ appInfo.contactName1 || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="联系电话1">
+                <span class="cell-mono">{{ appInfo.contactPhone1 || '--' }}</span>
+              </a-descriptions-item>
+              <a-descriptions-item label="联系人2">{{ appInfo.contactName2 || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="联系电话2">
+                <span class="cell-mono">{{ appInfo.contactPhone2 || '--' }}</span>
+              </a-descriptions-item>
+            </a-descriptions>
           </div>
 
-          <div class="detail-section">
-            <div class="detail-section-title">分类标签</div>
-            <div class="detail-kv">
-              <div class="kv-item"><label>面向对象</label><span>{{ appInfo.targetView || '--' }}</span></div>
-              <div class="kv-item"><label>应用架构</label><span>{{ appInfo.appArchitecture || '--' }}</span></div>
-              <div class="kv-item"><label>部署云服务商</label><span>{{ appInfo.cloudProviderStr || '--' }}</span></div>
-              <div class="kv-item"><label>应用覆盖范围</label><span>{{ appInfo.coverView || '--' }}</span></div>
-            </div>
+          <div class="info-section">
+            <div class="info-section__title">分类标签</div>
+            <a-descriptions :column="2" size="small" class="app-desc">
+              <a-descriptions-item label="面向对象">{{ appInfo.targetView || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="应用架构">{{ appInfo.appArchitecture || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="部署云服务商">{{ appInfo.cloudProviderStr || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="应用覆盖范围">{{ appInfo.coverView || '--' }}</a-descriptions-item>
+            </a-descriptions>
           </div>
+        </CloudCard>
 
-        </el-card>
-
-        <!-- 审核记录 -->
-        <el-card shadow="hover">
-          <div slot="header" class="clearfix">
-            <span>审核记录</span>
+        <CloudCard class="app-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">审核记录</span>
           </div>
-          <el-table :data="auditRecords" size="small" class="audit-table" :header-cell-style="{background:'#f5f7fa'}">
-            <el-table-column label="提交时间" width="150">
-              <template slot-scope="scope">{{ scope.row.submitTime || '--' }}</template>
-            </el-table-column>
-            <el-table-column label="提交人" width="110">
-              <template slot-scope="scope">{{ scope.row.createBy || '--' }}</template>
-            </el-table-column>
-            <el-table-column prop="status" label="审核状态" width="100">
-              <template slot-scope="scope">
-                <el-tag :type="getAuditStatusType(scope.row.status)" size="mini" effect="dark">{{ getAuditStatusText(scope.row.status) }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="审核人" width="110">
-              <template slot-scope="scope">{{ scope.row.auditor || '--' }}</template>
-            </el-table-column>
-            <el-table-column label="审核时间" width="150">
-              <template slot-scope="scope">{{ scope.row.auditTime || '--' }}</template>
-            </el-table-column>
-            <el-table-column label="审核意见" min-width="200" show-overflow-tooltip>
-              <template slot-scope="scope">{{ scope.row.opinion || '--' }}</template>
-            </el-table-column>
-          </el-table>
-        </el-card>
+          <a-table
+            :columns="auditColumns"
+            :data-source="auditRecords"
+            row-key="id"
+            size="middle"
+            :pagination="false"
+          >
+            <template #bodyCell="{ column, record }">
+              <StatusDot v-if="column.dataIndex === 'status'" :type="getAuditStatusKey(record.status)" :text="getAuditStatusText(record.status)" />
+              <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+            </template>
+          </a-table>
+        </CloudCard>
       </div>
 
-      <div class="detail-right">
-        <!-- 评价信息 -->
-        <el-card shadow="hover">
-          <div slot="header" class="clearfix">
-            <span>评价信息</span>
+      <div class="app-detail-page__side">
+        <CloudCard class="app-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">评价信息</span>
           </div>
           <div class="review-section">
             <div class="review-row">
-              <span class="review-label">平台评价</span>
-              <el-rate v-model="appInfo.platformRating" disabled show-score />
+              <span class="review-label">平台评分</span>
+              <div class="review-rating">
+                <a-rate :value="appInfo.platformRating" disabled allow-half />
+                <span class="review-score">{{ appInfo.platformRating || 0 }} 分</span>
+              </div>
             </div>
             <div class="review-row">
               <span class="review-label">用户评价</span>
-              <el-rate v-model="appInfo.usageRating" disabled show-score />
+              <div class="review-rating">
+                <a-rate :value="appInfo.usageRating" disabled allow-half />
+                <span class="review-score">{{ appInfo.usageRating || 0 }} 分</span>
+              </div>
             </div>
             <div class="review-row">
               <span class="review-label">评价数量</span>
               <span class="review-count-link" @click="openReviewList">{{ reviewListAll.length }} 条</span>
             </div>
           </div>
-        </el-card>
-
+        </CloudCard>
       </div>
     </div>
 
-    <!-- 用户评价列表弹窗 -->
-    <el-dialog title="用户评价列表" :visible.sync="reviewDialogVisible" width="1050px" :modal-append-to-body="false">
-      <el-table :data="reviewList" size="small" style="width: 100%" :header-cell-style="{background:'#f5f7fa'}">
-        <el-table-column label="评分" width="80">
-          <template slot-scope="scope">
-            <div class="stars"><span v-for="i in 5" :key="i" class="star" :class="{ full: i <= scope.row.score }">★</span></div>
+    <a-modal
+      v-model:open="reviewDialogVisible"
+      title="用户评价列表"
+      width="1080px"
+      :footer="null"
+      :mask-closable="false"
+    >
+      <a-table
+        :columns="reviewColumns"
+        :data-source="reviewListAll"
+        row-key="id"
+        size="middle"
+        :pagination="reviewPaginationConfig"
+        :scroll="{ x: 1100 }"
+      >
+        <template #bodyCell="{ column, record }">
+          <a-rate v-if="column.dataIndex === 'score'" :value="record.score" disabled />
+          <template v-else-if="column.dataIndex === 'service'">
+            <div class="cell-stack">
+              <div class="cell-stack__primary">{{ record.serviceName || '--' }}</div>
+              <div class="cell-stack__secondary cell-mono">{{ record.orderNo || '--' }}</div>
+            </div>
           </template>
-        </el-table-column>
-        <el-table-column label="服务/订单号" min-width="200">
-          <template slot-scope="scope">
-            <div><div class="rv-title">{{ scope.row.serviceName || '--' }}</div><div class="rv-sub">{{ scope.row.orderNo || '--' }}</div></div>
+          <template v-else-if="column.dataIndex === 'status'">
+            <StatusDot :type="record.status === '已回复' ? 'done' : 'warning'" :text="record.status" />
           </template>
-        </el-table-column>
-        <el-table-column label="评价机构" min-width="180">
-          <template slot-scope="scope">{{ scope.row.orgName || '--' }}</template>
-        </el-table-column>
-        <el-table-column label="评价内容" min-width="250">
-          <template slot-scope="scope"><div class="rv-content">{{ scope.row.content || '--' }}</div></template>
-        </el-table-column>
-        <el-table-column label="评价时间" width="130">
-          <template slot-scope="scope">{{ scope.row.time || '--' }}</template>
-        </el-table-column>
-        <el-table-column label="状态" width="90">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.status === '已回复' ? 'success' : 'warning'" size="mini">{{ scope.row.status || '--' }}</el-tag>
+          <template v-else-if="column.dataIndex === 'action'">
+            <a-button type="link" size="small" class="!p-0" @click="viewReviewDetail(record)">详情</a-button>
           </template>
-        </el-table-column>
-        <el-table-column label="回复内容" min-width="250">
-          <template slot-scope="scope"><div class="rv-content">{{ scope.row.reply || '--' }}</div></template>
-        </el-table-column>
-        <el-table-column label="回复时间" width="130">
-          <template slot-scope="scope">{{ scope.row.replyTime || '--' }}</template>
-        </el-table-column>
-      </el-table>
-      <div class="pagination-container">
-        <el-pagination
-          :current-page="reviewPage.currentPage"
-          :page-size="reviewPage.pageSize"
-          :total="reviewPage.total"
-          layout="total, prev, pager, next, jumper"
-          @current-change="handleReviewPageChange"
-          @size-change="handleReviewSizeChange"
-        />
-      </div>
-    </el-dialog>
+          <span v-else class="cell-default">{{ record[column.dataIndex] || '--' }}</span>
+        </template>
+      </a-table>
+    </a-modal>
 
-    <!-- 评价详情弹窗 -->
-    <el-dialog title="评价详情" :visible.sync="reviewDetailVisible" width="600px" :modal-append-to-body="false">
+    <a-modal
+      v-model:open="reviewDetailVisible"
+      title="评价详情"
+      width="600px"
+      :footer="null"
+    >
       <div class="rv-detail">
         <div class="rv-detail-header">
           <div class="rv-detail-info">
             <div class="rv-detail-name">{{ currentReview.userName || '--' }} · {{ currentReview.department || '--' }}</div>
             <div class="rv-detail-org">{{ currentReview.orgName || '--' }}</div>
           </div>
-          <div class="stars"><span v-for="i in 5" :key="i" class="star" :class="{ full: i <= currentReview.score }">★</span></div>
+          <a-rate :value="currentReview.score" disabled />
         </div>
         <div class="rv-detail-body">{{ currentReview.content || '--' }}</div>
         <div v-if="currentReview.reply" class="rv-detail-reply">
@@ -167,21 +167,30 @@
           <div class="rv-reply-body">{{ currentReview.reply }}</div>
         </div>
       </div>
-      <div slot="footer"><el-button @click="reviewDetailVisible = false">关闭</el-button></div>
-    </el-dialog>
+    </a-modal>
   </div>
 </template>
 
 <script>
+import { ArrowLeftOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+
 export default {
   name: 'MyAppsDetail',
+  components: {
+    PageHeader, CloudCard, StatusDot,
+    ArrowLeftOutlined
+  },
   data() {
     return {
       appInfo: {
         id: 1,
         appName: '智能办公系统',
         status: 'published',
-        applicationId: 'APP-2024-0001',
+        applicationId: 'APP-2026-0001',
         serviceProvider: '腾讯科技',
         deployServiceProviderView: '北京协同科技有限公司',
         systemUrl: 'https://oa.tencent.com',
@@ -190,7 +199,7 @@ export default {
         contactPhone1: '13800138000',
         contactName2: '李主管',
         contactPhone2: '13900139000',
-        submitTime: '2024-01-01 10:00',
+        submitTime: '2026-01-01 10:00',
         description: '智能办公系统是一款集协同办公、文档管理、审批流程等功能于一体的企业级办公软件，旨在提高企业内部沟通效率和管理水平。',
         targetView: '基层医疗卫生机构、公立医院',
         appArchitecture: 'B/S',
@@ -208,35 +217,52 @@ export default {
       reviewDialogVisible: false,
       reviewDetailVisible: false,
       currentReview: {},
-      reviewList: [],
-      reviewPage: {
-        currentPage: 1,
-        pageSize: 10,
-        total: 0
-      },
       reviewListAll: [
-        { id: 1, score: 5, serviceName: '智能办公系统', orderNo: '#ORD-2024-0085', orgName: '华能数智科技集团', userName: '张三', department: '技术部', content: '系统非常稳定，功能齐全，满足我们日常办公需求，响应速度也很快。', time: '2024-03-15 10:30', status: '已回复', reply: '感谢您的好评，我们会继续努力提供更好的服务！' },
-        { id: 2, score: 4, serviceName: '智能办公系统', orderNo: '#ORD-2024-0071', orgName: '中远云科技有限公司', userName: '王经理', department: '信息部', content: '整体不错，协同办公功能很好用，希望后续能增加移动端适配。', time: '2024-03-14 14:20', status: '已回复', reply: '感谢您的建议，移动端适配已在规划中，预计下个版本上线。' },
-        { id: 3, score: 3, serviceName: '智能办公系统', orderNo: '#ORD-2024-0063', orgName: '北京协和医学院', userName: '李护士长', department: '信息科', content: '文档管理功能基本满足需求，但批量操作效率有待提升。', time: '2024-03-13 16:45', status: '待回复' }
+        { id: 1, score: 5, serviceName: '智能办公系统', orderNo: '#202608100085', orgName: '华能数智科技集团', userName: '张三', department: '技术部', content: '系统非常稳定，功能齐全，满足我们日常办公需求，响应速度也很快。', time: '2026-03-15 10:30', status: '已回复', reply: '感谢您的好评，我们会继续努力提供更好的服务！', replyTime: '2026-03-15 11:00' },
+        { id: 2, score: 4, serviceName: '智能办公系统', orderNo: '#202608100071', orgName: '中远云科技有限公司', userName: '王经理', department: '信息部', content: '整体不错，协同办公功能很好用，希望后续能增加移动端适配。', time: '2026-03-14 14:20', status: '已回复', reply: '感谢您的建议，移动端适配已在规划中，预计下个版本上线。', replyTime: '2026-03-14 15:00' },
+        { id: 3, score: 3, serviceName: '智能办公系统', orderNo: '#202608100063', orgName: '北京协和医学院', userName: '李护士长', department: '信息科', content: '文档管理功能基本满足需求，但批量操作效率有待提升。', time: '2026-03-13 16:45', status: '待回复', reply: '', replyTime: '' }
       ],
       auditRecords: [
-        { id: 1, submitTime: '2024-01-01 10:00', createBy: '张经理', status: 'approved', auditor: '平台管理员', auditTime: '2024-01-02 14:30', opinion: '审核通过，应用符合上架标准。' },
-        { id: 2, submitTime: '2024-02-10 09:00', createBy: '张经理', status: 'rejected', auditor: '平台管理员', auditTime: '2024-02-11 16:00', opinion: '安全评估报告不完整，请补充后重新提交。' },
-        { id: 3, submitTime: '2024-02-15 11:00', createBy: '张经理', status: 'approved', auditor: '平台管理员', auditTime: '2024-02-16 10:30', opinion: '材料已补齐，审核通过。' },
-        { id: 4, submitTime: '2024-03-01 14:00', createBy: '张经理', status: 'pending', auditor: '', auditTime: '', opinion: '' }
-      ]
-    };
+        { id: 1, submitTime: '2026-01-01 10:00', createBy: '张经理', status: 'approved', auditor: '平台管理员', auditTime: '2026-01-02 14:30', opinion: '审核通过，应用符合上架标准。' },
+        { id: 2, submitTime: '2026-02-10 09:00', createBy: '张经理', status: 'rejected', auditor: '平台管理员', auditTime: '2026-02-11 16:00', opinion: '安全评估报告不完整，请补充后重新提交。' },
+        { id: 3, submitTime: '2026-02-15 11:00', createBy: '张经理', status: 'approved', auditor: '平台管理员', auditTime: '2026-02-16 10:30', opinion: '材料已补齐，审核通过。' },
+        { id: 4, submitTime: '2026-03-01 14:00', createBy: '张经理', status: 'pending', auditor: '', auditTime: '', opinion: '' }
+      ],
+      auditColumns: [
+        { title: '提交时间', dataIndex: 'submitTime', key: 'submitTime', width: 160 },
+        { title: '提交人', dataIndex: 'createBy', key: 'createBy', width: 110 },
+        { title: '审核状态', dataIndex: 'status', key: 'status', width: 110, align: 'center' },
+        { title: '审核人', dataIndex: 'auditor', key: 'auditor', width: 120 },
+        { title: '审核时间', dataIndex: 'auditTime', key: 'auditTime', width: 160 },
+        { title: '审核意见', dataIndex: 'opinion', key: 'opinion', ellipsis: true }
+      ],
+      reviewColumns: [
+        { title: '评分', dataIndex: 'score', key: 'score', width: 150 },
+        { title: '服务/订单号', dataIndex: 'service', key: 'service', width: 200 },
+        { title: '评价机构', dataIndex: 'orgName', key: 'orgName', width: 180 },
+        { title: '评价内容', dataIndex: 'content', key: 'content', ellipsis: true },
+        { title: '评价时间', dataIndex: 'time', key: 'time', width: 130 },
+        { title: '状态', dataIndex: 'status', key: 'status', width: 100 },
+        { title: '回复内容', dataIndex: 'reply', key: 'reply', ellipsis: true },
+        { title: '回复时间', dataIndex: 'replyTime', key: 'replyTime', width: 130 },
+        { title: '操作', dataIndex: 'action', key: 'action', width: 80, fixed: 'right' }
+      ],
+      reviewPagination: { current: 1, pageSize: 10 }
+    }
   },
-  watch: {
-    reviewDialogVisible(val) {
-      // 详情页内评价下钻不再更新 PRD 锚点
-    },
-    reviewDetailVisible(val) {
-      // 详情页内评价详情下钻不再更新 PRD 锚点
-    },
+  computed: {
+    reviewPaginationConfig() {
+      return {
+        current: this.reviewPagination.current,
+        pageSize: this.reviewPagination.pageSize,
+        total: this.reviewListAll.length,
+        showSizeChanger: true,
+        showTotal: (t) => `共 ${t} 条`
+      }
+    }
   },
   created() {
-    const q = this.$route.query;
+    const q = this.$route.query
     if (q && q.title) {
       this.appInfo = {
         ...this.appInfo,
@@ -255,157 +281,128 @@ export default {
         cloudProviderStr: q.cloudProviderStr || '--',
         platformRating: parseFloat(q.platformRating) || 0,
         usageRating: parseFloat(q.usageRating) || 0
-      };
-      this.reviewList.forEach(item => { item.serviceName = this.appInfo.appName; });
+      }
+      this.reviewListAll.forEach(item => { item.serviceName = this.appInfo.appName })
     }
   },
   methods: {
     goBack() {
-      this.$router.push('/workorder/myApps');
+      this.$router.push('/workorder/myApps')
     },
     openReviewList() {
-      this.reviewPage.currentPage = 1;
-      this.reviewPage.total = this.reviewListAll.length;
-      this.loadReviewPage();
-      this.reviewDialogVisible = true;
-    },
-    loadReviewPage() {
-      const start = (this.reviewPage.currentPage - 1) * this.reviewPage.pageSize;
-      const end = start + this.reviewPage.pageSize;
-      this.reviewList = this.reviewListAll.slice(start, end);
-    },
-    handleReviewPageChange(val) {
-      this.reviewPage.currentPage = val;
-      this.loadReviewPage();
-    },
-    handleReviewSizeChange(val) {
-      this.reviewPage.pageSize = val;
-      this.reviewPage.currentPage = 1;
-      this.loadReviewPage();
+      this.reviewPagination.current = 1
+      this.reviewDialogVisible = true
     },
     viewReviewDetail(row) {
-      this.currentReview = JSON.parse(JSON.stringify(row));
-      this.reviewDetailVisible = true;
+      this.currentReview = JSON.parse(JSON.stringify(row))
+      this.reviewDetailVisible = true
     },
     downloadMaterial(material) {
-      this.$message.success('下载附件：' + material.name);
+      message.success('下载附件：' + material.name)
     },
-    getAuditStatusType(status) {
-      const map = { approved: 'success', rejected: 'danger', pending: 'warning' };
-      return map[status] || 'info';
+    getAuditStatusKey(status) {
+      const map = { approved: 'done', rejected: 'rejected', pending: 'processing' }
+      return map[status] || 'default'
     },
     getAuditStatusText(status) {
-      const map = { approved: '已通过', rejected: '已驳回', pending: '待审核' };
-      return map[status] || '未知';
+      const map = { approved: '已通过', rejected: '已驳回', pending: '待审核' }
+      return map[status] || '未知'
     },
-    getStatusClass(status) {
+    getStatusKey(status) {
       const map = {
-        0: 'draft', 10: 'approved', 20: 'pending', 30: 'rejected', 40: 'offline',
-        draft: 'draft', pending_review: 'pending', published: 'approved', rejected: 'rejected', offline: 'offline'
-      };
-      return map[status] || '';
+        0: 'default', 10: 'done', 20: 'processing', 30: 'rejected', 40: 'cancelled',
+        draft: 'default', pending_review: 'processing', published: 'done', rejected: 'rejected', offline: 'cancelled'
+      }
+      return map[status] || 'default'
     },
     getStatusText(status) {
       const map = {
         0: '草稿', 10: '已发布', 20: '待审核', 30: '已驳回', 40: '已下线',
         draft: '草稿', pending_review: '待审核', published: '已发布', rejected: '已驳回', offline: '已下线'
-      };
-      return map[status] || status || '--';
-    },
+      }
+      return map[status] || status || '--'
+    }
   }
-};
+}
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
-
-:root{
-  --bg:#f2f4f8;
-  --surface:#ffffff;
-  --surface2:#f7f8fa;
-  --border:#e3e7ef;
-  --border2:#c8cdd9;
-  --text:#1c2033;
-  --text2:#5c6480;
-  --text3:#9aa0b8;
-  --accent:#3b5bdb;
-  --accent-dim:#eef2ff;
-  --accent-mid:#c5d0fa;
-  --green:#2f9e44;
-  --green-dim:#ebfbee;
-  --green-mid:#b2f2bb;
-  --amber:#e67700;
-  --amber-dim:#fff9db;
-  --amber-mid:#ffec99;
-  --red:#c92a2a;
-  --red-dim:#fff5f5;
-  --red-mid:#ffc9c9;
-  --r:8px;--rl:12px;--rxl:16px;
-  --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
-  --shadow-md:0 4px 16px rgba(0,0,0,.08);
+.app-detail-page {
+  padding: 4px 0;
 }
 
-/* Main */
-.detail-container {
-  display: flex;
-  flex-direction: column;
-  padding: 0 !important;
-  margin: -20px;
-  min-height: calc(100vh - 50px);
-  background-color: #f2f4f8;
-}
-
-.detail-header-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  margin: 0;
-  border-radius: 0;
-  height: auto;
-  flex-shrink: 0;
-}
-
-.back-btn { border-radius: 4px; padding: 8px 16px; font-weight: 500; }
-.back-btn:hover { background-color: #ecf5ff; border-color: #409eff; color: #409eff; }
-
-.detail-content-wrap {
-  display: flex;
+.app-detail-page__body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
   gap: 14px;
-  padding: 16px 20px 16px;
-  flex: 1;
-  background-color: #f2f4f8;
+  margin-top: 14px;
 }
 
-.detail-left {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.detail-left > * {
-  min-width: 0;
-  overflow-x: hidden;
-}
-
-.detail-right {
-  width: 272px;
-  flex-shrink: 0;
+.app-detail-page__main,
+.app-detail-page__side {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-width: 0;
 }
 
-.card-header {
+.card-head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.card-head__title {
+  font-size: 15px;
   font-weight: 600;
-  color: #303133;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.info-section {
+  padding: 14px 0;
+  border-top: 1px solid #F2F3F5;
+}
+
+.info-section:first-of-type {
+  padding-top: 0;
+  border-top: none;
+}
+
+.info-section:last-of-type {
+  padding-bottom: 0;
+}
+
+.info-section__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4E5969;
+  margin-bottom: 12px;
+}
+
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
+}
+
+.cell-primary {
+  color: rgba(0, 0, 0, 0.85);
   font-size: 14px;
+  font-weight: 500;
+}
+
+.cell-default {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+}
+
+.muted {
+  color: #4E5969;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .logo-thumb {
@@ -414,192 +411,141 @@ export default {
   vertical-align: middle;
 }
 
-/* 分组 */
-.detail-section {
+.app-desc :deep(.ant-descriptions-item-label) {
+  color: #86909C;
+  font-size: 13px;
+  width: 96px;
+}
+
+.app-desc :deep(.ant-descriptions-item-content) {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 13px;
+}
+
+.review-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.review-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.review-label {
+  color: #86909C;
+  font-size: 13px;
+  width: 72px;
+  flex-shrink: 0;
+}
+
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.review-score {
+  font-size: 13px;
+  font-weight: 600;
+  color: #F59E0B;
+}
+
+.review-count-link {
+  color: #165DFF;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.review-count-link:hover {
+  text-decoration: underline;
+}
+
+.cell-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+}
+
+.cell-stack__primary {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.cell-stack__secondary {
+  font-size: 11px;
+  color: #86909C;
+  margin-top: 2px;
+}
+
+.rv-detail {
+  padding: 4px 0;
+}
+
+.rv-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F2F3F5;
+}
+
+.rv-detail-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rv-detail-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.rv-detail-org {
+  font-size: 12px;
+  color: #86909C;
+  margin-top: 4px;
+}
+
+.rv-detail-body {
+  font-size: 13px;
+  color: #4E5969;
+  line-height: 1.7;
   margin-bottom: 16px;
 }
 
-.detail-section:last-child {
-  margin-bottom: 0;
-}
-
-/* 审核记录表格 */
-.audit-table {
-  min-height: auto !important;
-}
-
-.audit-table :deep(.el-table) {
-  --el-table-row-height: 32px !important;
-}
-
-.audit-table :deep(.el-table__row) {
-  height: 32px !important;
-  line-height: 32px !important;
-}
-
-.audit-table :deep(.el-table__header-wrapper) {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-.audit-table :deep(.el-table__body-wrapper) {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-.audit-table :deep(.el-table td),
-.audit-table :deep(.el-table th) {
-  padding: 6px 12px !important;
-}
-
-.detail-section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #303133;
-  margin-bottom: 14px;
-}
-
-/* 键值对网格 */
-.detail-kv {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 6px 40px;
-  overflow: hidden;
-}
-
-.kv-item {
-  display: flex;
-  align-items: baseline;
-  font-size: 14px;
-  line-height: 2;
-}
-
-.kv-item.full {
-  grid-column: 1 / -1;
-}
-
-.kv-item label {
-  color: #8c8c8c;
-  width: 100px;
-  flex-shrink: 0;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-.kv-item span {
-  color: #262626;
-  word-break: break-all;
-  font-weight: 400;
-  font-size: 14px;
-  min-width: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-.kv-item .mono {
-  font-family: 'DM Mono', monospace;
-  font-size: 13px;
-}
-
-.file-link {
-  display: inline-block;
-  margin: 2px 16px 2px 0;
-  font-size: 13px;
-  color: #3b5bdb;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
-}
-
-.file-link:hover {
-  color: #2f3ea5;
-}
-
-/* Review Section */
-.review-section { display: flex; flex-direction: column; gap: 12px; padding: 4px 0; }
-.review-row { display: flex; align-items: center; gap: 16px; }
-.review-label { color: #8c8c8c; font-size: 14px; width: 72px; flex-shrink: 0; font-weight: 400; }
-.review-count-link { color: #409eff; font-size: 13px; cursor: pointer; font-weight: 500; }
-.review-count-link:hover { text-decoration: underline; }
-
-/* Timeline */
-.tl { display: flex; flex-direction: column; padding: 8px 0; }
-.tl-row { display: flex; gap: 12px; }
-.tl-spine { display: flex; flex-direction: column; align-items: center; width: 14px; flex-shrink: 0; }
-.tl-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-.tl-dot.done { background: #2f9e44; }
-.tl-dot.on { background: #3b5bdb; box-shadow: 0 0 0 3px #c5d0fa; }
-.tl-dot.wait { background: #c8cdd9; }
-.tl-dot.red { background: #c92a2a; }
-.tl-vl { flex: 1; width: 1px; background: #e3e7ef; margin: 3px 0; min-height: 16px; }
-.tl-row:last-child .tl-vl { display: none; }
-.tl-body { padding-bottom: 14px; flex: 1; }
-.tl-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
-.tl-title.done { color: #5c6480; }
-.tl-title.on { color: #1c2033; }
-.tl-title.wait { color: #9aa0b8; }
-.tl-title.red { color: #c92a2a; }
-.tl-time { font-size: 11px; color: #9aa0b8; font-family: 'DM Mono', monospace; }
-
-/* Stars */
-.stars { display: flex; gap: 2px; }
-.star { font-size: 14px; color: #d9d9d9; }
-.star.full { color: #faad14; }
-.rv-title { font-size: 12px; font-weight: 400; color: #262626; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
-.rv-sub { font-size: 12px; color: #8c8c8c; margin-top: 2px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
-.rv-content { font-size: 12px; color: #5c6480; line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
-
-/* Review Detail Dialog */
-.rv-detail { padding: 16px; }
-.rv-detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
-.rv-detail-info { flex: 1; }
-.rv-detail-name { font-size: 13px; font-weight: 500; color: #1c2033; }
-.rv-detail-org { font-size: 12px; color: #8c8c8c; margin-top: 4px; }
-.rv-detail-body { font-size: 13px; color: #5c6480; line-height: 1.7; margin-bottom: 16px; }
-.rv-detail-reply { background: #f7f8fa; border-left: 3px solid #1890ff; padding: 12px; border-radius: 4px; margin-top: 12px; }
-.rv-reply-label { font-size: 11px; color: #1890ff; font-weight: 600; margin-bottom: 6px; }
-.rv-reply-body { font-size: 12px; color: #5c6480; line-height: 1.6; }
-
-/* 状态标签 */
-.sb {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 10px;
+.rv-detail-reply {
+  background: #F7F8FA;
+  border-left: 3px solid #165DFF;
+  padding: 12px;
   border-radius: 4px;
-  font-size: 12px;
+  margin-top: 12px;
+}
+
+.rv-reply-label {
+  font-size: 11px;
+  color: #165DFF;
   font-weight: 600;
-  white-space: nowrap;
+  margin-bottom: 6px;
 }
 
-.sb::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.rv-reply-body {
+  font-size: 12px;
+  color: #4E5969;
+  line-height: 1.6;
 }
 
-.sb.draft { background: #f0f0f0; color: #666; }
-.sb.draft::before { background: #666; }
-.sb.pending { background: #fff9db; color: #e67700; }
-.sb.pending::before { background: #e67700; }
-.sb.approved { background: #ebfbee; color: #2f9e44; }
-.sb.approved::before { background: #2f9e44; }
-.sb.rejected { background: #fff5f5; color: #c92a2a; }
-.sb.rejected::before { background: #c92a2a; }
-.sb.offline { background: #f0f0f0; color: #999; }
-.sb.offline::before { background: #999; }
-
-/* 弹窗仅覆盖左侧Demo区域 */
-:deep(.el-dialog__wrapper) {
-  position: absolute !important;
+@media (max-width: 1100px) {
+  .app-detail-page__body {
+    grid-template-columns: 1fr;
+  }
 }
-:deep(.v-modal) {
-  position: absolute !important;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 </style>

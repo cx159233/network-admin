@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="icon" href="/favicon.ico">
+    <title>云网管理中枢管理后台</title>
+    <style>
+      html, body, #app {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: #F7F8FA;
+      }
+      #app-loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #F7F8FA;
+        z-index: 9999;
+        transition: opacity 0.3s;
+      }
+      #app-loader .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid #E8F3FF;
+        border-top-color: #165DFF;
+        border-radius: 50%;
+        animation: app-spin 0.8s linear infinite;
+      }
+      #app-loader .text {
+        margin-top: 14px;
+        color: #4E5969;
+        font-size: 13px;
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+      @keyframes app-spin {
+        to { transform: rotate(360deg); }
+      }
+      #app-loader.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <script src="./config.js"></script>
+  <body>
+    <div id="app">
+      <div id="app-loader">
+        <div class="spinner"></div>
+        <div class="text">正在加载系统资源，请耐心等待</div>
+      </div>
+    </div>
+    <script>
+      // 捕获模块加载失败等顶层错误，避免 loader 永远卡住
+      window.addEventListener('error', function (e) {
+        const loader = document.getElementById('app-loader')
+        if (!loader) return
+        const msg = (e && e.message) || '未知错误'
+        const stack = (e && e.error && e.error.stack) || ''
+        loader.innerHTML =
+          '<div style="text-align:center;max-width:640px;padding:24px;border-radius:8px;background:#fff;border:1px solid #FEF0C7;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-family:\'PingFang SC\',\'Microsoft YaHei\',sans-serif;">' +
+            '<div style="font-size:14px;font-weight:600;color:#EF4444;margin-bottom:8px;">系统启动失败</div>' +
+            '<div style="font-size:13px;color:#EF4444;margin-bottom:10px;">' + msg + '</div>' +
+            (stack ? '<div style="font-size:12px;color:#4E5969;line-height:1.6;font-family:SF Mono,Consolas,monospace;white-space:pre-wrap;text-align:left;max-height:300px;overflow:auto;">' + stack + '</div>' : '') +
+          '</div>'
+      })
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

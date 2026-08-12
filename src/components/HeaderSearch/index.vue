@@ -21,7 +21,7 @@
 // fuse is a lightweight fuzzy-search module
 // make search results more in line with expectations
 import Fuse from 'fuse.js/dist/fuse.min.js'
-import path from 'path'
+import { resolve as pathResolve } from '@/utils/path'
 
 export default {
   name: 'HeaderSearch',
@@ -111,7 +111,7 @@ export default {
         if (router.hidden) { continue }
 
         const data = {
-          path: !this.ishttp(router.path) ? path.resolve(basePath, router.path) : router.path,
+          path: !this.ishttp(router.path) ? pathResolve(basePath, router.path) : router.path,
           title: [...prefixTitle]
         }
 

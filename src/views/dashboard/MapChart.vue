@@ -3,10 +3,10 @@
 </template>
 
 <script>
-import echarts from 'echarts'
-import chinaJson from "echarts/map/json/china.json"
-require('echarts/theme/macarons') // echarts theme
+import * as echarts from 'echarts'
 import resize from './mixins/resize'
+
+let chinaMapRegistered = false
 
 export default {
   mixins: [resize],
@@ -58,9 +58,14 @@ export default {
     this.chart = null
   },
   methods: {
-    initChart() {
+    async initChart() {
       this.chart = echarts.init(this.$refs.echartsMap)
-      echarts.registerMap("china", chinaJson);
+      if (!chinaMapRegistered) {
+        const resp = await fetch('/map/china.json')
+        const chinaJson = await resp.json()
+        echarts.registerMap('china', chinaJson)
+        chinaMapRegistered = true
+      }
       this.setOptions(this.chartData)
     },
     setOptions({ xAxisDatas, datas } = {}) {

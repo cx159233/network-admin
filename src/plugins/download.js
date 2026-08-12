@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Message } from 'element-ui'
+import { message } from 'ant-design-vue'
 import { saveAs } from 'file-saver'
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
@@ -49,7 +49,7 @@ export default {
     const resText = await data.text();
     const rspObj = JSON.parse(resText);
     const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default']
-    Message.error(errMsg);
+    message.error(errMsg);
   }
 }
 

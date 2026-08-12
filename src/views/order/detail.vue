@@ -1,336 +1,293 @@
 <template>
-  <div class="detail-container">
-    <!-- 顶部标题区域 -->
-    <div class="detail-header-wrap">
-      <el-button size="small" @click="goBack" class="back-btn">
-        <i class="el-icon-arrow-left"></i> 返回列表
-      </el-button>
-    </div>
+  <div class="order-detail-page">
+    <PageHeader
+      :title="`订单详情 · ${orderInfo.orderNo}`"
+      description="查看订单基础信息、流程进度、关联工单及满意度评价"
+    >
+      <template #actions>
+        <a-button @click="goBack">
+          <template #icon><ArrowLeftOutlined /></template>
+          返回列表
+        </a-button>
+      </template>
+    </PageHeader>
 
-    <!-- 工单详情内容 -->
-    <div class="detail-content-wrap">
-      <div class="detail-left">
-        <!-- 订单基本信息 -->
-        <el-card shadow="hover" class="mb-4">
-          <div slot="header" class="clearfix">
-            <span>订单基本信息</span>
-            <span class="sb processing" style="float: right">工单流转中</span>
+    <div class="order-detail-page__body">
+      <div class="order-detail-page__main">
+        <CloudCard class="order-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">订单基本信息</span>
+            <StatusDot :type="getStatusKey(orderInfo.status)" :text="orderInfo.status" />
           </div>
-          <div class="detail-kv">
-            <div class="kv-item"><label>服务名称</label><span>智慧园区综合管理平台</span></div>
-            <div class="kv-item"><label>服务规格</label><span>标准版，含500个设备接入 + 数据看板</span></div>
-            <div class="kv-item"><label>服务类型</label><span>数字应用服务</span></div>
-            <div class="kv-item"><label>申请人</label><span>张三</span></div>
-            <div class="kv-item"><label>申请机构</label><span>北京市海淀区数字经济发展局</span></div>
-            <div class="kv-item"><label>申请时间</label><span class="mono">2024-03-15 14:32:00</span></div>
-            <div class="kv-item full"><label>申请备注</label><span class="muted">本次申请智慧园区综合管理平台标准版，含500个设备接入及数据看板功能，请安排团队完成部署与联调。</span></div>
-          </div>
-        </el-card>
+          <a-descriptions :column="2" size="small" class="order-desc">
+            <a-descriptions-item label="服务名称">{{ orderInfo.serviceName }}</a-descriptions-item>
+            <a-descriptions-item label="服务类型">
+              <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(orderInfo.serviceType)}`]">{{ orderInfo.serviceType }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="服务规格" :span="2">{{ orderInfo.serviceSpec }}</a-descriptions-item>
+            <a-descriptions-item label="申请人">{{ orderInfo.applicant }}</a-descriptions-item>
+            <a-descriptions-item label="申请机构">{{ orderInfo.orgName }}</a-descriptions-item>
+            <a-descriptions-item label="申请时间">
+              <span class="cell-mono">{{ orderInfo.applyTime }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="订单号">
+              <span class="cell-mono">{{ orderInfo.orderNo }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="申请备注" :span="2">
+              <span class="muted">{{ orderInfo.remark }}</span>
+            </a-descriptions-item>
+          </a-descriptions>
+        </CloudCard>
 
-        <!-- 流程进度 -->
-        <el-card shadow="hover" class="description-card">
-          <div slot="header" class="clearfix">
-            <span>流程进度</span>
+        <CloudCard class="order-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">流程进度</span>
           </div>
-          <div class="tl">
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">提交申请</div><div class="tl-time">2024-03-15 14:32:00 · 张三</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot done"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title done">系统派发工单</div><div class="tl-time">2024-03-15 16:10:00 · 自动派发 → TK-0234</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot on"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title on">工单流转中</div><div class="tl-time">2024-03-15 16:15:00</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">服务交付完成</div><div class="tl-time">等待工单系统回执</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">服务评价</div><div class="tl-time">交付完成后可评价</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div><div class="tl-vl"></div></div><div class="tl-body"><div class="tl-title wait">订单驳回</div><div class="tl-time">工单驳回后记录驳回时间</div></div></div>
-            <div class="tl-row"><div class="tl-spine"><div class="tl-dot wait"></div></div><div class="tl-body"><div class="tl-title wait">订单取消</div><div class="tl-time">用户取消订单后记录取消时间</div></div></div>
-          </div>
-        </el-card>
+          <a-timeline class="order-timeline">
+            <a-timeline-item
+              v-for="(step, idx) in timeline"
+              :key="idx"
+              :color="step.dotColor"
+            >
+              <div :class="['tl-title', `tl-title--${step.state}`]">{{ step.title }}</div>
+              <div class="tl-time">{{ step.time }}</div>
+            </a-timeline-item>
+          </a-timeline>
+        </CloudCard>
 
-        <!-- 满意度评价 -->
-        <el-card shadow="hover" class="description-card">
-          <div slot="header" class="clearfix">
-            <span>满意度评价</span>
+        <CloudCard class="order-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">满意度评价</span>
           </div>
-          <div class="review-result">
-            <div class="review-score-row">
+          <div v-if="reviewInfo.hasReviewed" class="review-result">
+            <div class="review-row">
               <span class="review-label">满意度评分</span>
-              <el-rate v-if="reviewInfo.hasReviewed" v-model="reviewInfo.score" disabled />
-              <span v-else class="review-desc">--</span>
+              <a-rate v-model:value="reviewInfo.score" disabled />
             </div>
-            <div class="review-score-row">
+            <div class="review-row">
               <span class="review-label">评价内容</span>
-              <span class="review-desc">{{ reviewInfo.hasReviewed ? reviewInfo.description : '--' }}</span>
+              <span class="review-desc">{{ reviewInfo.description }}</span>
             </div>
-            <div class="review-score-row">
+            <div class="review-row">
               <span class="review-label">评价时间</span>
-              <span class="review-desc mono">{{ reviewInfo.hasReviewed ? reviewInfo.reviewTime : '--' }}</span>
+              <span class="review-desc cell-mono">{{ reviewInfo.reviewTime }}</span>
             </div>
           </div>
-        </el-card>
+          <div v-else class="review-empty">
+            <FrownOutlined class="review-empty__icon" />
+            <span>订单尚未完成，暂不可评价</span>
+          </div>
+        </CloudCard>
       </div>
 
-      <div class="detail-right">
-        <!-- 关联工单 -->
-        <el-card shadow="hover" class="mb-4">
-          <div slot="header" class="clearfix">
-            <span>关联工单</span>
+      <div class="order-detail-page__side">
+        <CloudCard class="order-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">关联工单</span>
           </div>
-          <div style="border:1px solid #ffec99;border-left:3px solid #e67700;border-radius:8px;padding:12px;background:#fff9db">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-              <span style="font-family:'DM Mono',monospace;font-size:11px;color:#e67700;font-weight:600">TK-0234</span>
+          <div class="workorder-chip">
+            <div class="workorder-chip__id">
+              <span class="cell-mono">{{ workorderInfo.id }}</span>
             </div>
-            <div style="font-size:13px;font-weight:500;margin-bottom:5px;color:#1c2033">智慧园区综合管理平台部署交付</div>
-            <div class="av-chip" style="font-size:11px;color:#9aa0b8">负责人：王五（安全团队）</div>
+            <div class="workorder-chip__title">{{ workorderInfo.title }}</div>
+            <div class="workorder-chip__owner">负责人：{{ workorderInfo.owner }}</div>
           </div>
-          <div style="display:flex;gap:6px;margin-top:10px">
-            <el-button plain size="small" style="width:100%">查看工单</el-button>
-          </div>
-        </el-card>
+          <a-button block style="margin-top: 12px" @click="goToWorkorder">
+            <template #icon><EyeOutlined /></template>
+            查看工单
+          </a-button>
+        </CloudCard>
 
-        <!-- 订单操作 - 暂时注释
-        <el-card shadow="hover">
-          <div slot="header" class="clearfix">
-            <span>订单操作</span>
+        <CloudCard class="order-detail-page__card">
+          <div class="card-head">
+            <span class="card-head__title">订单操作</span>
           </div>
-          <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-            <div class="custom-button danger" @click="cancelOrder">取消订单</div>
+          <div class="action-list">
+            <a-button block danger @click="cancelOrder">
+              <template #icon><CloseCircleOutlined /></template>
+              取消订单
+            </a-button>
           </div>
-        </el-card>
-        -->
+        </CloudCard>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import {
+  ArrowLeftOutlined, EyeOutlined, CloseCircleOutlined, FrownOutlined
+} from '@ant-design/icons-vue'
+import { Modal, message } from 'ant-design-vue'
+import PageHeader from '@/components/cloud/PageHeader.vue'
+import CloudCard from '@/components/cloud/CloudCard.vue'
+import StatusDot from '@/components/cloud/StatusDot.vue'
+
 export default {
   name: 'OrderDetail',
+  components: {
+    PageHeader, CloudCard, StatusDot,
+    ArrowLeftOutlined, EyeOutlined, CloseCircleOutlined, FrownOutlined
+  },
   data() {
     return {
+      orderInfo: {
+        orderNo: '202608100095',
+        serviceName: '智慧园区综合管理平台',
+        serviceSpec: '标准版，含500个设备接入 + 数据看板',
+        serviceType: '数字应用',
+        applicant: '张三',
+        orgName: '北京市海淀区数字经济发展局',
+        applyTime: '2026-03-15 14:32:00',
+        status: '工单流转中',
+        remark: '本次申请智慧园区综合管理平台标准版，含500个设备接入及数据看板功能，请安排团队完成部署与联调。'
+      },
+      workorderInfo: {
+        id: 'TK-0234',
+        title: '智慧园区综合管理平台部署交付',
+        owner: '王五（安全团队）'
+      },
       reviewInfo: {
         hasReviewed: false,
         score: 0,
         description: '',
         reviewTime: ''
-      }
-    };
+      },
+      timeline: [
+        { title: '提交申请', time: '2026-03-15 14:32:00 · 张三', state: 'done', dotColor: 'green' },
+        { title: '系统派发工单', time: '2026-03-15 16:10:00 · 自动派发 -> TK-0234', state: 'done', dotColor: 'green' },
+        { title: '工单流转中', time: '2026-03-15 16:15:00', state: 'on', dotColor: 'blue' },
+        { title: '服务交付完成', time: '等待工单系统回执', state: 'wait', dotColor: 'gray' },
+        { title: '服务评价', time: '交付完成后可评价', state: 'wait', dotColor: 'gray' }
+      ]
+    }
   },
   methods: {
     goBack() {
-      this.$router.push('/workorder/order/list');
+      const currentPath = this.$route.path
+      if (currentPath.startsWith('/portal/order')) {
+        this.$router.push('/portal/order/list')
+      } else {
+        this.$router.push('/workorder/order/list')
+      }
     },
-    forceCloseOrder() {
-      this.$confirm('确定要强制关单吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$message.success('强制关单成功');
-      }).catch(() => {});
+    goToWorkorder() {
+      this.$router.push({ path: '/workorder/detail', query: { workorderId: this.workorderInfo.id } })
     },
     cancelOrder() {
-      this.$confirm('确定要取消订单吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'danger'
-      }).then(() => {
-        this.$message.success('订单取消成功');
-      }).catch(() => {});
+      Modal.confirm({
+        title: '取消订单',
+        content: '确定要取消该订单吗？取消后无法恢复。',
+        okText: '确定',
+        cancelText: '返回',
+        okType: 'danger',
+        onOk: () => {
+          message.success('订单取消成功')
+        }
+      })
+    },
+    getServiceTypeClass(type) {
+      const map = {
+        '数字应用': 'digital',
+        '安全服务': 'security',
+        '能力组件': 'component',
+        '基础服务': 'basic'
+      }
+      return map[type] || ''
+    },
+    getStatusKey(status) {
+      const map = {
+        '工单流转中': 'processing',
+        '已完成': 'done',
+        '已评价': 'evaluated',
+        '已驳回': 'rejected',
+        '已取消': 'cancelled'
+      }
+      return map[status] || 'default'
     }
   }
-};
+}
 </script>
 
 <style scoped>
-/* Main */
-.detail-container {
-  display: flex;
-  flex-direction: column;
-  padding: 0 !important;
-  margin: -20px;
-  min-height: calc(100vh - 50px);
-  background-color: #f2f4f8;
+.order-detail-page {
+  padding: 4px 0;
 }
 
-.detail-header-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  margin: 0;
-  border-radius: 0;
-  height: auto;
-  flex-shrink: 0;
-}
-
-.back-btn {
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-weight: 500;
-}
-
-.back-btn:hover {
-  background-color: #ecf5ff;
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.detail-content-wrap {
-  display: flex;
-  gap: 14px;
-  padding: 16px 20px 16px;
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f2f4f8;
-}
-
-.detail-left {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.detail-left > * { min-width: 0; overflow: hidden; }
-
-.detail-right {
-  width: 272px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.detail-left .mb-4 {
-  margin-bottom: 0 !important;
-}
-
-.description-card {
-  margin-bottom: 0;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-  color: #303133;
-  font-size: 14px;
-}
-
-/* 键值对网格 */
-.detail-kv {
+.order-detail-page__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 6px 40px;
-  overflow: hidden;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+  margin-top: 14px;
 }
 
-.kv-item {
+.order-detail-page__main,
+.order-detail-page__side {
   display: flex;
-  align-items: baseline;
-  font-size: 14px;
-  line-height: 2;
-}
-
-.kv-item.full {
-  grid-column: 1 / -1;
-}
-
-.kv-item label {
-  color: #8c8c8c;
-  width: 100px;
-  flex-shrink: 0;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-.kv-item span {
-  color: #262626;
-  word-break: break-all;
-  font-weight: 400;
-  font-size: 14px;
+  flex-direction: column;
+  gap: 14px;
   min-width: 0;
 }
 
-.kv-item .mono {
-  font-family: 'DM Mono', monospace;
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.card-head__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.cell-mono {
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
+}
+
+.muted {
+  color: #86909C;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.order-desc :deep(.ant-descriptions-item-label) {
+  color: #86909C;
+  font-size: 13px;
+  width: 88px;
+}
+
+.order-desc :deep(.ant-descriptions-item-content) {
+  color: rgba(0, 0, 0, 0.85);
   font-size: 13px;
 }
 
-.kv-item .muted {
-  color: #262626;
+.order-timeline {
+  padding-top: 4px;
 }
 
-/* Status badge */
-.sb{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
-.sb::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.sb.processing{background:#eef2ff;color:#3b5bdb}
-.sb.processing::before{background:#3b5bdb;animation:blink 1.5s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
-
-/* Timeline */
-.tl{display:flex;flex-direction:column;padding:8px 0}
-.tl-row{display:flex;gap:12px}
-.tl-spine{display:flex;flex-direction:column;align-items:center;width:14px;flex-shrink:0}
-.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.tl-dot.done{background:#2f9e44}
-.tl-dot.on{background:#3b5bdb;box-shadow:0 0 0 3px #c5d0fa}
-.tl-dot.wait{background:#c8cdd9}
-.tl-dot.red{background:#c92a2a}
-.tl-vl{flex:1;width:1px;background:#e3e7ef;margin:3px 0;min-height:16px}
-.tl-row:last-child .tl-vl{display:none}
-.tl-body{padding-bottom:14px;flex:1}
-.tl-title{font-size:13px;font-weight:500;margin-bottom:2px}
-.tl-title.done{color:#5c6480}
-.tl-title.on{color:#1c2033}
-.tl-title.wait{color:#9aa0b8}
-.tl-time{font-size:11px;color:#9aa0b8;font-family:'DM Mono',monospace}
-
-/* Avatar chip */
-.av-chip{display:inline-flex;align-items:center;gap:5px}
-.av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600}
-.av.blue{background:#eef2ff;color:#3b5bdb}
-.av.amber{background:#fff9db;color:#e67700}
-.av.green{background:#ebfbee;color:#2f9e44}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#c8cdd9;border-radius:3px}
-
-/* 自定义按钮样式 */
-.custom-button {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  background-color: #ffffff;
-  color: #606266;
-  font-size: 12px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-sizing: border-box;
+.tl-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 2px;
 }
 
-.custom-button:hover {
-  border-color: #409eff;
-  color: #409eff;
+.tl-title--done { color: #4E5969; }
+.tl-title--on { color: #165DFF; font-weight: 600; }
+.tl-title--wait { color: #C9CDD4; }
+
+.tl-time {
+  font-size: 11px;
+  color: #86909C;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  letter-spacing: -0.2px;
 }
 
-.custom-button.danger {
-  border-color: #f56c6c;
-  color: #f56c6c;
-}
-
-.custom-button.danger:hover {
-  border-color: #f56c6c;
-  background-color: #fef0f0;
-  color: #f56c6c;
-}
-
-/* 满意度评价 */
 .review-result {
   display: flex;
   flex-direction: column;
@@ -338,42 +295,83 @@ export default {
   padding: 4px 0;
 }
 
-.review-score-row {
+.review-row {
   display: flex;
   align-items: flex-start;
   gap: 16px;
 }
 
 .review-label {
-  color: #8c8c8c;
-  font-size: 14px;
-  width: 100px;
+  color: #86909C;
+  font-size: 13px;
+  width: 80px;
   flex-shrink: 0;
-  font-weight: 400;
   white-space: nowrap;
 }
 
 .review-desc {
-  color: #262626;
-  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 13px;
   flex: 1;
-  font-weight: 400;
   word-break: break-all;
   min-width: 0;
 }
 
-.review-desc.mono {
-  font-family: 'DM Mono', monospace;
+.review-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 0;
+  color: #C9CDD4;
   font-size: 13px;
 }
 
-.review-placeholder {
-  padding: 20px 0;
-  text-align: center;
+.review-empty__icon {
+  font-size: 32px;
 }
 
-.review-placeholder-text {
-  color: #9aa0b8;
+.workorder-chip {
+  border: 1px solid rgba(245, 158, 11, 0.30);
+  border-left: 3px solid #F59E0B;
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.workorder-chip__id {
+  margin-bottom: 6px;
+}
+
+.workorder-chip__id .cell-mono {
+  color: #F59E0B;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.workorder-chip__title {
   font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 5px;
+  line-height: 1.5;
+}
+
+.workorder-chip__owner {
+  font-size: 11px;
+  color: #86909C;
+}
+
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .order-detail-page__body {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
