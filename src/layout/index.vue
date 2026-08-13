@@ -558,10 +558,14 @@ ${processedHtml}
   align-items: center;
   padding: 12px;
   gap: 10px;
-  width: 220px;
+  width: 100%;
   height: 48px;
   background: #fff;
   border-top: 1px solid #F2F3F5;
+}
+
+.app-sider--collapsed .app-sider__footer {
+  justify-content: center;
 }
 
 .app-sider__toggle {

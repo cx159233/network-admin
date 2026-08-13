@@ -69,7 +69,7 @@
           @change="onTableChange"
         >
           <template #bodyCell="{ column, record }">
-            <span v-else-if="column.dataIndex === 'dictLabel'">
+            <span v-if="column.dataIndex === 'dictLabel'">
               <a-tag v-if="record.listClass" :color="record.listClass">{{ record.dictLabel }}</a-tag>
               <span v-else>{{ record.dictLabel }}</span>
             </span>

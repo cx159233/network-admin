@@ -149,7 +149,6 @@
           </div>
           <div class="text-[12px] text-text-primary leading-[18px]">{{ viewEvalData.reply }}</div>
         </div>
-        <a-alert v-if="!viewEvalData.reply" type="info" show-icon class="!mt-[10px]" message="开发者尚未回复，平台将在 3 个工作日内跟进" />
       </template>
     </a-modal>
 
@@ -204,6 +203,12 @@ export default {
           content: '服务响应及时，功能符合预期，整体体验良好。',
           reviewTime: '2026-03-20 10:00:00',
           reply: '感谢您的认可与支持，我们将持续优化服务质量！'
+        },
+        '202608100088': {
+          ratings: { '准确性': 4, '稳定性': 4, '响应时效': 3, '业务适配性': 4 },
+          content: '组件接入便捷，稳定性较好，但响应时效有待提升。',
+          reviewTime: '2026-03-18 15:20:00',
+          reply: ''
         }
       },
       drawerTimeline: [
@@ -291,8 +296,13 @@ export default {
     },
     onViewReview(row) {
       const data = this.reviewRecords[row.orderNo]
-      if (data) {
-        this.viewEvalData = { orderNo: row.orderNo, serviceName: row.serviceName, ...data }
+      this.viewEvalData = {
+        orderNo: row.orderNo,
+        serviceName: row.serviceName,
+        ratings: (data && data.ratings) || { '准确性': 0, '稳定性': 0, '响应时效': 0, '业务适配性': 0 },
+        content: (data && data.content) || '',
+        reviewTime: (data && data.reviewTime) || '',
+        reply: (data && data.reply) || ''
       }
       this.replyContent = ''
       this.viewEvalVisible = true

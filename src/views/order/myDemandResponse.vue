@@ -2,12 +2,12 @@
   <div class="my-demand-response-page">
     <PageHeader
       title="需求响应"
-      description="查看所有需求及我的响应记录，支持按需求编号、机构名称、服务类型筛选"
+      description="查看所有待响应需求及我的响应记录，支持按需求编号、机构名称、服务类型筛选"
     />
 
     <CloudCard class="my-demand-response-page__table-card">
       <a-tabs v-model:activeKey="activeTab" class="response-tabs">
-        <a-tab-pane key="all" tab="所有需求" />
+        <a-tab-pane key="all" tab="所有待响应需求" />
         <a-tab-pane key="my" tab="我的响应" />
       </a-tabs>
       <FilterBar @search="handleQuery" @reset="resetQuery">
@@ -158,19 +158,18 @@
         <div class="drawer-header-row">
           <div class="drawer-header-info">
             <div class="drawer-header-title-row">
-              <span class="drawer-header-title">{{ drawer.record.demandNo }}</span>
+              <span class="drawer-header-title">{{ drawer.record.planName || '--' }}</span>
               <StatusDot :type="getStatusKey(drawer.record.status)" :text="drawer.record.status" />
             </div>
             <div class="drawer-header-sub">
-              <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(drawer.record.serviceType)}`]">{{ drawer.record.serviceType }}</span>
-              <span class="drawer-header-sub__sep">·</span>
-              <span>{{ drawer.record.orgName }}</span>
+              <span class="cell-mono">{{ drawer.record.demandNo || '--' }}</span>
             </div>
           </div>
         </div>
 
         <a-tabs v-model:activeKey="drawer.activeTab">
-          <a-tab-pane key="demand" tab="需求信息">
+          <a-tab-pane key="overview" tab="概览">
+            <div class="overview-section-title">需求信息</div>
             <a-descriptions :column="2" bordered size="small" class="drawer-desc">
               <a-descriptions-item label="需求编号">
                 <span class="cell-mono">{{ drawer.record.demandNo || '--' }}</span>
@@ -186,21 +185,23 @@
                 <span class="muted">{{ drawer.record.demandDescription || '--' }}</span>
               </a-descriptions-item>
             </a-descriptions>
-          </a-tab-pane>
-          <a-tab-pane v-if="drawer.record.responseContent" key="response" tab="响应信息">
-            <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-              <a-descriptions-item label="响应机构">{{ drawer.record.respondent || '--' }}</a-descriptions-item>
-              <a-descriptions-item label="响应时间">
-                <span class="cell-mono">{{ drawer.record.responseTime || '--' }}</span>
-              </a-descriptions-item>
-              <a-descriptions-item label="预估报价">
-                <span class="price-text">¥{{ drawer.record.estimatedPrice || '--' }}</span>
-              </a-descriptions-item>
-              <a-descriptions-item label="预计工期">{{ drawer.record.estimatedDuration || '--' }}</a-descriptions-item>
-              <a-descriptions-item label="响应内容" :span="2">
-                <span class="muted">{{ drawer.record.responseContent || '--' }}</span>
-              </a-descriptions-item>
-            </a-descriptions>
+
+            <template v-if="drawer.record.responseContent">
+              <div class="overview-section-title overview-section-title--spaced">响应信息</div>
+              <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                <a-descriptions-item label="响应机构">{{ drawer.record.respondent || '--' }}</a-descriptions-item>
+                <a-descriptions-item label="响应时间">
+                  <span class="cell-mono">{{ drawer.record.responseTime || '--' }}</span>
+                </a-descriptions-item>
+                <a-descriptions-item label="预估报价">
+                  <span class="price-text">¥{{ drawer.record.estimatedPrice || '--' }}</span>
+                </a-descriptions-item>
+                <a-descriptions-item label="预计工期">{{ drawer.record.estimatedDuration || '--' }}</a-descriptions-item>
+                <a-descriptions-item label="响应内容" :span="2">
+                  <span class="muted">{{ drawer.record.responseContent || '--' }}</span>
+                </a-descriptions-item>
+              </a-descriptions>
+            </template>
           </a-tab-pane>
         </a-tabs>
       </template>
@@ -251,15 +252,15 @@ export default {
         { title: '操作', dataIndex: 'action', key: 'action', width: 90, fixed: 'right' }
       ],
       allDemandList: [
-        { demandNo: 'DM-20260810-0012', demandDescription: '需要一个统一的身份认证平台，支持OAuth2.0和SAML协议，要求支持至少10万用户的并发认证，并提供SSO单点登录功能', serviceType: '安全服务', orgName: '北京市海淀区数字经济发展局', applicant: '张三', status: '待响应', publishTime: '2026-03-18 10:30:00' },
-        { demandNo: 'DM-20260810-0008', demandDescription: '需要部署一套智慧医疗数据中台，支持多源异构数据整合与分析', serviceType: '数字应用', orgName: '北京市第一人民医院', applicant: '李四', status: '待响应', publishTime: '2026-03-16 11:00:00' },
-        { demandNo: 'DM-20260810-0007', demandDescription: '需要采购高性能GPU计算集群，用于AI模型训练', serviceType: '基础服务', orgName: '北京人工智能研究院', applicant: '王五', status: '已响应', publishTime: '2026-03-12 08:30:00', respondent: '北京云计算科技有限公司', responseContent: '我方可提供NVIDIA A100集群方案，包含8卡GPU服务器2台，配套分布式训练框架，支持PyTorch/TensorFlow。提供7×24小时运维支持。', estimatedPrice: '580,000', estimatedDuration: '45个工作日', responseTime: '2026-03-13 09:20:00' },
-        { demandNo: 'DM-20260810-0005', demandDescription: '需要一套完整的网络安全防护方案，包括防火墙、入侵检测、日志审计等', serviceType: '安全服务', orgName: '北京市海淀区数字经济发展局', applicant: '张三', status: '已响应', publishTime: '2026-03-08 15:20:00', respondent: '北京信息安全技术有限公司', responseContent: '推荐部署下一代防火墙+态势感知平台，包含入侵防御、Web应用防护、日志审计模块。支持等保三级合规要求。', estimatedPrice: '320,000', estimatedDuration: '30个工作日', responseTime: '2026-03-09 14:30:00' }
+        { demandNo: 'DM-20260810-0012', planName: '统一身份认证平台采购', demandDescription: '需要一个统一的身份认证平台，支持OAuth2.0和SAML协议，要求支持至少10万用户的并发认证，并提供SSO单点登录功能', serviceType: '安全服务', orgName: '北京市海淀区数字经济发展局', applicant: '张三', status: '待响应', publishTime: '2026-03-18 10:30:00' },
+        { demandNo: 'DM-20260810-0008', planName: '智慧医疗数据中台建设', demandDescription: '需要部署一套智慧医疗数据中台，支持多源异构数据整合与分析', serviceType: '数字应用', orgName: '北京市第一人民医院', applicant: '李四', status: '待响应', publishTime: '2026-03-16 11:00:00' },
+        { demandNo: 'DM-20260810-0007', planName: '高性能GPU计算集群采购', demandDescription: '需要采购高性能GPU计算集群，用于AI模型训练', serviceType: '基础服务', orgName: '北京人工智能研究院', applicant: '王五', status: '已响应', publishTime: '2026-03-12 08:30:00', respondent: '北京云计算科技有限公司', responseContent: '我方可提供NVIDIA A100集群方案，包含8卡GPU服务器2台，配套分布式训练框架，支持PyTorch/TensorFlow。提供7×24小时运维支持。', estimatedPrice: '580,000', estimatedDuration: '45个工作日', responseTime: '2026-03-13 09:20:00' },
+        { demandNo: 'DM-20260810-0005', planName: '网络安全防护方案', demandDescription: '需要一套完整的网络安全防护方案，包括防火墙、入侵检测、日志审计等', serviceType: '安全服务', orgName: '北京市海淀区数字经济发展局', applicant: '张三', status: '已响应', publishTime: '2026-03-08 15:20:00', respondent: '北京信息安全技术有限公司', responseContent: '推荐部署下一代防火墙+态势感知平台，包含入侵防御、Web应用防护、日志审计模块。支持等保三级合规要求。', estimatedPrice: '320,000', estimatedDuration: '30个工作日', responseTime: '2026-03-09 14:30:00' }
       ],
       myResponseList: [
-        { demandNo: 'DM-20260810-0007', demandDescription: '需要采购高性能GPU计算集群，用于AI模型训练', serviceType: '基础服务', orgName: '北京人工智能研究院', applicant: '王五', status: '已响应', publishTime: '2026-03-12 08:30:00', responseContent: '我方可提供NVIDIA A100集群方案，包含8卡GPU服务器2台，配套分布式训练框架，支持PyTorch/TensorFlow。提供7×24小时运维支持。', estimatedPrice: '580,000', estimatedDuration: '45个工作日', responseTime: '2026-03-13 09:20:00' },
-        { demandNo: 'DM-20260810-0005', demandDescription: '需要一套完整的网络安全防护方案，包括防火墙、入侵检测、日志审计等', serviceType: '安全服务', orgName: '北京市海淀区数字经济发展局', applicant: '张三', status: '已响应', publishTime: '2026-03-08 15:20:00', responseContent: '推荐部署下一代防火墙+态势感知平台，包含入侵防御、Web应用防护、日志审计模块。支持等保三级合规要求。', estimatedPrice: '320,000', estimatedDuration: '30个工作日', responseTime: '2026-03-09 14:30:00' },
-        { demandNo: 'DM-20260810-0003', demandDescription: '需要构建统一数据治理平台，实现数据质量管理、元数据管理、数据血缘分析', serviceType: '数字应用', orgName: '北京市卫健委', applicant: '赵六', status: '已完成', publishTime: '2026-03-01 10:00:00', responseContent: '提供一站式数据治理解决方案，涵盖数据标准管理、质量监控、血缘追踪。支持对接主流数据库与大数据平台。', estimatedPrice: '450,000', estimatedDuration: '60个工作日', responseTime: '2026-03-02 16:00:00' }
+        { demandNo: 'DM-20260810-0007', planName: '高性能GPU计算集群采购', demandDescription: '需要采购高性能GPU计算集群，用于AI模型训练', serviceType: '基础服务', orgName: '北京人工智能研究院', applicant: '王五', status: '已响应', publishTime: '2026-03-12 08:30:00', responseContent: '我方可提供NVIDIA A100集群方案，包含8卡GPU服务器2台，配套分布式训练框架，支持PyTorch/TensorFlow。提供7×24小时运维支持。', estimatedPrice: '580,000', estimatedDuration: '45个工作日', responseTime: '2026-03-13 09:20:00' },
+        { demandNo: 'DM-20260810-0005', planName: '网络安全防护方案', demandDescription: '需要一套完整的网络安全防护方案，包括防火墙、入侵检测、日志审计等', serviceType: '安全服务', orgName: '北京市海淀区数字经济发展局', applicant: '张三', status: '已响应', publishTime: '2026-03-08 15:20:00', responseContent: '推荐部署下一代防火墙+态势感知平台，包含入侵防御、Web应用防护、日志审计模块。支持等保三级合规要求。', estimatedPrice: '320,000', estimatedDuration: '30个工作日', responseTime: '2026-03-09 14:30:00' },
+        { demandNo: 'DM-20260810-0003', planName: '统一数据治理平台建设', demandDescription: '需要构建统一数据治理平台，实现数据质量管理、元数据管理、数据血缘分析', serviceType: '数字应用', orgName: '北京市卫健委', applicant: '赵六', status: '已完成', publishTime: '2026-03-01 10:00:00', responseContent: '提供一站式数据治理解决方案，涵盖数据标准管理、质量监控、血缘追踪。支持对接主流数据库与大数据平台。', estimatedPrice: '450,000', estimatedDuration: '60个工作日', responseTime: '2026-03-02 16:00:00' }
       ],
       responseDialogVisible: false,
       currentDemand: {},
@@ -268,7 +269,7 @@ export default {
         responseContent: [{ required: true, message: '请输入响应内容', trigger: 'blur' }],
         estimatedPrice: [{ required: true, message: '请输入预估报价', trigger: 'blur' }]
       },
-      drawer: { visible: false, record: null, activeTab: 'demand' }
+      drawer: { visible: false, record: null, activeTab: 'overview' }
     }
   },
   computed: {
@@ -333,12 +334,12 @@ export default {
     },
     viewDetail(row) {
       this.drawer.record = row
-      this.drawer.activeTab = 'demand'
+      this.drawer.activeTab = 'overview'
       this.drawer.visible = true
     },
     viewMyResponseDetail(row) {
       this.drawer.record = row
-      this.drawer.activeTab = row.responseContent ? 'response' : 'demand'
+      this.drawer.activeTab = 'overview'
       this.drawer.visible = true
     },
     getServiceTypeClass(type) {
@@ -531,6 +532,19 @@ export default {
   color: #4E5969;
   font-size: 14px;
   line-height: 1.6;
+}
+
+.overview-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  margin: 0 0 12px 0;
+  padding-left: 8px;
+  border-left: 3px solid #165DFF;
+}
+
+.overview-section-title--spaced {
+  margin-top: 20px;
 }
 
 .price-text {
