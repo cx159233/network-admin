@@ -71,6 +71,35 @@ export const prdChapters = [
 <tr><td>已下架</td><td></td><td>详情、修改、删除</td></tr>
 </table>
 <p>注：下架操作仅由管理员在服务目录管理中执行。</p>
+<p>4、操作-新增</p>
+<p>点击【新增-按钮】，弹出"选择服务类型"弹窗（宽度520px），展示四种服务类型的卡片网格：数字应用、安全服务、能力组件、基础服务。开发者选择服务类型后，跳转至对应服务的表单页：</p>
+<table>
+<tr><th style="white-space:nowrap">服务类型</th><th style="white-space:nowrap">跳转页面</th><th>说明</th></tr>
+<tr><td>数字应用</td><td>新增数字应用页</td><td>见 3.1.1.1.3 新增数字应用</td></tr>
+<tr><td>安全服务</td><td>新增安全服务页</td><td>见 3.1.1.1.6 新增安全服务</td></tr>
+<tr><td>能力组件</td><td>新增能力组件页</td><td>见 3.1.1.1.9 新增能力组件</td></tr>
+<tr><td>基础服务</td><td>新增基础服务页</td><td>见 3.1.1.1.12 新增基础服务</td></tr>
+</table>
+<p>5、操作-删除</p>
+<p>删除操作适用于所有服务类型，为该功能通用操作。</p>
+<p>点击列表操作列的【删除-按钮】，弹出确认弹窗"是否确认删除该服务？删除后不可恢复。"，判断逻辑如下：</p>
+<p>1、操作-取消</p>
+<p>点击【取消-按钮】，关闭确认弹窗，不执行删除，停留当前页面。</p>
+<p>2、操作-确定</p>
+<p>点击【确定-按钮】，判断逻辑如下：</p>
+<p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
+<p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
+<p>2）若满足条件，软删除数据，关闭此对话框，进行消息提示，刷新列表</p>
+<p style="font-style:italic; color:#999">Tip：删除成功</p>
+<p>6、操作-查看详情</p>
+<p>点击列表【详情-按钮】，打开右侧详情抽屉（宽度860px），展示当前服务的完整信息。详情内容根据服务类型动态渲染对应的详情模板：</p>
+<table>
+<tr><th style="white-space:nowrap">服务类型</th><th style="white-space:nowrap">详情模板</th><th>说明</th></tr>
+<tr><td>数字应用</td><td>数字应用详情</td><td>包含概览（基本信息+联系信息+分类标签）、审核信息、评价信息三个Tab</td></tr>
+<tr><td>安全服务</td><td>安全服务详情</td><td>包含概览（基本信息+联系信息+分类标签）、审核信息、评价信息三个Tab</td></tr>
+<tr><td>能力组件</td><td>能力组件详情</td><td>包含概览（基本信息+联系信息+分类标签）、审核信息、评价信息三个Tab</td></tr>
+<tr><td>基础服务</td><td>基础服务详情</td><td>包含概览（基本信息+分类标签）、审核信息、评价信息三个Tab</td></tr>
+</table>
 
 <h3 id="prd-3.1.1.1.2">3.1.1.1.2 新增数字应用</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 新增数字应用</p>
@@ -1205,9 +1234,9 @@ export const prdChapters = [
 <p>1、基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>组件名称</td><td>name</td><td>必填，文本输入</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>重复上传覆盖之前图片，自动删除前一个图片</td></tr>
-<tr><td>组件描述</td><td>description</td><td>必填，多行文本</td></tr>
+<tr><td>能力组件名称</td><td>name</td><td>必填，限制20汉字，超出不可输入，占位提示"请输入能力组件名称"，右下角显示字数统计</td></tr>
+<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
+<tr><td>组件描述</td><td>description</td><td>必填，限制1000汉字，超出不可输入，占位提示"请输入组件描述"，右下角显示字数统计</td></tr>
 <tr><td>显示顺序</td><td></td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
 </table>
 <p>2、联系信息</p>
@@ -1227,7 +1256,7 @@ export const prdChapters = [
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
-<p style="font-style:italic; color:#999">组件名称为空：请输入组件名称</p>
+<p style="font-style:italic; color:#999">能力组件名称为空：请输入能力组件名称</p>
 <p style="font-style:italic; color:#999">组件描述为空：请输入组件描述</p>
 <p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
 <p style="font-style:italic; color:#999">开放范围为空：请选择开放范围</p>
@@ -1267,9 +1296,9 @@ export const prdChapters = [
 <p>字段与新增页面相同，在新增规则基础上增加回显描述：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>组件名称</td><td>name</td><td>必填，文本输入；回显原组件名称，可修改</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>非必填；回显原LOGO，可修改；<br>重复上传覆盖之前图片，自动删除前一个图片</td></tr>
-<tr><td>组件描述</td><td>description</td><td>必填，多行文本；回显原组件描述，可修改</td></tr>
+<tr><td>能力组件名称</td><td>name</td><td>1.必填，限制20汉字，超出不可输入；<br>2.回显原能力组件名称，可修改</td></tr>
+<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
+<tr><td>组件描述</td><td>description</td><td>1.必填，限制1000汉字，超出不可输入；<br>2.回显原组件描述，可修改</td></tr>
 <tr><td>显示顺序</td><td></td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>非必填；回显原服务商名称，可修改</td></tr>
 <tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>非必填；回显原联系方式1，可修改</td></tr>
@@ -1281,7 +1310,7 @@ export const prdChapters = [
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
-<p style="font-style:italic; color:#999">组件名称为空：请输入组件名称</p>
+<p style="font-style:italic; color:#999">能力组件名称为空：请输入能力组件名称</p>
 <p style="font-style:italic; color:#999">组件描述为空：请输入组件描述</p>
 <p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
 <p style="font-style:italic; color:#999">开放范围为空：请选择开放范围</p>
@@ -1499,18 +1528,22 @@ export const prdChapters = [
 <p>1、表单字段</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务名称</td><td></td><td>必填，文本输入</td></tr>
-<tr><td>服务描述</td><td></td><td>必填，多行文本</td></tr>
-<tr><td>服务类型</td><td></td><td>必填，枚举：计算服务、存储服务、网络服务、安全服务、大数据服务、数据库服务、备份容灾服务、软件与应用服务、机房托管服务</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云</td></tr>
-<tr><td>区域</td><td></td><td>必填，枚举：华东、华北、华南、西南</td></tr>
+<tr><td>基础服务名称</td><td></td><td>必填，限制40字符，超出不可输入，占位提示"请输入基础服务名称"，右下角显示字数统计</td></tr>
+<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
+<tr><td>服务描述</td><td></td><td>必填，限制500字符，超出不可输入，占位提示"请输入服务描述"，右下角显示字数统计</td></tr>
+<tr><td>服务类型</td><td></td><td>必填，枚举：计算服务、存储服务、网络服务、安全服务、大数据服务、数据库服务、备份容灾服务、软件与应用服务、机房托管服务，支持多选</td></tr>
+<tr><td>云服务商</td><td>deployServiceProviderView</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云，支持多选</td></tr>
+<tr><td>区域</td><td></td><td>必填，枚举：华东、华北、华南、西南，支持多选</td></tr>
+<tr><td>服务商名称</td><td></td><td>非必填，文本输入，占位提示"请输入服务商名称"</td></tr>
+<tr><td>联系方式1</td><td></td><td>非必填，包含联系人姓名和联系电话</td></tr>
+<tr><td>联系方式2</td><td></td><td>非必填，包含联系人姓名和联系电话</td></tr>
 <tr><td>显示顺序</td><td></td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
 </table>
 <p>2、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
-<p style="font-style:italic; color:#999">服务名称为空：请输入服务名称</p>
+<p style="font-style:italic; color:#999">基础服务名称为空：请输入基础服务名称</p>
 <p style="font-style:italic; color:#999">服务描述为空：请输入服务描述</p>
 <p style="font-style:italic; color:#999">服务类型为空：请选择服务类型</p>
 <p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
@@ -1551,18 +1584,22 @@ export const prdChapters = [
 <p>字段与新增页面相同，在新增规则基础上增加回显描述：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务名称</td><td></td><td>必填，文本输入；回显原服务名称，可修改</td></tr>
-<tr><td>服务描述</td><td></td><td>必填，多行文本；回显原服务描述，可修改</td></tr>
-<tr><td>服务类型</td><td></td><td>必填；回显原服务类型，可修改</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>必填；回显原云服务商，可修改</td></tr>
-<tr><td>区域</td><td></td><td>必填；回显原区域，可修改</td></tr>
+<tr><td>基础服务名称</td><td></td><td>1.必填，限制40字符，超出不可输入；<br>2.回显原基础服务名称，可修改</td></tr>
+<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
+<tr><td>服务描述</td><td></td><td>1.必填，限制500字符，超出不可输入；<br>2.回显原服务描述，可修改</td></tr>
+<tr><td>服务类型</td><td></td><td>1.必填，支持多选；<br>2.回显原服务类型，可修改</td></tr>
+<tr><td>云服务商</td><td>deployServiceProviderView</td><td>1.必填，支持多选；<br>2.回显原云服务商，可修改</td></tr>
+<tr><td>区域</td><td></td><td>1.必填，支持多选；<br>2.回显原区域，可修改</td></tr>
+<tr><td>服务商名称</td><td></td><td>1.非必填，文本输入；<br>2.回显原服务商名称，可修改</td></tr>
+<tr><td>联系方式1</td><td></td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式1，可修改</td></tr>
+<tr><td>联系方式2</td><td></td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式2，可修改</td></tr>
 <tr><td>显示顺序</td><td></td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
 </table>
 <p>2、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
-<p style="font-style:italic; color:#999">服务名称为空：请输入服务名称</p>
+<p style="font-style:italic; color:#999">基础服务名称为空：请输入基础服务名称</p>
 <p style="font-style:italic; color:#999">服务描述为空：请输入服务描述</p>
 <p style="font-style:italic; color:#999">服务类型为空：请选择服务类型</p>
 <p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
@@ -2227,24 +2264,30 @@ export const prdChapters = [
 <tr><td>公立应用覆盖范围</td><td></td><td>仅当面向对象含"公立医院"时显示，多值以分号分隔展示</td></tr>
 <tr><td>医技应用覆盖范围</td><td></td><td>仅当面向对象含"医技护人员"时显示，多值以分号分隔展示</td></tr>
 </table>
-<p>5、右侧-审核操作</p>
-<p>以纵向步骤列表展示四个审核阶段：阶段1-申报材料评估、阶段2-应用技术测评、阶段3-现场演示答辩、阶段4-服务目录发布。每个阶段显示序号、阶段名称和状态标签（待审核/通过/驳回）。当前阶段高亮显示，已完成阶段标记为绿色，已驳回阶段标记为红色。未到阶段标记为灰色。</p>
-<p>当前阶段且审核中时，显示审核意见输入框（多行文本，最多200字，显示字数统计，占位提示"请输入审核意见"）和操作按钮（审核通过/驳回）。</p>
-<p>已完成或已驳回阶段显示审核记录（审核意见 + 审核人 + 审核时间）。</p>
+<p>5、右侧——审核操作（四阶段纵向步骤条）</p>
+<p>审核分为四个阶段，以纵向步骤条展示：阶段1 申报材料评估 → 阶段2 应用技术测评 → 阶段3 现场演示答辩 → 阶段4 服务目录发布。每个阶段节点有三种状态：已通过（绿色对勾）、已驳回（红色叉号）、审核中（蓝色高亮）、待审核（灰色）。</p>
+<p>当前阶段为审核中时，展示审核操作区：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>审核意见</td><td></td><td>多行文本输入框（textarea），最多200字，右下角显示字数统计"0/200"，占位提示"请输入审核意见"</td></tr>
+<tr><td>阶段通过按钮</td><td></td><td>各阶段按钮文案不同：阶段1"通过材料评估，进入技术测评"、阶段2"通过技术测评，进入现场答辩"、阶段3"通过答辩评审，进入发布环节"、阶段4"确认发布至服务目录"</td></tr>
+<tr><td>驳回按钮</td><td></td><td>各阶段均显示"驳回"按钮，点击后驳回当前阶段申请</td></tr>
+</table>
+<p>已完成的阶段展示审核记录（审核意见、审核人、审核时间）。</p>
 <p>6、操作-审核通过</p>
-<p>点击当前阶段【通过-按钮】（按钮文案随阶段变化，如阶段4显示"通过并进入服务目录"），判断逻辑如下：</p>
+<p>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"，判断逻辑如下：</p>
 <p>1）若审核意见为空，进行表单校验提示</p>
-<p style="font-style:italic; color:#999">Tip：审核意见为空：请填写审核意见</p>
+<p style="font-style:italic; color:#999">Tip：请填写审核意见</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
-<p>3）若满足条件，当前阶段变更为已通过，若为最后阶段则整体审核通过，进行消息提示</p>
+<p>3）若满足条件，当前阶段变更为已通过，更新步骤条状态。若为最后阶段（服务目录发布）则整体审核通过，进行消息提示，关闭抽屉，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：审核通过</p>
 <p>7、操作-驳回</p>
-<p>点击【驳回-按钮】，判断逻辑如下：</p>
+<p>点击【驳回-按钮】，弹出确认框"确定要驳回该服务的申请吗？"，判断逻辑如下：</p>
 <p>1）若审核意见为空，进行表单校验提示</p>
-<p style="font-style:italic; color:#999">Tip：审核意见为空：请填写审核意见</p>
+<p style="font-style:italic; color:#999">Tip：请填写驳回原因</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
-<p>3）若满足条件，当前阶段变更为已驳回，进行消息提示</p>
-<p style="font-style:italic; color:#999">Tip：驳回成功</p>
+<p>3）若满足条件，当前阶段变更为已驳回，进行消息提示，关闭抽屉</p>
+<p style="font-style:italic; color:#999">Tip：审核已拒绝</p>
 <p>8、操作-关闭抽屉</p>
 <p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
 
@@ -2341,26 +2384,25 @@ export const prdChapters = [
 <p>当前阶段为审核中时，展示审核操作区：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>审核意见</td><td></td><td>多行文本输入框（textarea），最多200字，右下角显示字数统计"0/200"</td></tr>
+<tr><td>审核意见</td><td></td><td>多行文本输入框（textarea），最多200字，右下角显示字数统计"0/200"，占位提示"请输入审核意见"</td></tr>
 <tr><td>阶段通过按钮</td><td></td><td>各阶段按钮文案不同：阶段1"通过材料评估，进入技术测评"、阶段2"通过技术测评，进入现场答辩"、阶段3"通过答辩评审，进入发布环节"、阶段4"确认发布至服务目录"</td></tr>
-<tr><td>驳回按钮</td><td></td><td>点击后驳回当前阶段</td></tr>
+<tr><td>驳回按钮</td><td></td><td>各阶段均显示"驳回"按钮，点击后驳回当前阶段申请</td></tr>
 </table>
 <p>已完成的阶段展示审核记录（审核意见、审核人、审核时间）。</p>
 <p>6、操作-阶段通过</p>
-<p>点击【通过-按钮】，判断逻辑如下：</p>
+<p>点击【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"，判断逻辑如下：</p>
 <p>1）若审核意见为空，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：请填写审核意见</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
-<p>3）若满足条件，调用审核通过接口，进行消息提示，更新步骤条状态</p>
+<p>3）若满足条件，当前阶段变更为已通过，更新步骤条状态。若为最后阶段（服务目录发布）则整体审核通过，进行消息提示，关闭抽屉，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：审核通过</p>
 <p>7、操作-驳回</p>
-<p>点击【驳回-按钮】，判断逻辑如下：</p>
+<p>点击【驳回-按钮】，弹出确认框"确定要驳回该服务的申请吗？"，判断逻辑如下：</p>
 <p>1）若审核意见为空，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：请填写驳回原因</p>
-<p>2）弹出确认对话框，确认后调用驳回接口</p>
-<p>3）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
-<p>4）若满足条件，当前阶段变更为已驳回，进行消息提示，关闭抽屉</p>
-<p style="font-style:italic; color:#999">Tip：审核已驳回</p>
+<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
+<p>3）若满足条件，当前阶段变更为已驳回，进行消息提示，关闭抽屉</p>
+<p style="font-style:italic; color:#999">Tip：审核已拒绝</p>
 <p>8、操作-关闭抽屉</p>
 <p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
 
@@ -2476,6 +2518,121 @@ export const prdChapters = [
 <p>2）弹出确认对话框，确认后调用驳回接口</p>
 <p>3）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p>4）若满足条件，当前阶段变更为已驳回，进行消息提示，关闭抽屉</p>
+<p style="font-style:italic; color:#999">Tip：审核已拒绝</p>
+<p>8、操作-关闭抽屉</p>
+<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+
+<h3 id="prd-3.2.2.5">3.2.2.5 安全服务审核</h3>
+<p><strong>入口页面：</strong>运营管理后台 / 服务审核管理 / 安全服务审核</p>
+<p><strong>页面描述：</strong>审核机构提交的安全服务上架申请，支持四阶段审核与通过或驳回操作。</p>
+
+<h3 id="prd-3.2.2.5.1">3.2.2.5.1 安全服务审核列表</h3>
+<p><strong>模块描述：</strong>服务审核管理 / 安全服务审核 / 安全服务审核列表</p>
+<p><strong>功能描述：</strong>展示所有机构提交的安全服务审核列表，展示审核状态和审核阶段，可进行审核和查看详情操作。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>进入页面自动加载审核列表。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、筛选区域</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>时间区间选择器，选择起止日期后按提交时间范围筛选，默认不筛选</td></tr>
+<tr><td>审核状态</td><td></td><td>枚举：待审核、已通过、已拒绝，默认不筛选</td></tr>
+<tr><td>审核阶段</td><td></td><td>枚举：申报材料评估、应用技术测评、现场演示答辩、服务目录发布，默认不筛选</td></tr>
+<tr><td>安全服务名称</td><td></td><td>支持模糊搜索</td></tr>
+<tr><td>安全服务ID</td><td></td><td>支持模糊搜索</td></tr>
+<tr><td>服务商名称</td><td></td><td>支持模糊搜索</td></tr>
+<tr><td>部署云服务商</td><td></td><td>枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云，默认不筛选</td></tr>
+<tr><td>列设置按钮</td><td></td><td>点击可自定义显示/隐藏列表列</td></tr>
+<tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
+<tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
+</table>
+<p>2、列表展示</p>
+<p>1）数据范围为所有机构（不区分机构）提交的所有审核状态（待审核、已通过、已拒绝）的安全服务审核数据。</p>
+<p>2）根据筛选查询条件，刷新列表并根据入参响应对应内容，默认按提交时间倒序排列，待审核数据优先展示。</p>
+<p>3）默认加载10条最新数据，通过分页形式分隔长列表，可调整每页加载条数。</p>
+<p>4）当前列表数据为空时，显示"暂无数据"。</p>
+<p>5）支持列设置，可自定义显示/隐藏列。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交审核时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>审核状态</td><td></td><td>枚举：待审核、已通过、已拒绝，使用StatusDot组件展示</td></tr>
+<tr><td>审核阶段</td><td></td><td>显示当前所处的审核阶段名称（申报材料评估/应用技术测评/现场演示答辩/服务目录发布）</td></tr>
+<tr><td>安全服务名称/ID</td><td></td><td>上方展示服务名称（加粗），下方展示服务ID（灰色小字），为空时显示"--"</td></tr>
+<tr><td>服务描述</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务商名称</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>部署云服务商</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+</table>
+<p>3、状态流转与按钮</p>
+<pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
+待审核 --(审核)---→ 审核通过 / 审核拒绝
+  ┆
+  └┄┄(各阶段逐一审核，四阶段全部通过后发布)
+</pre>
+<table>
+<tr><th style="white-space:nowrap">状态名称</th><th style="white-space:nowrap">状态代码</th><th>状态对应操作</th></tr>
+<tr><td>待审核</td><td></td><td>审核</td></tr>
+<tr><td>已通过</td><td></td><td>详情</td></tr>
+<tr><td>已拒绝</td><td></td><td>详情</td></tr>
+</table>
+
+<h3 id="prd-3.2.2.5.2">3.2.2.5.2 审核详情抽屉</h3>
+<p><strong>模块描述：</strong>服务审核管理 / 安全服务审核 / 审核详情抽屉</p>
+<p><strong>功能描述：</strong>查看安全服务备案的详细信息，进行四阶段审核操作。抽屉宽度1100px，左右分栏布局：左侧展示应用概览信息，右侧展示四阶段审核流程。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>点击列表【审核-按钮】或【详情-按钮】打开详情抽屉。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、抽屉头部</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>Logo图标</td><td></td><td>展示服务Logo图片，若无则显示默认图标</td></tr>
+<tr><td>服务名称</td><td></td><td>加粗大号字体展示</td></tr>
+<tr><td>审核状态</td><td></td><td>使用StatusDot组件展示当前审核状态</td></tr>
+<tr><td>服务ID</td><td></td><td>灰色小字，格式"ID：XXX"</td></tr>
+</table>
+<p>2、左侧——基本信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>系统地址</td><td>systemUrl</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>数字展示，为空时显示0</td></tr>
+<tr><td>服务描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+</table>
+<p>3、左侧——联系信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务商名称</td><td>serviceProvider</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>合作伙伴名称</td><td>cooperativeEnterprise</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>展示联系人姓名和电话，为空时显示"--"</td></tr>
+<tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>展示联系人姓名和电话，为空时显示"--"</td></tr>
+</table>
+<p>4、左侧——分类标签</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>应用架构</td><td>appArchitecture</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>部署云服务商</td><td>cloudProvider</td><td>完整展示，为空时显示"--"</td></tr>
+</table>
+<p>5、右侧——审核操作（四阶段纵向步骤条）</p>
+<p>审核分为四个阶段，以纵向步骤条展示：阶段1 申报材料评估 → 阶段2 应用技术测评 → 阶段3 现场演示答辩 → 阶段4 服务目录发布。每个阶段节点有三种状态：已通过（绿色对勾）、已驳回（红色叉号）、审核中（蓝色高亮）、待审核（灰色）。</p>
+<p>当前阶段为审核中时，展示审核操作区：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>审核意见</td><td></td><td>多行文本输入框（textarea），最多200字，右下角显示字数统计"0/200"，占位提示"请输入审核意见"</td></tr>
+<tr><td>阶段通过按钮</td><td></td><td>各阶段按钮文案不同：阶段1"通过材料评估，进入技术测评"、阶段2"通过技术测评，进入现场答辩"、阶段3"通过答辩评审，进入发布环节"、阶段4"确认发布至服务目录"</td></tr>
+<tr><td>驳回按钮</td><td></td><td>各阶段均显示"驳回"按钮，点击后驳回当前阶段申请</td></tr>
+</table>
+<p>已完成的阶段展示审核记录（审核意见、审核人、审核时间）。</p>
+<p>6、操作-审核通过</p>
+<p>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"，判断逻辑如下：</p>
+<p>1）若审核意见为空，进行表单校验提示</p>
+<p style="font-style:italic; color:#999">Tip：请填写审核意见</p>
+<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
+<p>3）若满足条件，当前阶段变更为已通过，更新步骤条状态。若为最后阶段（服务目录发布）则整体审核通过，进行消息提示，关闭抽屉，刷新列表</p>
+<p style="font-style:italic; color:#999">Tip：审核通过</p>
+<p>7、操作-驳回</p>
+<p>点击【驳回-按钮】，弹出确认框"确定要驳回该服务的申请吗？"，判断逻辑如下：</p>
+<p>1）若审核意见为空，进行表单校验提示</p>
+<p style="font-style:italic; color:#999">Tip：请填写驳回原因</p>
+<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
+<p>3）若满足条件，当前阶段变更为已驳回，进行消息提示，关闭抽屉</p>
 <p style="font-style:italic; color:#999">Tip：审核已拒绝</p>
 <p>8、操作-关闭抽屉</p>
 <p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
