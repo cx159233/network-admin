@@ -33,6 +33,7 @@
           :data-source="filteredData"
           :pagination="paginationConfig"
           :loading="loading"
+          :scroll="{ x: 'max-content' }"
           row-key="orderNo"
           size="middle"
           @change="onTableChange"
@@ -237,7 +238,7 @@ export default {
         { title: '状态', dataIndex: 'status', key: 'status', width: 120 },
         { title: '关联工单', dataIndex: 'workorderId', key: 'workorderId', width: 130 },
         { title: '创建时间', dataIndex: 'applyTime', key: 'applyTime', width: 160 },
-        { title: '操作', dataIndex: 'action', key: 'action', width: 180, fixed: 'right' }
+        { title: '操作', dataIndex: 'action', key: 'action', width: 220, fixed: 'right' }
       ],
       orderList: [
         { orderNo: '202608100089', serviceId: 'SVC-0234', serviceName: '智慧园区综合管理平台', serviceSpec: '标准版，含500个设备接入 + 数据看板', orgName: '北京市海淀区数字经济发展局', applicant: '张三', department: '技术部', serviceType: '数字应用', status: '工单流转中', workorderId: 'TK-0234', applyTime: '2026-03-15 14:32' },
@@ -395,6 +396,14 @@ export default {
 .cell-default {
   color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
+}
+
+/* 操作列按钮组：禁止换行，确保查看评价等按钮完整显示 */
+.my-subscriptions-page :deep(.ant-table-tbody > tr > td:last-child .ant-space) {
+  white-space: nowrap;
+}
+.my-subscriptions-page :deep(.ant-table-cell-fix-right) {
+  background: #fff !important;
 }
 
 .cell-mono {
