@@ -3,7 +3,7 @@
     <PageHeader
       :title="viewMode === 'summary' ? '质量评价管理' : '评价明细'"
       :description="viewMode === 'summary'
-        ? '查看平台服务的评价汇总数据，支持按服务名称和服务类型筛选，可点击查看评价明细'
+        ? '查看平台服务的评价汇总数据，支持按服务名称、服务ID和服务类型筛选，可点击查看评价明细'
         : '查看该服务的用户评价明细，支持回复用户评价'"
     />
 
@@ -12,6 +12,7 @@
       <CloudCard class="review-page__table-card">
         <FilterBar @search="handleQuery" @reset="resetQuery">
           <a-input v-model:value="filter.serviceName" placeholder="服务名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
+          <a-input v-model:value="filter.serviceId" placeholder="服务ID" allow-clear style="width: 180px" @pressEnter="handleQuery" />
           <a-select v-model:value="filter.serviceType" placeholder="服务类型" allow-clear style="width: 150px">
             <a-select-option value="数字应用">数字应用</a-select-option>
             <a-select-option value="安全服务">安全服务</a-select-option>
@@ -34,7 +35,7 @@
             <template #headerCell="{ column }">
               <template v-if="column.key === 'avgScore'">
                 <a-tooltip title="所有用户的平均分值">
-                  <span class="header-with-tip">平均用户评分 <QuestionCircleOutlined class="header-tip-icon" /></span>
+                  <span class="header-with-tip">用户评分 <QuestionCircleOutlined class="header-tip-icon" /></span>
                 </a-tooltip>
               </template>
               <template v-else-if="column.key === 'platformScore'">
@@ -113,7 +114,7 @@
 
       <CloudCard class="review-page__table-card">
         <FilterBar @search="handleDetailQuery" @reset="resetDetailQuery">
-          <a-select v-model:value="detailFilter.score" placeholder="评分" allow-clear style="width: 120px">
+          <a-select v-model:value="detailFilter.score" placeholder="四维均分" allow-clear style="width: 120px">
             <a-select-option value="5">5 星</a-select-option>
             <a-select-option value="4">4 星</a-select-option>
             <a-select-option value="3">3 星及以下</a-select-option>
@@ -122,15 +123,12 @@
             <a-select-option value="待回复">待回复</a-select-option>
             <a-select-option value="已回复">已回复</a-select-option>
           </a-select>
-          <template #suffix>
-            <ColumnSettings v-model="hiddenKeys" :columns="columns" />
-          </template>
         </FilterBar>
         <div class="review-page__divider"></div>
 
         <div class="review-page__table-wrap">
           <a-table
-            :columns="visibleColumns"
+            :columns="columns"
             :data-source="filteredDetailData"
             :pagination="paginationConfig"
             :loading="loading"
@@ -141,7 +139,7 @@
             <template #headerCell="{ column }">
               <template v-if="column.key === 'avgScore'">
                 <a-tooltip title="准确性、稳定性、响应时效、业务适配性的平均分值">
-                  <span class="header-with-tip">用户评分 <QuestionCircleOutlined class="header-tip-icon" /></span>
+                  <span class="header-with-tip">四维均分 <QuestionCircleOutlined class="header-tip-icon" /></span>
                 </a-tooltip>
               </template>
             </template>
@@ -199,7 +197,7 @@
     <!-- 平台评分弹窗 -->
     <a-modal v-model:open="platformEvalVisible" title="平台评分" :width="480" :footer="null" :destroy-on-close="true">
       <a-form layout="vertical">
-        <a-form-item label="综合评价">
+        <a-form-item label="平台评分">
           <a-rate v-model:value="platformEvalForm.score" style="font-size: 24px" />
           <span class="text-[13px] text-text-tertiary ml-[8px]">{{ platformEvalForm.score }} 星</span>
         </a-form-item>
@@ -223,22 +221,20 @@ import PageHeader from '@/components/cloud/PageHeader.vue'
 import CloudCard from '@/components/cloud/CloudCard.vue'
 import FilterBar from '@/components/cloud/FilterBar.vue'
 import StatusDot from '@/components/cloud/StatusDot.vue'
-import ColumnSettings from '@/components/cloud/ColumnSettings.vue'
 
 export default {
   name: 'ServiceReview',
   components: {
-    PageHeader, CloudCard, FilterBar, StatusDot, ColumnSettings,
+    PageHeader, CloudCard, FilterBar, StatusDot,
     ArrowLeftOutlined, QuestionCircleOutlined
   },
   data() {
     return {
       loading: false,
-      hiddenKeys: [],
       viewMode: 'summary',
       selectedService: null,
-      filter: { serviceName: '', serviceType: undefined },
-      applied: { serviceName: '', serviceType: undefined },
+      filter: { serviceName: '', serviceId: '', serviceType: undefined },
+      applied: { serviceName: '', serviceId: '', serviceType: undefined },
       detailFilter: { score: undefined, status: undefined },
       detailApplied: { score: undefined, status: undefined },
       pagination: { current: 1, pageSize: 10 },
@@ -248,13 +244,13 @@ export default {
         { title: '平均稳定性', dataIndex: 'avgStability', key: 'avgStability', width: 105 },
         { title: '平均响应时效', dataIndex: 'avgResponseTime', key: 'avgResponseTime', width: 115 },
         { title: '平均业务适配性', dataIndex: 'avgBusinessFit', key: 'avgBusinessFit', width: 130 },
-        { title: '用户评价', dataIndex: 'avgScore', key: 'avgScore', width: 110 },
+        { title: '用户评分', dataIndex: 'avgScore', key: 'avgScore', width: 110 },
         { title: '平台评分', dataIndex: 'platformScore', key: 'platformScore', width: 110 },
         { title: '操作', dataIndex: 'action', key: 'action', width: 160 },
       ],
       columns: [
         { title: '评分维度', dataIndex: 'dims', key: 'dims', width: 240 },
-        { title: '用户评分', dataIndex: 'avgScore', key: 'avgScore', width: 80 },
+        { title: '四维均分', dataIndex: 'avgScore', key: 'avgScore', width: 80 },
         { title: '服务单号', dataIndex: 'orderNo', key: 'orderNo', width: 140 },
         { title: '评价机构', dataIndex: 'orgName', key: 'orgName', width: 170, ellipsis: true },
         { title: '评价内容', dataIndex: 'content', key: 'content', width: 260, ellipsis: true },
@@ -286,14 +282,12 @@ export default {
     }
   },
   computed: {
-    visibleColumns() {
-      return this.columns.filter(c => !this.hiddenKeys.includes(c.key))
-    },
     summaryData() {
       const f = this.applied
       const groupMap = {}
       this.reviewList.forEach(item => {
         if (f.serviceName && !(item.serviceName || '').includes(f.serviceName)) return
+        if (f.serviceId && !(item.serviceId || '').includes(f.serviceId)) return
         if (f.serviceType && item.serviceType !== f.serviceType) return
         const key = item.serviceId || item.serviceName
         if (!groupMap[key]) {
@@ -381,7 +375,7 @@ export default {
       this.pagination.current = 1
     },
     resetQuery() {
-      this.filter = { serviceName: '', serviceType: undefined }
+      this.filter = { serviceName: '', serviceId: '', serviceType: undefined }
       this.applied = { ...this.filter }
       this.pagination.current = 1
     },

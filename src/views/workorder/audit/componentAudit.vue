@@ -7,11 +7,11 @@
 
     <CloudCard class="component-audit-page__table-card">
       <FilterBar @search="handleQuery" @reset="resetQuery">
-        <a-range-picker v-model:value="filter.submitTimeRange" :placeholder="['提交时间', '提交时间']" allow-clear style="width: 240px" value-format="YYYY-MM-DD" />
+        <a-range-picker v-model:value="filter.submitTimeRange" :placeholder="['提交审核时间', '提交审核时间']" allow-clear style="width: 240px" value-format="YYYY-MM-DD" />
         <a-select v-model:value="filter.status" placeholder="审核状态" allow-clear style="width: 130px">
           <a-select-option value="10">待审核</a-select-option>
           <a-select-option value="20">已通过</a-select-option>
-          <a-select-option value="30">已拒绝</a-select-option>
+          <a-select-option value="30">已驳回</a-select-option>
         </a-select>
         <a-select v-model:value="filter.step" placeholder="审核阶段" allow-clear style="width: 150px">
           <a-select-option :value="1">申报材料评估</a-select-option>
@@ -271,67 +271,67 @@ export default {
       },
       // 审核数据：按submissionId索引，每个提交含4阶段审核信息
       submissionAuditData: {
-        SUB001: {
+        'NLZJ202410210001-V1': {
           1: { id: 'SUB001_s1', status: 'processing', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-21 10:43:04', auditTime: '2026-10-21 10:43:04', remark: '机构提交申报材料', auditor: '', opinion: '' }] },
           2: { id: 'SUB001_s2', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           3: { id: 'SUB001_s3', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           4: { id: 'SUB001_s4', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
-        SUB002: {
+        'NLZJ202410220001-V1': {
           1: { id: 'SUB002_s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-10-29 15:30', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-22 14:08:38', auditTime: '2026-10-22 14:08:38', remark: '机构提交申报材料', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-10-22 14:08:38', auditTime: '2026-10-29 15:30', auditor: '李主管', opinion: '材料完整有效，本阶段通过' }] },
           2: { id: 'SUB002_s2', status: 'processing', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-30 09:00', auditTime: '2026-10-30 09:00', remark: '材料评估通过后自动进入技术测评', auditor: '', opinion: '' }] },
           3: { id: 'SUB002_s3', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           4: { id: 'SUB002_s4', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
-        SUB003: {
+        'NLZJ202410240001-V1': {
           1: { id: 'SUB003_s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主管', auditTime: '2026-11-01 10:30', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 14:59:25', auditTime: '2026-10-24 14:59:25', remark: '机构提交申报材料', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 14:59:25', auditTime: '2026-11-01 10:30', auditor: '张主管', opinion: '材料齐全，审核通过' }] },
           2: { id: 'SUB003_s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-05 14:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-02 09:00', auditTime: '2026-11-02 09:00', remark: '材料评估通过后自动进入技术测评', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-02 09:00', auditTime: '2026-11-05 14:00', auditor: '王工程师', opinion: '功能完整性和性能指标达标，技术测评通过' }] },
           3: { id: 'SUB003_s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘主任', auditTime: '2026-11-12 16:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-06 09:00', auditTime: '2026-11-06 09:00', remark: '技术测评通过，预约现场演示', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-06 09:00', auditTime: '2026-11-12 16:00', auditor: '刘主任', opinion: '核心功能演示完整，AI辅助诊断效果显著，答辩通过' }] },
           4: { id: 'SUB003_s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '陈管理员', auditTime: '2026-11-15 11:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-13 09:00', auditTime: '2026-11-13 09:00', remark: '答辩通过，提交服务目录发布申请', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-13 09:00', auditTime: '2026-11-15 11:00', auditor: '陈管理员', opinion: '发布信息配置正确，已上架至服务目录' }] }
         },
-        SUB004: {
+        'NLZJ202410240002-V1': {
           1: { id: 'SUB004_s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主管', auditTime: '2026-11-01 11:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:00:03', auditTime: '2026-10-24 15:00:03', remark: '机构提交申报材料', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:00:03', auditTime: '2026-11-01 11:00', auditor: '张主管', opinion: '材料齐全，审核通过' }] },
           2: { id: 'SUB004_s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-05 15:30', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-02 09:00', auditTime: '2026-11-02 09:00', remark: '材料评估通过后自动进入技术测评', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-02 09:00', auditTime: '2026-11-05 15:30', auditor: '王工程师', opinion: '影像分析能力满足需求，技术测评通过' }] },
           3: { id: 'SUB004_s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘主任', auditTime: '2026-11-12 17:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-06 09:00', auditTime: '2026-11-06 09:00', remark: '技术测评通过，预约现场演示', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-06 09:00', auditTime: '2026-11-12 17:00', auditor: '刘主任', opinion: '放射组学分析流程演示清晰，答辩通过' }] },
           4: { id: 'SUB004_s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '陈管理员', auditTime: '2026-11-15 14:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-13 09:00', auditTime: '2026-11-13 09:00', remark: '答辩通过，提交服务目录发布申请', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-13 09:00', auditTime: '2026-11-15 14:00', auditor: '陈管理员', opinion: '发布信息配置正确，已上架至服务目录' }] }
         },
-        SUB005: {
+        'NLZJ202410240003-V1': {
           1: { id: 'SUB005_s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主管', auditTime: '2026-11-02 10:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:00:21', auditTime: '2026-10-24 15:00:21', remark: '机构提交申报材料', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:00:21', auditTime: '2026-11-02 10:00', auditor: '张主管', opinion: '材料齐全，审核通过' }] },
           2: { id: 'SUB005_s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-06 11:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-03 09:00', auditTime: '2026-11-03 09:00', remark: '材料评估通过后自动进入技术测评', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-03 09:00', auditTime: '2026-11-06 11:00', auditor: '王工程师', opinion: 'DICOM格式兼容性正常，技术测评通过' }] },
           3: { id: 'SUB005_s3', status: 'rejected', statusKey: 'rejected', statusText: '已驳回', auditor: '刘主任', auditTime: '2026-11-13 16:30', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-07 09:00', auditTime: '2026-11-07 09:00', remark: '技术测评通过，预约现场演示', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'rejected', submitTime: '2026-11-07 09:00', auditTime: '2026-11-13 16:30', auditor: '刘主任', opinion: '影像结果查看器在移动端适配不完善，平板端界面布局异常，请优化后重新答辩' }] },
           4: { id: 'SUB005_s4', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
-        SUB006: {
+        'NLZJ202410240004-V1': {
           1: { id: 'SUB006_s1', status: 'processing', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:00:40', auditTime: '2026-10-24 15:00:40', remark: '机构提交申报材料', auditor: '', opinion: '' }] },
           2: { id: 'SUB006_s2', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           3: { id: 'SUB006_s3', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           4: { id: 'SUB006_s4', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
-        SUB007: {
+        'NLZJ202410240005-V1': {
           1: { id: 'SUB007_s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主管', auditTime: '2026-11-03 09:30', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:01:13', auditTime: '2026-10-24 15:01:13', remark: '机构提交申报材料', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:01:13', auditTime: '2026-11-03 09:30', auditor: '张主管', opinion: '电子签名资质完备，材料审核通过' }] },
           2: { id: 'SUB007_s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-08 10:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-04 09:00', auditTime: '2026-11-04 09:00', remark: '材料评估通过后自动进入技术测评', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-04 09:00', auditTime: '2026-11-08 10:00', auditor: '王工程师', opinion: '扫码签名和授权签名功能正常，技术测评通过' }] },
           3: { id: 'SUB007_s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘主任', auditTime: '2026-11-14 14:30', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-09 09:00', auditTime: '2026-11-09 09:00', remark: '技术测评通过，预约现场演示', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-09 09:00', auditTime: '2026-11-14 14:30', auditor: '刘主任', opinion: '电子签名流程完整合规，移动签名体验良好，答辩通过' }] },
           4: { id: 'SUB007_s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '陈管理员', auditTime: '2026-11-18 09:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-15 09:00', auditTime: '2026-11-15 09:00', remark: '答辩通过，提交服务目录发布申请', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-15 09:00', auditTime: '2026-11-18 09:00', auditor: '陈管理员', opinion: '发布信息配置正确，已上架至服务目录' }] }
         },
-        SUB008: {
+        'NLZJ202410240005-V2': {
           1: { id: 'SUB008_s1', status: 'processing', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:01:13', auditTime: '2026-10-24 15:01:13', remark: 'V2版本提交申报材料（新增双方会签功能）', auditor: '', opinion: '' }] },
           2: { id: 'SUB008_s2', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           3: { id: 'SUB008_s3', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           4: { id: 'SUB008_s4', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
-        SUB009: {
+        'NLZJ202410240006-V1': {
           1: { id: 'SUB009_s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主管', auditTime: '2026-11-03 10:30', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:01:28', auditTime: '2026-10-24 15:01:28', remark: '机构提交申报材料', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:01:28', auditTime: '2026-11-03 10:30', auditor: '张主管', opinion: '患者签名场景材料齐全，审核通过' }] },
           2: { id: 'SUB009_s2', status: 'rejected', statusKey: 'rejected', statusText: '已驳回', auditor: '王工程师', auditTime: '2026-11-08 16:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-04 09:00', auditTime: '2026-11-04 09:00', remark: '材料评估通过后自动进入技术测评', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'rejected', submitTime: '2026-11-04 09:00', auditTime: '2026-11-08 16:00', auditor: '王工程师', opinion: '智能签名屏驱动兼容性问题，部分有线签字板无法正常识别签名，需修复后重新测评' }] },
           3: { id: 'SUB009_s3', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           4: { id: 'SUB009_s4', status: 'pending', statusKey: 'default', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
-        SUB010: {
+        'NLZJ202410240007-V1': {
           1: { id: 'SUB010_s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主管', auditTime: '2026-11-03 14:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:01:43', auditTime: '2026-10-24 15:01:43', remark: '机构提交申报材料', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:01:43', auditTime: '2026-11-03 14:00', auditor: '张主管', opinion: '电子签名和印章资质齐全，审核通过' }] },
           2: { id: 'SUB010_s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-07 15:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-04 09:00', auditTime: '2026-11-04 09:00', remark: '材料评估通过后自动进入技术测评', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-04 09:00', auditTime: '2026-11-07 15:00', auditor: '王工程师', opinion: '手写签名识别率达标，电子印章验证功能正常，技术测评通过' }] },
           3: { id: 'SUB010_s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘主任', auditTime: '2026-11-14 10:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-08 09:00', auditTime: '2026-11-08 09:00', remark: '技术测评通过，预约现场演示', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-08 09:00', auditTime: '2026-11-14 10:00', auditor: '刘主任', opinion: '手写电子化和印章场景演示完整，答辩通过' }] },
           4: { id: 'SUB010_s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '陈管理员', auditTime: '2026-11-18 11:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-15 09:00', auditTime: '2026-11-15 09:00', remark: '答辩通过，提交服务目录发布申请', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-15 09:00', auditTime: '2026-11-18 11:00', auditor: '陈管理员', opinion: '发布信息配置正确，已上架至服务目录' }] }
         },
-        SUB011: {
+        'NLZJ202410240008-V1': {
           1: { id: 'SUB011_s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主管', auditTime: '2026-11-04 10:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:13:21', auditTime: '2026-10-24 15:13:21', remark: '机构提交申报材料', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:13:21', auditTime: '2026-11-04 10:00', auditor: '张主管', opinion: '文档资质齐全，审核通过' }] },
           2: { id: 'SUB011_s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-08 14:00', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-05 09:00', auditTime: '2026-11-05 09:00', remark: '材料评估通过后自动进入技术测评', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-05 09:00', auditTime: '2026-11-08 14:00', auditor: '王工程师', opinion: '多格式文档预览和签章验章功能稳定，技术测评通过' }] },
           3: { id: 'SUB011_s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘主任', auditTime: '2026-11-15 10:30', _records: [{ nodeType: 'submit', status: 'pending', submitTime: '2026-11-09 09:00', auditTime: '2026-11-09 09:00', remark: '技术测评通过，预约现场演示', auditor: '', opinion: '' }, { nodeType: 'audit', status: 'approved', submitTime: '2026-11-09 09:00', auditTime: '2026-11-15 10:30', auditor: '刘主任', opinion: '文档轻阅读体验流畅，安全管控功能完善，答辩通过' }] },
@@ -405,7 +405,7 @@ export default {
       return map[String(status)] || 'default'
     },
     getAuditStatusText(status) {
-      const map = { 10: '待审核', 20: '已通过', 30: '已拒绝' }
+      const map = { 10: '待审核', 20: '已通过', 30: '已驳回' }
       return map[String(status)] || ''
     },
     getStepName(step) {
@@ -483,7 +483,7 @@ export default {
     getStepTagText(idx) {
       if (this.isStepApproved(idx)) return '已通过'
       if (this.isStepRejected(idx)) return '已驳回'
-      if (this.isStepCurrent(idx)) return '审核中'
+      if (this.isStepCurrent(idx)) return '待审核'
       return '待审核'
     },
     formatTime(time) {
@@ -531,37 +531,81 @@ export default {
     },
     approve() {
       if (!this.auditForm.opinion.trim()) {
-        message.warning('请填写审核意见')
+        message.warning('审核意见为空：请填写审核意见')
         return
       }
+      const isLastStage = this.activeStepIdx === this.auditSteps.length - 1
+      const stepName = this.auditSteps[this.activeStepIdx]?.title || ''
       Modal.confirm({
         title: '确认通过',
-        content: '确定要通过该组件的审核吗？',
+        content: isLastStage
+          ? `当前为第 ${this.activeStepIdx + 1} 阶段（${stepName}），通过后将完成全部审核流程，确定通过吗？`
+          : `通过后将从「${stepName}」进入下一阶段，确定通过吗？`,
         okText: '确定',
         cancelText: '取消',
         okType: 'primary',
-        onOk: () => {
-          message.success('审核通过')
-          this.drawer.visible = false
+        onOk: async () => {
+          try {
+            this.recordApproveLog()
+            message.success('审核通过')
+            this.drawer.visible = false
+            this.fetchList()
+          } catch (e) {
+            message.error('网络异常，请稍后再试')
+          }
         }
       })
     },
     reject() {
       if (!this.auditForm.opinion.trim()) {
-        message.warning('请填写驳回原因')
+        message.warning('审核意见为空：请填写审核意见')
         return
       }
+      const stepName = this.auditSteps[this.activeStepIdx]?.title || ''
       Modal.confirm({
         title: '确认驳回',
-        content: '确定要驳回该组件的审核吗？',
+        content: `驳回后当前阶段（${stepName}）状态将变更为"已驳回"并终止审核流程，确定驳回吗？`,
         okText: '确定',
         cancelText: '取消',
         okType: 'danger',
-        onOk: () => {
-          message.success('审核已驳回')
-          this.drawer.visible = false
+        onOk: async () => {
+          try {
+            this.recordRejectLog()
+            message.success('驳回成功')
+            this.drawer.visible = false
+            this.fetchList()
+          } catch (e) {
+            message.error('网络异常，请稍后再试')
+          }
         }
       })
+    },
+    recordApproveLog() {
+      const record = this.drawer.record
+      if (!record) return
+      const idx = this.activeStepIdx
+      if (!record.auditFlow) record.auditFlow = {}
+      record.auditFlow[`step${idx + 1}`] = {
+        status: 'approved', opinion: this.auditForm.opinion, auditor: '当前审核人', auditTime: this.formatTime(new Date())
+      }
+      if (idx < this.auditSteps.length - 1) {
+        record.currentStep = (record.currentStep || 1) + 1
+      } else {
+        record.auditStatus = '审核通过'
+        record.currentStep = this.auditSteps.length
+      }
+      this.auditForm.opinion = ''
+    },
+    recordRejectLog() {
+      const record = this.drawer.record
+      if (!record) return
+      const idx = this.activeStepIdx
+      if (!record.auditFlow) record.auditFlow = {}
+      record.auditFlow[`step${idx + 1}`] = {
+        status: 'rejected', opinion: this.auditForm.opinion, auditor: '当前审核人', auditTime: this.formatTime(new Date())
+      }
+      record.auditStatus = '审核驳回'
+      this.auditForm.opinion = ''
     },
   }
 }
@@ -948,14 +992,14 @@ export default {
   word-break: break-all;
   white-space: normal;
   background: #FAFBFC !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 400 !important;
   color: rgba(0, 0, 0, 0.85) !important;
   line-height: 1.5;
 }
 
 .drawer-split__left .ant-descriptions-item-content {
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 400 !important;
   color: rgba(0, 0, 0, 0.65) !important;
   word-break: break-all;

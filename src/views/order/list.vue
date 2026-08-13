@@ -6,12 +6,6 @@
 
     <CloudCard class="order-list-page__table-card">
       <FilterBar @search="handleQuery" @reset="resetQuery">
-        <template #actions>
-          <a-button @click="onExport">
-            <template #icon><DownloadOutlined /></template>
-            导出清单
-          </a-button>
-        </template>
         <a-input v-model:value="filter.orderNo" placeholder="服务单号" allow-clear style="width: 180px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceName" placeholder="服务名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceId" placeholder="服务ID" allow-clear style="width: 160px" @pressEnter="handleQuery" />
@@ -171,7 +165,6 @@
 </template>
 
 <script>
-import { DownloadOutlined } from '@ant-design/icons-vue'
 import { Modal, message } from 'ant-design-vue'
 import PageHeader from '@/components/cloud/PageHeader.vue'
 import CloudCard from '@/components/cloud/CloudCard.vue'
@@ -182,8 +175,7 @@ import ColumnSettings from '@/components/cloud/ColumnSettings.vue'
 export default {
   name: 'OrderList',
   components: {
-    PageHeader, CloudCard, FilterBar, StatusDot, ColumnSettings,
-    DownloadOutlined
+    PageHeader, CloudCard, FilterBar, StatusDot, ColumnSettings
   },
   data() {
     return {
@@ -467,9 +459,6 @@ export default {
     onTableChange(pag) {
       this.pagination.current = pag.current
       this.pagination.pageSize = pag.pageSize
-    },
-    onExport() {
-      message.success('服务单清单导出请求已提交')
     },
     goToDetail(row) {
       this.drawer.record = row

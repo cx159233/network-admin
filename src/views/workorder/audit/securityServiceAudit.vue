@@ -7,11 +7,11 @@
 
     <CloudCard class="security-audit-page__table-card">
       <FilterBar @search="handleQuery" @reset="resetQuery">
-        <a-range-picker v-model:value="filter.submitTimeRange" :placeholder="['提交时间', '提交时间']" allow-clear style="width: 240px" value-format="YYYY-MM-DD" />
+        <a-range-picker v-model:value="filter.submitTimeRange" :placeholder="['提交审核时间', '提交审核时间']" allow-clear style="width: 240px" value-format="YYYY-MM-DD" />
         <a-select v-model:value="filter.status" placeholder="审核状态" allow-clear style="width: 130px">
           <a-select-option value="10">待审核</a-select-option>
           <a-select-option value="20">已通过</a-select-option>
-          <a-select-option value="30">已拒绝</a-select-option>
+          <a-select-option value="30">已驳回</a-select-option>
         </a-select>
         <a-select v-model:value="filter.step" placeholder="审核阶段" allow-clear style="width: 150px">
           <a-select-option :value="1">申报材料评估</a-select-option>
@@ -389,7 +389,7 @@ export default {
       return map[String(status)] || 'default'
     },
     getAuditStatusText(status) {
-      const map = { 10: '待审核', 20: '已通过', 30: '已拒绝' }
+      const map = { 10: '待审核', 20: '已通过', 30: '已驳回' }
       return map[String(status)] || ''
     },
     getStepName(step) {
@@ -457,7 +457,7 @@ export default {
     getStepTagText(idx) {
       if (this.isStepApproved(idx)) return '已通过'
       if (this.isStepRejected(idx)) return '已驳回'
-      if (this.isStepCurrent(idx)) return '审核中'
+      if (this.isStepCurrent(idx)) return '待审核'
       return '待审核'
     },
     formatTime(time) {
@@ -892,14 +892,14 @@ export default {
   word-break: break-all;
   white-space: normal;
   background: #FAFBFC !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 400 !important;
   color: rgba(0, 0, 0, 0.85) !important;
   line-height: 1.5;
 }
 
 .drawer-split__left .ant-descriptions-item-content {
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 400 !important;
   color: rgba(0, 0, 0, 0.65) !important;
   word-break: break-all;

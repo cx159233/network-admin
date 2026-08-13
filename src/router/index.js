@@ -619,6 +619,12 @@ export const constantRoutes = [
         meta: { title: '字典管理', noCache: true }
       },
       {
+        path: 'dict/data',
+        component: () => import('@/views/system/dict/data'),
+        name: 'SystemDictData',
+        meta: { title: '字典数据', noCache: true, activeMenu: '/system/dict' }
+      },
+      {
         path: 'friendLink',
         component: () => import('@/views/cms/link/linkGroup'),
         name: 'FriendLinkManagement',

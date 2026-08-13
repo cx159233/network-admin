@@ -246,7 +246,7 @@ export default {
         cancelText: '取消',
         okType: 'danger',
         onOk: () => {
-          message.success('审核已拒绝')
+          message.success('审核已驳回')
           this.goBack()
         }
       })

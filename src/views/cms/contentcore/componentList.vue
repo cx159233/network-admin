@@ -47,14 +47,14 @@
         </template>
         <a-input
           v-model:value="queryParams.name"
-          placeholder="组件名称"
+          placeholder="能力组件名称"
           allow-clear
           style="width: 160px"
           @pressEnter="handleQuery"
         />
         <a-input
           v-model:value="queryParams.componentId"
-          placeholder="组件ID"
+          placeholder="能力组件ID"
           allow-clear
           style="width: 160px"
           @pressEnter="handleQuery"

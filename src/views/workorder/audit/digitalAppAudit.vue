@@ -7,11 +7,11 @@
 
     <CloudCard class="digital-app-audit-page__table-card">
       <FilterBar @search="handleQuery" @reset="resetQuery">
-        <a-range-picker v-model:value="filter.submitTimeRange" :placeholder="['提交时间', '提交时间']" allow-clear style="width: 240px" value-format="YYYY-MM-DD" />
+        <a-range-picker v-model:value="filter.submitTimeRange" :placeholder="['提交审核时间', '提交审核时间']" allow-clear style="width: 240px" value-format="YYYY-MM-DD" />
         <a-select v-model:value="filter.status" placeholder="审核状态" allow-clear style="width: 130px">
           <a-select-option value="10">待审核</a-select-option>
           <a-select-option value="20">已通过</a-select-option>
-          <a-select-option value="30">已拒绝</a-select-option>
+          <a-select-option value="30">已驳回</a-select-option>
         </a-select>
         <a-select v-model:value="filter.step" placeholder="审核阶段" allow-clear style="width: 150px">
           <a-select-option :value="1">申报材料评估</a-select-option>
@@ -287,7 +287,7 @@ export default {
       // 每个提交的审核步骤数据（key: submissionId → stageKey → stage data）
       submissionAuditData: {
         // 同步远方医疗服务 V1 — 被驳回于步骤3
-        SUB001: {
+        'SZYY202410220001-V1': {
           1: {
             id: 'v1s1', status: 'approved', statusKey: 'done', statusText: '已通过',
             auditor: '李主管', auditTime: '2026-03-18 15:30',
@@ -317,7 +317,7 @@ export default {
           4: { id: 'v1s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 同步远方医疗服务 V2 — 待审核，当前在步骤2
-        SUB002: {
+        'SZYY202410220001-V2': {
           1: {
             id: 'v2s1', status: 'approved', statusKey: 'done', statusText: '已通过',
             auditor: '李主管', auditTime: '2026-05-20 10:00',
@@ -337,7 +337,7 @@ export default {
           4: { id: 'v2s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 智慧住院服务 V1
-        SUB003: {
+        'SZYY202410230001-V1': {
           1: {
             id: 's3s1', status: 'approved', statusKey: 'done', statusText: '已通过',
             auditor: '李主管', auditTime: '2026-10-25 10:00',
@@ -357,28 +357,28 @@ export default {
           4: { id: 's3s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 久远康嘉医联体一体化服务 V1 — 已通过
-        SUB004: {
+        'SZYY202410240001-V1': {
           1: { id: 's4s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘主管', auditTime: '2026-11-01 10:00', _records: [{ id: 61, nodeType: 'submit', submitTime: '2026-10-24 14:59', remark: '机构提交申报材料' }, { id: 62, nodeType: 'audit', status: 'approved', auditTime: '2026-11-01 10:00', auditor: '刘主管', opinion: '材料完整合规' }] },
           2: { id: 's4s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '陈工程师', auditTime: '2026-11-05 14:00', _records: [{ id: 63, nodeType: 'submit', submitTime: '2026-11-02 09:00', remark: '进入技术测评' }, { id: 64, nodeType: 'audit', status: 'approved', auditTime: '2026-11-05 14:00', auditor: '陈工程师', opinion: '架构合理、性能达标' }] },
           3: { id: 's4s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '周主任', auditTime: '2026-11-10 16:00', _records: [{ id: 65, nodeType: 'submit', submitTime: '2026-11-06 10:00', remark: '预约现场答辩' }, { id: 66, nodeType: 'audit', status: 'approved', auditTime: '2026-11-10 16:00', auditor: '周主任', opinion: '演示完整、答辩通过' }] },
           4: { id: 's4s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '赵管理员', auditTime: '2026-11-15 09:00', _records: [{ id: 67, nodeType: 'submit', submitTime: '2026-11-11 14:00', remark: '提交发布申请' }, { id: 68, nodeType: 'audit', status: 'approved', auditTime: '2026-11-15 09:00', auditor: '赵管理员', opinion: '发布至服务目录' }] }
         },
         // 中医智能辅助服务 V1 — 已通过
-        SUB005: {
+        'SZYY202410240002-V1': {
           1: { id: 's5s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘主管', auditTime: '2026-11-02 09:00', _records: [{ id: 71, nodeType: 'submit', submitTime: '2026-10-24 15:00', remark: '机构提交申报材料' }, { id: 72, nodeType: 'audit', status: 'approved', auditTime: '2026-11-02 09:00', auditor: '刘主管', opinion: '材料齐全' }] },
           2: { id: 's5s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-06 11:00', _records: [{ id: 73, nodeType: 'submit', submitTime: '2026-11-03 09:00', remark: '进入技术测评' }, { id: 74, nodeType: 'audit', status: 'approved', auditTime: '2026-11-06 11:00', auditor: '王工程师', opinion: '技术测评通过' }] },
           3: { id: 's5s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主任', auditTime: '2026-11-12 15:00', _records: [{ id: 75, nodeType: 'submit', submitTime: '2026-11-07 10:00', remark: '预约答辩' }, { id: 76, nodeType: 'audit', status: 'approved', auditTime: '2026-11-12 15:00', auditor: '张主任', opinion: '答辩通过' }] },
           4: { id: 's5s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '赵管理员', auditTime: '2026-11-16 10:00', _records: [{ id: 77, nodeType: 'submit', submitTime: '2026-11-13 14:00', remark: '发布申请' }, { id: 78, nodeType: 'audit', status: 'approved', auditTime: '2026-11-16 10:00', auditor: '赵管理员', opinion: '已发布' }] }
         },
         // 智慧慢病管理一体化服务 V1 — 被驳回于步骤3
-        SUB006: {
+        'SZYY202410240003-V1': {
           1: { id: 's6s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-11-03 10:00', _records: [{ id: 81, nodeType: 'submit', submitTime: '2026-10-24 15:00', remark: '机构提交申报材料' }, { id: 82, nodeType: 'audit', status: 'approved', auditTime: '2026-11-03 10:00', auditor: '李主管', opinion: '材料完整' }] },
           2: { id: 's6s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-07 14:00', _records: [{ id: 83, nodeType: 'submit', submitTime: '2026-11-04 09:00', remark: '进入技术测评' }, { id: 84, nodeType: 'audit', status: 'approved', auditTime: '2026-11-07 14:00', auditor: '王工程师', opinion: '技术测试通过' }] },
           3: { id: 's6s3', status: 'rejected', statusKey: 'rejected', statusText: '已驳回', auditor: '张主任', auditTime: '2026-11-14 16:00', _records: [{ id: 85, nodeType: 'submit', submitTime: '2026-11-08 10:00', remark: '预约答辩' }, { id: 86, nodeType: 'audit', status: 'rejected', auditTime: '2026-11-14 16:00', auditor: '张主任', opinion: '慢病管理闭环流程不完整，缺少患者随访跟踪环节' }] },
           4: { id: 's6s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 急诊急救指挥调度服务 V1 — 待审核，步骤1
-        SUB007: {
+        'SZYY202410240004-V1': {
           1: {
             id: 's7s1', status: 'processing', statusKey: 'processing', statusText: '进行中',
             auditor: '', auditTime: '',
@@ -391,14 +391,14 @@ export default {
           4: { id: 's7s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 智慧医疗综合管理服务 V1 — 已通过
-        SUB008: {
+        'SZYY202410240005-V1': {
           1: { id: 's8s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-03-15 14:00', _records: [{ id: 101, nodeType: 'submit', submitTime: '2026-03-10 08:00', remark: '机构提交申报材料' }, { id: 102, nodeType: 'audit', status: 'approved', auditTime: '2026-03-15 14:00', auditor: '李主管', opinion: '材料齐全，审核通过' }] },
           2: { id: 's8s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-03-20 10:00', _records: [{ id: 103, nodeType: 'submit', submitTime: '2026-03-16 09:00', remark: '进入技术测评' }, { id: 104, nodeType: 'audit', status: 'approved', auditTime: '2026-03-20 10:00', auditor: '王工程师', opinion: '技术架构合理，性能达标' }] },
           3: { id: 's8s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主任', auditTime: '2026-03-28 15:00', _records: [{ id: 105, nodeType: 'submit', submitTime: '2026-03-21 10:00', remark: '预约答辩' }, { id: 106, nodeType: 'audit', status: 'approved', auditTime: '2026-03-28 15:00', auditor: '张主任', opinion: '演示流畅，功能完备' }] },
           4: { id: 's8s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '赵管理员', auditTime: '2026-04-02 09:00', _records: [{ id: 107, nodeType: 'submit', submitTime: '2026-03-29 14:00', remark: '提交发布申请' }, { id: 108, nodeType: 'audit', status: 'approved', auditTime: '2026-04-02 09:00', auditor: '赵管理员', opinion: '已发布至数字应用目录' }] }
         },
         // 智慧医疗综合管理服务 V2 — 待审核，步骤1
-        SUB009: {
+        'SZYY202410240005-V2': {
           1: {
             id: 's9s1', status: 'processing', statusKey: 'processing', statusText: '进行中',
             auditor: '', auditTime: '',
@@ -479,7 +479,7 @@ export default {
       return map[String(status)] || 'default'
     },
     getAuditStatusText(status) {
-      const map = { 10: '待审核', 20: '已通过', 30: '已拒绝' }
+      const map = { 10: '待审核', 20: '已通过', 30: '已驳回' }
       return map[String(status)] || ''
     },
     getStepName(step) {
@@ -494,7 +494,7 @@ export default {
       const cur = this.drawer.record.currentStep || 1
       // 整体已通过：所有步骤都已完成
       if (status === '20') return true
-      // 整体已拒绝：驳回步骤之前的算已通过
+      // 整体已驳回：驳回步骤之前的算已通过
       if (status === '30') return idx < cur - 1
       // 待审核：当前步骤之前的算已通过
       return idx < cur - 1
@@ -503,7 +503,7 @@ export default {
       if (!this.drawer.record) return false
       const status = String(this.drawer.record.auditStatus)
       const cur = this.drawer.record.currentStep || 1
-      // 整体已拒绝：当前步骤为驳回步骤
+      // 整体已驳回：当前步骤为驳回步骤
       return status === '30' && idx === cur - 1
     },
     isStepCurrent(idx) {
@@ -564,7 +564,7 @@ export default {
     getStepTagText(idx) {
       if (this.isStepApproved(idx)) return '已通过'
       if (this.isStepRejected(idx)) return '已驳回'
-      if (this.isStepCurrent(idx)) return '审核中'
+      if (this.isStepCurrent(idx)) return '待审核'
       return '待审核'
     },
     getStepCardClass(idx) {
@@ -1071,14 +1071,14 @@ export default {
   word-break: break-all;
   white-space: normal;
   background: #FAFBFC !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 400 !important;
   color: rgba(0, 0, 0, 0.85) !important;
   line-height: 1.5;
 }
 
 .drawer-split__left .ant-descriptions-item-content {
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 400 !important;
   color: rgba(0, 0, 0, 0.65) !important;
   word-break: break-all;

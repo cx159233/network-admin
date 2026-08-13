@@ -827,6 +827,12 @@ ${processedHtml}
   color: #86909C;
 }
 
+.prd-toc__item--level-6 {
+  padding-left: 60px;
+  font-size: 11px;
+  color: #86909C;
+}
+
 .prd-header {
   display: flex;
   align-items: center;

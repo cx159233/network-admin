@@ -71,6 +71,8 @@
             <template v-else-if="column.dataIndex === 'action'">
               <a-space size="small">
                 <a-button type="link" size="small" class="!p-0" @click="viewDetail(record)">详情</a-button>
+                <a-divider v-if="record.status === '已响应'" type="vertical" class="!mx-[2px]" />
+                <a-button v-if="record.status === '已响应'" type="link" size="small" class="!p-0" @click="handleConfirmResponse(record)">确认响应</a-button>
                 <a-divider v-if="record.status === '待响应'" type="vertical" class="!mx-[2px]" />
                 <a-button v-if="record.status === '待响应'" type="link" size="small" danger class="!p-0" @click="handleClose(record)">关闭</a-button>
               </a-space>
@@ -90,6 +92,17 @@
       @ok="handleCloseConfirm"
     >
       <p class="close-modal__text">确认关闭需求吗？关闭后不可恢复。</p>
+    </a-modal>
+
+    <a-modal
+      v-model:open="confirmResponseDialogVisible"
+      title="确认响应"
+      width="420px"
+      ok-text="确定"
+      cancel-text="取消"
+      @ok="handleConfirmResponseConfirm"
+    >
+      <p class="close-modal__text">确认接受该响应吗？确认后需求状态将变更为"已完成"。</p>
     </a-modal>
 
     <!-- 详情抽屉 -->
@@ -239,7 +252,9 @@ export default {
         }
       ],
       closeDialogVisible: false,
-      closeTarget: {}
+      closeTarget: {},
+      confirmResponseDialogVisible: false,
+      confirmResponseTarget: {}
     }
   },
   computed: {
@@ -296,6 +311,16 @@ export default {
     handleCloseConfirm() {
       message.success('需求已关闭')
       this.closeDialogVisible = false
+    },
+    handleConfirmResponse(row) {
+      this.confirmResponseTarget = row
+      this.confirmResponseDialogVisible = true
+    },
+    handleConfirmResponseConfirm() {
+      const target = this.demandList.find(i => i.demandNo === this.confirmResponseTarget.demandNo)
+      if (target) target.status = '已完成'
+      message.success('确认响应成功')
+      this.confirmResponseDialogVisible = false
     },
     getServiceTypeClass(type) {
       const map = {

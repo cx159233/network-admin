@@ -287,7 +287,7 @@ export default {
         cancelText: '取消',
         okType: 'danger',
         onOk: () => {
-          message.success('审核已拒绝')
+          message.success('审核已驳回')
           this.goBack()
         }
       })
@@ -312,7 +312,7 @@ export default {
         const statusMap = {
           approved: { statusKey: 'done', statusText: '已通过' },
           rejected: { statusKey: 'rejected', statusText: '已驳回' },
-          processing: { statusKey: 'active', statusText: '审核中' },
+          processing: { statusKey: 'active', statusText: '待审核' },
           pending: { statusKey: 'pending', statusText: '待审核' }
         }
         const mapped = statusMap[s.status] || statusMap.pending

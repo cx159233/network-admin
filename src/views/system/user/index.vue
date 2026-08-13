@@ -333,7 +333,7 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect, getAuthRole, updateAuthRole } from "@/api/system/user";
+import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, deptTreeSelect, getAuthRole, updateAuthRole } from "@/api/system/user";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
