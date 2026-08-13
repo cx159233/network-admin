@@ -11,7 +11,13 @@
           <a-divider type="vertical" />
           <span class="text-[16px] font-semibold text-text-primary">{{ isEdit ? '编辑能力组件' : '新增能力组件' }}</span>
         </div>
-        <a-button type="primary" @click="onSubmit">直接发布</a-button>
+        <template v-if="isShelfMode">
+          <a-space>
+            <a-button @click="onSaveDraft">保存草稿</a-button>
+            <a-button type="primary" @click="onSubmit">提交审核</a-button>
+          </a-space>
+        </template>
+        <a-button v-else type="primary" @click="onSubmit">直接发布</a-button>
       </div>
     </div>
 
@@ -131,6 +137,7 @@
 import { ArrowLeftOutlined, PictureOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { getComponentList } from '@/api/contentcore/component';
+import emitter from '@/utils/emitter';
 
 export default {
   name: 'CMSComponentForm',
@@ -180,8 +187,14 @@ export default {
     isEdit() {
       return !!this.$route.query.id;
     },
+    isShelfMode() {
+      return this.$route.query.mode === 'shelf';
+    },
   },
   created() {
+    emitter.emit('set-prd-anchor', this.isShelfMode
+      ? (this.isEdit ? 'prd-3.1.1.1.3.3' : 'prd-3.1.1.1.2.3')
+      : (this.isEdit ? 'prd-3.2.1.3.3' : 'prd-3.2.1.3.2'));
     if (this.isEdit) {
       this.loadRecord();
     }
@@ -230,7 +243,13 @@ export default {
     },
     onSubmit() {
       this.$refs.formRef.validate().then(() => {
-        message.success(this.isEdit ? '修改成功' : '新增成功');
+        message.success(this.isShelfMode ? '提交成功' : (this.isEdit ? '修改成功' : '新增成功'));
+        this.$router.back();
+      }).catch(() => {});
+    },
+    onSaveDraft() {
+      this.$refs.formRef.validate().then(() => {
+        message.success('草稿已保存');
         this.$router.back();
       }).catch(() => {});
     },

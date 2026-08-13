@@ -558,7 +558,7 @@ export default {
       }
       const path = routeMap[type]
       if (path) {
-        this.$router.push({ path, query: { cid: '603612031287365' } })
+        this.$router.push({ path, query: { cid: '603612031287365', mode: 'shelf' } })
       }
     },
     handleEdit(row) {
@@ -572,7 +572,7 @@ export default {
       }
       const path = routeMap[type]
       if (path) {
-        this.$router.push({ path, query: { id, cid: '603612031287365' } })
+        this.$router.push({ path, query: { id, cid: '603612031287365', mode: 'shelf' } })
       }
     },
     handleDelete(row) {

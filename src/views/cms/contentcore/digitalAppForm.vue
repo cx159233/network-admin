@@ -11,7 +11,13 @@
           <a-divider type="vertical" />
           <span class="text-[16px] font-semibold text-text-primary">{{ isEdit ? '编辑数字应用' : '新增数字应用' }}</span>
         </div>
-        <a-button type="primary" @click="onSubmit">直接发布</a-button>
+        <template v-if="isShelfMode">
+          <a-space>
+            <a-button @click="onSaveDraft">保存草稿</a-button>
+            <a-button type="primary" @click="onSubmit">提交审核</a-button>
+          </a-space>
+        </template>
+        <a-button v-else type="primary" @click="onSubmit">直接发布</a-button>
       </div>
     </div>
 
@@ -225,6 +231,9 @@ export default {
     isEdit() {
       return !!this.$route.query.id;
     },
+    isShelfMode() {
+      return this.$route.query.mode === 'shelf';
+    },
     flatTargetObject() {
       return this.targetObjectSubgroups.flatMap(sg => sg.options);
     },
@@ -236,7 +245,9 @@ export default {
     },
   },
   created() {
-    emitter.emit('set-prd-anchor', this.isEdit ? 'prd-3.2.1.1.3' : 'prd-3.2.1.1.2');
+    emitter.emit('set-prd-anchor', this.isShelfMode
+      ? (this.isEdit ? 'prd-3.1.1.1.3.1' : 'prd-3.1.1.1.2.1')
+      : (this.isEdit ? 'prd-3.2.1.1.3' : 'prd-3.2.1.1.2'));
     this.catalogId = this.$route.query.cid || '603612031287365';
     if (this.isEdit) {
       this.loadRecord();
@@ -292,7 +303,13 @@ export default {
     },
     onSubmit() {
       this.$refs.formRef.validate().then(() => {
-        message.success(this.isEdit ? '修改成功' : '新增成功');
+        message.success(this.isShelfMode ? '提交成功' : (this.isEdit ? '修改成功' : '新增成功'));
+        this.$router.back();
+      }).catch(() => {});
+    },
+    onSaveDraft() {
+      this.$refs.formRef.validate().then(() => {
+        message.success('草稿已保存');
         this.$router.back();
       }).catch(() => {});
     },
