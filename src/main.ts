@@ -17,6 +17,8 @@ import plugins from './plugins'
 
 import { getDicts } from '@/api/system/dict/data'
 import { getConfigKey } from '@/api/system/config'
+import { getDicts as fetchDicts } from '@/api/admin/index'
+import DataDict from '@/utils/dict'
 import { download, exportExcel } from '@/utils/request'
 import {
   parseTime,
@@ -63,6 +65,36 @@ app.component('Pagination', Pagination)
 // 自定义指令与插件
 app.use(directive)
 app.use(plugins)
+
+// 字典插件（dicts 选项支持，dict.type.XXX 数据来源）
+function searchDictByKey(dict: any, key: string) {
+  if (key == null || key === '') return null
+  try {
+    for (let i = 0; i < dict.length; i++) {
+      if (dict[i].key == key) return dict[i].value
+    }
+  } catch (e) {
+    return null
+  }
+}
+app.use(DataDict as any, {
+  metas: {
+    '*': {
+      labelField: 'dictLabel',
+      valueField: 'dictCode',
+      request(dictMeta: any) {
+        const storeDict = searchDictByKey(store.getters.dict, dictMeta.type)
+        if (storeDict) {
+          return Promise.resolve(storeDict)
+        }
+        return fetchDicts(dictMeta.type).then((res: any) => {
+          store.dispatch('dict/setDict', { key: dictMeta.type, value: res.rows })
+          return res.rows
+        })
+      },
+    },
+  },
+})
 
 try {
   app.mount('#app')

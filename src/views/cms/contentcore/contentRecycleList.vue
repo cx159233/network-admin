@@ -1,171 +1,133 @@
 <template>
   <div class="cms-content-list">
-    <el-row :gutter="24" class="mb12">
-      <el-col :span="12">
-        <el-row :gutter="10">
-          <el-col :span="1.5">
-            <el-button 
-              plain
-              type="primary"
-              icon="el-icon-refresh-left"
-              size="mini"
-              :disabled="multiple"
-              @click="handleRecover">{{ $t('CMS.Content.Restore') }}
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button 
-              plain
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete">{{ $t("Common.Delete") }}
-            </el-button>
-          </el-col>
-        </el-row>
-      </el-col>
-      <el-col :span="12" style="text-align:right">
-        <el-form 
-          :model="queryParams"
-          ref="queryForm"
-          size="mini"
-          :inline="true"
-          class="el-form-search">
-          <el-form-item prop="title">
-            <el-input 
-              v-model="queryParams.title"
-              :placeholder="$t('CMS.Content.Placeholder.Title')"
-              clearable
-              style="width: 200px"
-              @keyup.enter.native="handleQuery" />
-          </el-form-item>
-          <el-form-item prop="contentType">
-            <el-select 
-              v-model="queryParams.contentType"
-              :placeholder="$t('CMS.Content.ContentType')"
-              clearable
-              style="width: 125px">
-              <el-option 
-                v-for="ct in contentTypeOptions"
-                :key="ct.id"
-                :label="ct.name"
-                :value="ct.id" />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="status">
-            <el-select  
-              v-model="queryParams.status"
-              :placeholder="$t('CMS.Content.Status')"
-              clearable
-              style="width: 110px">
-              <el-option 
-                v-for="dict in dict.type.CMSContentStatus"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button-group>
-              <el-button 
-                type="primary"
-                icon="el-icon-search"
-                @click="handleQuery">{{ $t("Common.Search") }}</el-button>
-              <el-button 
-                icon="el-icon-refresh"
-                @click="resetQuery">{{ $t("Common.Reset") }}</el-button>
-            </el-button-group>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
+    <div class="mb12" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <a-space>
+        <a-button
+          type="primary"
+          ghost
+          :disabled="multiple"
+          @click="handleRecover"
+        >
+          <template #icon><RollbackOutlined /></template>
+          {{ $t("CMS.Content.Restore") }}
+        </a-button>
+        <a-button danger :disabled="multiple" @click="handleDeleteSelected">
+          <template #icon><DeleteOutlined /></template>
+          {{ $t("Common.Delete") }}
+        </a-button>
+      </a-space>
+      <a-form ref="queryForm" :model="queryParams" layout="inline" @submit.prevent>
+        <a-form-item name="title">
+          <a-input
+            v-model:value="queryParams.title"
+            :placeholder="$t('CMS.Content.Placeholder.Title')"
+            allow-clear
+            style="width: 200px"
+            @press-enter="handleQuery"
+          />
+        </a-form-item>
+        <a-form-item name="contentType">
+          <a-select
+            v-model:value="queryParams.contentType"
+            :placeholder="$t('CMS.Content.ContentType')"
+            allow-clear
+            style="width: 125px"
+          >
+            <a-select-option v-for="ct in contentTypeOptions" :key="ct.id" :value="ct.id">
+              {{ ct.name }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item name="status">
+          <a-select
+            v-model:value="queryParams.status"
+            :placeholder="$t('CMS.Content.Status')"
+            allow-clear
+            style="width: 110px"
+          >
+            <a-select-option v-for="dict in dict.type.CMSContentStatus" :key="dict.value" :value="dict.value">
+              {{ dict.label }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" @click="handleQuery">
+            <template #icon><SearchOutlined /></template>
+            {{ $t("Common.Search") }}
+          </a-button>
+        </a-form-item>
+        <a-form-item>
+          <a-button @click="resetQuery">
+            <template #icon><ReloadOutlined /></template>
+            {{ $t("Common.Reset") }}
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </div>
 
-    <el-table 
-      v-loading="loading"
-      ref="tablecontentRecycleList"
-      :data="contentRecycleList"
-      :height="tableHeight"
-      :max-height="tableMaxHeight"
-      @row-click="handleRowClick"
-      @selection-change="handleSelectionChange">
-      <el-table-column 
-        type="selection"
-        width="50"
-        align="center" />
-      <el-table-column :label="$t('CMS.Content.Title')" :show-overflow-tooltip="true" prop="title" />
-      <el-table-column 
-        :label="$t('CMS.Content.ContentType')" 
-        width="110"
-        align="center"
-        prop="contentType"
-        :formatter="contentTypeFormat" />
-      <el-table-column 
-        :label="$t('CMS.Content.StatusBefore')"
-        width="110"
-        align="center">
-        <template slot-scope="scope">
-          <el-tag :type="statusTagType(scope.row.status)">{{ statusFormat(scope.row, 'status') }}</el-tag>
+    <a-table
+      :loading="loading"
+      :columns="columns"
+      :data-source="contentRecycleList"
+      :scroll="{ y: tableHeight }"
+      size="small"
+      row-key="contentId"
+      :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
+      :pagination="false"
+    >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'contentType'">{{ contentTypeFormat(record) }}</template>
+        <template v-else-if="column.dataIndex === 'status'">
+          <a-tag :color="statusTagColor(record.status)">{{ statusFormat(record, "status") }}</a-tag>
         </template>
-      </el-table-column>
-      <el-table-column 
-        :label="$t('CMS.Content.DeleteTime')"
-        align="center"
-        prop="updateTime"
-        width="160">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime) }}</span>
+        <span v-else-if="column.dataIndex === 'updateTime'">{{ parseTime(record.updateTime) }}</span>
+        <template v-else-if="column.dataIndex === 'action'">
+          <a-button type="link" size="small" class="!p-0" danger @click="handleDelete(record)">
+            {{ $t("Common.Delete") }}
+          </a-button>
         </template>
-      </el-table-column>
-      <el-table-column :label="$t('CMS.Content.DeleteUser')" align="center" :show-overflow-tooltip="true" prop="updateBy" width="140" />
-      <el-table-column 
-        :label="$t('Common.Operation')"
-        align="center"
-        width="100"
-        class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button 
-            size="small"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)">{{ $t("Common.Delete") }}</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination 
-      v-show="total>0"
+      </template>
+    </a-table>
+    <pagination
+      v-show="total > 0"
       :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="loadRecyclecontentRecycleList" />
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      @pagination="loadRecyclecontentRecycleList"
+    />
   </div>
 </template>
 <script>
+import { RollbackOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined } from "@ant-design/icons-vue";
 import { getContentTypes } from "@/api/contentcore/catalog";
 import { getRecycleContentList, recoverRecycleContent, deleteRecycleContents } from "@/api/contentcore/recycle";
 
 export default {
   name: "CMScontentRecycleList",
-  dicts: ['CMSContentStatus'],
+  dicts: ["CMSContentStatus"],
+  components: {
+    RollbackOutlined,
+    DeleteOutlined,
+    SearchOutlined,
+    ReloadOutlined,
+  },
   props: {
     cid: {
       type: String,
       default: undefined,
       required: false,
-    }
+    },
   },
-  data () {
+  data() {
     return {
-      // 遮罩层
       loading: false,
       contentTypeOptions: [],
       catalogId: this.cid,
       contentRecycleList: null,
       total: 0,
-      tableHeight: 600, // 表格高度
-      tableMaxHeight: 600, // 表格最大高度
-      selectedRows: [], // 表格选中行
-      single: true,
+      tableHeight: 600,
+      selectedRows: [],
+      selectedRowKeys: [],
       multiple: true,
       queryParams: {
         pageNum: 1,
@@ -175,20 +137,27 @@ export default {
         status: undefined,
         catalogId: undefined,
       },
-      openCatalogSelector: false, // 栏目选择弹窗
+      columns: [
+        { title: this.$t("CMS.Content.Title"), dataIndex: "title", key: "title", ellipsis: true },
+        { title: this.$t("CMS.Content.ContentType"), dataIndex: "contentType", key: "contentType", align: "center", width: 110 },
+        { title: this.$t("CMS.Content.StatusBefore"), dataIndex: "status", key: "status", align: "center", width: 110 },
+        { title: this.$t("CMS.Content.DeleteTime"), dataIndex: "updateTime", key: "updateTime", align: "center", width: 160 },
+        { title: this.$t("CMS.Content.DeleteUser"), dataIndex: "updateBy", key: "updateBy", align: "center", width: 140, ellipsis: true },
+        { title: this.$t("Common.Operation"), dataIndex: "action", key: "action", align: "center", width: 100 },
+      ],
     };
   },
   watch: {
-    cid(newVal) { 
+    cid(newVal) {
       this.catalogId = newVal;
     },
-    catalogId(newVal) {
+    catalogId() {
       this.loadRecyclecontentRecycleList();
     },
   },
-  created () {
+  created() {
     this.changeTableHeight();
-    getContentTypes().then(response => {
+    getContentTypes().then((response) => {
       this.contentTypeOptions = response.data;
     });
     if (this.catalogId && this.catalogId > 0) {
@@ -196,109 +165,100 @@ export default {
     }
   },
   methods: {
-    loadRecyclecontentRecycleList () {
+    loadRecyclecontentRecycleList() {
       this.loading = true;
       this.queryParams.catalogId = this.catalogId;
-      getRecycleContentList(this.queryParams).then(response => {
-        this.contentRecycleList = response.data.rows;
-        this.total = parseInt(response.data.total);
-        this.loading = false;
-      });
+      getRecycleContentList(this.queryParams)
+        .then((response) => {
+          this.contentRecycleList = response.data.rows;
+          this.total = parseInt(response.data.total);
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     },
-    statusFormat (row, column) {
+    statusFormat(row, column) {
       return this.selectDictLabel(this.dict.type.CMSContentStatus, row[column]);
     },
-    contentTypeFormat (row, column) {
-      var hitValue = [];
-      this.contentTypeOptions.forEach(ct => {
-        if (ct.id == ('' + row.contentType)) {
+    contentTypeFormat(row) {
+      let hitValue = [];
+      this.contentTypeOptions.forEach((ct) => {
+        if (ct.id == "" + row.contentType) {
           hitValue = ct.name;
           return;
         }
       });
       return hitValue;
     },
-    handleSelectionChange (selection) {
-      this.selectedRows = selection;
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
+    handleSelectionChange(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys;
+      this.selectedRows = selectedRows;
+      this.multiple = !selectedRows.length;
     },
-    handleRowClick (currentRow) {
-      this.toggleAllCheckedRows();
-      this.$refs.tablecontentRecycleList.toggleRowSelection(currentRow);
-      this.selectedRows.push(currentRow);
-    },
-    toggleAllCheckedRows() {
-      this.selectedRows.forEach(row => {
-          this.$refs.tablecontentRecycleList.toggleRowSelection(row, false);
-      });
-      this.selectedRows = [];
-    },
-    statusTagType(status) {
+    statusTagColor(status) {
       if (status == 40) {
         return "warning";
       } else if (status == 20 || status == 30) {
         return "success";
       } else if (status == 0) {
-        return "info";
+        return "default";
       }
-      return "";
+      return "processing";
     },
-    handleQuery () {
+    handleQuery() {
       this.queryParams.pageNum = 1;
       this.loadRecyclecontentRecycleList();
     },
-    resetQuery () {
-      this.dateRange = [];
-      this.resetForm("queryForm");
+    resetQuery() {
+      this.$refs.queryForm.resetFields();
       this.handleQuery();
     },
-    handleDelete (row) {
-      const backupIds = row.backupId ? [ row.backupId ] : this.selectedRows.map(row => row.backupId);
-      this.$modal.confirm(this.$t('Common.ConfirmDelete')).then(function () {
-        return deleteRecycleContents(backupIds);
-      }).then(() => {
-        this.loadRecyclecontentRecycleList();
-        this.$modal.msgSuccess(this.$t('Common.DeleteSuccess'));
-      }).catch(function () { });
+    handleDelete(row) {
+      const backupIds = row.backupId ? [row.backupId] : this.selectedRows.map((r) => r.backupId);
+      this.$modal
+        .confirm(this.$t("Common.ConfirmDelete"))
+        .then(function () {
+          return deleteRecycleContents(backupIds);
+        })
+        .then(() => {
+          this.loadRecyclecontentRecycleList();
+          this.$modal.msgSuccess(this.$t("Common.DeleteSuccess"));
+        })
+        .catch(function () {});
     },
-    changeTableHeight () {
-      let height = document.body.offsetHeight // 网页可视区域高度
+    handleDeleteSelected() {
+      if (!this.selectedRows.length) {
+        return;
+      }
+      const backupIds = this.selectedRows.map((r) => r.backupId);
+      this.$modal
+        .confirm(this.$t("Common.ConfirmDelete"))
+        .then(function () {
+          return deleteRecycleContents(backupIds);
+        })
+        .then(() => {
+          this.loadRecyclecontentRecycleList();
+          this.$modal.msgSuccess(this.$t("Common.DeleteSuccess"));
+        })
+        .catch(function () {});
+    },
+    changeTableHeight() {
+      const height = document.body.offsetHeight;
       this.tableHeight = height - 330;
-      this.tableMaxHeight = this.tableHeight;
     },
-    handleRecover(row) {
-      const backupIds = row.backupId ? [ row.backupId ] : this.selectedRows.map(row => row.backupId);
-      recoverRecycleContent(backupIds).then(response => {
+    handleRecover() {
+      const backupIds = this.selectedRows.map((r) => r.backupId);
+      recoverRecycleContent(backupIds).then(() => {
         this.loadRecyclecontentRecycleList();
-        this.$modal.msgSuccess(this.$t('Common.OpSuccess'));
+        this.$modal.msgSuccess(this.$t("Common.OpSuccess"));
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
-.head-container .el-select .el-input {
-  width: 110px;
-}
-.el-divider {
-  margin-top: 10px;
-}
-.el-tabs__header {
-  margin-bottom: 10px;
-}
-.pagination-container {
-  height: 30px;
-}
-.row-more-btn {
-  padding-left: 10px;
-}
-.top-icon {
-  font-weight: bold;
-  font-size: 12px;
-  color:green;
-}
-.content_attr {
-  margin-left: 2px;
+.mb12 {
+  margin-bottom: 12px;
 }
 </style>

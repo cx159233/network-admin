@@ -239,6 +239,8 @@ export default {
     '$route'(to) {
       this.currentPath = to.path
       this.dialogAnchor = ''
+      // 上一个页面的渲染错误不阻塞新页面展示
+      this.renderError = null
     }
   },
   created() {
