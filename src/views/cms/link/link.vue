@@ -264,7 +264,7 @@ export default {
       });
     },
     handleGoBack() {
-      this.$router.push({ path: "/system/friendLink" });
+      this.$router.push({ path: "/portal/content/friendLink" });
     },
   },
 };

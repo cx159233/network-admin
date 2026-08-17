@@ -96,7 +96,14 @@
     >
       <a-form ref="form" :model="form" :rules="rules" :label-col="{ style: { width: '120px' } }">
         <a-form-item :label="$t('CMS.Catalog.ParentCatalog')" name="parentId">
-          <treeselect v-model="form.parentId" :options="catalogOptions" />
+          <a-tree-select
+            v-model:value="form.parentId"
+            :tree-data="catalogOptions"
+            :field-names="{ children: 'children', label: 'label', value: 'id' }"
+            tree-default-expand-all
+            allow-clear
+            style="width: 100%"
+          />
         </a-form-item>
         <a-form-item :label="$t('CMS.Catalog.Name')" name="name">
           <a-input v-model:value="form.name" @blur="handleNameBlur" />
@@ -132,7 +139,14 @@
         layout="vertical"
       >
         <a-form-item :label="$t('CMS.Catalog.ParentCatalog')" name="parentId">
-          <treeselect v-model="formBatch.parentId" :options="catalogOptions" />
+          <a-tree-select
+            v-model:value="formBatch.parentId"
+            :tree-data="catalogOptions"
+            :field-names="{ children: 'children', label: 'label', value: 'id' }"
+            tree-default-expand-all
+            allow-clear
+            style="width: 100%"
+          />
         </a-form-item>
         <a-form-item :label="$t('CMS.Catalog.CatalogTree')" name="catalogs">
           <a-textarea v-model:value="formBatch.catalogs" :rows="10" />
@@ -204,8 +218,6 @@ import {
   sortCatalog,
   generateAliasAndPath,
 } from "@/api/contentcore/catalog";
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import CMSProgress from "@/views/components/Progress";
 import { message } from "ant-design-vue";
 import {
@@ -223,7 +235,6 @@ import {
 export default {
   name: "CMSCatalogTree",
   components: {
-    Treeselect,
     "cms-progress": CMSProgress,
     PlusOutlined,
     DownOutlined,

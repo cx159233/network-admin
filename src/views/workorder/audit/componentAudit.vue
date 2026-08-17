@@ -531,81 +531,37 @@ export default {
     },
     approve() {
       if (!this.auditForm.opinion.trim()) {
-        message.warning('审核意见为空：请填写审核意见')
+        message.warning('请填写审核意见')
         return
       }
-      const isLastStage = this.activeStepIdx === this.auditSteps.length - 1
-      const stepName = this.auditSteps[this.activeStepIdx]?.title || ''
       Modal.confirm({
         title: '确认通过',
-        content: isLastStage
-          ? `当前为第 ${this.activeStepIdx + 1} 阶段（${stepName}），通过后将完成全部审核流程，确定通过吗？`
-          : `通过后将从「${stepName}」进入下一阶段，确定通过吗？`,
+        content: '确定要通过该组件的审核吗？',
         okText: '确定',
         cancelText: '取消',
         okType: 'primary',
-        onOk: async () => {
-          try {
-            this.recordApproveLog()
-            message.success('审核通过')
-            this.drawer.visible = false
-            this.fetchList()
-          } catch (e) {
-            message.error('网络异常，请稍后再试')
-          }
+        onOk: () => {
+          message.success('审核通过')
+          this.drawer.visible = false
         }
       })
     },
     reject() {
       if (!this.auditForm.opinion.trim()) {
-        message.warning('审核意见为空：请填写审核意见')
+        message.warning('请填写驳回原因')
         return
       }
-      const stepName = this.auditSteps[this.activeStepIdx]?.title || ''
       Modal.confirm({
         title: '确认驳回',
-        content: `驳回后当前阶段（${stepName}）状态将变更为"已驳回"并终止审核流程，确定驳回吗？`,
+        content: '确定要驳回该组件的审核吗？',
         okText: '确定',
         cancelText: '取消',
         okType: 'danger',
-        onOk: async () => {
-          try {
-            this.recordRejectLog()
-            message.success('驳回成功')
-            this.drawer.visible = false
-            this.fetchList()
-          } catch (e) {
-            message.error('网络异常，请稍后再试')
-          }
+        onOk: () => {
+          message.success('审核已驳回')
+          this.drawer.visible = false
         }
       })
-    },
-    recordApproveLog() {
-      const record = this.drawer.record
-      if (!record) return
-      const idx = this.activeStepIdx
-      if (!record.auditFlow) record.auditFlow = {}
-      record.auditFlow[`step${idx + 1}`] = {
-        status: 'approved', opinion: this.auditForm.opinion, auditor: '当前审核人', auditTime: this.formatTime(new Date())
-      }
-      if (idx < this.auditSteps.length - 1) {
-        record.currentStep = (record.currentStep || 1) + 1
-      } else {
-        record.auditStatus = '审核通过'
-        record.currentStep = this.auditSteps.length
-      }
-      this.auditForm.opinion = ''
-    },
-    recordRejectLog() {
-      const record = this.drawer.record
-      if (!record) return
-      const idx = this.activeStepIdx
-      if (!record.auditFlow) record.auditFlow = {}
-      record.auditFlow[`step${idx + 1}`] = {
-        status: 'rejected', opinion: this.auditForm.opinion, auditor: '当前审核人', auditTime: this.formatTime(new Date())
-      }
-      record.auditStatus = '审核驳回'
-      this.auditForm.opinion = ''
     },
   }
 }

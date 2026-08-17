@@ -1,47 +1,23 @@
 <template>
   <div class="logo-viewer" :style="{ width: imgWidth, height: imgHeight }">
     <div class="picture" v-show="showImage">
-      <el-image
+      <a-image
         :src="imageSrc"
         :style="{ width: imgWidth, height: imgHeight }"
-        @click="handleEdit"
+        :preview="false"
         fit="scale-down"
-      >
-      </el-image>
-      <el-image-viewer
-        v-if="showImageViewer"
-        :on-close="handleImageViewerClose"
-        :url-list="imageViewerList"
-      >
-      </el-image-viewer>
+        @click="handleEdit"
+      />
       <div class="toolbar">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="$t('Common.View')"
-          placement="top"
-        >
-          <i class="el-icon-search" @click="handleView" />
-        </el-tooltip>
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="$t('Common.Edit')"
-          placement="top"
-        >
-          <i class="el-icon-edit" @click="handleEdit" />
-        </el-tooltip>
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="$t('Common.Remove')"
-          placement="top"
-        >
-          <i class="el-icon-delete" @click="handleRemove" />
-        </el-tooltip>
-        <!-- <el-tooltip class="item" effect="dark" :content="$t('CMS.Resource.Cut')" placement="top">
-          <i class="el-icon-crop" @click="handleCut" />
-        </el-tooltip> -->
+        <a-tooltip :title="$t('Common.View')" placement="top">
+          <EyeOutlined @click="handleView" />
+        </a-tooltip>
+        <a-tooltip :title="$t('Common.Edit')" placement="top">
+          <EditOutlined @click="handleEdit" />
+        </a-tooltip>
+        <a-tooltip :title="$t('Common.Remove')" placement="top">
+          <DeleteOutlined @click="handleRemove" />
+        </a-tooltip>
       </div>
     </div>
     <div
@@ -51,8 +27,17 @@
     >
       <svg-icon icon-class="upload" @click="handleEdit"></svg-icon>
     </div>
+    <a-modal
+      v-model:open="showImageViewer"
+      :footer="null"
+      centered
+      width="800px"
+      @cancel="handleImageViewerClose"
+    >
+      <img :src="imageSrc" class="logo-preview-img" />
+    </a-modal>
     <cms-resource-dialog
-      :open.sync="openResourceDialog"
+      v-model:open="openResourceDialog"
       rtype="image"
       :upload-limit="1"
       @ok="handleResourceDialogOk"
@@ -62,20 +47,19 @@
 </template>
 <script>
 import CMSResourceDialog from "@/views/cms/contentcore/resourceDialog";
-import ElImageViewer from "element-ui/packages/image/src/image-viewer";
+import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons-vue";
 
 export default {
   name: "CMSLogoView",
   components: {
     "cms-resource-dialog": CMSResourceDialog,
-    "el-image-viewer": ElImageViewer,
+    EyeOutlined,
+    EditOutlined,
+    DeleteOutlined,
   },
-  model: {
-    prop: "path",
-    event: "change",
-  },
+  emits: ["update:modelValue", "changeSrc"],
   props: {
-    path: {
+    modelValue: {
       type: String,
       default: undefined,
       required: false,
@@ -128,14 +112,14 @@ export default {
     },
   },
   watch: {
-    path(newVal) {
+    modelValue(newVal) {
       this.imagePath = newVal;
     },
     src(newVal) {
       this.imageSrc = newVal;
     },
     imagePath(newVal) {
-      this.$emit("change", newVal);
+      this.$emit("update:modelValue", newVal);
     },
     imageSrc(newVal) {
       if (newVal && newVal.length > 0) {
@@ -148,7 +132,7 @@ export default {
   },
   data() {
     return {
-      imagePath: this.path,
+      imagePath: this.modelValue,
       imageSrc: this.src,
       openResourceDialog: false,
       showImageViewer: false,
@@ -193,10 +177,7 @@ export default {
   display: block;
 }
 .logo-viewer .picture:hover .toolbar {
-  opacity: 80;
-}
-.logo-viewer .el-image {
-  background-color: #e7e7e7;
+  opacity: 1;
 }
 .logo-viewer .toolbar {
   position: absolute;
@@ -210,12 +191,12 @@ export default {
   transition: opacity 0.3s;
   opacity: 0;
 }
-.logo-viewer .toolbar i {
+.logo-viewer .toolbar .anticon {
   font-size: 16px;
   padding: 7px;
   cursor: pointer;
 }
-.logo-viewer .toolbar i:hover {
+.logo-viewer .toolbar .anticon:hover {
   color: #409eff;
 }
 .logo-viewer .no-picture {
@@ -226,5 +207,10 @@ export default {
 }
 .logo-viewer .no-picture:hover {
   color: #409eff;
+}
+.logo-preview-img {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
 }
 </style>

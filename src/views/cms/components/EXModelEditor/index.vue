@@ -1,68 +1,63 @@
 <template>
   <div>
-    <el-form-item v-for="field in fieldList" 
-                  :key="field.fieldName"
-                  :label="field.label"
-                  :prop="field.fieldName">
-      <el-input v-if="field.controlType==='input'" 
-                v-model="field.value" />
-      <el-input v-if="field.controlType==='textarea'" 
-                v-model="field.value"
-                type="textarea" />
-      <el-radio-group v-if="field.controlType==='radio'" 
-                      v-model="field.value">
-        <el-radio v-for="item in field.options" 
-                  :key="item.value"
-                  :label="item.value">{{ item.name }}</el-radio>
-      </el-radio-group>
-      <el-checkbox-group v-if="field.controlType==='checkbox'" v-model="field.value">
-        <el-checkbox 
-          v-for="item in field.options" 
-          :key="item.value"
-          :label="item.value">{{ item.name }}
-        </el-checkbox>
-      </el-checkbox-group>
-      <el-select v-if="field.controlType==='select'" 
-                 v-model="field.value" 
-                 clearable>
-        <el-option
+    <a-form-item
+      v-for="field in fieldList"
+      :key="field.fieldName"
+      :label="field.label"
+    >
+      <a-input v-if="field.controlType==='input'" v-model:value="field.value" />
+      <a-textarea v-if="field.controlType==='textarea'" v-model:value="field.value" />
+      <a-radio-group v-if="field.controlType==='radio'" v-model:value="field.value">
+        <a-radio v-for="item in field.options" :key="item.value" :value="item.value">{{ item.name }}</a-radio>
+      </a-radio-group>
+      <a-checkbox-group v-if="field.controlType==='checkbox'" v-model:value="field.value">
+        <a-checkbox v-for="item in field.options" :key="item.value" :value="item.value">{{ item.name }}</a-checkbox>
+      </a-checkbox-group>
+      <a-select
+        v-if="field.controlType==='select'"
+        v-model:value="field.value"
+        allow-clear
+        style="width: 100%"
+      >
+        <a-select-option
           v-for="item in field.options"
           :key="item.value"
-          :label="item.name"
-          :value="item.value">
-        </el-option>
-      </el-select>
-      <el-date-picker v-if="field.controlType==='date'" 
+          :value="item.value"
+        >{{ item.name }}</a-select-option>
+      </a-select>
+      <a-date-picker
+        v-if="field.controlType==='date'"
+        v-model:value="field.value"
+        value-format="YYYY-MM-DD"
+      />
+      <a-time-picker
+        v-if="field.controlType==='time'"
+        v-model:value="field.value"
+        value-format="HH:mm:ss"
+      />
+      <a-date-picker
+        v-if="field.controlType==='datetime'"
+        v-model:value="field.value"
+        show-time
+        value-format="YYYY-MM-DD HH:mm:ss"
+      />
+      <cms-logo-view v-if="field.controlType==='CMSImage'"
         v-model="field.value"
-        type="date"
-        value-format="yyyy-MM-dd">
-      </el-date-picker>
-      <el-time-picker v-if="field.controlType==='time'" 
-        v-model="field.value"
-        value-format="HH:mm:ss">
-      </el-time-picker>
-      <el-date-picker v-if="field.controlType==='datetime'" 
-        v-model="field.value"
-        type="datetime"
-        value-format="yyyy-MM-dd HH:mm:ss">
-      </el-date-picker>
-      <cms-logo-view v-if="field.controlType==='CMSImage'" 
-        v-model="field.value" 
-        :src="field.valueObj" 
-        :width="210" 
+        :src="field.valueObj"
+        :width="210"
         :height="150">
       </cms-logo-view>
-      <ueditor v-if="field.controlType==='UEditor'" 
-        :editorId="'ex-'+field.fieldName" 
-        :height="200" 
-        :configs="ueConfigs" 
+      <ueditor v-if="field.controlType==='UEditor'"
+        :editorId="'ex-'+field.fieldName"
+        :height="200"
+        :configs="ueConfigs"
         v-model="field.value">
       </ueditor>
-      <cms-content-selector v-if="field.controlType==='CMSContentSelect'" 
-        v-model="field.value" 
+      <cms-content-selector v-if="field.controlType==='CMSContentSelect'"
+        v-model="field.value"
         :selected="field.valueObj">
       </cms-content-selector>
-    </el-form-item>
+    </a-form-item>
   </div>
 </template>
 <script>
@@ -176,7 +171,7 @@ export default {
 };
 </script>
 <style scoped>
-.el-form-item {
+.ant-form-item {
   margin-bottom: 12px;
 }
 </style>

@@ -120,6 +120,12 @@ export const constantRoutes = [
             component: () => import('@/views/cms/contentcore/contentManage'),
             name: 'ContentManage',
             meta: { title: '内容管理' }
+          },
+          {
+            path: 'friendLink',
+            component: () => import('@/views/cms/link/linkGroup'),
+            name: 'FriendLinkManagement',
+            meta: { title: '友链管理' }
           }
         ]
       },
@@ -623,12 +629,6 @@ export const constantRoutes = [
         component: () => import('@/views/system/dict/data'),
         name: 'SystemDictData',
         meta: { title: '字典数据', noCache: true, activeMenu: '/system/dict' }
-      },
-      {
-        path: 'friendLink',
-        component: () => import('@/views/cms/link/linkGroup'),
-        name: 'FriendLinkManagement',
-        meta: { title: '友链管理' }
       }
     ]
   },
@@ -708,13 +708,13 @@ export const constantRoutes = [
     path: '/operations',
     component: Layout,
     hidden: true,
-    redirect: '/system/friendLink',
+    redirect: '/portal/content/friendLink',
     children: [
       {
         path: 'link/list',
         component: () => import('@/views/cms/link/link'),
         name: 'CmsLink',
-        meta: { noCache: true, title: i18n.global.t('CMS.FriendLink.RouteLinkList'), activeMenu: '/system/friendLink'}
+        meta: { noCache: true, title: i18n.global.t('CMS.FriendLink.RouteLinkList'), activeMenu: '/portal/content/friendLink'}
       }
     ]
   },

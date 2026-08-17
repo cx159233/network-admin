@@ -42,7 +42,21 @@
       "Read(//c/Users/99763/AppData/Roaming/Code/User/History/**)",
       "Bash([ -f \"$d/prd.js\" ])",
       "Bash(stat --format=%y __TRACKED_VAR__/prd.js)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Bash(git rm *)",
+      "Bash(ls -la .claude/skills/)",
+      "Bash(ls -la .claude/skills/prd/)",
+      "Bash(ls -la ~/.claude/skills/)",
+      "Bash(git ls-remote *)",
+      "Bash(npm run *)",
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Bash(git ls-tree *)",
+      "Bash(cat .npmrc)",
+      "Bash(grep -A2 '\"engines\"' package.json)",
+      "Bash(npm view *)"
     ]
   }
 }
