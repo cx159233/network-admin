@@ -35,7 +35,7 @@
       <div class="my-processed-page__divider"></div>
 
       <div class="my-processed-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 'max-content' }"
           :columns="visibleColumns"
           :data-source="filteredData"
           :pagination="paginationConfig"
@@ -74,7 +74,7 @@
     </CloudCard>
 
     <!-- 已办详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="已办详情"
       :width="860"
@@ -245,6 +245,12 @@ export default {
     this.loadOrderList()
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleQuery() {
       this.applied = { ...this.filter }
       this.pagination.current = 1

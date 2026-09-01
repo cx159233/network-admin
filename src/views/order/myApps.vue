@@ -32,7 +32,7 @@
       <div class="my-apps-page__divider"></div>
 
       <div class="my-apps-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 'max-content' }"
           :columns="columns"
           :data-source="filteredData"
           :pagination="paginationConfig"
@@ -71,7 +71,7 @@
     </CloudCard>
 
     <!-- 服务类型选择弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDrawerContainer"
       v-model:open="showTypeSelector"
       title="选择服务类型"
       width="520px"
@@ -97,7 +97,7 @@
       </div>
     </a-modal>
 
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       v-model:open="deleteDialogVisible"
       title="删除确认"
       width="420px"
@@ -113,7 +113,7 @@
     </a-modal>
 
     <!-- 应用详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       :title="drawerTitle"
       :width="860"
@@ -147,7 +147,7 @@
                 <div class="overview-section__title">基本信息</div>
                 <a-descriptions :column="2" bordered size="small" class="drawer-desc">
                   <a-descriptions-item label="系统地址" :span="2">{{ drawer.record.systemUrl || '--' }}</a-descriptions-item>
-                  <a-descriptions-item label="显示顺序" :span="2">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</a-descriptions-item>
+                  <a-descriptions-item label="付费方式参考" :span="2">{{ drawer.record.paymentMethodRef || '--' }}</a-descriptions-item>
                   <a-descriptions-item label="应用描述" :span="2">{{ drawer.record.description || '--' }}</a-descriptions-item>
                 </a-descriptions>
               </div>
@@ -163,7 +163,7 @@
               <div class="overview-section">
                 <div class="overview-section__title">分类标签</div>
                 <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-                  <a-descriptions-item label="面向对象" :span="2">{{ formatArray(drawer.record.targetObject) }}</a-descriptions-item>
+                  <a-descriptions-item label="服务对象" :span="2">{{ formatArray(drawer.record.targetObject) }}</a-descriptions-item>
                   <a-descriptions-item label="应用架构" :span="2">{{ formatArray(drawer.record.appArchitecture) }}</a-descriptions-item>
                   <a-descriptions-item label="部署云服务商" :span="2">{{ formatArray(drawer.record.cloudProvider) }}</a-descriptions-item>
                   <a-descriptions-item v-if="drawer.record.targetObject && drawer.record.targetObject.includes('基层医疗卫生机构')" label="基层应用覆盖范围" :span="2">{{ formatArray(drawer.record.coverBase) }}</a-descriptions-item>
@@ -178,7 +178,7 @@
               <div class="overview-section">
                 <div class="overview-section__title">基本信息</div>
                 <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-                  <a-descriptions-item label="显示顺序" :span="2">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</a-descriptions-item>
+                  <a-descriptions-item label="付费方式参考" :span="2">{{ drawer.record.paymentMethodRef || '--' }}</a-descriptions-item>
                   <a-descriptions-item label="组件描述" :span="2">{{ drawer.record.description || '--' }}</a-descriptions-item>
                 </a-descriptions>
               </div>
@@ -204,7 +204,7 @@
               <div class="overview-section">
                 <div class="overview-section__title">基本信息</div>
                 <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-                  <a-descriptions-item label="显示顺序" :span="2">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</a-descriptions-item>
+                  <a-descriptions-item label="付费方式参考" :span="2">{{ drawer.record.paymentMethodRef || '--' }}</a-descriptions-item>
                   <a-descriptions-item label="服务描述" :span="2">{{ drawer.record.description || '--' }}</a-descriptions-item>
                 </a-descriptions>
               </div>
@@ -219,9 +219,9 @@
               <div class="overview-section">
                 <div class="overview-section__title">分类标签</div>
                 <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="服务专区">{{ getServiceZoneLabel(drawer.record.serviceZone) }}</a-descriptions-item>
                   <a-descriptions-item label="部署云服务商">{{ formatArray(drawer.record.cloudProvider) }}</a-descriptions-item>
-                  <a-descriptions-item label="服务子类">{{ drawer.record.serviceSubType || '--' }}</a-descriptions-item>
-                  <a-descriptions-item label="区域" :span="2">{{ drawer.record.region || '--' }}</a-descriptions-item>
+                  <a-descriptions-item label="服务分类">{{ drawer.record.serviceSubType || '--' }}</a-descriptions-item>
                 </a-descriptions>
               </div>
             </template>
@@ -229,7 +229,7 @@
 
           <a-tab-pane key="audit" tab="审核信息">
             <div class="overview-section__title">审核记录</div>
-            <a-table
+            <a-table :scroll="{ x: 'max-content' }"
               :columns="auditColumns"
               :data-source="auditVersionRows"
               row-key="versionKey"
@@ -312,10 +312,11 @@
               </div>
               <div class="rating-list">
                 <div v-for="(item, idx) in drawerUsageRatings" :key="idx" class="rating-card">
-                  <div class="rating-card__avatar">{{ (item.userName || '匿').charAt(0) }}</div>
                   <div class="rating-card__body">
                     <div class="rating-card__row">
-                      <span class="rating-card__name">{{ item.userName || '匿名用户' }}</span>
+                      <span class="rating-card__org">{{ item.orgName || '--' }}</span>
+                      <span class="rating-card__sep">·</span>
+                      <span class="rating-card__order">{{ item.orderNo }}</span>
                     </div>
                     <div class="rating-card__dims">
                       <span v-for="d in dimLabels" :key="d" class="rating-card__dim">
@@ -325,11 +326,6 @@
                         </span>
                         <span class="rating-card__dim-num">{{ item.ratings[d] }}</span>
                       </span>
-                    </div>
-                    <div class="rating-card__meta">
-                      <span>{{ item.orgName || '--' }}</span>
-                      <span class="rating-card__sep">·</span>
-                      <span class="rating-card__order">{{ item.orderNo }}</span>
                     </div>
                     <div class="rating-card__content">{{ item.content }}</div>
                     <div class="rating-card__time">{{ item.time }}</div>
@@ -502,6 +498,12 @@ export default {
     this.loadAppList()
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     formatCover(val) {
       if (!val) return '--'
       if (Array.isArray(val)) return val.join('、')
@@ -510,6 +512,10 @@ export default {
     formatArray(arr) {
       if (Array.isArray(arr)) return arr.join('、') || '--'
       return arr || '--'
+    },
+    getServiceZoneLabel(zone) {
+      const map = { X86Zone: 'X86专区', XinChuangZone: '信创专区', CipherZone: '密码服务专区', SuperComputeZone: '超算、智算专区' }
+      return map[zone] || zone || '--'
     },
     loadAppList() {
       this.loading = true
@@ -549,7 +555,6 @@ export default {
       this.pagination.pageSize = pag.pageSize
     },
     onSelectType(type) {
-      this.showTypeSelector = false
       const routeMap = {
         '数字应用': '/portal/service/digitalAppForm',
         '安全服务': '/portal/service/securityServiceForm',
@@ -557,7 +562,9 @@ export default {
         '基础服务': '/portal/service/serviceCatalogForm'
       }
       const path = routeMap[type]
+      this.showTypeSelector = false
       if (path) {
+        // 弹窗挂载在 .app-overlay（与路由容器分离），可直接立即跳转，不会产生 DOM 冲突
         this.$router.push({ path, query: { cid: '603612031287365', mode: 'shelf' } })
       }
     },
@@ -927,19 +934,6 @@ export default {
   border-radius: 8px;
 }
 
-.rating-card__avatar {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #165DFF, #4096FF);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  display: grid;
-  place-items: center;
-}
-
 .rating-card__body {
   flex: 1;
   min-width: 0;
@@ -952,10 +946,10 @@ export default {
   margin-bottom: 6px;
 }
 
-.rating-card__name {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.85);
+.rating-card__org {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .rating-card__dims {
@@ -998,21 +992,12 @@ export default {
   min-width: 12px;
 }
 
-.rating-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #86909C;
-  margin-bottom: 6px;
-}
-
 .rating-card__sep {
   color: #C9CDD4;
 }
 
 .rating-card__order {
+  font-size: 13px;
   color: #86909C;
 }
 

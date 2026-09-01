@@ -1,5 +1,5 @@
 <template>
-  <a-modal
+  <a-modal :get-container="getDemoContainer"
     :open="visible"
     :title="title"
     :width="500"
@@ -81,6 +81,12 @@ export default {
     };
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     startInterval() {
       if (this.taskId != "") {
         this.getProgressInfo();

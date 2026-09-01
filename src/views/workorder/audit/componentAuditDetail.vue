@@ -84,7 +84,7 @@
           <div class="card-head">
             <span class="card-head__title">审核记录</span>
           </div>
-          <a-table
+          <a-table :scroll="{ x: 'max-content' }"
             :columns="auditColumns"
             :data-source="auditRecords"
             :pagination="false"
@@ -213,6 +213,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadCompDetail() {},
     goBack() {
       this.$router.push('/portal/auditCenter/componentAudit')
@@ -223,6 +229,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认通过',
         content: '确定要通过该组件的审核吗？',
         okText: '确定',
@@ -240,6 +247,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认驳回',
         content: '确定要拒绝该组件的审核吗？',
         okText: '确定',

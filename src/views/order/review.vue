@@ -23,7 +23,7 @@
         <div class="review-page__divider"></div>
 
         <div class="review-page__table-wrap">
-          <a-table
+          <a-table :scroll="{ x: 1195 }"
             :columns="summaryColumns"
             :data-source="summaryData"
             :pagination="paginationConfig"
@@ -50,6 +50,9 @@
                   <div class="summary-service__name">{{ record.serviceName || '--' }}</div>
                   <div class="summary-service__id">{{ record.serviceId || '--' }}</div>
                 </div>
+              </template>
+              <template v-else-if="column.dataIndex === 'serviceType'">
+                <span :class="['service-type-tag', getServiceTypeClass(record.serviceType)]">{{ record.serviceType || '--' }}</span>
               </template>
               <template v-else-if="column.dataIndex === 'avgAccuracy'">
                 <span :class="metricClass(record.avgAccuracy, 4.5)">{{ record.avgAccuracy.toFixed(1) }}</span>
@@ -114,7 +117,7 @@
 
       <CloudCard class="review-page__table-card">
         <FilterBar @search="handleDetailQuery" @reset="resetDetailQuery">
-          <a-select v-model:value="detailFilter.score" placeholder="四维均分" allow-clear style="width: 120px">
+          <a-select v-model:value="detailFilter.score" placeholder="综合评分" allow-clear style="width: 120px">
             <a-select-option value="5">5 星</a-select-option>
             <a-select-option value="4">4 星</a-select-option>
             <a-select-option value="3">3 星及以下</a-select-option>
@@ -127,7 +130,7 @@
         <div class="review-page__divider"></div>
 
         <div class="review-page__table-wrap">
-          <a-table
+          <a-table :scroll="{ x: 1650 }"
             :columns="columns"
             :data-source="filteredDetailData"
             :pagination="paginationConfig"
@@ -139,7 +142,7 @@
             <template #headerCell="{ column }">
               <template v-if="column.key === 'avgScore'">
                 <a-tooltip title="准确性、稳定性、响应时效、业务适配性的平均分值">
-                  <span class="header-with-tip">四维均分 <QuestionCircleOutlined class="header-tip-icon" /></span>
+                  <span class="header-with-tip">综合评分 <QuestionCircleOutlined class="header-tip-icon" /></span>
                 </a-tooltip>
               </template>
             </template>
@@ -182,7 +185,7 @@
     </template>
 
     <!-- 回复弹窗 -->
-    <a-modal v-model:open="replyModalVisible" title="回复评价" :width="480" :footer="null" :destroy-on-close="true">
+    <a-modal :get-container="getDemoContainer" v-model:open="replyModalVisible" title="回复评价" :width="480" :footer="null" :destroy-on-close="true">
       <div class="mb-[14px]">
         <div class="text-[13px] font-semibold text-text-primary mb-[6px]">回复内容</div>
         <a-textarea v-model:value="replyForm.replyContent" :rows="4" placeholder="请输入回复内容..." />
@@ -195,7 +198,7 @@
     </a-modal>
 
     <!-- 平台评分弹窗 -->
-    <a-modal v-model:open="platformEvalVisible" title="平台评分" :width="480" :footer="null" :destroy-on-close="true">
+    <a-modal :get-container="getDemoContainer" v-model:open="platformEvalVisible" title="平台评分" :width="480" :footer="null" :destroy-on-close="true">
       <a-form layout="vertical">
         <a-form-item label="平台评分">
           <a-rate v-model:value="platformEvalForm.score" style="font-size: 24px" />
@@ -240,6 +243,7 @@ export default {
       pagination: { current: 1, pageSize: 10 },
       summaryColumns: [
         { title: '服务名称/ID', dataIndex: 'serviceName', key: 'serviceName' },
+        { title: '服务类型', dataIndex: 'serviceType', key: 'serviceType', width: 120 },
         { title: '平均准确性', dataIndex: 'avgAccuracy', key: 'avgAccuracy', width: 105 },
         { title: '平均稳定性', dataIndex: 'avgStability', key: 'avgStability', width: 105 },
         { title: '平均响应时效', dataIndex: 'avgResponseTime', key: 'avgResponseTime', width: 115 },
@@ -249,13 +253,13 @@ export default {
         { title: '操作', dataIndex: 'action', key: 'action', width: 160 },
       ],
       columns: [
-        { title: '评分维度', dataIndex: 'dims', key: 'dims', width: 240 },
-        { title: '四维均分', dataIndex: 'avgScore', key: 'avgScore', width: 80 },
+        { title: '评分明细', dataIndex: 'dims', key: 'dims', width: 240 },
+        { title: '综合评分', dataIndex: 'avgScore', key: 'avgScore', width: 80 },
         { title: '服务单号', dataIndex: 'orderNo', key: 'orderNo', width: 140 },
         { title: '评价机构', dataIndex: 'orgName', key: 'orgName', width: 170, ellipsis: true },
-        { title: '评价内容', dataIndex: 'content', key: 'content', width: 260, ellipsis: true },
+        { title: '评价内容', dataIndex: 'content', key: 'content', width: 260, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '评价时间', dataIndex: 'time', key: 'time', width: 140 },
-        { title: '回复内容', dataIndex: 'replyContent', key: 'replyContent', width: 200, ellipsis: true },
+        { title: '回复内容', dataIndex: 'replyContent', key: 'replyContent', width: 200, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '回复人', dataIndex: 'replyBy', key: 'replyBy', width: 100 },
         { title: '回复时间', dataIndex: 'replyTime', key: 'replyTime', width: 140 },
         { title: '状态', dataIndex: 'status', key: 'status', width: 90 },
@@ -361,6 +365,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     checkRouteQuery() {
       const serviceId = this.$route.query.serviceId
       if (serviceId) {
@@ -433,6 +443,15 @@ export default {
       if (value >= threshold) return 'metric metric--ok'
       return 'metric metric--bad'
     },
+    getServiceTypeClass(type) {
+      const map = {
+        '数字应用': 'service-type-tag--digital',
+        '安全服务': 'service-type-tag--security',
+        '能力组件': 'service-type-tag--component',
+        '基础服务': 'service-type-tag--basic'
+      }
+      return map[type] || ''
+    },
     scoreClass(val) {
       if (val >= 4) return 'score-high'
       if (val >= 3) return 'score-mid'
@@ -440,7 +459,11 @@ export default {
     },
     onPlatformEvaluate(record) {
       this.platformEvalTarget = record
-      this.platformEvalForm = { score: 0, content: '' }
+      const rated = record.platformScore > 0 || record.platformContent
+      this.platformEvalForm = {
+        score: rated ? Math.round(record.platformScore) : 0,
+        content: record.platformContent || '',
+      }
       this.platformEvalVisible = true
     },
     submitPlatformEval() {
@@ -484,6 +507,23 @@ export default {
   color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
 }
+
+.service-type-tag {
+  display: inline-block;
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  border-radius: 3px;
+  border: 1px solid;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.service-type-tag--digital { color: #165DFF; background: #E8F3FF; border-color: rgba(22, 93, 255, 0.20); }
+.service-type-tag--security { color: #F53F3F; background: #FFF0ED; border-color: rgba(245, 63, 63, 0.20); }
+.service-type-tag--component { color: #D97000; background: #FFF3E8; border-color: rgba(217, 112, 0, 0.20); }
+.service-type-tag--basic { color: #16A34A; background: rgba(22, 163, 74, 0.10); border-color: rgba(22, 163, 74, 0.20); }
 
 .cell-mono {
   font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;

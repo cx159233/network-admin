@@ -38,20 +38,32 @@
           <template #prefix><SearchOutlined /></template>
         </a-input>
       </div>
-      <div class="service-grid">
+      <div class="service-groups">
         <div
-          v-for="service in filteredServices"
-          :key="service.id"
-          class="service-item"
-          :class="`service-item--${getServiceTone(service.name)}`"
-          @click="handleServiceClick(service)"
+          v-for="group in filteredGroups"
+          :key="group.type"
+          class="service-group"
+          :class="`service-group--${getServiceTypeClass(group.type)}`"
         >
-          <div class="service-item__icon">
-            <component :is="getServiceIcon(service.name)" />
+          <div class="service-group__head">
+            <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(group.type)}`]">{{ group.type }}</span>
+            <span class="service-group__count">{{ group.services.length }} 个服务</span>
           </div>
-          <div class="service-item__name">{{ service.name }}</div>
+          <div class="service-grid">
+            <div
+              v-for="service in group.services"
+              :key="service.id"
+              class="service-item"
+              @click="handleServiceClick(service)"
+            >
+              <div class="service-item__icon">
+                <component :is="getServiceIcon(service.name)" />
+              </div>
+              <div class="service-item__name">{{ service.name }}</div>
+            </div>
+          </div>
         </div>
-        <div v-if="filteredServices.length === 0" class="empty-state">
+        <div v-if="filteredGroups.length === 0" class="empty-state">
           <FrownOutlined class="empty-state__icon" />
           <span>未找到匹配的服务</span>
         </div>
@@ -64,7 +76,8 @@
 import {
   AppstoreOutlined, CloudOutlined, SearchOutlined,
   ThunderboltOutlined, FrownOutlined, DatabaseOutlined, GlobalOutlined,
-  GitlabOutlined, BranchesOutlined, ClusterOutlined, FireOutlined
+  GitlabOutlined, BranchesOutlined, ClusterOutlined, FireOutlined,
+  LockOutlined, KeyOutlined, FileProtectOutlined, IdcardOutlined, SendOutlined
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import PageHeader from '@/components/cloud/PageHeader.vue'
@@ -76,7 +89,8 @@ export default {
     PageHeader, CloudCard,
     AppstoreOutlined, CloudOutlined, SearchOutlined,
     ThunderboltOutlined, FrownOutlined, DatabaseOutlined, GlobalOutlined,
-    GitlabOutlined, BranchesOutlined, ClusterOutlined, FireOutlined
+    GitlabOutlined, BranchesOutlined, ClusterOutlined, FireOutlined,
+    LockOutlined, KeyOutlined, FileProtectOutlined, IdcardOutlined, SendOutlined
   },
   data() {
     return {
@@ -88,58 +102,95 @@ export default {
         { id: 4, name: 'Gitlab相关申请' },
         { id: 5, name: '技术中台创建云相关申请' }
       ],
-      allServices: [
-        { id: 1, name: '负载均衡(SLB)实例申请' },
-        { id: 2, name: '通用服务需求' },
-        { id: 3, name: '通用数据处理需求' },
-        { id: 4, name: '云资源-主机申请' },
-        { id: 5, name: 'VPN相关申请' },
-        { id: 6, name: '云资源-数据库申请' },
-        { id: 7, name: '堡垒机相关申请' },
-        { id: 8, name: '云资源-K8S申请' },
-        { id: 9, name: '云资源-SLB申请' },
-        { id: 10, name: '统一用户中心系统权限申请' },
-        { id: 11, name: '网站/域名相关申请' },
-        { id: 12, name: '大数据平台资源相关申请' },
-        { id: 13, name: 'Gitlab相关申请' },
-        { id: 14, name: '技术中台创建云相关申请' },
-        { id: 15, name: '安全测试单' }
+      // 全部服务数据来源：服务目录管理中状态为已上线使用的服务，按服务类型分组
+      serviceGroups: [
+        {
+          type: '数字应用',
+          services: [
+            { id: 1, name: '卫宁健康区域医疗卫生信息应用服务' },
+            { id: 2, name: '同步远方医卫一体化应用服务' },
+            { id: 3, name: '中联公共卫生应用服务' },
+            { id: 4, name: '智慧医院信息管理系统' },
+            { id: 5, name: '医学影像处理系统' },
+            { id: 6, name: '大数据分析平台' }
+          ]
+        },
+        {
+          type: '安全服务',
+          services: [
+            { id: 7, name: '数据加密传输服务' },
+            { id: 8, name: '安全审计平台' },
+            { id: 9, name: '网络安全防护服务' },
+            { id: 10, name: '主机安全检测服务' }
+          ]
+        },
+        {
+          type: '能力组件',
+          services: [
+            { id: 11, name: '统一身份认证组件' },
+            { id: 12, name: '电子健康卡组件' },
+            { id: 13, name: '消息推送中间件' },
+            { id: 14, name: '人脸识别组件' }
+          ]
+        },
+        {
+          type: '基础服务',
+          services: [
+            { id: 15, name: '弹性云服务器' },
+            { id: 16, name: '云数据库服务' },
+            { id: 17, name: '对象存储OSS' },
+            { id: 18, name: '负载均衡SLB' }
+          ]
+        }
       ]
     }
   },
   computed: {
-    filteredServices() {
+    filteredGroups() {
       if (!this.searchQuery) {
-        return this.allServices
+        return this.serviceGroups
       }
-      return this.allServices.filter(service =>
-        service.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      )
+      const q = this.searchQuery.toLowerCase()
+      return this.serviceGroups
+        .map(group => ({
+          ...group,
+          services: group.services.filter(s => s.name.toLowerCase().includes(q))
+        }))
+        .filter(group => group.services.length > 0)
     }
   },
   methods: {
     handleSearch() {
-      if (this.filteredServices.length === 0) {
+      if (this.filteredGroups.length === 0) {
         message.info('未找到匹配的服务')
       }
     },
     handleServiceClick(service) {
       message.loading({ content: '正在跳转至多云管理系统...', key: 'serviceJump', duration: 1.5 })
     },
-    getServiceTone(name) {
-      if (name.includes('云资源') || name.includes('SLB') || name.includes('K8S')) return 'success'
-      if (name.includes('权限') || name.includes('堡垒机') || name.includes('VPN')) return 'warning'
-      if (name.includes('安全') || name.includes('Gitlab')) return 'danger'
-      return 'primary'
+    getServiceTypeClass(type) {
+      const map = {
+        '数字应用': 'digital',
+        '安全服务': 'security',
+        '能力组件': 'component',
+        '基础服务': 'basic'
+      }
+      return map[type] || ''
     },
     getServiceIcon(name) {
       if (name.includes('数据库')) return 'DatabaseOutlined'
       if (name.includes('网站') || name.includes('域名')) return 'GlobalOutlined'
       if (name.includes('Gitlab')) return 'GitlabOutlined'
       if (name.includes('K8S') || name.includes('集群')) return 'ClusterOutlined'
-      if (name.includes('VPN') || name.includes('网络')) return 'BranchesOutlined'
+      if (name.includes('VPN') || name.includes('网络') || name.includes('安全防护')) return 'BranchesOutlined'
       if (name.includes('大数据') || name.includes('安全')) return 'FireOutlined'
       if (name.includes('云资源') || name.includes('SLB')) return 'CloudOutlined'
+      if (name.includes('身份认证') || name.includes('权限')) return 'KeyOutlined'
+      if (name.includes('电子健康卡') || name.includes('人脸识别')) return 'IdcardOutlined'
+      if (name.includes('加密')) return 'LockOutlined'
+      if (name.includes('审计')) return 'FileProtectOutlined'
+      if (name.includes('消息推送')) return 'SendOutlined'
+      if (name.includes('服务') && name.includes('数据')) return 'AppstoreOutlined'
       return 'AppstoreOutlined'
     }
   }
@@ -170,6 +221,24 @@ export default {
 }
 
 .card-head__hint {
+  font-size: 12px;
+  color: #86909C;
+}
+
+.service-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.service-group__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.service-group__count {
   font-size: 12px;
   color: #86909C;
 }
@@ -211,12 +280,15 @@ export default {
 
 .service-item--primary .service-item__icon { background: #E8F3FF; color: #165DFF; }
 .service-item--primary:hover { border-color: rgba(22, 93, 255, 0.30); }
-.service-item--success .service-item__icon { background: rgba(22, 163, 74, 0.10); color: #16A34A; }
-.service-item--success:hover { border-color: rgba(22, 163, 74, 0.30); }
-.service-item--warning .service-item__icon { background: rgba(245, 158, 11, 0.10); color: #F59E0B; }
-.service-item--warning:hover { border-color: rgba(245, 158, 11, 0.30); }
-.service-item--danger .service-item__icon { background: rgba(239, 68, 68, 0.10); color: #EF4444; }
-.service-item--danger:hover { border-color: rgba(239, 68, 68, 0.30); }
+
+.service-group--digital .service-item__icon { background: #E8F3FF; color: #165DFF; }
+.service-group--digital .service-item:hover { border-color: rgba(22, 93, 255, 0.30); }
+.service-group--security .service-item__icon { background: #FFF0ED; color: #F53F3F; }
+.service-group--security .service-item:hover { border-color: rgba(245, 63, 63, 0.30); }
+.service-group--component .service-item__icon { background: #FFF3E8; color: #D97000; }
+.service-group--component .service-item:hover { border-color: rgba(217, 112, 0, 0.30); }
+.service-group--basic .service-item__icon { background: rgba(22, 163, 74, 0.10); color: #16A34A; }
+.service-group--basic .service-item:hover { border-color: rgba(22, 163, 74, 0.30); }
 
 .service-item__name {
   font-size: 13px;

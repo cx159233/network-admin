@@ -50,6 +50,18 @@
           @pressEnter="handleQuery"
         />
         <a-select
+          v-model:value="queryParams.serviceZone"
+          placeholder="服务专区"
+          allow-clear
+          style="width: 150px"
+        >
+          <a-select-option
+            v-for="item in serviceZoneOptions"
+            :key="item.value"
+            :value="item.value"
+          >{{ item.label }}</a-select-option>
+        </a-select>
+        <a-select
           v-model:value="queryParams.cloudProvider"
           placeholder="部署云服务商"
           allow-clear
@@ -81,7 +93,7 @@
           :pagination="paginationConfig"
           :row-key="(record) => record.serviceId"
           :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
-          :scroll="{ y: tableHeight }"
+          :scroll="{ x: 1360, y: tableHeight }"
           @change="onTableChange"
         >
           <template #bodyCell="{ column, record }">
@@ -90,11 +102,10 @@
               <span class="cell-name__id">{{ record.serviceId || '--' }}</span>
             </span>
             <a-badge v-else-if="column.dataIndex === 'status'" :status="record.status === 20 ? 'success' : record.status === 30 ? 'error' : 'default'" :text="record.status === 20 ? '已上线使用' : record.status === 30 ? '已下架' : '未知'" />
-            <span v-else-if="column.dataIndex === 'platformRating'" class="rating-star" @click="goToReview(record)">{{ record.platformRating || 0 }}</span>
-            <span v-else-if="column.dataIndex === 'usageRating'" class="rating-star" @click="goToReview(record)">{{ record.usageRating || 0 }}</span>
-            <template v-else-if="column.dataIndex === 'serviceType'">
-              <span :class="['service-type-tag', getServiceTypeClass(record.serviceType)]">{{ getServiceTypeLabel(record.serviceType) }}</span>
-            </template>
+            <span v-else-if="column.dataIndex === 'platformRating'">{{ record.platformRating || 0 }}</span>
+            <span v-else-if="column.dataIndex === 'usageRating'">{{ record.usageRating || 0 }}</span>
+            <span v-else-if="column.dataIndex === 'serviceZone'">{{ getServiceZoneLabel(record.serviceZone) }}</span>
+            <span v-else-if="column.dataIndex === 'serviceType'">{{ getServiceTypeLabel(record.serviceType) }}</span>
             <template v-else-if="column.dataIndex === 'action'">
               <a-space size="small">
                 <a-button type="link" size="small" class="!p-0" @click.stop="handleDetail(record)">详情</a-button>
@@ -111,7 +122,7 @@
     </CloudCard>
 
     <!-- 详情弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       title="详情"
       width="920px"
       v-model:open="detailDialogVisible"
@@ -166,16 +177,16 @@
           <div class="form-section-title">服务信息</div>
           <div class="gird">
             <div class="content">
+              <span>服务专区</span>
+              <span>{{ getServiceZoneLabel(detailForm.serviceZone) }}</span>
+            </div>
+            <div class="content">
               <span>部署云服务商</span>
               <span>{{ detailForm.cloudProvider || '--' }}</span>
             </div>
             <div class="content">
-              <span>服务类型</span>
+              <span>服务分类</span>
               <span>{{ detailForm.serviceType || '--' }}</span>
-            </div>
-            <div class="content">
-              <span>区域</span>
-              <span>{{ detailForm.region || '--' }}</span>
             </div>
           </div>
         </div>
@@ -186,7 +197,7 @@
     </a-modal>
 
     <!-- 评价弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       title="服务评价"
       width="920px"
       v-model:open="ratingDialogVisible"
@@ -209,7 +220,7 @@
             </a-form>
           </a-tab-pane>
           <a-tab-pane tab="用户评分" key="user">
-            <a-table
+            <a-table :scroll="{ x: 'max-content' }"
               :columns="ratingColumns"
               :data-source="usageRatings"
               :pagination="false"
@@ -256,7 +267,7 @@
     </a-modal>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="基础服务详情"
       :width="860"
@@ -285,8 +296,8 @@
             <div class="overview-section">
               <div class="overview-section__title">基本信息</div>
               <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-                <a-descriptions-item label="显示顺序" :span="2">
-                  <span class="cell-mono">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</span>
+                <a-descriptions-item label="付费方式参考" :span="2">
+                  <span class="muted">{{ drawer.record.paymentMethodRef || '--' }}</span>
                 </a-descriptions-item>
                 <a-descriptions-item label="服务描述" :span="2">
                   <span class="muted">{{ drawer.record.description || '--' }}</span>
@@ -301,18 +312,25 @@
                 <a-descriptions-item label="联系方式2">{{ drawer.record.contactPhone2 || '--' }}</a-descriptions-item>
               </a-descriptions>
             </div>
+<div class="overview-section">
+                <div class="overview-section__title">分类标签</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="服务专区">{{ getServiceZoneLabel(drawer.record.serviceZone) }}</a-descriptions-item>
+                  <a-descriptions-item label="部署云服务商">{{ drawer.record.cloudProvider || '--' }}</a-descriptions-item>
+                  <a-descriptions-item label="服务分类">{{ drawer.record.serviceType || '--' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
             <div class="overview-section">
-              <div class="overview-section__title">分类标签</div>
-              <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-                <a-descriptions-item label="部署云服务商">{{ drawer.record.cloudProvider || '--' }}</a-descriptions-item>
-                <a-descriptions-item label="服务子类">{{ drawer.record.serviceType || '--' }}</a-descriptions-item>
-                <a-descriptions-item label="区域" :span="2">{{ drawer.record.region || '--' }}</a-descriptions-item>
-              </a-descriptions>
-            </div>
+                <div class="overview-section__title">管理信息</div>
+                <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                  <a-descriptions-item label="显示顺序" :span="2">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</a-descriptions-item>
+                  <a-descriptions-item label="服务征集得分" :span="2">{{ drawer.record.recruitScore != null ? drawer.record.recruitScore : '--' }}</a-descriptions-item>
+                </a-descriptions>
+              </div>
           </a-tab-pane>
           <a-tab-pane key="audit" tab="审核信息">
             <div class="overview-section__title">审核记录</div>
-            <a-table
+            <a-table :scroll="{ x: 'max-content' }"
               :columns="auditVersionColumns"
               :data-source="auditVersionRows"
               :pagination="false"
@@ -386,15 +404,16 @@
             </div>
             <div class="overview-section">
               <div class="overview-section__head">
-                <span class="overview-section__title">用户评分</span>
+                <span class="overview-section__title">用户评价</span>
                 <span class="overview-section__count">共 {{ drawerUsageRatings.length }} 条</span>
               </div>
               <div class="rating-list">
                 <div v-for="(item, idx) in drawerUsageRatings" :key="idx" class="rating-card">
-                  <div class="rating-card__avatar">{{ (item.userName || '匿').charAt(0) }}</div>
                   <div class="rating-card__body">
                     <div class="rating-card__row">
-                      <span class="rating-card__name">{{ item.userName || '匿名用户' }}</span>
+                      <span class="rating-card__org">{{ item.orgName || '--' }}</span>
+                      <span class="rating-card__sep">·</span>
+                      <span class="rating-card__order">{{ item.orderNo }}</span>
                     </div>
                     <div class="rating-card__dims">
                       <span v-for="d in dimLabels" :key="d" class="rating-card__dim">
@@ -404,11 +423,6 @@
                         </span>
                         <span class="rating-card__dim-num">{{ item.ratings[d] }}</span>
                       </span>
-                    </div>
-                    <div class="rating-card__meta">
-                      <span>{{ item.orgName || '--' }}</span>
-                      <span class="rating-card__sep">·</span>
-                      <span class="rating-card__order">{{ item.orderNo }}</span>
                     </div>
                     <div class="rating-card__content">{{ item.content }}</div>
                     <div class="rating-card__time">{{ formatTime(item.time) }}</div>
@@ -527,6 +541,12 @@ export default {
         }
       },
       // 云服务商选项
+      serviceZoneOptions: [
+        { value: 'X86Zone', label: 'X86专区' },
+        { value: 'XinChuangZone', label: '信创专区' },
+        { value: 'CipherZone', label: '密码服务专区' },
+        { value: 'SuperComputeZone', label: '超算、智算专区' }
+      ],
       cloudProviderOptions: [
         { value: '影像云', label: '影像云' },
         { value: '电信云', label: '电信云' },
@@ -548,13 +568,15 @@ export default {
         serviceName: undefined,
         serviceId: undefined,
         serviceProvider: undefined,
+        serviceZone: undefined,
         cloudProvider: undefined,
         status: undefined,
       },
       columns: [
         { title: '基础服务名称/ID', dataIndex: 'serviceName', key: 'serviceName', ellipsis: true, width: 200 },
-        { title: '服务子类', dataIndex: 'serviceType', key: 'serviceType', width: 120 },
-        { title: '服务描述', dataIndex: 'description', key: 'description', ellipsis: true, width: 250 },
+        { title: '服务专区', dataIndex: 'serviceZone', key: 'serviceZone', width: 120 },
+        { title: '服务分类', dataIndex: 'serviceType', key: 'serviceType', width: 120 },
+        { title: '服务描述', dataIndex: 'description', key: 'description', width: 250, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '服务商名称', dataIndex: 'vendor', key: 'vendor', width: 180 },
         { title: '部署云服务商', dataIndex: 'cloudProvider', key: 'cloudProvider', ellipsis: true, width: 150 },
         { title: '状态', dataIndex: 'status', key: 'status', width: 80 },
@@ -578,7 +600,6 @@ export default {
         description: '',
         serviceType: '',
         cloudProvider: '',
-        region: '',
         sortOrder: 0,
         vendor: '',
         contactPhone1: '',
@@ -657,11 +678,17 @@ export default {
     this.loadServiceCatalogList();
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadServiceCatalogList() {
       this.loading = true;
       // 模拟数据
       setTimeout(() => {
-        this.serviceCatalogList = [
+        let list = [
           {
             serviceId: 'SVC001',
             serviceName: '云服务器ECS',
@@ -669,9 +696,9 @@ export default {
             contactPhone1: '400-880-8800',
             contactPhone2: '010-8888-0001',
             description: '弹性计算服务，提供安全可靠、弹性可扩展的云服务器',
-            serviceType: 'compute',
+            serviceZone: 'X86Zone',
+            serviceType: '计算服务',
             cloudProvider: '电信云',
-            region: '华东',
             status: 20,
             sortOrder: 1
           },
@@ -682,9 +709,9 @@ export default {
             contactPhone1: '400-881-9901',
             contactPhone2: '021-6222-0002',
             description: '安全、稳定、高效的云存储服务',
-            serviceType: 'storage',
+            serviceZone: 'X86Zone',
+            serviceType: '存储服务',
             cloudProvider: '移动云',
-            region: '华北',
             status: 20,
             sortOrder: 2
           },
@@ -695,14 +722,31 @@ export default {
             contactPhone1: '400-882-8802',
             contactPhone2: '010-6666-0003',
             description: '稳定可靠的关系型数据库服务',
-            serviceType: 'database',
+            serviceZone: 'X86Zone',
+            serviceType: '数据库服务',
             cloudProvider: '联通云',
-            region: '华南',
             status: 10,
             sortOrder: 3
+          },
+          {
+            serviceId: 'SVC004',
+            serviceName: '负载均衡SLB',
+            vendor: '中科信息安全有限公司',
+            contactPhone1: '400-883-8803',
+            contactPhone2: '010-6666-0004',
+            description: '将访问流量分发到多台云服务器，提升应用可用性',
+            serviceZone: 'XinChuangZone',
+            serviceType: '网络服务',
+            cloudProvider: '浪潮云',
+            status: 20,
+            sortOrder: 4
           }
         ];
-        this.total = 3;
+        if (this.queryParams.serviceZone) {
+          list = list.filter(i => i.serviceZone === this.queryParams.serviceZone);
+        }
+        this.serviceCatalogList = list;
+        this.total = list.length;
         this.loading = false;
       }, 1000);
     },
@@ -743,9 +787,6 @@ export default {
       if (val >= 4) return 'score-high';
       if (val >= 3) return 'score-mid';
       return 'score-low';
-    },
-    goToReview(row) {
-      this.$router.push({ path: '/portal/order/review', query: { serviceId: row.serviceId } });
     },
     getStatusKey(status) {
       const map = {
@@ -788,6 +829,10 @@ export default {
       }
       return map[type] || ''
     },
+    getServiceZoneLabel(zone) {
+      const map = { X86Zone: 'X86专区', XinChuangZone: '信创专区', CipherZone: '密码服务专区', SuperComputeZone: '超算、智算专区' }
+      return map[zone] || zone || '--'
+    },
     formatTime(time) {
       if (!time) return '--';
       const d = new Date(time);
@@ -809,6 +854,7 @@ export default {
         ? [safeRow.serviceId]
         : this.selectedRows.map((r) => r.serviceId);
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '系统提示',
         content: '是否确认删除？',
         onOk: () => {
@@ -827,6 +873,7 @@ export default {
         return;
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '系统提示',
         content: '发布后将在门户网站上显示，是否确认发布？',
         onOk: () => {
@@ -845,6 +892,7 @@ export default {
         return;
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '系统提示',
         content: '下线后将在门户网站上隐藏，是否确认下线？',
         onOk: () => {
@@ -1037,15 +1085,7 @@ export default {
 }
 
 /* 评价样式 */
-.rating-star {
-  color: #165DFF;
-  cursor: pointer;
-  font-weight: 400;
-}
 
-.rating-star:hover {
-  text-decoration: underline;
-}
 
 /* 列表状态列文字统一 0.65（色点不变） */
 :deep(.ant-badge-status-text) {
@@ -1304,19 +1344,6 @@ export default {
   border-radius: 8px;
 }
 
-.rating-card__avatar {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #165DFF, #4096FF);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  display: grid;
-  place-items: center;
-}
-
 .rating-card__body {
   flex: 1;
   min-width: 0;
@@ -1329,10 +1356,10 @@ export default {
   margin-bottom: 6px;
 }
 
-.rating-card__name {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.85);
+.rating-card__org {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .rating-card__dims {
@@ -1385,21 +1412,12 @@ export default {
   margin-right: 4px;
 }
 
-.rating-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #86909C;
-  margin-bottom: 6px;
-}
-
 .rating-card__sep {
   color: #C9CDD4;
 }
 
 .rating-card__order {
+  font-size: 13px;
   color: #86909C;
 }
 

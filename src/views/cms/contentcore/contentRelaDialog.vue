@@ -1,91 +1,95 @@
 <template>
   <div class="app-container-content-sort">
-    <el-dialog 
+    <a-modal :get-container="getDemoContainer"
       :title="$t('CMS.Content.RelaContent')"
-      :visible.sync="visible"
+      :open="visible"
       width="800px"
-      :close-on-click-modal="false"
-      append-to-body>
-      <el-row>
-        <el-col>
-          <el-button 
-            plain
+      :mask-closable="false"
+      @cancel="handleCancel"
+    >
+      <div class="mb12" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <a-space>
+          <a-button
             type="primary"
-            icon="el-icon-add"
-            size="mini"
+            ghost
+            size="small"
             v-hasPermi="[ $p('Catalog:EditContent:{0}', [ cid ]) ]"
-            @click="handleAdd">{{ $t("Common.Add") }}
-          </el-button>
-          <el-button 
-            plain
-            type="danger"
-            icon="el-icon-delete"
-            size="mini"
+            @click="handleAdd"
+          >
+            <template #icon><PlusOutlined /></template>
+            {{ $t("Common.Add") }}
+          </a-button>
+          <a-button
+            danger
+            size="small"
             :disabled="multiple"
             v-hasPermi="[ $p('Catalog:EditContent:{0}', [ cid ]) ]"
-            @click="handleDelete">{{ $t("Common.Delete") }}
-          </el-button>
-        </el-col>
-        <el-col>
-          <el-form 
-            :model="queryParams"
-            ref="queryForm"
-            :inline="true"
-            size="small"
-            @submit.native.prevent
-            class="el-form-search mt10 mb10"
-            style="text-align:left">
-            <el-form-item label="" prop="title">
-              <el-input 
-                v-model="queryParams.title" 
-                :placeholder="$t('CMS.Content.Placeholder.Title')" 
-                @keyup.enter.native="handleQuery">
-              </el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button-group>
-                <el-button type="primary" icon="el-icon-search" @click="handleQuery">{{ $t("Common.Search") }}</el-button>
-                <el-button icon="el-icon-refresh" @click="resetQuery">{{ $t("Common.Reset") }}</el-button>
-              </el-button-group>
-            </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
-      
-      <el-table 
-        v-loading="loading"
-        :data="relaContentList"
-        size="mini"
-        highlight-current-row
-        @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="50" align="center" />
-        <el-table-column type="index" :label="$t('Common.RowNo')" align="center" width="50" />
-        <el-table-column :label="$t('CMS.Content.Title')" align="left" prop="title">
-          <template slot-scope="scope">
-            <span><i v-if="scope.row.topFlag>0" class="el-icon-top top-icon" :title="$t('CMS.Content.SetTop')"></i> {{ scope.row.title }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('CMS.Content.Status')" align="center" prop="status">
-          <template slot-scope="scope">
-            <dict-tag :options="dict.type.CMSContentStatus" :value="scope.row.status"/>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('CMS.Content.PublishDate')" align="center" prop="publishDate" width="160">
-          <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.publishDate) }}</span>
-          </template>
-        </el-table-column>
-      </el-table>
-      <pagination 
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="loadRelaContentList" />
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="handleClose">{{ $t("Common.Cancel") }}</el-button>
+            @click="handleDelete"
+          >
+            <template #icon><DeleteOutlined /></template>
+            {{ $t("Common.Delete") }}
+          </a-button>
+        </a-space>
+        <a-form
+          ref="queryForm"
+          :model="queryParams"
+          layout="inline"
+          @submit.prevent
+        >
+          <a-form-item name="title">
+            <a-input
+              v-model:value="queryParams.title"
+              :placeholder="$t('CMS.Content.Placeholder.Title')"
+              allow-clear
+              @press-enter="handleQuery"
+            />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="handleQuery">
+              <template #icon><SearchOutlined /></template>
+              {{ $t("Common.Search") }}
+            </a-button>
+          </a-form-item>
+          <a-form-item>
+            <a-button @click="resetQuery">
+              <template #icon><ReloadOutlined /></template>
+              {{ $t("Common.Reset") }}
+            </a-button>
+          </a-form-item>
+        </a-form>
       </div>
-    </el-dialog>
+
+      <a-table :scroll="{ x: 'max-content' }"
+        :loading="loading"
+        :columns="columns"
+        :data-source="relaContentList"
+        size="small"
+        row-key="contentId"
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
+        :pagination="false"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'title'">
+            <span v-if="record.topFlag > 0" class="top-icon" :title="$t('CMS.Content.SetTop')">
+              <VerticalAlignTopOutlined />
+            </span>
+            {{ record.title }}
+          </template>
+          <span v-else-if="column.dataIndex === 'status'">{{ statusFormat(record.status) }}</span>
+          <span v-else-if="column.dataIndex === 'publishDate'">{{ parseTime(record.publishDate) }}</span>
+        </template>
+      </a-table>
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="loadRelaContentList"
+      />
+      <template #footer>
+        <a-button @click="handleCancel">{{ $t("Common.Cancel") }}</a-button>
+      </template>
+    </a-modal>
     <!-- 内容选择组件 -->
     <cms-content-selector
       :open="openContentSelector"
@@ -94,6 +98,7 @@
   </div>
 </template>
 <script>
+import { PlusOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined, VerticalAlignTopOutlined } from "@ant-design/icons-vue";
 import { getRelaContentList, addRelaContents, delRelaContents } from "@/api/contentcore/rela";
 
 import CMSContentSelector from "@/views/cms/contentcore/contentSelector";
@@ -102,7 +107,12 @@ export default {
   name: "CMSContentRelaDialog",
   dicts: ['CMSContentStatus'],
   components: {
-    'cms-content-selector': CMSContentSelector
+    'cms-content-selector': CMSContentSelector,
+    PlusOutlined,
+    DeleteOutlined,
+    SearchOutlined,
+    ReloadOutlined,
+    VerticalAlignTopOutlined,
   },
   props: {
     open: {
@@ -116,6 +126,7 @@ export default {
       required: false
     }
   },
+  emits: ['close'],
   watch: {
     open () {
       this.visible = this.open;
@@ -136,6 +147,7 @@ export default {
       loading: false,
       visible: this.open,
       selectedContents: [],
+      selectedRowKeys: [],
       relaContentList: [],
       multiple: true,
       total: 0,
@@ -146,9 +158,21 @@ export default {
         title: undefined
       },
       openContentSelector: false,
+      columns: [
+        { title: this.$t("Common.RowNo"), dataIndex: "rowNo", key: "rowNo", align: "center", width: 50, customRender: ({ index }) => index + 1 },
+        { title: this.$t("CMS.Content.Title"), dataIndex: "title", key: "title", align: "left", ellipsis: true },
+        { title: this.$t("CMS.Content.Status"), dataIndex: "status", key: "status", align: "center", width: 100 },
+        { title: this.$t("CMS.Content.PublishDate"), dataIndex: "publishDate", key: "publishDate", align: "center", width: 160 },
+      ],
     };
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadRelaContentList () {
       if (!this.visible) {
         return;
@@ -158,12 +182,20 @@ export default {
         this.relaContentList = response.data.rows;
         this.total = parseInt(response.data.total);
         this.selectedContents = [];
+        this.selectedRowKeys = [];
+        this.loading = false;
+      }).catch(() => {
         this.loading = false;
       });
     },
-    handleSelectionChange (selection) {
-      this.selectedContents = selection;
-      this.multiple = !selection.length;
+    handleSelectionChange (selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys;
+      this.selectedContents = selectedRows;
+      this.multiple = !selectedRows.length;
+    },
+    statusFormat (value) {
+      const dict = (this.dict.type.CMSContentStatus || []).find(d => d.value === String(value));
+      return dict ? dict.label : value;
     },
     handleAdd () {
       this.openContentSelector = true;
@@ -194,10 +226,14 @@ export default {
             this.handleQuery();
         });
     },
+    handleCancel () {
+      this.visible = false;
+    },
     handleClose () {
       this.$emit("close");
       this.resetForm("queryForm");
       this.selectedContents = [];
+      this.selectedRowKeys = [];
       this.relaContentList = [];
     },
     handleQuery () {
@@ -210,3 +246,12 @@ export default {
   }
 };
 </script>
+<style scoped>
+.mb12 {
+  margin-bottom: 12px;
+}
+.top-icon {
+  color: #faad14;
+  margin-right: 2px;
+}
+</style>

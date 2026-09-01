@@ -201,7 +201,7 @@ aside {
   z-index: 1000 !important;
 }
 
-/* 统一服务类型标签 */
+/* 统一服务类型标签（与服务目录管理一致） */
 .service-type-tag {
   display: inline-block;
   padding: 0 6px;
@@ -225,3 +225,44 @@ aside {
 .service-type-tag--backup { color: #0D9488; background: #F0FDFA; border-color: rgba(13, 148, 136, 0.20); }
 .service-type-tag--software { color: #4F46E5; background: #EEF2FF; border-color: rgba(79, 70, 229, 0.20); }
 .service-type-tag--hosting { color: #64748B; background: #F1F5F9; border-color: rgba(100, 116, 139, 0.20); }
+
+/* 统一方案类型标签 */
+.plan-type-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 20px;
+  background: #F4F8FF;
+  color: #035BFE;
+  border: 1px solid rgba(3, 91, 254, 0.20);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* 列表统一支持横向滚动：内容超出时出现横向滚动条 */
+.ant-table-wrapper .ant-table-content {
+  overflow-x: auto;
+}
+
+.ant-table-wrapper .ant-table-content > table {
+  min-width: 100%;
+}
+
+/* 描述类列：限定列宽内换行（配合 table-layout: fixed） */
+.cell-wrap {
+  white-space: normal !important;
+  word-break: break-word;
+}
+
+/* 弹窗/抽屉约束在挂载容器内打开（antd 默认 fixed 定位需改为 absolute；容器 pointer-events:none 需为弹层恢复点击） */
+.app-overlay .ant-modal-mask,
+.app-overlay .ant-modal-wrap {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.app-overlay .ant-drawer {
+  position: absolute;
+}

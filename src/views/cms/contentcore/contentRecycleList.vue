@@ -69,7 +69,7 @@
       :loading="loading"
       :columns="columns"
       :data-source="contentRecycleList"
-      :scroll="{ y: tableHeight }"
+      :scroll="{ x: 'max-content', y: tableHeight }"
       size="small"
       row-key="contentId"
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"

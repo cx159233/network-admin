@@ -58,7 +58,7 @@
       </FilterBar>
       <div class="dict-data-page__divider"></div>
       <div class="dict-data-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 1140 }"
           :columns="dataColumns"
           :data-source="dataList"
           :loading="dataLoading"
@@ -96,7 +96,7 @@
     </CloudCard>
 
     <!-- 新增/修改字典数据弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="dataTitle"
       v-model:open="dataOpen"
       width="520px"
@@ -206,7 +206,7 @@ export default {
         { title: '字典键值', dataIndex: 'dictValue', key: 'dictValue', width: 120 },
         { title: '字典排序', dataIndex: 'dictSort', key: 'dictSort', width: 90 },
         { title: '状态', dataIndex: 'status', key: 'status', width: 90 },
-        { title: '备注', dataIndex: 'remark', key: 'remark', ellipsis: true },
+        { title: '备注', dataIndex: 'remark', key: 'remark', width: 240, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '图标', dataIndex: 'icon', key: 'icon', width: 80, align: 'center' },
         { title: '创建时间', dataIndex: 'createTime', key: 'createTime', width: 170 },
         { title: '操作', dataIndex: 'action', key: 'action', width: 140, fixed: 'right' }
@@ -233,6 +233,12 @@ export default {
     this.loadList()
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     goBack() {
       this.$router.push('/system/dict')
     },
@@ -322,6 +328,7 @@ export default {
       const rows = row.dictCode ? [row] : this.dataSelectedRows
       const dictCodes = rows.map((r) => r.dictCode)
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认删除',
         content: `是否确认删除选中的 ${rows.length} 条字典数据？`,
         onOk: () => {

@@ -42,7 +42,7 @@
       </FilterBar>
       <div class="org-collab-page__divider"></div>
       <div class="org-collab-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 1710 }"
           :columns="columns"
           :data-source="filteredData"
           :loading="loading"
@@ -81,7 +81,7 @@
     </CloudCard>
 
     <!-- 机构详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="机构详情"
       :width="960"
@@ -209,7 +209,7 @@ export default {
         { title: '联系人', dataIndex: 'contactName', key: 'contactName', width: 80 },
         { title: '联系电话', dataIndex: 'contactPhone', key: 'contactPhone', width: 130 },
         { title: 'E-mail/邮箱', dataIndex: 'contactEmail', key: 'contactEmail', width: 170, ellipsis: true },
-        { title: '企业简介', dataIndex: 'companyIntro', key: 'companyIntro', width: 180, ellipsis: true },
+        { title: '企业简介', dataIndex: 'companyIntro', key: 'companyIntro', width: 180, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '注册时间', dataIndex: 'registerTime', key: 'registerTime', width: 150 },
         { title: '状态', dataIndex: 'status', key: 'status', width: 70 },
         { title: '操作', dataIndex: 'action', key: 'action', width: 190, fixed: 'right' }
@@ -401,6 +401,12 @@ export default {
     }, 200)
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     getOrgRoleText(roles) {
       if (!roles || !roles.length) return ''
       const map = { provider: '服务提供方', consumer: '服务使用方' }

@@ -23,17 +23,24 @@
             <a-descriptions-item label="需求编号">
               <span class="cell-mono">{{ demandInfo.demandNo }}</span>
             </a-descriptions-item>
+            <a-descriptions-item label="方案类型">
+              <a-tag class="plan-type-tag">{{ demandInfo.planType }}</a-tag>
+            </a-descriptions-item>
+            <a-descriptions-item label="方案名称" :span="2">{{ demandInfo.planName }}</a-descriptions-item>
+            <a-descriptions-item label="服务项" :span="2">
+              <div class="service-item-list">
+                <a-tag v-for="(item, idx) in serviceItemList" :key="idx" class="service-item-tag">{{ item }}</a-tag>
+              </div>
+            </a-descriptions-item>
+            <a-descriptions-item label="需求说明" :span="2">
+              <span class="muted">{{ demandInfo.demandDescription }}</span>
+            </a-descriptions-item>
             <a-descriptions-item label="服务类型">
               <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(demandInfo.serviceType)}`]">{{ demandInfo.serviceType }}</span>
             </a-descriptions-item>
             <a-descriptions-item label="申请机构">{{ demandInfo.orgName }}</a-descriptions-item>
-            <a-descriptions-item label="申请人">{{ demandInfo.applicant }}</a-descriptions-item>
             <a-descriptions-item label="发布时间">
               <span class="cell-mono">{{ demandInfo.publishTime }}</span>
-            </a-descriptions-item>
-            <a-descriptions-item label="需求状态">{{ demandInfo.status }}</a-descriptions-item>
-            <a-descriptions-item label="需求描述" :span="2">
-              <span class="muted">{{ demandInfo.demandDescription }}</span>
             </a-descriptions-item>
           </a-descriptions>
         </CloudCard>
@@ -69,12 +76,12 @@
           </div>
           <div class="info-mini-list">
             <div class="info-mini">
-              <span class="info-mini__label">服务类型</span>
-              <span class="info-mini__value">{{ demandInfo.serviceType }}</span>
+              <span class="info-mini__label">方案名称</span>
+              <span class="info-mini__value">{{ demandInfo.planName }}</span>
             </div>
             <div class="info-mini">
-              <span class="info-mini__label">申请人</span>
-              <span class="info-mini__value">{{ demandInfo.applicant }}</span>
+              <span class="info-mini__label">服务类型</span>
+              <span class="info-mini__value">{{ demandInfo.serviceType }}</span>
             </div>
             <div class="info-mini">
               <span class="info-mini__label">申请机构</span>
@@ -123,10 +130,12 @@ export default {
     return {
       demandInfo: {
         demandNo: 'DM-20260810-0012',
+        planName: '统一身份认证平台采购',
+        planType: '安全可控',
+        serviceItems: '统一身份认证平台、安全审计服务',
         demandDescription: '需要一个统一的身份认证平台，支持OAuth2.0和SAML协议，要求支持至少10万用户的并发认证，并提供SSO单点登录功能',
         serviceType: '安全服务',
         orgName: '北京市海淀区数字经济发展局',
-        applicant: '张三',
         status: '已响应',
         publishTime: '2026-03-18 10:30:00',
         respondent: '北京信息安全技术有限公司',
@@ -135,6 +144,12 @@ export default {
         estimatedDuration: '40个工作日',
         responseTime: '2026-03-19 14:20:00'
       }
+    }
+  },
+  computed: {
+    serviceItemList() {
+      if (!this.demandInfo.serviceItems) return []
+      return this.demandInfo.serviceItems.split(/[、，,]/).map(s => s.trim()).filter(Boolean)
     }
   },
   methods: {
@@ -208,6 +223,39 @@ export default {
   color: #4E5969;
   font-size: 13px;
   line-height: 1.6;
+}
+
+.plan-type-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 20px;
+  background: #F4F8FF;
+  color: #035BFE;
+  border: 1px solid rgba(3, 91, 254, 0.20);
+  font-weight: 500;
+  margin: 0;
+}
+
+.service-item-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.service-item-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  line-height: 20px;
+  background: #EAF1FF;
+  color: #035BFE;
+  border: 1px solid #CDDDFF;
+  margin: 0;
 }
 
 .price-text {

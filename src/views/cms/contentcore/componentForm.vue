@@ -78,8 +78,13 @@
               </div>
             </div>
           </a-form-item>
-          <a-form-item label="显示顺序">
-            <a-input-number v-model:value="form.sortOrder" :min="0" style="width: 200px" />
+          <a-form-item label="付费方式参考">
+            <div class="relative">
+              <a-textarea v-model:value="form.paymentMethodRef" :rows="2" placeholder="请输入付费方式参考" :maxlength="200" class="!pb-[28px]" />
+              <div class="absolute right-[8px] bottom-[6px] text-[12px] text-text-tertiary pointer-events-none">
+                {{ form.paymentMethodRef.length }}/200
+              </div>
+            </div>
           </a-form-item>
         </section>
 
@@ -128,6 +133,21 @@
           </a-form-item>
         </section>
 
+        <!-- 4. 管理信息 -->
+        <section v-if="!isShelfMode" class="cloud-card p-[20px] mb-[14px] scroll-mt-[80px]">
+          <div class="flex items-center gap-[8px] mb-[16px]">
+            <div class="w-[4px] h-[16px] bg-primary rounded-full" />
+            <span class="text-[14px] font-semibold text-text-primary">管理信息</span>
+            <span class="text-[11px] text-text-tertiary">仅管理员服务目录管理可见</span>
+          </div>
+          <a-form-item label="显示顺序">
+            <a-input-number v-model:value="form.sortOrder" :min="0" style="width: 200px" />
+          </a-form-item>
+          <a-form-item label="服务征集得分">
+            <a-input-number v-model:value="form.recruitScore" :min="0" :step="0.1" style="width: 200px" placeholder="请输入服务征集得分" />
+          </a-form-item>
+        </section>
+
       </a-form>
     </main>
   </div>
@@ -137,6 +157,7 @@
 import { ArrowLeftOutlined, PictureOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { getComponentList } from '@/api/contentcore/component';
+import { getDicts } from '@/api/system/dict/data';
 import emitter from '@/utils/emitter';
 
 export default {
@@ -154,6 +175,8 @@ export default {
         name: '',
         logo: '',
         description: '',
+        paymentMethodRef: '',
+        recruitScore: undefined,
         sortOrder: 0,
         serviceProviderName: '',
         contact1Name: '',
@@ -170,11 +193,7 @@ export default {
         { value: '10254', label: '联通云' },
         { value: '10250', label: '浪潮云' },
       ],
-      coverOptions: [
-        { value: '10256', label: '不限' },
-        { value: '10257', label: '市级' },
-        { value: '10258', label: '区（县）域' },
-      ],
+      coverOptions: [],
       rules: {
         name: [{ required: true, message: '请输入能力组件名称', trigger: 'blur' }],
         description: [{ required: true, message: '请输入组件描述', trigger: 'blur' }],
@@ -193,13 +212,22 @@ export default {
   },
   created() {
     emitter.emit('set-prd-anchor', this.isShelfMode
-      ? (this.isEdit ? 'prd-3.1.1.1.3.3' : 'prd-3.1.1.1.2.3')
+      ? (this.isEdit ? 'prd-3.1.2.1.3.3' : 'prd-3.1.2.1.2.3')
       : (this.isEdit ? 'prd-3.2.1.3.3' : 'prd-3.2.1.3.2'));
+    this.loadCoverOptions();
     if (this.isEdit) {
       this.loadRecord();
     }
   },
   methods: {
+    loadCoverOptions() {
+      getDicts('OpenRange').then((response) => {
+        this.coverOptions = (response.data || []).map((item) => ({
+          value: String(item.dictCode),
+          label: item.dictLabel
+        }));
+      });
+    },
     loadRecord() {
       const componentId = this.$route.query.id;
       if (!componentId) return;
@@ -211,6 +239,8 @@ export default {
             name: row.name || '',
             logo: row.logo || '',
             description: row.description || '',
+            paymentMethodRef: row.paymentMethodRef || '',
+            recruitScore: row.recruitScore != null ? row.recruitScore : undefined,
             sortOrder: row.sortOrder || 0,
             serviceProviderName: row.serviceProviderName || '',
             contact1Name: row.contact1Name || '',

@@ -1,44 +1,62 @@
 <template>
-  <div class="menu-perms-container" v-loading="loading">
-    <el-row class="mb12">
-      <el-col>
-        <el-button plain type="success" icon="el-icon-edit" size="mini" @click="handleSave">{{ $t("Common.Save") }}</el-button>
-        <el-button plain type="primary" icon="el-icon-check" size="mini" @click="handleSelectAll">{{ this.selectAll ? $t('Common.CheckInverse') : $t('Common.CheckAll')  }}</el-button>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col>
-        <el-table 
-          v-loading="loading"
-          :data="sitePrivs"
-          style="width:100%;line-height: normal;">
-          <el-table-column type="index" :label="$t('Common.RowNo')" width="50">
-          </el-table-column>
-          <el-table-column :label="$t('CMS.Site.Name')" width="200">
-            <template slot-scope="scope">
-                <el-checkbox @change="handleRowSelectAll($event, scope.row.siteId)" v-model="scope.row.perms['View'].granted" :disabled="scope.row.perms['View'].inherited">{{ scope.row.name }}</el-checkbox>
-            </template>
-          </el-table-column>
-          <template v-for="(item, index) in sitePrivItems">
-            <el-table-column :key="index" :label="item.name" v-if="item.id!='View'">
-              <template slot="header">
-                <el-checkbox @change="handleColumnSelectAll(item.id)">{{ item.name }}</el-checkbox>
-              </template>
-              <template slot-scope="scope">
-                <el-checkbox v-model="scope.row.perms[item.id].granted" :disabled="scope.row.perms[item.id].inherited" @change="handleRowColumnChange($event, scope.row)"></el-checkbox>
-              </template>
-            </el-table-column>
-          </template>
-        </el-table>
-      </el-col>
-    </el-row>
+  <div class="menu-perms-container">
+    <div class="mb12">
+      <a-space>
+        <a-button type="primary" ghost size="small" @click="handleSave">
+          <template #icon><EditOutlined /></template>
+          {{ $t("Common.Save") }}
+        </a-button>
+        <a-button ghost size="small" @click="handleSelectAll">
+          <template #icon><CheckOutlined /></template>
+          {{ selectAll ? $t('Common.CheckInverse') : $t('Common.CheckAll') }}
+        </a-button>
+      </a-space>
+    </div>
+    <a-table :scroll="{ x: 'max-content' }"
+      :loading="loading"
+      :columns="columns"
+      :data-source="sitePrivs"
+      row-key="siteId"
+      size="small"
+      :pagination="false"
+      style="width: 100%"
+    >
+      <template #headerCell="{ column }">
+        <template v-if="column.permId && column.permId !== 'View'">
+          <a-checkbox @change="handleColumnSelectAll(column.permId)">{{ column.title }}</a-checkbox>
+        </template>
+      </template>
+      <template #bodyCell="{ column, record, index }">
+        <template v-if="column.key === 'rowNo'">{{ index + 1 }}</template>
+        <template v-else-if="column.dataIndex === 'name'">
+          <a-checkbox
+            v-model:checked="record.perms['View'].granted"
+            :disabled="record.perms['View'].inherited"
+            @change="(e) => handleRowSelectAll(e.target.checked, record.siteId)"
+          >{{ record.name }}</a-checkbox>
+        </template>
+        <template v-else-if="column.permId">
+          <a-checkbox
+            v-model:checked="record.perms[column.permId].granted"
+            :disabled="record.perms[column.permId].inherited"
+            @change="(e) => handleRowColumnChange(e.target.checked, record)"
+          />
+        </template>
+      </template>
+    </a-table>
   </div>
 </template>
 <script>
+import { EditOutlined, CheckOutlined } from "@ant-design/icons-vue";
 import { getSitePermissions, saveSitePermissions } from "@/api/contentcore/perms"
 
 export default {
   name: "SitePermission",
+  components: {
+    EditOutlined,
+    CheckOutlined
+  },
+  emits: [],
   props: {
     ownerType: {
       type: String,
@@ -78,9 +96,27 @@ export default {
       selectAll: false,
       selectColumnAll: {},
       sitePrivs: [],
-      sitePrivItems: []
+      sitePrivItems: [],
+      form: {
+        ownerType: "",
+        owner: ""
+      }
     };
-  }, 
+  },
+  computed: {
+    columns() {
+      const cols = [
+        { title: this.$t("Common.RowNo"), dataIndex: "rowNo", key: "rowNo", width: 50, align: "center" },
+        { title: this.$t("CMS.Site.Name"), dataIndex: "name", key: "name", width: 200 }
+      ];
+      this.sitePrivItems.forEach((item) => {
+        if (item.id != 'View') {
+          cols.push({ title: item.name, dataIndex: item.id, key: item.id, width: 100, align: "center", permId: item.id });
+        }
+      });
+      return cols;
+    }
+  },
   methods: {
     loadData() {
       this.loading = true;
@@ -154,3 +190,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+.mb12 {
+  margin-bottom: 12px;
+}
+</style>

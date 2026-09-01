@@ -21,7 +21,9 @@
               <div class="kv-item"><label>服务名称</label><span>{{ serviceInfo.serviceName || '--' }}</span></div>
               <div class="kv-item"><label>服务类型</label><span>{{ serviceInfo.serviceType || '--' }}</span></div>
               <div class="kv-item"><label>显示顺序</label><span>{{ serviceInfo.sortOrder || '0' }}</span></div>
+              <div class="kv-item"><label>服务征集得分</label><span>{{ serviceInfo.recruitScore != null ? serviceInfo.recruitScore : '--' }}</span></div>
               <div class="kv-item full"><label>服务描述</label><span>{{ serviceInfo.description || '--' }}</span></div>
+              <div class="kv-item full"><label>付费方式参考</label><span>{{ serviceInfo.paymentMethodRef || '--' }}</span></div>
             </div>
           </div>
 
@@ -29,7 +31,6 @@
             <div class="detail-section-title">服务信息</div>
             <div class="detail-kv">
               <div class="kv-item"><label>部署云服务商</label><span>{{ serviceInfo.cloudProvider || '--' }}</span></div>
-              <div class="kv-item"><label>区域</label><span>{{ serviceInfo.region || '--' }}</span></div>
             </div>
           </div>
 
@@ -172,10 +173,11 @@ export default {
         serviceId: '',
         serviceName: '',
         description: '',
+        paymentMethodRef: '',
         sortOrder: 0,
+        recruitScore: null,
         cloudProvider: '',
         serviceType: '',
-        region: '',
         submitTime: '',
         platformRating: 0,
         usageRating: 0,
@@ -220,7 +222,9 @@ export default {
       serviceId: q.serviceId || 'SVC-2024-0001',
       serviceName: q.serviceName || '弹性计算服务 ECS',
       description: q.description || '弹性计算服务（ECS）是一种简单高效、处理能力可弹性伸缩的计算服务，帮助快速构建更稳定、安全的应用，提升运维效率，降低 IT 成本。',
+      paymentMethodRef: q.paymentMethodRef || '按量计费 0.28 元/小时，包年包月更优惠',
       sortOrder: parseInt(q.sortOrder) || 1,
+      recruitScore: q.recruitScore != null ? parseFloat(q.recruitScore) : 90,
       cloudProvider: q.cloudProvider || '浪潮云',
       serviceType: q.serviceType || '计算服务',
       region: q.region || '华东',

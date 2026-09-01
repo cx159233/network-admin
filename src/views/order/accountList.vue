@@ -33,7 +33,7 @@
       </FilterBar>
       <div class="account-list-page__divider"></div>
       <div class="account-list-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 'max-content' }"
           :columns="columns"
           :data-source="filteredData"
           :loading="loading"
@@ -133,6 +133,12 @@ export default {
     this.loadAccountList()
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadAccountList() {
       this.loading = true
       setTimeout(() => { this.loading = false }, 200)
@@ -165,6 +171,7 @@ export default {
     handleToggleStatus(record) {
       const action = record.status === 'enabled' ? '停用' : '启用'
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: `确认${action}`,
         content: `确定要${action}账户「${record.username}」吗？`,
         okText: '确定',

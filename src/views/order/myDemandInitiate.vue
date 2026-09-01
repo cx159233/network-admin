@@ -38,7 +38,7 @@
       <div class="my-demand-initiate-page__divider"></div>
 
       <div class="my-demand-initiate-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 1620 }"
           :columns="columns"
           :data-source="filteredData"
           :pagination="paginationConfig"
@@ -62,11 +62,19 @@
                 <span class="cell-default">{{ record.demandDescription || '--' }}</span>
               </a-tooltip>
             </template>
+            <template v-else-if="column.dataIndex === 'org'">
+              <div class="cell-stack">
+                <div class="cell-stack__primary">{{ record.orgName || '--' }}</div>
+              </div>
+            </template>
             <template v-else-if="column.dataIndex === 'serviceType'">
               <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(record.serviceType)}`]">{{ record.serviceType }}</span>
             </template>
             <template v-else-if="column.dataIndex === 'status'">
               <StatusDot :type="getStatusKey(record.status)" :text="record.status" />
+            </template>
+            <template v-else-if="column.dataIndex === 'responseTime'">
+              <span class="cell-mono">{{ record.responseTime || '--' }}</span>
             </template>
             <template v-else-if="column.dataIndex === 'action'">
               <a-space size="small">
@@ -83,7 +91,7 @@
       </div>
     </CloudCard>
 
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       v-model:open="closeDialogVisible"
       title="关闭需求"
       width="420px"
@@ -94,7 +102,7 @@
       <p class="close-modal__text">确认关闭需求吗？关闭后不可恢复。</p>
     </a-modal>
 
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       v-model:open="confirmResponseDialogVisible"
       title="确认响应"
       width="420px"
@@ -106,7 +114,7 @@
     </a-modal>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="需求详情"
       :width="860"
@@ -121,57 +129,49 @@
               <StatusDot :type="getStatusKey(drawer.record.status)" :text="drawer.record.status" />
             </div>
             <div class="drawer-header-sub">
-              <span class="cell-mono">{{ drawer.record.demandNo || '--' }}</span>
+              <span class="cell-mono">需求编号：{{ drawer.record.demandNo || '--' }}</span>
             </div>
           </div>
         </div>
 
-        <a-tabs v-model:activeKey="drawer.activeTab">
-          <a-tab-pane key="overview" tab="概览">
-            <div class="overview-section-title">需求信息</div>
+        <div class="overview-section">
+          <div class="overview-section__title">需求信息</div>
+          <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+            <a-descriptions-item label="服务类型">
+              <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(drawer.record.serviceType)}`]">{{ drawer.record.serviceType || '--' }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="方案类型">{{ drawer.record.planType || '--' }}</a-descriptions-item>
+            <a-descriptions-item label="服务项" :span="2">
+              <span class="cell-default">{{ drawer.record.serviceItems || '--' }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="需求说明" :span="2">
+              <span class="muted">{{ drawer.record.demandDescription || '--' }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="申请机构">{{ drawer.record.orgName || '--' }}</a-descriptions-item>
+            <a-descriptions-item label="发布时间">
+              <span class="cell-mono">{{ drawer.record.publishTime || '--' }}</span>
+            </a-descriptions-item>
+          </a-descriptions>
+        </div>
+
+        <template v-if="drawer.record.responseContent">
+          <div class="overview-section">
+            <div class="overview-section__title">响应信息</div>
             <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-              <a-descriptions-item label="需求编号">
-                <span class="cell-mono">{{ drawer.record.demandNo || '--' }}</span>
+              <a-descriptions-item label="响应机构">{{ drawer.record.respondent || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="响应时间">
+                <span class="cell-mono">{{ drawer.record.responseTime || '--' }}</span>
               </a-descriptions-item>
-              <a-descriptions-item label="方案类型">
-                <a-tag class="plan-type-tag">{{ drawer.record.planType || '--' }}</a-tag>
+              <a-descriptions-item label="预估报价">
+                <span class="price-text">¥{{ drawer.record.estimatedPrice || '--' }}</span>
               </a-descriptions-item>
-              <a-descriptions-item label="方案名称" :span="2">{{ drawer.record.planName || '--' }}</a-descriptions-item>
-              <a-descriptions-item label="服务项" :span="2">
-                <div class="service-item-list">
-                  <a-tag v-for="(item, idx) in getServiceItemList(drawer.record.serviceItems)" :key="idx" class="service-item-tag">{{ item }}</a-tag>
-                </div>
-              </a-descriptions-item>
-              <a-descriptions-item label="需求说明" :span="2">
-                <span class="muted">{{ drawer.record.demandDescription || '--' }}</span>
-              </a-descriptions-item>
-              <a-descriptions-item label="服务类型">
-                <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(drawer.record.serviceType)}`]">{{ drawer.record.serviceType || '--' }}</span>
-              </a-descriptions-item>
-              <a-descriptions-item label="申请机构">{{ drawer.record.orgName || '--' }}</a-descriptions-item>
-              <a-descriptions-item label="发布时间">
-                <span class="cell-mono">{{ drawer.record.publishTime || '--' }}</span>
+              <a-descriptions-item label="预计工期">{{ drawer.record.estimatedDuration || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="响应内容" :span="2">
+                <span class="muted">{{ drawer.record.responseContent || '--' }}</span>
               </a-descriptions-item>
             </a-descriptions>
-
-            <template v-if="drawer.record.responseContent">
-              <div class="overview-section-title overview-section-title--spaced">响应信息</div>
-              <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-                <a-descriptions-item label="响应机构">{{ drawer.record.respondent || '--' }}</a-descriptions-item>
-                <a-descriptions-item label="响应时间">
-                  <span class="cell-mono">{{ drawer.record.responseTime || '--' }}</span>
-                </a-descriptions-item>
-                <a-descriptions-item label="预估报价">
-                  <span class="price-text">¥{{ drawer.record.estimatedPrice || '--' }}</span>
-                </a-descriptions-item>
-                <a-descriptions-item label="预计工期">{{ drawer.record.estimatedDuration || '--' }}</a-descriptions-item>
-                <a-descriptions-item label="响应内容" :span="2">
-                  <span class="muted">{{ drawer.record.responseContent || '--' }}</span>
-                </a-descriptions-item>
-              </a-descriptions>
-            </template>
-          </a-tab-pane>
-        </a-tabs>
+          </div>
+        </template>
       </template>
     </a-drawer>
   </div>
@@ -199,16 +199,19 @@ export default {
       filter: { demandNo: '', orgName: '', planType: undefined, serviceType: undefined, status: undefined },
       applied: { demandNo: '', orgName: '', planType: undefined, serviceType: undefined, status: undefined },
       pagination: { current: 1, pageSize: 10 },
-      drawer: { visible: false, record: null, activeTab: 'overview' },
+      drawer: { visible: false, record: null },
       columns: [
         { title: '需求编号', dataIndex: 'demandNo', key: 'demandNo', width: 150 },
         { title: '方案名称', dataIndex: 'planName', key: 'planName', width: 180, ellipsis: true },
         { title: '方案类型', dataIndex: 'planType', key: 'planType', width: 120 },
         { title: '服务项', dataIndex: 'serviceItems', key: 'serviceItems', width: 220, ellipsis: true },
-        { title: '需求说明', dataIndex: 'demandDescription', key: 'demandDescription', width: 220, ellipsis: true },
+        { title: '需求说明', dataIndex: 'demandDescription', key: 'demandDescription', width: 220, customCell: () => ({ class: 'cell-wrap' }) },
+        { title: '申请机构', dataIndex: 'org', key: 'org', width: 200 },
         { title: '服务类型', dataIndex: 'serviceType', key: 'serviceType', width: 110 },
         { title: '状态', dataIndex: 'status', key: 'status', width: 110 },
         { title: '发布时间', dataIndex: 'publishTime', key: 'publishTime', width: 160 },
+        { title: '响应机构', dataIndex: 'respondent', key: 'respondent', width: 180, ellipsis: true },
+        { title: '响应时间', dataIndex: 'responseTime', key: 'responseTime', width: 160 },
         { title: '操作', dataIndex: 'action', key: 'action', width: 150, fixed: 'right' }
       ],
       demandList: [
@@ -283,6 +286,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleQuery() {
       this.applied = { ...this.filter }
       this.pagination.current = 1
@@ -301,7 +310,6 @@ export default {
     },
     viewDetail(row) {
       this.drawer.record = row
-      this.drawer.activeTab = 'overview'
       this.drawer.visible = true
     },
     handleClose(row) {
@@ -377,10 +385,45 @@ export default {
   font-weight: 500;
 }
 
+.cell-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+}
+
+.cell-stack__primary {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.cell-stack__secondary {
+  font-size: 12px;
+  color: #86909C;
+  margin-top: 2px;
+}
+
 .cell-default {
   color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
 }
+
+/* 服务类型标签（与需求响应列表一致） */
+.service-type-tag {
+  display: inline-block;
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  border-radius: 3px;
+  border: 1px solid;
+  vertical-align: middle;
+}
+
+.service-type-tag--digital { color: #165DFF; background: #E8F3FF; border-color: rgba(22, 93, 255, 0.20); }
+.service-type-tag--security { color: #F53F3F; background: #FFF0ED; border-color: rgba(245, 63, 63, 0.20); }
+.service-type-tag--component { color: #D97000; background: #FFF3E8; border-color: rgba(217, 112, 0, 0.20); }
+.service-type-tag--basic { color: #16A34A; background: rgba(22, 163, 74, 0.10); border-color: rgba(22, 163, 74, 0.20); }
 
 .dialog-tip {
   display: flex;
@@ -429,8 +472,9 @@ export default {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 4px 0 8px;
-  margin-bottom: 8px;
+  padding: 4px 0 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #F2F3F5;
 }
 
 .drawer-header-info {
@@ -450,7 +494,6 @@ export default {
   font-weight: 700;
   color: #0f172a;
   line-height: 1.3;
-  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
 }
 
 .drawer-header-sub {
@@ -465,43 +508,8 @@ export default {
   color: #C9CDD4;
 }
 
-.service-type-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 14px;
-  line-height: 22px;
-  border: 1px solid transparent;
-  font-weight: 500;
-}
-
-.service-type-tag--digital {
-  color: #165DFF;
-  background: #E8F3FF;
-  border-color: rgba(22, 93, 255, 0.20);
-}
-
-.service-type-tag--security {
-  color: #F5222D;
-  background: #FFF1F0;
-  border-color: rgba(245, 34, 45, 0.20);
-}
-
-.service-type-tag--component {
-  color: #722ED1;
-  background: #F4ECFE;
-  border-color: rgba(114, 46, 209, 0.20);
-}
-
-.service-type-tag--basic {
-  color: #13A57D;
-  background: #E6F8F2;
-  border-color: rgba(19, 165, 125, 0.20);
-}
-
 .muted {
-  color: #4E5969;
+  color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -512,17 +520,20 @@ export default {
   font-size: 14px;
 }
 
-.overview-section-title {
+.overview-section {
+  margin-bottom: 16px;
+}
+
+.overview-section:last-child {
+  margin-bottom: 0;
+}
+
+.overview-section__title {
   font-size: 14px;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.85);
   margin: 0 0 12px 0;
-  padding-left: 8px;
-  border-left: 3px solid #165DFF;
-}
-
-.overview-section-title--spaced {
-  margin-top: 20px;
+  line-height: 1.4;
 }
 
 :deep(.ant-drawer .ant-table-wrapper),

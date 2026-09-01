@@ -295,7 +295,7 @@ export function getComponentList(query) {
 
   if (query && query.cover) {
     filteredData = filteredData.filter(item =>
-      item.coverView === query.cover
+      String(item.cover) === String(query.cover)
     );
   }
 

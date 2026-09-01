@@ -23,7 +23,7 @@
       </FilterBar>
       <div class="site-page__divider"></div>
       <div class="site-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 'max-content' }"
           :columns="columns"
           :data-source="siteList"
           :loading="siteListLoading"
@@ -50,7 +50,7 @@
       </div>
     </CloudCard>
 
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="$t('CMS.Site.Dialog.AddTitle')"
       v-model:open="open"
       width="600px"
@@ -161,6 +161,12 @@ export default {
     this.loadSiteList();
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadSiteList() {
       this.siteListLoading = true;
       listSite(this.queryParams).then((response) => {
@@ -222,6 +228,7 @@ export default {
     handleDelete(row) {
       const siteId = row.siteId;
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: this.$t("Common.ConfirmDelete"),
         onOk: () => {
           return delSite(siteId).then((response) => {

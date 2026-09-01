@@ -37,7 +37,7 @@
         </a-form-model-item>
       </a-col>
     </a-form-model>
-    <a-table
+    <a-table :scroll="{ x: 'max-content' }"
       :columns="columns"
       :data-source="dataSource"
       :loading="loading"

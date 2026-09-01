@@ -88,7 +88,7 @@
       </a-tree>
     </div>
     <!-- 添加栏目对话框 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="$t('CMS.Catalog.AddCatalog')"
       v-model:open="diagOpen"
       :mask-closable="false"
@@ -125,7 +125,7 @@
       </template>
     </a-modal>
 
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="$t('CMS.Catalog.BatchAddCatalog')"
       v-model:open="openBatchAdd"
       :mask-closable="false"
@@ -175,7 +175,7 @@
       </template>
     </a-modal>
 
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="$t('CMS.Catalog.PublishDialogTitle')"
       v-model:open="publishDialogVisible"
       width="500px"
@@ -335,6 +335,12 @@ export default {
     });
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     /** 查询栏目树结构 */
     loadCatalogTreeData() {
       this.loading = true;

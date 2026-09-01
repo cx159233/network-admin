@@ -80,8 +80,13 @@
               </div>
             </div>
           </a-form-item>
-          <a-form-item label="显示顺序">
-            <a-input-number v-model:value="form.sortOrder" :min="0" style="width: 200px" />
+          <a-form-item label="付费方式参考">
+            <div class="relative">
+              <a-textarea v-model:value="form.paymentMethodRef" :rows="2" placeholder="请输入付费方式参考" :maxlength="200" class="!pb-[28px]" />
+              <div class="absolute right-[8px] bottom-[6px] text-[12px] text-text-tertiary pointer-events-none">
+                {{ form.paymentMethodRef.length }}/200
+              </div>
+            </div>
           </a-form-item>
         </section>
 
@@ -123,7 +128,7 @@
             <span class="text-[14px] font-semibold text-text-primary">分类标签</span>
             <span class="text-[11px] text-text-tertiary">应用分类与部署信息</span>
           </div>
-          <a-form-item label="面向对象" name="targetObject" :rules="[{ required: true, message: '请选择面向对象', trigger: 'change', type: 'array', min: 1 }]">
+          <a-form-item label="服务对象" name="targetObject" :rules="[{ required: true, message: '请选择服务对象', trigger: 'change', type: 'array', min: 1 }]">
             <a-checkbox-group v-model:value="form.targetObject">
               <a-checkbox v-for="opt in flatTargetObject" :key="opt" :value="opt">{{ opt }}</a-checkbox>
             </a-checkbox-group>
@@ -160,6 +165,21 @@
           </a-form-item>
         </section>
 
+        <!-- 4. 管理信息 -->
+        <section v-if="!isShelfMode" class="cloud-card p-[20px] mb-[14px] scroll-mt-[80px]">
+          <div class="flex items-center gap-[8px] mb-[16px]">
+            <div class="w-[4px] h-[16px] bg-primary rounded-full" />
+            <span class="text-[14px] font-semibold text-text-primary">管理信息</span>
+            <span class="text-[11px] text-text-tertiary">仅管理员服务目录管理可见</span>
+          </div>
+          <a-form-item label="显示顺序">
+            <a-input-number v-model:value="form.sortOrder" :min="0" style="width: 200px" />
+          </a-form-item>
+          <a-form-item label="服务征集得分">
+            <a-input-number v-model:value="form.recruitScore" :min="0" :step="0.1" style="width: 200px" placeholder="请输入服务征集得分" />
+          </a-form-item>
+        </section>
+
       </a-form>
     </main>
   </div>
@@ -187,8 +207,10 @@ export default {
         title: '',
         logo: '',
         description: '',
+        paymentMethodRef: '',
         systemUrl: '',
         sortOrder: 0,
+        recruitScore: undefined,
         serviceProvider: '',
         cooperativeEnterprise: '',
         contactName1: '',
@@ -222,7 +244,7 @@ export default {
         title: [{ required: true, message: '请输入数字应用名称', trigger: 'blur' }],
         description: [{ required: true, message: '请输入应用描述', trigger: 'blur' }],
         serviceProvider: [{ required: true, message: '请输入服务商名称', trigger: 'blur' }],
-        targetObject: [{ required: true, message: '请选择面向对象', trigger: 'change', type: 'array', min: 1 }],
+        targetObject: [{ required: true, message: '请选择服务对象', trigger: 'change', type: 'array', min: 1 }],
         cloudProvider: [{ required: true, message: '请选择部署云服务商', trigger: 'change', type: 'array', min: 1 }],
       },
     };
@@ -246,7 +268,7 @@ export default {
   },
   created() {
     emitter.emit('set-prd-anchor', this.isShelfMode
-      ? (this.isEdit ? 'prd-3.1.1.1.3.1' : 'prd-3.1.1.1.2.1')
+      ? (this.isEdit ? 'prd-3.1.2.1.3.1' : 'prd-3.1.2.1.2.1')
       : (this.isEdit ? 'prd-3.2.1.1.3' : 'prd-3.2.1.1.2'));
     this.catalogId = this.$route.query.cid || '603612031287365';
     if (this.isEdit) {
@@ -265,8 +287,10 @@ export default {
             title: row.title || '',
             logo: row.logo || '',
             description: row.description || '',
+            paymentMethodRef: row.paymentMethodRef || '',
             systemUrl: row.systemUrl || '',
             sortOrder: row.sortOrder || 0,
+            recruitScore: row.recruitScore != null ? row.recruitScore : undefined,
             serviceProvider: row.serviceProvider || '',
             cooperativeEnterprise: row.cooperativeEnterprise || '',
             contactName1: row.contactName1 || '',

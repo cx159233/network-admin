@@ -41,7 +41,7 @@
       </FilterBar>
       <div class="link-group-page__divider"></div>
       <div class="link-group-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 'max-content' }"
           :columns="columns"
           :data-source="linkGroupList"
           :loading="loading"
@@ -87,7 +87,7 @@
     </CloudCard>
 
     <!-- 添加/编辑弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="title"
       v-model:open="open"
       width="500px"
@@ -173,6 +173,12 @@ export default {
     this.loadListData();
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadListData() {
       this.loading = true;
       getLinkGroupList(this.queryParams).then((response) => {
@@ -232,6 +238,7 @@ export default {
     handleDelete(row) {
       const rows = row.linkGroupId ? [row] : this.selectedRows;
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: this.$t("Common.ConfirmDelete"),
         onOk: () => {
           return deleteLinkGroup(rows).then(() => {

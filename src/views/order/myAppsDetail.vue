@@ -57,7 +57,7 @@
           <div class="info-section">
             <div class="info-section__title">分类标签</div>
             <a-descriptions :column="2" size="small" class="app-desc">
-              <a-descriptions-item label="面向对象">{{ appInfo.targetView || '--' }}</a-descriptions-item>
+              <a-descriptions-item label="服务对象">{{ appInfo.targetView || '--' }}</a-descriptions-item>
               <a-descriptions-item label="应用架构">{{ appInfo.appArchitecture || '--' }}</a-descriptions-item>
               <a-descriptions-item label="部署云服务商">{{ appInfo.cloudProviderStr || '--' }}</a-descriptions-item>
               <a-descriptions-item label="应用覆盖范围">{{ appInfo.coverView || '--' }}</a-descriptions-item>
@@ -75,6 +75,7 @@
             row-key="id"
             size="middle"
             :pagination="false"
+            :scroll="{ x: 'max-content' }"
           >
             <template #bodyCell="{ column, record }">
               <StatusDot v-if="column.dataIndex === 'status'" :type="getAuditStatusKey(record.status)" :text="getAuditStatusText(record.status)" />
@@ -113,7 +114,7 @@
       </div>
     </div>
 
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       v-model:open="reviewDialogVisible"
       title="用户评价列表"
       width="1080px"
@@ -147,7 +148,7 @@
       </a-table>
     </a-modal>
 
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       v-model:open="reviewDetailVisible"
       title="评价详情"
       width="600px"
@@ -286,6 +287,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     goBack() {
       this.$router.push('/workorder/myApps')
     },

@@ -1,8 +1,8 @@
-﻿<template>
+﻿﻿﻿﻿﻿<template>
   <div class="digital-app-audit-page">
     <PageHeader
       title="数字应用审核"
-      description="审核机构提交的数字应用上架申请，支持按应用名称、面向对象和审核状态筛选"
+      description="审核机构提交的数字应用上架申请，支持按应用名称、服务对象和审核状态筛选"
     />
 
     <CloudCard class="digital-app-audit-page__table-card">
@@ -22,12 +22,6 @@
         <a-input v-model:value="filter.title" placeholder="数字应用名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceId" placeholder="数字应用ID" allow-clear style="width: 180px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceProvider" placeholder="服务商名称" allow-clear style="width: 160px" @pressEnter="handleQuery" />
-        <a-select v-model:value="filter.appScope" placeholder="应用覆盖范围" allow-clear style="width: 150px">
-          <a-select-option v-for="item in appScopeOptions" :key="item.value" :value="item.value">{{ item.label }}</a-select-option>
-        </a-select>
-        <a-select v-model:value="filter.targetObjectStr" placeholder="面向对象" allow-clear style="width: 150px">
-          <a-select-option v-for="item in targetObjectOptions" :key="item.value" :value="item.value">{{ item.label }}</a-select-option>
-        </a-select>
         <template #suffix>
           <ColumnSettings v-model="hiddenKeys" :columns="columns" />
         </template>
@@ -69,7 +63,7 @@
     </CloudCard>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="审核详情"
       :width="1100"
@@ -102,11 +96,11 @@
                 <a-descriptions-item label="系统地址">
                   {{ drawer.record.systemUrl || '--' }}
                 </a-descriptions-item>
-                <a-descriptions-item label="显示顺序">
-                  {{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}
-                </a-descriptions-item>
                 <a-descriptions-item label="应用描述">
                   {{ drawer.record.description || '--' }}
+                </a-descriptions-item>
+                <a-descriptions-item label="付费方式参考">
+                  {{ drawer.record.paymentMethodRef || '--' }}
                 </a-descriptions-item>
               </a-descriptions>
             </div>
@@ -122,7 +116,7 @@
             <div class="split-section">
               <div class="split-section__title">分类标签</div>
               <a-descriptions :column="1" bordered size="small">
-                <a-descriptions-item label="面向对象">{{ drawer.record.targetObjectStr || '--' }}</a-descriptions-item>
+                <a-descriptions-item label="服务对象">{{ drawer.record.targetObjectStr || '--' }}</a-descriptions-item>
                 <a-descriptions-item label="应用架构">{{ drawer.record.appArchitecture || '--' }}</a-descriptions-item>
                 <a-descriptions-item label="部署云服务商">{{ drawer.record.cloudProviderStr || '--' }}</a-descriptions-item>
                 <a-descriptions-item v-if="drawer.record.targetObject && drawer.record.targetObject.includes('基层医疗卫生机构')" label="基层应用覆盖范围">{{ formatArray(drawer.record.coverBase) }}</a-descriptions-item>
@@ -228,27 +222,15 @@ export default {
     return {
       loading: false,
       hiddenKeys: [],
-      filter: { title: '', serviceId: '', serviceProvider: '', appScope: undefined, targetObjectStr: undefined, status: undefined, step: undefined, submitTimeRange: [] },
-      applied: { title: '', serviceId: '', serviceProvider: '', appScope: undefined, targetObjectStr: undefined, status: undefined, step: undefined, submitTimeRange: [] },
+      filter: { title: '', serviceId: '', serviceProvider: '', status: undefined, step: undefined, submitTimeRange: [] },
+      applied: { title: '', serviceId: '', serviceProvider: '', status: undefined, step: undefined, submitTimeRange: [] },
       pagination: { current: 1, pageSize: 10 },
-      appScopeOptions: [
-        { value: '基本公共卫生服务', label: '基本公共卫生服务' },
-        { value: '医院信息系统（HIS）', label: '医院信息系统（HIS）' },
-        { value: '家庭医生签约', label: '家庭医生签约' },
-        { value: '实验室信息管理系统（LIS）', label: '实验室信息管理系统（LIS）' },
-        { value: '影像归档和通信系统（PACS）', label: '影像归档和通信系统（PACS）' }
-      ],
-      targetObjectOptions: [
-        { value: '基层医疗卫生机构', label: '基层医疗卫生机构' },
-        { value: '公立医院', label: '公立医院' },
-        { value: '医技护人员', label: '医技护人员' }
-      ],
       columns: [
         { title: '提交审核时间', dataIndex: 'submitTime', key: 'submitTime', width: 170 },
         { title: '审核状态', dataIndex: 'auditStatus', key: 'auditStatus', width: 110 },
         { title: '审核阶段', dataIndex: 'currentStep', key: 'currentStep', width: 140 },
         { title: '数字应用名称/ID', dataIndex: 'title', key: 'title', width: 240 },
-        { title: '面向对象', dataIndex: 'targetObjectStr', key: 'targetObjectStr', width: 130 },
+        { title: '服务对象', dataIndex: 'targetObjectStr', key: 'targetObjectStr', width: 130 },
         { title: '应用覆盖范围', dataIndex: 'appScope', key: 'appScope', width: 200 },
         { title: '服务商名称', dataIndex: 'serviceProvider', key: 'serviceProvider', ellipsis: true, width: 150 },
         { title: '合作企业', dataIndex: 'cooperativeEnterprise', key: 'cooperativeEnterprise', ellipsis: true, width: 150 },
@@ -284,12 +266,13 @@ export default {
         coverBase: ['基本公共卫生服务', '家庭医生签约'],
         coverPublic: ['医院信息系统（HIS）', '实验室信息管理系统（LIS）'],
         coverTech: ['影像归档和通信系统（PACS）'],
+        paymentMethodRef: '按年付费，含维保服务，具体费用根据服务内容协商确定',
         sortOrder: 1
       },
       // 每个提交的审核步骤数据（key: submissionId → stageKey → stage data）
       submissionAuditData: {
         // 同步远方医疗服务 V1 — 被驳回于步骤3
-        SUB001: {
+        'SZYY202410220001-V1': {
           1: {
             id: 'v1s1', status: 'approved', statusKey: 'done', statusText: '已通过',
             auditor: '李主管', auditTime: '2026-03-18 15:30',
@@ -319,7 +302,7 @@ export default {
           4: { id: 'v1s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 同步远方医疗服务 V2 — 待审核，当前在步骤2
-        SUB002: {
+        'SZYY202410220001-V2': {
           1: {
             id: 'v2s1', status: 'approved', statusKey: 'done', statusText: '已通过',
             auditor: '李主管', auditTime: '2026-05-20 10:00',
@@ -339,7 +322,7 @@ export default {
           4: { id: 'v2s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 智慧住院服务 V1
-        SUB003: {
+        'SZYY202410230001-V1': {
           1: {
             id: 's3s1', status: 'approved', statusKey: 'done', statusText: '已通过',
             auditor: '李主管', auditTime: '2026-10-25 10:00',
@@ -359,28 +342,28 @@ export default {
           4: { id: 's3s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 久远康嘉医联体一体化服务 V1 — 已通过
-        SUB004: {
+        'SZYY202410240001-V1': {
           1: { id: 's4s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘主管', auditTime: '2026-11-01 10:00', _records: [{ id: 61, nodeType: 'submit', submitTime: '2026-10-24 14:59', remark: '机构提交申报材料' }, { id: 62, nodeType: 'audit', status: 'approved', auditTime: '2026-11-01 10:00', auditor: '刘主管', opinion: '材料完整合规' }] },
           2: { id: 's4s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '陈工程师', auditTime: '2026-11-05 14:00', _records: [{ id: 63, nodeType: 'submit', submitTime: '2026-11-02 09:00', remark: '进入技术测评' }, { id: 64, nodeType: 'audit', status: 'approved', auditTime: '2026-11-05 14:00', auditor: '陈工程师', opinion: '架构合理、性能达标' }] },
           3: { id: 's4s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '周主任', auditTime: '2026-11-10 16:00', _records: [{ id: 65, nodeType: 'submit', submitTime: '2026-11-06 10:00', remark: '预约现场答辩' }, { id: 66, nodeType: 'audit', status: 'approved', auditTime: '2026-11-10 16:00', auditor: '周主任', opinion: '演示完整、答辩通过' }] },
           4: { id: 's4s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '赵管理员', auditTime: '2026-11-15 09:00', _records: [{ id: 67, nodeType: 'submit', submitTime: '2026-11-11 14:00', remark: '提交发布申请' }, { id: 68, nodeType: 'audit', status: 'approved', auditTime: '2026-11-15 09:00', auditor: '赵管理员', opinion: '发布至服务目录' }] }
         },
         // 中医智能辅助服务 V1 — 已通过
-        SUB005: {
+        'SZYY202410240002-V1': {
           1: { id: 's5s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘主管', auditTime: '2026-11-02 09:00', _records: [{ id: 71, nodeType: 'submit', submitTime: '2026-10-24 15:00', remark: '机构提交申报材料' }, { id: 72, nodeType: 'audit', status: 'approved', auditTime: '2026-11-02 09:00', auditor: '刘主管', opinion: '材料齐全' }] },
           2: { id: 's5s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-06 11:00', _records: [{ id: 73, nodeType: 'submit', submitTime: '2026-11-03 09:00', remark: '进入技术测评' }, { id: 74, nodeType: 'audit', status: 'approved', auditTime: '2026-11-06 11:00', auditor: '王工程师', opinion: '技术测评通过' }] },
           3: { id: 's5s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主任', auditTime: '2026-11-12 15:00', _records: [{ id: 75, nodeType: 'submit', submitTime: '2026-11-07 10:00', remark: '预约答辩' }, { id: 76, nodeType: 'audit', status: 'approved', auditTime: '2026-11-12 15:00', auditor: '张主任', opinion: '答辩通过' }] },
           4: { id: 's5s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '赵管理员', auditTime: '2026-11-16 10:00', _records: [{ id: 77, nodeType: 'submit', submitTime: '2026-11-13 14:00', remark: '发布申请' }, { id: 78, nodeType: 'audit', status: 'approved', auditTime: '2026-11-16 10:00', auditor: '赵管理员', opinion: '已发布' }] }
         },
         // 智慧慢病管理一体化服务 V1 — 被驳回于步骤3
-        SUB006: {
+        'SZYY202410240003-V1': {
           1: { id: 's6s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-11-03 10:00', _records: [{ id: 81, nodeType: 'submit', submitTime: '2026-10-24 15:00', remark: '机构提交申报材料' }, { id: 82, nodeType: 'audit', status: 'approved', auditTime: '2026-11-03 10:00', auditor: '李主管', opinion: '材料完整' }] },
           2: { id: 's6s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-11-07 14:00', _records: [{ id: 83, nodeType: 'submit', submitTime: '2026-11-04 09:00', remark: '进入技术测评' }, { id: 84, nodeType: 'audit', status: 'approved', auditTime: '2026-11-07 14:00', auditor: '王工程师', opinion: '技术测试通过' }] },
           3: { id: 's6s3', status: 'rejected', statusKey: 'rejected', statusText: '已驳回', auditor: '张主任', auditTime: '2026-11-14 16:00', _records: [{ id: 85, nodeType: 'submit', submitTime: '2026-11-08 10:00', remark: '预约答辩' }, { id: 86, nodeType: 'audit', status: 'rejected', auditTime: '2026-11-14 16:00', auditor: '张主任', opinion: '慢病管理闭环流程不完整，缺少患者随访跟踪环节' }] },
           4: { id: 's6s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 急诊急救指挥调度服务 V1 — 待审核，步骤1
-        SUB007: {
+        'SZYY202410240004-V1': {
           1: {
             id: 's7s1', status: 'processing', statusKey: 'processing', statusText: '进行中',
             auditor: '', auditTime: '',
@@ -393,14 +376,14 @@ export default {
           4: { id: 's7s4', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         // 智慧医疗综合管理服务 V1 — 已通过
-        SUB008: {
+        'SZYY202410240005-V1': {
           1: { id: 's8s1', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-03-15 14:00', _records: [{ id: 101, nodeType: 'submit', submitTime: '2026-03-10 08:00', remark: '机构提交申报材料' }, { id: 102, nodeType: 'audit', status: 'approved', auditTime: '2026-03-15 14:00', auditor: '李主管', opinion: '材料齐全，审核通过' }] },
           2: { id: 's8s2', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-03-20 10:00', _records: [{ id: 103, nodeType: 'submit', submitTime: '2026-03-16 09:00', remark: '进入技术测评' }, { id: 104, nodeType: 'audit', status: 'approved', auditTime: '2026-03-20 10:00', auditor: '王工程师', opinion: '技术架构合理，性能达标' }] },
           3: { id: 's8s3', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主任', auditTime: '2026-03-28 15:00', _records: [{ id: 105, nodeType: 'submit', submitTime: '2026-03-21 10:00', remark: '预约答辩' }, { id: 106, nodeType: 'audit', status: 'approved', auditTime: '2026-03-28 15:00', auditor: '张主任', opinion: '演示流畅，功能完备' }] },
           4: { id: 's8s4', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '赵管理员', auditTime: '2026-04-02 09:00', _records: [{ id: 107, nodeType: 'submit', submitTime: '2026-03-29 14:00', remark: '提交发布申请' }, { id: 108, nodeType: 'audit', status: 'approved', auditTime: '2026-04-02 09:00', auditor: '赵管理员', opinion: '已发布至数字应用目录' }] }
         },
         // 智慧医疗综合管理服务 V2 — 待审核，步骤1
-        SUB009: {
+        'SZYY202410240005-V2': {
           1: {
             id: 's9s1', status: 'processing', statusKey: 'processing', statusText: '进行中',
             auditor: '', auditTime: '',
@@ -433,7 +416,6 @@ export default {
       const list = this.appList.filter(item => {
         if (f.title && !(item.title || '').includes(f.title)) return false
         if (f.serviceId && !(item.serviceId || '').includes(f.serviceId)) return false
-        if (f.targetObjectStr && item.targetObjectStr !== f.targetObjectStr) return false
         if (f.submitTimeRange && f.submitTimeRange.length === 2) {
           const itemDate = (item.submitTime || '').slice(0, 10)
           if (itemDate < f.submitTimeRange[0] || itemDate > f.submitTimeRange[1]) return false
@@ -463,6 +445,12 @@ export default {
     },
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleQuery() {
       this.applied = { ...this.filter }
       this.pagination.current = 1
@@ -683,6 +671,7 @@ export default {
       const isLastStage = this.activeStepIdx === this.auditSteps.length - 1
       const stepName = this.auditSteps[this.activeStepIdx]?.title || ''
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认通过',
         content: isLastStage
           ? `当前为第 ${this.activeStepIdx + 1} 阶段（${stepName}），通过后将完成全部审核流程，确定通过吗？`
@@ -710,6 +699,7 @@ export default {
       }
       const stepName = this.auditSteps[this.activeStepIdx]?.title || ''
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认驳回',
         content: `驳回后当前阶段（${stepName}）状态将变更为"已驳回"并终止审核流程，确定驳回吗？`,
         okText: '确定',

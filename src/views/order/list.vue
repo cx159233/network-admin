@@ -31,7 +31,7 @@
       <div class="order-list-page__divider"></div>
 
       <div class="order-list-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 'max-content' }"
           :columns="visibleColumns"
           :data-source="filteredData"
           :pagination="paginationConfig"
@@ -79,7 +79,7 @@
     </CloudCard>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="服务开通详情"
       :width="860"
@@ -94,7 +94,7 @@
               <StatusDot :type="getStatusKey(drawer.record.status)" :text="drawer.record.status" />
             </div>
             <div class="drawer-header-sub">
-              <span>ID：{{ drawer.record.serviceId || drawer.record.orderNo || '--' }}</span>
+              <span class="cell-mono">服务单号：{{ drawer.record.orderNo || '--' }}</span>
             </div>
           </div>
         </div>
@@ -102,8 +102,8 @@
         <div class="overview-section">
           <div class="overview-section__title">基本信息</div>
           <a-descriptions :column="2" bordered size="small">
-            <a-descriptions-item label="服务单号">
-              <span class="cell-mono">{{ drawer.record.orderNo || '--' }}</span>
+            <a-descriptions-item label="服务ID">
+              <span class="cell-mono">{{ drawer.record.serviceId || '--' }}</span>
             </a-descriptions-item>
             <a-descriptions-item label="服务类型">
               <span :class="['service-type-tag', getServiceTypeClass(drawer.record.serviceType)]">{{ drawer.record.serviceType || '--' }}</span>
@@ -128,7 +128,10 @@
               :key="idx"
               :color="step.dotColor"
             >
-              <div :class="['tl-title', `tl-title--${step.state}`]">{{ step.title }}</div>
+              <div :class="['tl-title', `tl-title--${step.state}`]">
+                {{ step.title }}
+                <span :class="['tl-state', `tl-state--${step.state}`]">{{ step.stateLabel }}</span>
+              </div>
               <div class="tl-time">{{ step.time }}</div>
             </a-timeline-item>
           </a-timeline>
@@ -137,7 +140,7 @@
     </a-drawer>
 
     <!-- 查看评价弹窗 -->
-    <a-modal v-model:open="reviewVisible" title="用户评价" :width="520" :footer="null" :destroy-on-close="true">
+    <a-modal :get-container="getDemoContainer" v-model:open="reviewVisible" title="用户评价" :width="520" :footer="null" :destroy-on-close="true">
       <template v-if="currentReview.ratings">
         <div class="review-modal__rating-grid">
           <div v-for="key in ratingKeys" :key="key" class="review-modal__rating-item">
@@ -157,6 +160,15 @@
           <span>{{ currentReview.orgName || '--' }}</span>
           <span class="review-modal__meta-sep">·</span>
           <span>{{ currentReview.time || '--' }}</span>
+        </div>
+        <div v-if="currentReview.reply" class="review-modal__reply">
+          <div class="review-modal__reply-label">回复内容</div>
+          <p class="review-modal__reply-text">{{ currentReview.reply.content || '--' }}</p>
+          <div class="review-modal__reply-meta">
+            <span>{{ currentReview.reply.role || '--' }}</span>
+            <span class="review-modal__meta-sep">·</span>
+            <span>{{ currentReview.reply.time || '--' }}</span>
+          </div>
         </div>
       </template>
       <a-empty v-else description="暂无评价信息" />
@@ -203,13 +215,6 @@ export default {
       drawer: { visible: false, record: null },
       reviewInfo: { score: 0, description: '', reviewTime: '' },
       reviewForm: { score: 0, description: '', submitting: false },
-      drawerTimeline: [
-        { title: '提交申请', time: '工单已提交', state: 'done', dotColor: 'green' },
-        { title: '系统派发工单', time: '自动派发', state: 'done', dotColor: 'green' },
-        { title: '工单流转中', time: '当前节点', state: 'on', dotColor: 'blue' },
-        { title: '服务交付完成', time: '等待工单系统回执', state: 'wait', dotColor: 'gray' },
-        { title: '服务评价', time: '交付完成后可评价', state: 'wait', dotColor: 'gray' }
-      ],
       reviewVisible: false,
       currentReview: {},
       ratingKeys: ['准确性', '稳定性', '响应时效', '业务适配性'],
@@ -285,7 +290,12 @@ export default {
           serviceType: '能力组件',
           status: '已评价',
           workorderId: 'TK-0228',
-          applyTime: '2026-03-13 14:11:32'
+          applyTime: '2026-03-13 14:11:32',
+          reply: {
+            role: '开发者',
+            content: '感谢您的反馈，响应时效问题已纳入下一版本优化计划，届时将进一步缩短接口调用耗时。',
+            time: '2026-03-21 15:30:00'
+          }
         },
         {
           orderNo: '202608100091',
@@ -436,9 +446,64 @@ export default {
       const r = this.currentReview.ratings
       if (!r) return 0
       return (r['准确性'] + r['稳定性'] + r['响应时效'] + r['业务适配性']) / 4
+    },
+    drawerTimeline() {
+      const rec = this.drawer.record
+      if (!rec) return []
+      const fmt = (minutes) => this.offsetTime(rec.applyTime, minutes)
+      const DONE = { state: 'done', stateLabel: '已完成', dotColor: 'green' }
+      const ON = { state: 'on', stateLabel: '进行中', dotColor: 'blue' }
+      const WAIT = { state: 'wait', stateLabel: '待处理', dotColor: 'gray', time: '--' }
+      const node = (title, time, st) => ({ title, time: time || '--', ...st })
+      switch (rec.status) {
+        case '工单流转中':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('系统派发工单', fmt(2), DONE),
+            node('工单流转中', fmt(2), ON),
+            node('服务交付完成', '', WAIT),
+            node('服务评价', '', WAIT)
+          ]
+        case '已完成':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('系统派发工单', fmt(2), DONE),
+            node('工单流转中', fmt(2), DONE),
+            node('服务交付完成', fmt(24 * 60 + 35), DONE),
+            node('服务评价', '', ON)
+          ]
+        case '已评价':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('系统派发工单', fmt(2), DONE),
+            node('工单流转中', fmt(2), DONE),
+            node('服务交付完成', fmt(24 * 60 + 35), DONE),
+            node('服务评价', fmt(26 * 60 + 10), DONE)
+          ]
+        case '已驳回':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('系统派发工单', fmt(2), DONE),
+            node('工单流转中', fmt(2), DONE),
+            node('订单驳回', fmt(5 * 60 + 20), DONE)
+          ]
+        case '已取消':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('订单取消', fmt(40), DONE)
+          ]
+        default:
+          return []
+      }
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleQuery() {
       this.applied = { ...this.filter }
       this.pagination.current = 1
@@ -460,17 +525,25 @@ export default {
       this.pagination.current = pag.current
       this.pagination.pageSize = pag.pageSize
     },
+    offsetTime(base, minutes) {
+      if (!base) return '--'
+      const t = new Date(String(base).replace(/-/g, '/'))
+      if (isNaN(t.getTime())) return '--'
+      t.setMinutes(t.getMinutes() + minutes)
+      const p = (n) => String(n).padStart(2, '0')
+      return `${t.getFullYear()}-${p(t.getMonth() + 1)}-${p(t.getDate())} ${p(t.getHours())}:${p(t.getMinutes())}:${p(t.getSeconds())}`
+    },
     goToDetail(row) {
       this.drawer.record = row
       this.drawer.visible = true
     },
     onViewReview(row) {
-      this.currentReview = this.reviewMock
+      this.currentReview = { ...this.reviewMock, reply: row.reply || null }
       this.reviewVisible = true
     },
     goToWorkorder(workorderId) {
       if (workorderId) {
-        window.open(`https://yunyi-cloud.example.com/workorder/${workorderId}`, '_blank')
+        window.open(`https://yunyi-cloud.example.com/workorder/detail?workorderId=${workorderId}`, '_blank')
       }
     },
     submitReview() {
@@ -497,6 +570,7 @@ export default {
     cancelOrder(row) {
       const target = row || this.drawer.record
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '取消服务单',
         content: `确定要取消服务单 ${target ? target.orderNo : ''} 吗？取消后无法恢复。`,
         okText: '确定',
@@ -506,7 +580,7 @@ export default {
           if (target) {
             target.status = '已取消'
           }
-          message.success('服务单取消成功')
+          message.success('取消成功')
         }
       })
     },
@@ -666,6 +740,21 @@ export default {
 .tl-title--done { color: #4E5969; }
 .tl-title--on { color: #165DFF; font-weight: 600; }
 .tl-title--wait { color: #C9CDD4; }
+
+.tl-state {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 6px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  vertical-align: 1px;
+}
+
+.tl-state--done { color: #4E5969; background: #F2F3F5; }
+.tl-state--on { color: #165DFF; background: #E8F3FF; }
+.tl-state--wait { color: #C9CDD4; background: #FAFAFA; }
 
 .tl-time {
   font-size: 11px;
@@ -857,5 +946,33 @@ export default {
 
 .review-modal__meta-sep {
   color: #C9CDD4;
+}
+
+.review-modal__reply {
+  margin-top: 12px;
+  padding: 12px;
+  background: #F7F8FA;
+  border-radius: 4px;
+}
+
+.review-modal__reply-label {
+  font-size: 13px;
+  color: #86909C;
+  margin-bottom: 6px;
+}
+
+.review-modal__reply-text {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.6;
+  margin: 0 0 6px;
+}
+
+.review-modal__reply-meta {
+  font-size: 12px;
+  color: #86909C;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 </style>

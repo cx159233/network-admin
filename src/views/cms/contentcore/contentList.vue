@@ -131,7 +131,7 @@
             size="small"
             :columns="columns"
             :data-source="contentList"
-            :scroll="{ y: tableHeight }"
+            :scroll="{ x: 'max-content', y: tableHeight }"
             row-key="contentId"
             :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
             :pagination="false"
@@ -185,7 +185,7 @@
     </CloudCard>
 
     <!-- 置顶时间设置弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="$t('CMS.Content.SetTop')"
       width="400px"
       v-model:open="topDialogVisible"
@@ -394,6 +394,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadContentList() {
       this.loading = true;
       this.queryParams.catalogId = this.catalogId;
@@ -497,6 +503,7 @@ export default {
         ? [row.contentId]
         : this.selectedRows.map((row) => row.contentId);
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         content: "删除后门户网站不可见，是否确认删除？",
         onOk: () => {
           return delContent(contentIds).then(() => {
@@ -516,6 +523,7 @@ export default {
         return;
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         content: "发布后将在门户网站上显示，是否确认发布？",
         onOk: () => {
           this.updateArticle(contentIds);
@@ -682,6 +690,7 @@ export default {
     },
     handleOffline(row) {
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         content: "下线后将在门户网站上隐藏，是否确认下线？",
         onOk: () => {
           const contentIds = row.contentId
@@ -696,6 +705,7 @@ export default {
     },
     handleToPublish(row) {
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         content: "待发布后将在门户网站上隐藏，是否确认待发布？",
         onOk: () => {
           const contentIds = row.contentId

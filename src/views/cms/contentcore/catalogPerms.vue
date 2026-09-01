@@ -1,62 +1,82 @@
 <template>
-  <div class="menu-perms-container" v-loading="loading">
-    <el-row :gutter="10" class="mb10">
-      <el-col :span="1.5">
-        <el-select v-model="currentSiteId" size="mini" @change="handleSiteChange">
-          <el-option
+  <div class="menu-perms-container">
+    <div class="mb12">
+      <a-space>
+        <a-select
+          v-model:value="currentSiteId"
+          size="small"
+          style="min-width: 160px"
+          @change="handleSiteChange"
+        >
+          <a-select-option
             v-for="item in siteOptions"
             :key="item.id"
-            :label="item.name"
             :value="item.id"
+          >
+            {{ item.name }}
+          </a-select-option>
+        </a-select>
+        <a-button type="primary" ghost size="small" @click="handleSave">
+          <template #icon><EditOutlined /></template>
+          {{ $t("Common.Save") }}
+        </a-button>
+        <a-button ghost size="small" @click="handleSelectAll">
+          <template #icon><CheckOutlined /></template>
+          {{ selectAll ? $t('Common.CheckInverse') : $t('Common.CheckAll') }}
+        </a-button>
+      </a-space>
+    </div>
+    <a-table
+      v-if="siteOptions.length > 0"
+      :loading="loading"
+      :columns="columns"
+      :data-source="catalogPrivs"
+      row-key="catalogId"
+      size="small"
+      v-model:expanded-row-keys="expandedRowKeys"
+      :scroll="{ x: 'max-content', y: tableHeight }"
+      :pagination="false"
+      style="width: 100%"
+    >
+      <template #headerCell="{ column }">
+        <template v-if="column.permId && column.permId !== 'View'">
+          <a-checkbox @change="handleColumnSelectAll(column.permId)">{{ column.title }}</a-checkbox>
+        </template>
+      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'name'">
+          <a-checkbox
+            v-model:checked="record.perms['View'].granted"
+            :disabled="record.perms['View'].inherited"
+            @change="(e) => handleRowSelectAll(e.target.checked, record.catalogId)"
+          >{{ record.name }}</a-checkbox>
+        </template>
+        <template v-else-if="column.permId">
+          <a-checkbox
+            v-model:checked="record.perms[column.permId].granted"
+            :disabled="record.perms[column.permId].inherited"
+            @change="(e) => handleRowColumnChange(e.target.checked, record)"
           />
-        </el-select>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain type="success" icon="el-icon-edit" size="mini" @click="handleSave">{{ $t("Common.Save") }}</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain type="primary" icon="el-icon-check" size="mini" @click="handleSelectAll">{{ this.selectAll ? $t('Common.CheckInverse') : $t('Common.CheckAll') }}</el-button>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col>
-        <el-table 
-          v-if="siteOptions.length > 0"
-          v-loading="loading"
-          :data="catalogPrivs"
-          :height="tableHeight"
-          :max-height="tableMaxHeight"
-          row-key="catalogId"
-          default-expand-all
-          style="width:100%;line-height: normal;">
-          <el-table-column :label="$t('CMS.Catalog.Name')" width="200">
-            <template slot-scope="scope">
-                <el-checkbox @change="handleRowSelectAll($event, scope.row.catalogId)" v-model="scope.row.perms['View'].granted" :disabled="scope.row.perms['View'].inherited">{{ scope.row.name }}</el-checkbox>
-            </template>
-          </el-table-column>
-          <template v-for="(item, index) in catalogPrivItems">
-            <el-table-column :key="index" :label="item.name" v-if="item.id!='View'" width="100">
-              <template slot="header">
-                <el-checkbox @change="handleColumnSelectAll(item.id)">{{ item.name }}</el-checkbox>
-              </template>
-              <template slot-scope="scope">
-                <el-checkbox v-model="scope.row.perms[item.id].granted" :disabled="scope.row.perms[item.id].inherited" @change="handleRowColumnChange($event, scope.row)"></el-checkbox>
-              </template>
-            </el-table-column>
-          </template>
-        </el-table>
-        <div v-else style="background-color: #f4f4f5;color: #909399;font-size:12px;line-height: 30px;padding-left:10px;">
-          <i class="el-icon-info mr5"></i>{{ $t("CMS.Catalog.NoSitePermissions") }}
-        </div>
-      </el-col>
-    </el-row>
+        </template>
+      </template>
+    </a-table>
+    <div v-else class="no-perms-tip">
+      <InfoCircleOutlined class="mr5" />{{ $t("CMS.Catalog.NoSitePermissions") }}
+    </div>
   </div>
 </template>
 <script>
+import { EditOutlined, CheckOutlined, InfoCircleOutlined } from "@ant-design/icons-vue";
 import { getCatalogPermissions, saveCatalogPermissions, getSiteOptions } from "@/api/contentcore/perms"
 
 export default {
   name: "CatalogPermission",
+  components: {
+    EditOutlined,
+    CheckOutlined,
+    InfoCircleOutlined
+  },
+  emits: [],
   props: {
     ownerType: {
       type: String,
@@ -96,10 +116,28 @@ export default {
       selectColumnAll: {},
       catalogPrivs: [],
       catalogPrivItems: [],
+      expandedRowKeys: [],
       currentSiteId: "",
-      siteOptions: []
+      siteOptions: [],
+      form: {
+        ownerType: "",
+        owner: ""
+      }
     };
-  }, 
+  },
+  computed: {
+    columns() {
+      const cols = [
+        { title: this.$t("CMS.Catalog.Name"), dataIndex: "name", key: "name", width: 200 }
+      ];
+      this.catalogPrivItems.forEach((item) => {
+        if (item.id != 'View') {
+          cols.push({ title: item.name, dataIndex: item.id, key: item.id, width: 100, align: "center", permId: item.id });
+        }
+      });
+      return cols;
+    }
+  },
   created () {
     this.changeTableHeight();
     this.loadSiteOptions();
@@ -126,6 +164,7 @@ export default {
       getCatalogPermissions(params).then(response => {
         this.catalogPrivItems = response.data.catalogPrivItems;
         this.catalogPrivs = this.initCatalogPrivs(response.data.catalogPrivs);
+        this.expandedRowKeys = this.getExpandKeys(this.catalogPrivs);
         this.loading = false;
       });
     },
@@ -141,6 +180,17 @@ export default {
         }
       });
       return catalogPrivs;
+    },
+    getExpandKeys(arr) {
+      // 树表数据异步加载后 defaultExpandAllRows 不生效，改为受控展开全部
+      const keys = [];
+      arr.forEach(row => {
+        if (row.children && row.children.length > 0) {
+          keys.push(row.catalogId);
+          keys.push(...this.getExpandKeys(row.children));
+        }
+      });
+      return keys;
     },
     handleSiteChange() {
       this.loadData();
@@ -222,7 +272,7 @@ export default {
         if (row.children && row.children.length > 0) {
           this.selectColumn(row.children, column, checked)
         }
-      })
+      });
     },
     handleRowColumnChange(value, row) {
       if (value) {
@@ -255,3 +305,18 @@ export default {
   }
 };
 </script>
+<style scoped>
+.mb12 {
+  margin-bottom: 12px;
+}
+.mr5 {
+  margin-right: 5px;
+}
+.no-perms-tip {
+  background-color: #f4f4f5;
+  color: #909399;
+  font-size: 12px;
+  line-height: 30px;
+  padding-left: 10px;
+}
+</style>

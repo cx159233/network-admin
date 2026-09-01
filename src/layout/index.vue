@@ -67,6 +67,9 @@
       </div>
     </main>
 
+    <!-- 弹层挂载容器：覆盖 Demo 区域（顶部导航+左侧导航+页面内容），右边界与 PRD 分隔条对齐 -->
+    <div class="app-overlay"></div>
+
     <aside class="prd-area" :class="{ 'prd-area--open': prdVisible && showPrd, 'prd-area--visible': showPrd }">
       <div v-if="showPrd" class="prd-divider" @click="prdVisible = !prdVisible">
         <div class="prd-divider-line"></div>
@@ -139,7 +142,7 @@ import {
 import { message } from 'ant-design-vue'
 import SidebarMenu from './components/Sidebar/SidebarMenu.vue'
 import { filterMenusByRole, roleList, roleLabels } from '@/config/roleMenus'
-import { shouldShowPrd, getAllPrdHtml, getPrdAnchor, getPrdPageName, getPrdToc } from '@/data/prd'
+import { getAllPrdHtml, getPrdAnchor, getPrdPageName, getPrdToc } from '@/data/prd'
 import emitter from '@/utils/emitter'
 
 export default {
@@ -205,7 +208,7 @@ export default {
       return this.currentRole === 'developer' || this.currentRole === 'org'
     },
     showPrd() {
-      return shouldShowPrd(this.currentPath || '')
+      return true
     },
     prdPageName() {
       return getPrdPageName(this.currentPath || '')
@@ -631,10 +634,27 @@ ${processedHtml}
   padding: 20px 24px;
   overflow-y: auto;
   height: 100%;
+  position: relative;
+  /* 创建新的 fixed 定位包含块：挂载进来的弹窗/抽屉蒙层（position: fixed）被限制在内容区域内 */
+  transform: translateZ(0);
 }
 
 .app-main__content--full-bleed {
   padding: 0;
+}
+
+/* 弹层挂载容器（抽屉级）：覆盖整个 Demo 区域（含顶部/左侧导航），z-index 高于 header(30)/sider(20)；transform 创建 fixed 包含块，抽屉蒙层被限制在该区域内；overflow:hidden 裁掉滑入动画溢出部分，抽屉从 Demo 区右边缘滑入 */
+.app-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: var(--prd-area-width, 0px);
+  z-index: 40;
+  pointer-events: none;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0);
+  overflow: hidden;
 }
 
 .app-sider--collapsed ~ .app-main {

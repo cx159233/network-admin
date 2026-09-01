@@ -1,7 +1,7 @@
 <template>
   <div class="qualification-detail-page">
     <PageHeader
-      :title="`机构资质审核 · ${orgInfo.unitName}`"
+      :title="`机构入驻审核 · ${orgInfo.unitName}`"
       description="查看机构资质申请详情、附件材料及审核记录，并通过审核激活账号或驳回申请"
     >
       <template #actions>
@@ -108,7 +108,7 @@
           <div class="card-head">
             <span class="card-head__title">审核记录</span>
           </div>
-          <a-table
+          <a-table :scroll="{ x: 'max-content' }"
             :columns="auditColumns"
             :data-source="auditRecords"
             :pagination="false"
@@ -227,6 +227,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadOrgDetail() {},
     goBack() {
       this.$router.push('/portal/auditCenter/qualificationAudit')
@@ -237,6 +243,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认通过',
         content: '确定要通过该机构的资质审核并激活账号吗？',
         okText: '确定',
@@ -254,6 +261,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认驳回',
         content: '确定要驳回该机构的资质审核吗？',
         okText: '确定',

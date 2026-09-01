@@ -519,7 +519,7 @@ export const constantRoutes = [
             path: 'mySubscriptions',
             component: () => import('@/views/order/mySubscriptions'),
             name: 'OrderMySubscriptions',
-            meta: { title: '服务订阅' }
+            meta: { title: '服务开通' }
           },
           {
             path: 'myInitiated',

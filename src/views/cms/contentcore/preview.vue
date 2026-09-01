@@ -1,56 +1,48 @@
 <template>
   <div class="app-container preview-page">
-    <el-container>
-      <el-header class="header-bar" v-if="type!=='pagewidget'" style="padding-top: 15px">
-        <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <span class="mr10" style="font-size: 14px;">{{ $t('CMS.ContentCore.PublishPipe') }}</span>
-            <el-select 
-              v-model="selectedPublishPipe"
-              type="primary"
-              size="small" 
-              style="width:180px"
-              @change="handlePublishPipeChange">
-              <el-option 
-                v-for="pp of publishPipes"
-                :key="pp.pipeCode"
-                :label="pp.pipeName"
-                :value="pp.pipeCode" />
-            </el-select>
-          </el-col>
-          <el-col :span="1.5">
-            <el-radio-group size="small" v-model="clientType" @input="handleClientTypeChange">
-              <el-radio-button v-for="ct in clientTypes" :key="ct.id" :label="ct.id">{{ ct.name }}</el-radio-button>
-            </el-radio-group>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button 
-              plain
-              type="primary"
-              size="small"
-              icon="el-icon-refresh"
-              @click="handleRefresh">{{ $t('Common.Refresh') }}</el-button>
-          </el-col>
-        </el-row>
-      </el-header>
-      <el-main>
-        <div :class="previewClass">
-          <div class="preview_iframe_wrap">
-            <div style="width:100%;height:100%;">
-              <iframe id="iframePreview" :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
-            </div>
-          </div>
+    <div class="header-bar" v-if="type !== 'pagewidget'">
+      <span class="pipe-label">{{ $t('CMS.ContentCore.PublishPipe') }}</span>
+      <a-select
+        v-model:value="selectedPublishPipe"
+        size="small"
+        style="width: 180px"
+        @change="handlePublishPipeChange"
+      >
+        <a-select-option
+          v-for="pp of publishPipes"
+          :key="pp.pipeCode"
+          :value="pp.pipeCode"
+        >
+          {{ pp.pipeName }}
+        </a-select-option>
+      </a-select>
+      <a-radio-group size="small" v-model:value="clientType" @change="handleClientTypeChange">
+        <a-radio-button v-for="ct in clientTypes" :key="ct.id" :value="ct.id">{{ ct.name }}</a-radio-button>
+      </a-radio-group>
+      <a-button type="primary" ghost size="small" @click="handleRefresh">
+        <template #icon><ReloadOutlined /></template>
+        {{ $t('Common.Refresh') }}
+      </a-button>
+    </div>
+    <div :class="previewClass">
+      <div class="preview_iframe_wrap">
+        <div style="width:100%;height:100%;">
+          <iframe id="iframePreview" :src="previewUrl" width="100%" height="100%" frameborder="0"></iframe>
         </div>
-      </el-main>
-    </el-container>
+      </div>
+    </div>
   </div>
 </template>
 <script>
+import { ReloadOutlined } from "@ant-design/icons-vue";
 import { getToken } from '@/utils/auth'
 import { getPublishPipeSelectData } from "@/api/contentcore/publishpipe";
 
 export default {
   name: "ContentCorePreview",
+  components: {
+    ReloadOutlined,
+  },
   data() {
     return {
       type: this.$route.query.type,
@@ -58,7 +50,7 @@ export default {
       publishPipes: [],
       selectedPublishPipe: undefined,
       previewUrl: undefined,
-      clientTypes: [ 
+      clientTypes: [
         { id: "pc", name: this.$t("CMS.ContentCore.ClientType.PC"), className: "preview preview_pc" },
         { id: "phone", name: this.$t("CMS.ContentCore.ClientType.Phone"), className: "preview preview_mobile preview_phone" },
         { id: "pad", name: this.$t("CMS.ContentCore.ClientType.Pad"), className: "preview preview_mobile" }
@@ -82,8 +74,8 @@ export default {
       });
     },
     handlePublishPipeChange () {
-      this.previewUrl = process.env.VUE_APP_BASE_API + "/cms/preview/" + this.type + "/" + this.dataId 
-        + "?pp=" + this.selectedPublishPipe+ "&Authorization=Bearer " + getToken();
+      this.previewUrl = process.env.VUE_APP_BASE_API + "/cms/preview/" + this.type + "/" + this.dataId
+        + "?pp=" + this.selectedPublishPipe + "&Authorization=Bearer " + getToken();
     },
     handleClientTypeChange () {
       this.previewClass = this.clientTypes.find(item => item.id === this.clientType).className
@@ -95,22 +87,24 @@ export default {
 };
 </script>
 <style scoped>
-.preview-page { 
-  padding:0; 
-}
-.preview-page .header-bar {
-  height:40px;
-  padding-top: 15px;
-  background-color: #f7f7f7;
-  border-bottom: solid 1px #ddd;
-  position:relative;
-  z-index: 999;
-}
-.preview-page .el-main {
+.preview-page {
   padding: 0;
 }
-.preview-page .el-button {
-  margin-left: 10px;
+.preview-page .header-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding-top: 15px;
+  padding-left: 15px;
+  box-sizing: content-box;
+  background-color: #f7f7f7;
+  border-bottom: solid 1px #ddd;
+  position: relative;
+  z-index: 999;
+}
+.preview-page .header-bar .pipe-label {
+  font-size: 14px;
 }
 .preview {
     position: absolute;
@@ -180,5 +174,4 @@ export default {
     height: 30px;
     bottom: 15px
 }
-
 </style>

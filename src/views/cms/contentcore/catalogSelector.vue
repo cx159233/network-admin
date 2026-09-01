@@ -162,7 +162,7 @@ export default {
   },
   methods: {
     getModalContainer() {
-      return document.body;
+      return document.querySelector('.app-main__content') || document.body;
     },
     loadCatalogTreeData() {
       this.selectedCatalogs = [];

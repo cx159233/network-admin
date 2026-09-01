@@ -69,7 +69,7 @@
       </FilterBar>
       <div class="dict-page__divider"></div>
       <div class="dict-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 1120 }"
           :columns="columns"
           :data-source="typeList"
           :loading="loading"
@@ -108,7 +108,7 @@
     </CloudCard>
 
     <!-- 新增/修改字典类型 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="title"
       v-model:open="open"
       width="520px"
@@ -187,10 +187,10 @@ export default {
       },
       columns: [
         { title: '字典编号', dataIndex: 'dictId', key: 'dictId', width: 100 },
-        { title: '字典名称', dataIndex: 'dictName', key: 'dictName' },
-        { title: '字典类型', dataIndex: 'dictType', key: 'dictType' },
+        { title: '字典名称', dataIndex: 'dictName', key: 'dictName', width: 150 },
+        { title: '字典类型', dataIndex: 'dictType', key: 'dictType', width: 160 },
         { title: '状态', dataIndex: 'status', key: 'status', width: 90 },
-        { title: '备注', dataIndex: 'remark', key: 'remark', ellipsis: true },
+        { title: '备注', dataIndex: 'remark', key: 'remark', width: 240, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '创建时间', dataIndex: 'createTime', key: 'createTime', width: 160 },
         { title: '操作', dataIndex: 'action', key: 'action', width: 220, fixed: 'right' }
       ],
@@ -207,6 +207,12 @@ export default {
     this.loadList()
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadList() {
       this.loading = true
       const params = { ...this.queryParams }
@@ -289,6 +295,7 @@ export default {
       const rows = row.dictId ? [row] : this.selectedRows
       const dictIds = rows.map((r) => r.dictId)
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认删除',
         content: `是否确认删除选中的 ${rows.length} 条字典类型数据？`,
         onOk: () => {

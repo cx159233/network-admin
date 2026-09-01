@@ -1,138 +1,143 @@
 <template>
-  <div class="">
-    <el-row :gutter="24" class="mb12">
-      <el-col :span="12">
-        <el-row :gutter="10">
-          <el-col :span="1.5">
-            <el-button 
-              plain
-              type="primary"
-              icon="el-icon-plus"
-              size="mini"
-              v-hasPermi="[ $p('Site:Edit:{0}', [ site ]) ]"
-              @click="handleAdd">{{ $t("Common.Add") }}</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button 
-              plain
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              v-hasPermi="[ $p('Site:Edit:{0}', [ site ]) ]"
-              @click="handleDelete">{{ $t("Common.Delete") }}</el-button>
-          </el-col>
-        </el-row>
-      </el-col>
-      <el-col :span="12" style="text-align:right">
-        <el-form 
-          :model="queryParams"
-          ref="queryForm"
-          :inline="true"
-          size="mini"
-          class="el-form-search">
-          <el-form-item prop="query">
-            <el-input :placeholder="$t('CMS.Site.Property.QueryPlaceholder')" v-model="queryParams.query"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button-group>
-              <el-button 
-                type="primary"
-                icon="el-icon-search"
-                @click="handleQuery">{{ $t("Common.Search") }}</el-button>
-              <el-button 
-                icon="el-icon-refresh"
-                @click="resetQuery">{{ $t("Common.Reset") }}</el-button>
-            </el-button-group>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
+  <div>
+    <div class="mb12" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <a-space>
+        <a-button
+          type="primary"
+          ghost
+          v-hasPermi="[$p('Site:Edit:{0}', [site])]"
+          @click="handleAdd"
+        >
+          <template #icon><PlusOutlined /></template>
+          {{ $t("Common.Add") }}
+        </a-button>
+        <a-button
+          danger
+          :disabled="multiple"
+          v-hasPermi="[$p('Site:Edit:{0}', [site])]"
+          @click="handleDelete"
+        >
+          <template #icon><DeleteOutlined /></template>
+          {{ $t("Common.Delete") }}
+        </a-button>
+      </a-space>
+      <a-form :model="queryParams" ref="queryForm" layout="inline" @submit.prevent>
+        <a-form-item name="query">
+          <a-input
+            v-model:value="queryParams.query"
+            :placeholder="$t('CMS.Site.Property.QueryPlaceholder')"
+            allow-clear
+            @press-enter="handleQuery"
+          />
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" @click="handleQuery">
+            <template #icon><SearchOutlined /></template>
+            {{ $t("Common.Search") }}
+          </a-button>
+        </a-form-item>
+        <a-form-item>
+          <a-button @click="resetQuery">
+            <template #icon><ReloadOutlined /></template>
+            {{ $t("Common.Reset") }}
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </div>
 
-    <el-table v-loading="loading"
-              :data="propertyList"
-              @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="propertyId" width="180" />
-      <el-table-column :label="$t('CMS.Site.Property.PropName')" align="center" prop="propName" />
-      <el-table-column :label="$t('CMS.Site.Property.PropCode')" align="center" prop="propCode" />
-      <el-table-column :label="$t('CMS.Site.Property.PropValue')" align="center" prop="propValue" />
-      <el-table-column :label="$t('Common.Remark')" align="center" prop="remark" />
-      <el-table-column :label="$t('Common.Operation')" align="center" width="180" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button 
-            size="small"
-            type="text"
-            icon="el-icon-edit"
-            v-hasPermi="[ $p('Site:Edit:{0}', [ scope.row.siteId ]) ]"
-            @click="handleEdit(scope.row)"
-          >{{ $t("Common.Edit") }}</el-button>
-          <el-button 
-            size="small"
-            type="text"
-            icon="el-icon-delete"
-            v-hasPermi="[ $p('Site:Edit:{0}', [ scope.row.siteId ]) ]"
-            @click="handleDelete(scope.row)"
-          >{{ $t("Common.Delete") }}</el-button>
+    <a-table :scroll="{ x: 'max-content' }"
+      :loading="loading"
+      :columns="columns"
+      :data-source="propertyList"
+      size="small"
+      row-key="propertyId"
+      :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
+      :pagination="false"
+    >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'action'">
+          <a-space size="small">
+            <a-button
+              type="link"
+              size="small"
+              class="!p-0"
+              v-hasPermi="[$p('Site:Edit:{0}', [record.siteId])]"
+              @click="handleEdit(record)"
+            >{{ $t("Common.Edit") }}</a-button>
+            <a-divider type="vertical" class="!mx-[2px]" />
+            <a-button
+              type="link"
+              size="small"
+              class="!p-0"
+              danger
+              v-hasPermi="[$p('Site:Edit:{0}', [record.siteId])]"
+              @click="handleDelete(record)"
+            >{{ $t("Common.Delete") }}</a-button>
+          </a-space>
         </template>
-      </el-table-column>
-    </el-table>
-    <pagination 
-      v-show="total>0"
+      </template>
+    </a-table>
+    <pagination
+      v-show="total > 0"
       :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="loadSitePropertyList" />
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      @pagination="loadSitePropertyList"
+    />
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title"
-               :visible.sync="open"
-               :close-on-click-modal="false"
-               width="500px"
-               append-to-body>
-      <el-form ref="form"
-               :model="form"
-               :rules="rules"
-               label-width="80px">
-        <el-form-item :label="$t('CMS.Site.Property.PropName')" prop="propName">
-          <el-input v-model="form.propName"/>
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Site.Property.PropCode')" prop="propCode">
-          <el-input v-model="form.propCode" />
-        </el-form-item>
-        <el-form-item :label="$t('CMS.Site.Property.PropValue')" prop="propValue">
-          <el-input v-model="form.propValue" />
-        </el-form-item>
-        <el-form-item :label="$t('Common.Remark')" prop="remark">
-          <el-input v-model="form.remark" type="textarea" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">{{ $t("Common.Confirm") }}</el-button>
-        <el-button @click="cancel">{{ $t("Common.Cancel") }}</el-button>
-      </div>
-    </el-dialog>
+    <a-modal :get-container="getDemoContainer"
+      :title="title"
+      :open="open"
+      :mask-closable="false"
+      width="500px"
+      @cancel="cancel"
+    >
+      <a-form ref="form" :model="form" :rules="rules" :label-col="{ style: { width: '80px' } }">
+        <a-form-item :label="$t('CMS.Site.Property.PropName')" name="propName">
+          <a-input v-model:value="form.propName" />
+        </a-form-item>
+        <a-form-item :label="$t('CMS.Site.Property.PropCode')" name="propCode">
+          <a-input v-model:value="form.propCode" />
+        </a-form-item>
+        <a-form-item :label="$t('CMS.Site.Property.PropValue')" name="propValue">
+          <a-input v-model:value="form.propValue" />
+        </a-form-item>
+        <a-form-item :label="$t('Common.Remark')" name="remark">
+          <a-textarea v-model:value="form.remark" />
+        </a-form-item>
+      </a-form>
+      <template #footer>
+        <a-button type="primary" @click="submitForm">{{ $t("Common.Confirm") }}</a-button>
+        <a-button class="ml8" @click="cancel">{{ $t("Common.Cancel") }}</a-button>
+      </template>
+    </a-modal>
   </div>
 </template>
-<style scoped>
-</style>
 <script>
-import { getSitePropertyList, addSiteProperty, saveSiteProperty, deleteSiteProperty  } from "@/api/contentcore/site";
+import { PlusOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined } from "@ant-design/icons-vue";
+import { getSitePropertyList, addSiteProperty, saveSiteProperty, deleteSiteProperty } from "@/api/contentcore/site";
 
 export default {
   name: "CMSSitePropperty",
+  components: {
+    PlusOutlined,
+    DeleteOutlined,
+    SearchOutlined,
+    ReloadOutlined,
+  },
   props: {
     site: {
       type: String,
       default: undefined,
       required: false,
-    }
+    },
   },
-  data () {
+  data() {
     return {
       loading: false,
       ids: [],
-      single: true,
+      selectedRowKeys: [],
       multiple: true,
       total: 0,
       propertyList: [],
@@ -142,96 +147,123 @@ export default {
         siteId: this.site,
         pageNum: 1,
         pageSize: 20,
-        query: undefined
+        query: undefined,
       },
+      columns: [
+        { title: "ID", dataIndex: "propertyId", key: "propertyId", align: "center", width: 180 },
+        { title: this.$t("CMS.Site.Property.PropName"), dataIndex: "propName", key: "propName" },
+        { title: this.$t("CMS.Site.Property.PropCode"), dataIndex: "propCode", key: "propCode" },
+        { title: this.$t("CMS.Site.Property.PropValue"), dataIndex: "propValue", key: "propValue" },
+        { title: this.$t("Common.Remark"), dataIndex: "remark", key: "remark" },
+        { title: this.$t("Common.Operation"), dataIndex: "action", key: "action", align: "center", width: 180 },
+      ],
       form: {},
       rules: {
         propName: [
-          { required: true, message: this.$t('CMS.Site.Property.RuleTips.PropName'), trigger: "blur" }
+          { required: true, message: this.$t("CMS.Site.Property.RuleTips.PropName"), trigger: "blur" },
         ],
         propCode: [
-          { required: true, pattern: "^[A-Za-z0-9_]+$", message: this.$t('CMS.Site.Property.RuleTips.PropCode'), trigger: "blur" }
-        ]
-      }
+          { required: true, pattern: "^[A-Za-z0-9_]+$", message: this.$t("CMS.Site.Property.RuleTips.PropCode"), trigger: "blur" },
+        ],
+      },
     };
-  },
-  watch: {
-    siteId(newVal) {
-      if (newVal != undefined && newVal != null && newVal.length > 0) {
-        this.loadSitePropertyList();
-      }
-    },
   },
   created() {
     this.loadSitePropertyList();
   },
   methods: {
-    loadSitePropertyList () {
-      this.loading = true;
-      getSitePropertyList(this.queryParams).then(response => {
-        this.propertyList = response.data.rows;
-        this.total = parseInt(response.data.total);
-        this.loading = false;
-      });
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
     },
-    handleQuery () {
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
+    loadSitePropertyList() {
+      this.loading = true;
+      getSitePropertyList(this.queryParams)
+        .then((response) => {
+          this.propertyList = response.data.rows;
+          this.total = parseInt(response.data.total);
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+    },
+    handleQuery() {
       this.queryParams.pageNum = 1;
       this.loadSitePropertyList();
     },
-    resetQuery () {
-      this.resetForm("queryForm");
+    resetQuery() {
+      if (this.$refs.queryForm) {
+        this.$refs.queryForm.resetFields();
+      }
       this.queryParams.query = undefined;
-      this.queryParams.pageNum = 1;
       this.handleQuery();
     },
-    handleSelectionChange (selection) {
-      this.ids = selection.map(item => item.propertyId)
-      this.single = selection.length != 1
-      this.multiple = !selection.length
+    handleSelectionChange(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys;
+      this.ids = selectedRows.map((item) => item.propertyId);
+      this.multiple = !selectedRows.length;
     },
-    cancel () {
+    cancel() {
       this.open = false;
-      this.resetForm("form");
+      if (this.$refs.form) {
+        this.$refs.form.resetFields();
+      }
     },
-    handleAdd () {
+    handleAdd() {
       this.form = { siteId: this.queryParams.siteId };
       this.title = "添加属性";
       this.open = true;
     },
-    handleEdit (row) {
-      this.form = row;
+    handleEdit(row) {
+      this.form = { ...row };
       this.title = "编辑属性";
       this.open = true;
     },
-    submitForm () {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
+    submitForm() {
+      this.$refs["form"]
+        .validate()
+        .then(() => {
           if (this.form.propertyId) {
-            saveSiteProperty(this.form).then(response => {
+            saveSiteProperty(this.form).then((response) => {
               this.$modal.msgSuccess(response.msg);
               this.open = false;
               this.loadSitePropertyList();
-            }); 
+            });
           } else {
             this.form.siteId = this.queryParams.siteId;
-            addSiteProperty(this.form).then(response => {
+            addSiteProperty(this.form).then((response) => {
               this.$modal.msgSuccess(response.msg);
               this.open = false;
               this.loadSitePropertyList();
-            }); 
+            });
           }
-        }
-      });
+        })
+        .catch(() => {});
     },
-    handleDelete (row) {
-      const propertyIds = row.propertyId ? [ row.propertyId ] : this.ids;
-      this.$modal.confirm(this.$t('Common.ConfirmDelete')).then(function () {
-        return deleteSiteProperty(propertyIds);
-      }).then(() => {
-        this.loadSitePropertyList();
-        this.$modal.msgSuccess(this.$t('Common.DeleteSuccess'));
-      }).catch(function () { });
-    }
-  }
+    handleDelete(row) {
+      const propertyIds = row.propertyId ? [row.propertyId] : this.ids;
+      this.$modal
+        .confirm(this.$t("Common.ConfirmDelete"))
+        .then(function () {
+          return deleteSiteProperty(propertyIds);
+        })
+        .then(() => {
+          this.loadSitePropertyList();
+          this.$modal.msgSuccess(this.$t("Common.DeleteSuccess"));
+        })
+        .catch(function () {});
+    },
+  },
 };
 </script>
+<style scoped>
+.mb12 {
+  margin-bottom: 12px;
+}
+.ml8 {
+  margin-left: 8px;
+}
+</style>

@@ -20,7 +20,7 @@
       <div class="my-approved-page__divider"></div>
 
       <div class="my-approved-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 'max-content' }"
           :columns="visibleColumns"
           :data-source="filteredData"
           :pagination="paginationConfig"
@@ -44,7 +44,7 @@
     </CloudCard>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="已审批工单详情"
       :width="860"
@@ -207,6 +207,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleQuery() {
       this.applied = { ...this.filter }
       this.pagination.current = 1

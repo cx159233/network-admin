@@ -23,8 +23,9 @@
             <a-descriptions-item label="服务ID">
               <span class="cell-mono">{{ serviceInfo.serviceId }}</span>
             </a-descriptions-item>
+            <a-descriptions-item label="服务专区">{{ getServiceZoneLabel(serviceInfo.serviceZone) }}</a-descriptions-item>
             <a-descriptions-item label="部署云服务商">{{ serviceInfo.cloudProvider }}</a-descriptions-item>
-            <a-descriptions-item label="服务类型">{{ serviceInfo.serviceType }}</a-descriptions-item>
+            <a-descriptions-item label="服务分类">{{ serviceInfo.serviceType }}</a-descriptions-item>
             <a-descriptions-item label="服务商名称">{{ serviceInfo.vendor }}</a-descriptions-item>
             <a-descriptions-item label="服务等级">{{ serviceInfo.serviceLevel }}</a-descriptions-item>
             <a-descriptions-item label="提交时间">
@@ -70,7 +71,7 @@
           <div class="card-head">
             <span class="card-head__title">审核记录</span>
           </div>
-          <a-table
+          <a-table :scroll="{ x: 'max-content' }"
             :columns="auditColumns"
             :data-source="auditRecords"
             :pagination="false"
@@ -159,6 +160,7 @@ export default {
         id: 1,
         serviceName: '弹性计算服务ECS',
         serviceId: 'SVC-2024-0001',
+        serviceZone: 'X86Zone',
         cloudProvider: '浪潮云',
         serviceType: '计算服务',
         vendor: '浪潮云信息技术有限公司',
@@ -194,6 +196,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadServiceDetail() {},
     goBack() {
       this.$router.push('/portal/auditCenter/basicServiceAudit')
@@ -204,6 +212,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认通过',
         content: '确定要通过该服务的审核吗？',
         okText: '确定',
@@ -221,6 +230,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认驳回',
         content: '确定要拒绝该服务的审核吗？',
         okText: '确定',
@@ -242,6 +252,10 @@ export default {
     getAuditStatusText(status) {
       const map = { approved: '已通过', rejected: '已驳回', pending: '待审核' }
       return map[status] || '未知'
+    },
+    getServiceZoneLabel(zone) {
+      const map = { X86Zone: 'X86专区', XinChuangZone: '信创专区', CipherZone: '密码服务专区', SuperComputeZone: '超算、智算专区' }
+      return map[zone] || zone || '--'
     }
   }
 }

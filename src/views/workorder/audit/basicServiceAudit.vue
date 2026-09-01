@@ -22,9 +22,6 @@
         <a-input v-model:value="filter.serviceName" placeholder="基础服务名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceId" placeholder="基础服务ID" allow-clear style="width: 160px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.vendor" placeholder="服务商名称" allow-clear style="width: 160px" @pressEnter="handleQuery" />
-        <a-select v-model:value="filter.cloudProvider" placeholder="部署云服务商" allow-clear style="width: 150px">
-          <a-select-option v-for="item in cloudProviderOptions" :key="item.value" :value="item.value">{{ item.label }}</a-select-option>
-        </a-select>
         <template #suffix>
           <ColumnSettings v-model="hiddenKeys" :columns="columns" />
         </template>
@@ -32,7 +29,7 @@
       <div class="service-audit-page__divider"></div>
 
       <div class="service-audit-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 1480 }"
           :columns="visibleColumns"
           :data-source="filteredData"
           :pagination="paginationConfig"
@@ -51,9 +48,8 @@
             </template>
             <span v-else-if="column.dataIndex === 'submitTime'" class="cell-default">{{ record.submitTime || '--' }}</span>
             <span v-else-if="column.dataIndex === 'currentStep'" class="cell-default">{{ getStepName(record.currentStep) }}</span>
-            <template v-else-if="column.dataIndex === 'serviceType'">
-              <span :class="['service-type-tag', getServiceTypeClass(record.serviceType)]">{{ record.serviceType || '--' }}</span>
-            </template>
+            <span v-else-if="column.dataIndex === 'serviceZone'" class="cell-default">{{ getServiceZoneLabel(record.serviceZone) }}</span>
+            <span v-else-if="column.dataIndex === 'serviceType'" class="cell-default">{{ record.serviceType || '--' }}</span>
             <template v-else-if="column.dataIndex === 'action'">
               <a-space size="small">
                 <a-button v-if="String(record.auditStatus) === '10'" type="link" size="small" class="!p-0" @click="startAudit(record)">审核</a-button>
@@ -67,7 +63,7 @@
     </CloudCard>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="审核详情"
       :width="1100"
@@ -97,11 +93,11 @@
             <div class="split-section">
               <div class="split-section__title">基本信息</div>
               <a-descriptions :column="1" bordered size="small">
-                <a-descriptions-item label="显示顺序">
-                  {{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}
-                </a-descriptions-item>
                 <a-descriptions-item label="服务描述">
                   {{ drawer.record.description || '--' }}
+                </a-descriptions-item>
+                <a-descriptions-item label="付费方式参考">
+                  {{ drawer.record.paymentMethodRef || '--' }}
                 </a-descriptions-item>
               </a-descriptions>
             </div>
@@ -116,9 +112,9 @@
             <div class="split-section">
               <div class="split-section__title">分类标签</div>
               <a-descriptions :column="1" bordered size="small">
+                <a-descriptions-item label="服务专区">{{ getServiceZoneLabel(drawer.record.serviceZone) }}</a-descriptions-item>
                 <a-descriptions-item label="部署云服务商">{{ drawer.record.cloudProvider || '--' }}</a-descriptions-item>
-                <a-descriptions-item label="服务子类">{{ drawer.record.serviceType || '--' }}</a-descriptions-item>
-                <a-descriptions-item label="区域">{{ drawer.record.region || '--' }}</a-descriptions-item>
+                <a-descriptions-item label="服务分类">{{ drawer.record.serviceType || '--' }}</a-descriptions-item>
               </a-descriptions>
             </div>
           </div>
@@ -230,19 +226,20 @@ export default {
         { title: '审核状态', dataIndex: 'auditStatus', key: 'auditStatus', width: 110 },
         { title: '审核阶段', dataIndex: 'currentStep', key: 'currentStep', width: 140 },
         { title: '基础服务名称/ID', dataIndex: 'serviceName', key: 'serviceName', width: 240 },
-        { title: '服务子类', dataIndex: 'serviceType', key: 'serviceType', width: 120 },
-        { title: '服务描述', dataIndex: 'description', key: 'description', width: 280, ellipsis: true },
+        { title: '服务专区', dataIndex: 'serviceZone', key: 'serviceZone', width: 120 },
+        { title: '服务分类', dataIndex: 'serviceType', key: 'serviceType', width: 120 },
+        { title: '服务描述', dataIndex: 'description', key: 'description', width: 280, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '服务商名称', dataIndex: 'vendor', key: 'vendor', width: 200 },
         { title: '部署云服务商', dataIndex: 'cloudProvider', key: 'cloudProvider', width: 130 },
         { title: '操作', dataIndex: 'action', key: 'action', width: 90, fixed: 'right' }
       ],
       serviceList: [
-        { submissionId: 'SVC001-V1', serviceId: 'SVC001', serviceGroup: '云服务器ECS', serviceName: '云服务器ECS', vendor: '浪潮云信息技术有限公司', contactPhone1: '400-880-8800', contactPhone2: '010-8888-0001', versionNo: 'V1', description: '弹性计算服务，提供安全可靠、弹性可扩展的云服务器', serviceType: '计算服务', cloudProvider: '电信云', region: '华东', auditStatus: 20, currentStep: 4, submitTime: '2026-10-18 11:21:45' },
-        { submissionId: 'SVC002-V1', serviceId: 'SVC002', serviceGroup: '对象存储OSS', serviceName: '对象存储OSS', vendor: '中科信息安全有限公司', contactPhone1: '400-881-9901', contactPhone2: '021-6222-0002', versionNo: 'V1', description: '安全、稳定、高效的云存储服务', serviceType: '存储服务', cloudProvider: '移动云', region: '华北', auditStatus: 20, currentStep: 4, submitTime: '2026-10-21 14:45:23' },
-        { submissionId: 'SVC002-V2', serviceId: 'SVC002', serviceGroup: '对象存储OSS', serviceName: '对象存储OSS', vendor: '中科信息安全有限公司', contactPhone1: '400-881-9901', contactPhone2: '021-6222-0002', versionNo: 'V2', description: '安全、稳定、高效的云存储服务', serviceType: '存储服务', cloudProvider: '移动云', region: '华北', auditStatus: 10, currentStep: 1, submitTime: '2026-10-22 10:00:00' },
-        { submissionId: 'SVC003-V1', serviceId: 'SVC003', serviceGroup: '云数据库RDS', serviceName: '云数据库RDS', vendor: '华能数智科技集团', contactPhone1: '400-882-8802', contactPhone2: '010-6666-0003', versionNo: 'V1', description: '稳定可靠的关系型数据库服务', serviceType: '数据库', cloudProvider: '联通云', region: '华南', auditStatus: 10, currentStep: 2, submitTime: '2026-10-21 15:38:24' },
-        { submissionId: 'SVC004-V1', serviceId: 'SVC004', serviceGroup: '负载均衡SLB', serviceName: '负载均衡SLB', vendor: '深圳云计算有限公司', contactPhone1: '400-883-8803', contactPhone2: '0755-8888-0004', versionNo: 'V1', description: '将访问流量分发到多台云服务器，提升应用可用性', serviceType: '网络服务', cloudProvider: '浪潮云', region: '西南', auditStatus: 10, currentStep: 1, submitTime: '2026-10-22 09:15:00' },
-        { submissionId: 'SVC005-V1', serviceId: 'SVC005', serviceGroup: '内容分发网络CDN', serviceName: '内容分发网络CDN', vendor: '北京健康科技有限公司', contactPhone1: '400-884-8804', contactPhone2: '010-5555-0005', versionNo: 'V1', description: '将源站内容分发至最接近用户的节点，加速访问', serviceType: '网络服务', cloudProvider: '影像云', region: '全国', auditStatus: 30, currentStep: 3, submitTime: '2026-10-19 13:20:11' }
+        { submissionId: 'SVC001-V1', serviceId: 'SVC001', serviceGroup: '云服务器ECS', serviceName: '云服务器ECS', vendor: '浪潮云信息技术有限公司', contactPhone1: '400-880-8800', contactPhone2: '010-8888-0001', versionNo: 'V1', description: '弹性计算服务，提供安全可靠、弹性可扩展的云服务器', serviceZone: 'X86Zone', serviceType: '计算服务', cloudProvider: '电信云', auditStatus: 20, currentStep: 4, submitTime: '2026-10-18 11:21:45' },
+        { submissionId: 'SVC002-V1', serviceId: 'SVC002', serviceGroup: '对象存储OSS', serviceName: '对象存储OSS', vendor: '中科信息安全有限公司', contactPhone1: '400-881-9901', contactPhone2: '021-6222-0002', versionNo: 'V1', description: '安全、稳定、高效的云存储服务', serviceZone: 'X86Zone', serviceType: '存储服务', cloudProvider: '移动云', auditStatus: 20, currentStep: 4, submitTime: '2026-10-21 14:45:23' },
+        { submissionId: 'SVC002-V2', serviceId: 'SVC002', serviceGroup: '对象存储OSS', serviceName: '对象存储OSS', vendor: '中科信息安全有限公司', contactPhone1: '400-881-9901', contactPhone2: '021-6222-0002', versionNo: 'V2', description: '安全、稳定、高效的云存储服务', serviceZone: 'X86Zone', serviceType: '存储服务', cloudProvider: '移动云', auditStatus: 10, currentStep: 1, submitTime: '2026-10-22 10:00:00' },
+        { submissionId: 'SVC003-V1', serviceId: 'SVC003', serviceGroup: '云数据库RDS', serviceName: '云数据库RDS', vendor: '华能数智科技集团', contactPhone1: '400-882-8802', contactPhone2: '010-6666-0003', versionNo: 'V1', description: '稳定可靠的关系型数据库服务', serviceZone: 'X86Zone', serviceType: '数据库服务', cloudProvider: '联通云', auditStatus: 10, currentStep: 2, submitTime: '2026-10-21 15:38:24' },
+        { submissionId: 'SVC004-V1', serviceId: 'SVC004', serviceGroup: '负载均衡SLB', serviceName: '负载均衡SLB', vendor: '深圳云计算有限公司', contactPhone1: '400-883-8803', contactPhone2: '0755-8888-0004', versionNo: 'V1', description: '将访问流量分发到多台云服务器，提升应用可用性', serviceZone: 'XinChuangZone', serviceType: '网络服务', cloudProvider: '浪潮云', auditStatus: 10, currentStep: 1, submitTime: '2026-10-22 09:15:00' },
+        { submissionId: 'SVC005-V1', serviceId: 'SVC005', serviceGroup: '内容分发网络CDN', serviceName: '内容分发网络CDN', vendor: '北京健康科技有限公司', contactPhone1: '400-884-8804', contactPhone2: '010-5555-0005', versionNo: 'V1', description: '将源站内容分发至最接近用户的节点，加速访问', serviceZone: 'XinChuangZone', serviceType: '网络服务', cloudProvider: '影像云', auditStatus: 30, currentStep: 3, submitTime: '2026-10-19 13:20:11' }
       ],
       drawer: { visible: false, record: null, activeTab: 'overview' },
       auditForm: { opinion: '' },
@@ -255,6 +252,7 @@ export default {
         serviceLevel: 'SLA 99.95%',
         serviceScope: '全国',
         region: '华东',
+        paymentMethodRef: '按月/按量付费，含基础运维服务，具体费用根据服务规格协商确定',
         sortOrder: 1,
         materials: [
           { name: '服务技术白皮书.pdf', size: '3.2 MB' },
@@ -353,6 +351,12 @@ export default {
     this.loadServiceList()
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadServiceList() {
       this.loading = true
       setTimeout(() => { this.loading = false }, 200)
@@ -362,7 +366,7 @@ export default {
       this.pagination.current = 1
     },
     resetQuery() {
-      this.filter = { serviceName: '', serviceId: '', vendor: '', cloudProvider: undefined, status: undefined, step: undefined, submitTimeRange: [] }
+      this.filter = { serviceName: '', serviceId: '', vendor: '', status: undefined, step: undefined, submitTimeRange: [] }
       this.applied = { ...this.filter }
       this.pagination.current = 1
     },
@@ -461,6 +465,10 @@ export default {
       if (/\d{2}:\d{2}:\d{2}/.test(time)) return time
       return time + ':00'
     },
+    getServiceZoneLabel(zone) {
+      const map = { X86Zone: 'X86专区', XinChuangZone: '信创专区', CipherZone: '密码服务专区', SuperComputeZone: '超算、智算专区' }
+      return map[zone] || zone || '--'
+    },
     getApproveText(idx) {
       const texts = [
         '通过材料评估，进入技术测评',
@@ -510,6 +518,7 @@ export default {
       const isLastStage = this.activeStepIdx === this.auditSteps.length - 1
       const stepName = this.auditSteps[this.activeStepIdx]?.title || ''
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认通过',
         content: isLastStage
           ? `当前为第 ${this.activeStepIdx + 1} 阶段（${stepName}），通过后将完成全部审核流程，确定通过吗？`
@@ -536,6 +545,7 @@ export default {
       }
       const stepName = this.auditSteps[this.activeStepIdx]?.title || ''
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认驳回',
         content: `驳回后当前阶段（${stepName}）状态将变更为"已驳回"并终止审核流程，确定驳回吗？`,
         okText: '确定',

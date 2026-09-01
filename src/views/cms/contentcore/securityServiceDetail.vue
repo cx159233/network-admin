@@ -42,7 +42,7 @@
           <div class="detail-section">
             <div class="detail-section-title">分类标签</div>
             <div class="detail-kv">
-              <div class="kv-item"><label>面向对象</label><span>{{ appInfo.targetObjectStr || '--' }}</span></div>
+              <div class="kv-item"><label>服务对象</label><span>{{ appInfo.targetObjectStr || '--' }}</span></div>
               <div class="kv-item"><label>应用架构</label><span>{{ appInfo.appArchitecture || '--' }}</span></div>
               <div class="kv-item"><label>部署云服务商</label><span>{{ appInfo.cloudProviderStr || '--' }}</span></div>
               <div class="kv-item"><label>应用覆盖范围</label><span>{{ appInfo.appScope || '--' }}</span></div>
@@ -128,7 +128,10 @@
           </template>
         </el-table-column>
         <el-table-column label="评价机构" min-width="180">
-          <template slot-scope="scope">{{ scope.row.orgName || '--' }}</template>
+          <template slot-scope="scope">
+            <div class="rv-title">{{ scope.row.orgName || '--' }}</div>
+            <div class="rv-sub">{{ scope.row.userName || '--' }} · {{ scope.row.department || '--' }}</div>
+          </template>
         </el-table-column>
         <el-table-column label="评价内容" min-width="250">
           <template slot-scope="scope"><div class="rv-content">{{ scope.row.content || '--' }}</div></template>
@@ -297,7 +300,7 @@ export default {
       return 'score-low';
     },
     goBack() {
-      this.$router.push('/portal/service/digitalApp');
+      this.$router.push('/portal/service/securityService');
     },
     openReviewList() {
       this.reviewPage.currentPage = 1;

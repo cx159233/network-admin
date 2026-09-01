@@ -75,8 +75,13 @@
               </div>
             </div>
           </a-form-item>
-          <a-form-item label="显示顺序">
-            <a-input-number v-model:value="form.sortOrder" :min="0" style="width: 200px" />
+          <a-form-item label="付费方式参考">
+            <div class="relative">
+              <a-textarea v-model:value="form.paymentMethodRef" :rows="2" placeholder="请输入付费方式参考" :maxlength="200" class="!pb-[28px]" />
+              <div class="absolute right-[8px] bottom-[6px] text-[12px] text-text-tertiary pointer-events-none">
+                {{ form.paymentMethodRef.length }}/200
+              </div>
+            </div>
           </a-form-item>
         </section>
 
@@ -113,20 +118,36 @@
             <span class="text-[14px] font-semibold text-text-primary">分类标签</span>
             <span class="text-[11px] text-text-tertiary">服务分类与部署信息</span>
           </div>
-          <a-form-item label="服务子类" name="serviceType" :rules="[{ required: true, message: '请选择服务子类', trigger: 'change', type: 'array', min: 1 }]">
+          <a-form-item label="服务专区" name="serviceZone" :rules="[{ required: true, message: '请选择服务专区', trigger: 'change' }]">
+            <a-radio-group v-model:value="form.serviceZone">
+              <a-radio v-for="opt in serviceZoneOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item label="服务分类" name="serviceType" :rules="[{ required: true, message: '请选择服务分类', trigger: 'change', type: 'array', min: 1 }]">
             <a-checkbox-group v-model:value="form.serviceType">
-              <a-checkbox v-for="opt in serviceTypeOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</a-checkbox>
+              <a-checkbox v-for="opt in serviceTypeOptions" :key="opt" :value="opt">{{ opt }}</a-checkbox>
             </a-checkbox-group>
+            <div v-if="!form.serviceZone" class="mt-[4px] text-[12px] text-text-tertiary">请先选择服务专区</div>
           </a-form-item>
           <a-form-item label="部署云服务商" name="cloudProvider" :rules="[{ required: true, message: '请选择部署云服务商', trigger: 'change', type: 'array', min: 1 }]">
             <a-checkbox-group v-model:value="form.cloudProvider">
               <a-checkbox v-for="opt in cloudProviderOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
-          <a-form-item label="区域" name="region" :rules="[{ required: true, message: '请选择区域', trigger: 'change', type: 'array', min: 1 }]">
-            <a-checkbox-group v-model:value="form.region">
-              <a-checkbox v-for="opt in regionOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</a-checkbox>
-            </a-checkbox-group>
+        </section>
+
+        <!-- 4. 管理信息 -->
+        <section v-if="!isShelfMode" class="cloud-card p-[20px] mb-[14px] scroll-mt-[80px]">
+          <div class="flex items-center gap-[8px] mb-[16px]">
+            <div class="w-[4px] h-[16px] bg-primary rounded-full" />
+            <span class="text-[14px] font-semibold text-text-primary">管理信息</span>
+            <span class="text-[11px] text-text-tertiary">仅管理员服务目录管理可见</span>
+          </div>
+          <a-form-item label="显示顺序">
+            <a-input-number v-model:value="form.sortOrder" :min="0" style="width: 200px" />
+          </a-form-item>
+          <a-form-item label="服务征集得分">
+            <a-input-number v-model:value="form.recruitScore" :min="0" :step="0.1" style="width: 200px" placeholder="请输入服务征集得分" />
           </a-form-item>
         </section>
 
@@ -155,7 +176,9 @@ export default {
         serviceName: '',
         logo: '',
         description: '',
+        paymentMethodRef: '',
         sortOrder: 0,
+        recruitScore: undefined,
         serviceProvider: '',
         contactName1: '',
         contactPhone1: '',
@@ -163,19 +186,20 @@ export default {
         contactPhone2: '',
         serviceType: [],
         cloudProvider: [],
-        region: [],
+        serviceZone: 'X86Zone',
       },
-      serviceTypeOptions: [
-        { value: 'compute', label: '计算服务' },
-        { value: 'storage', label: '存储服务' },
-        { value: 'network', label: '网络服务' },
-        { value: 'security', label: '安全服务' },
-        { value: 'bigdata', label: '大数据服务' },
-        { value: 'database', label: '数据库服务' },
-        { value: 'backup', label: '备份容灾服务' },
-        { value: 'software', label: '软件与应用服务' },
-        { value: 'hosting', label: '机房托管服务' },
+      serviceZoneOptions: [
+        { value: 'X86Zone', label: 'X86专区' },
+        { value: 'XinChuangZone', label: '信创专区' },
+        { value: 'CipherZone', label: '密码服务专区' },
+        { value: 'SuperComputeZone', label: '超算、智算专区' },
       ],
+      zoneServiceTypeMap: {
+        X86Zone: ['机房云托管服务', '计算服务', '存储服务', '网络服务', '安全服务', '大数据服务', '备份容灾服务', '数据库服务'],
+        XinChuangZone: ['机房云托管服务', '计算服务', '存储服务', '网络服务', '软件服务'],
+        CipherZone: ['密码服务'],
+        SuperComputeZone: ['超算服务', '智算服务'],
+      },
       cloudProviderOptions: [
         { value: '10251', label: '影像云' },
         { value: '10252', label: '电信云' },
@@ -183,22 +207,19 @@ export default {
         { value: '10254', label: '联通云' },
         { value: '10250', label: '浪潮云' },
       ],
-      regionOptions: [
-        { value: 'east', label: '华东' },
-        { value: 'north', label: '华北' },
-        { value: 'south', label: '华南' },
-        { value: 'southwest', label: '西南' },
-      ],
       rules: {
         serviceName: [{ required: true, message: '请输入基础服务名称', trigger: 'blur' }],
         description: [{ required: true, message: '请输入服务描述', trigger: 'blur' }],
-        serviceType: [{ required: true, message: '请选择服务子类', trigger: 'change', type: 'array', min: 1 }],
+        serviceZone: [{ required: true, message: '请选择服务专区', trigger: 'change' }],
+        serviceType: [{ required: true, message: '请选择服务分类', trigger: 'change', type: 'array', min: 1 }],
         cloudProvider: [{ required: true, message: '请选择部署云服务商', trigger: 'change', type: 'array', min: 1 }],
-        region: [{ required: true, message: '请选择区域', trigger: 'change', type: 'array', min: 1 }],
       },
     };
   },
   computed: {
+    serviceTypeOptions() {
+      return this.zoneServiceTypeMap[this.form.serviceZone] || [];
+    },
     isEdit() {
       return !!this.$route.query.id;
     },
@@ -206,9 +227,14 @@ export default {
       return this.$route.query.mode === 'shelf';
     },
   },
+  watch: {
+    'form.serviceZone'() {
+      this.form.serviceType = [];
+    },
+  },
   created() {
     emitter.emit('set-prd-anchor', this.isShelfMode
-      ? (this.isEdit ? 'prd-3.1.1.1.3.4' : 'prd-3.1.1.1.2.4')
+      ? (this.isEdit ? 'prd-3.1.2.1.3.4' : 'prd-3.1.2.1.2.4')
       : (this.isEdit ? 'prd-3.2.1.4.3' : 'prd-3.2.1.4.2'));
     if (this.isEdit) {
       this.loadRecord();
@@ -228,7 +254,9 @@ export default {
           serviceName: row.serviceName || '',
           logo: row.logo || '',
           description: row.description || '',
+          paymentMethodRef: row.paymentMethodRef || '',
           sortOrder: row.sortOrder != null ? row.sortOrder : 0,
+          recruitScore: row.recruitScore != null ? row.recruitScore : undefined,
           serviceProvider: row.serviceProvider || '',
           contactName1: row.contactName1 || '',
           contactPhone1: row.contactPhone1 || '',
@@ -236,7 +264,7 @@ export default {
           contactPhone2: row.contactPhone2 || '',
           serviceType: Array.isArray(row.serviceType) ? row.serviceType : (row.serviceType ? [row.serviceType] : []),
           cloudProvider: Array.isArray(row.cloudProvider) ? row.cloudProvider : (row.cloudProvider ? [row.cloudProvider] : []),
-          region: Array.isArray(row.region) ? row.region : (row.region ? [row.region] : []),
+          serviceZone: row.serviceZone || 'X86Zone',
         };
       }
     },

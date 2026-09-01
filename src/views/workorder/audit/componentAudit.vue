@@ -22,12 +22,6 @@
         <a-input v-model:value="filter.name" placeholder="组件名称" allow-clear style="width: 160px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.componentId" placeholder="组件ID" allow-clear style="width: 160px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceProvider" placeholder="服务商名称" allow-clear style="width: 160px" @pressEnter="handleQuery" />
-        <a-select v-model:value="filter.cloudProvider" placeholder="部署云服务商" allow-clear style="width: 150px">
-          <a-select-option v-for="item in cloudProviderOptions" :key="item.value" :value="item.value">{{ item.label }}</a-select-option>
-        </a-select>
-        <a-select v-model:value="filter.cover" placeholder="开放范围" allow-clear style="width: 130px">
-          <a-select-option v-for="item in coverOptions" :key="item.value" :value="item.value">{{ item.label }}</a-select-option>
-        </a-select>
         <template #suffix>
           <ColumnSettings v-model="hiddenKeys" :columns="columns" />
         </template>
@@ -35,7 +29,7 @@
       <div class="component-audit-page__divider"></div>
 
       <div class="component-audit-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 1430 }"
           :columns="visibleColumns"
           :data-source="filteredData"
           :pagination="paginationConfig"
@@ -67,7 +61,7 @@
     </CloudCard>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="审核详情"
       :width="1100"
@@ -97,11 +91,11 @@
             <div class="split-section">
               <div class="split-section__title">基本信息</div>
               <a-descriptions :column="1" bordered size="small">
-                <a-descriptions-item label="显示顺序">
-                  {{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}
-                </a-descriptions-item>
                 <a-descriptions-item label="组件描述">
                   {{ drawer.record.description || '--' }}
+                </a-descriptions-item>
+                <a-descriptions-item label="付费方式参考">
+                  {{ drawer.record.paymentMethodRef || '--' }}
                 </a-descriptions-item>
               </a-descriptions>
             </div>
@@ -206,6 +200,7 @@ import {
   RobotOutlined
 } from '@ant-design/icons-vue'
 import { Modal, message } from 'ant-design-vue'
+import { getDicts } from '@/api/system/dict/data'
 
 export default {
   name: 'ComponentAudit',
@@ -221,11 +216,7 @@ export default {
       filter: { name: '', componentId: '', serviceProvider: '', cloudProvider: undefined, cover: undefined, status: undefined, step: undefined, submitTimeRange: [] },
       applied: { name: '', componentId: '', serviceProvider: '', cloudProvider: undefined, cover: undefined, status: undefined, step: undefined, submitTimeRange: [] },
       pagination: { current: 1, pageSize: 10 },
-      coverOptions: [
-        { value: '不限', label: '不限' },
-        { value: '市级', label: '市级' },
-        { value: '区（县）域', label: '区（县）域' }
-      ],
+      coverOptions: [],
       cloudProviderOptions: [
         { value: '电信云', label: '电信云' },
         { value: '移动云', label: '移动云' },
@@ -239,7 +230,7 @@ export default {
         { title: '审核状态', dataIndex: 'auditStatus', key: 'auditStatus', width: 110 },
         { title: '审核阶段', dataIndex: 'currentStep', key: 'currentStep', width: 140 },
         { title: '能力组件名称/ID', dataIndex: 'name', key: 'name', width: 240 },
-        { title: '组件描述', dataIndex: 'description', key: 'description', width: 300, ellipsis: true },
+        { title: '组件描述', dataIndex: 'description', key: 'description', width: 300, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '服务商名称', dataIndex: 'serviceProviderName', key: 'serviceProviderName', width: 150, ellipsis: true },
         { title: '部署云服务商', dataIndex: 'deployServiceProviderView', key: 'deployServiceProviderView', width: 120 },
         { title: '开放范围', dataIndex: 'coverView', key: 'coverView', width: 110 },
@@ -267,6 +258,7 @@ export default {
         contact1Phone: '13800138000',
         contact2Name: '李助理',
         contact2Phone: '13900139000',
+        paymentMethodRef: '按调用量计费，含技术支持服务，具体费用根据服务内容协商确定',
         sortOrder: 1
       },
       // 审核数据：按submissionId索引，每个提交含4阶段审核信息
@@ -386,13 +378,30 @@ export default {
       }
     },
   },
+  created() {
+    this.loadCoverOptions();
+  },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
+    loadCoverOptions() {
+      getDicts('OpenRange').then((response) => {
+        this.coverOptions = (response.data || []).map((item) => ({
+          value: String(item.dictCode),
+          label: item.dictLabel
+        }));
+      });
+    },
     handleQuery() {
       this.applied = { ...this.filter }
       this.pagination.current = 1
     },
     resetQuery() {
-      this.filter = { name: '', componentId: '', serviceProvider: '', cloudProvider: undefined, cover: undefined, status: undefined, step: undefined, submitTimeRange: [] }
+      this.filter = { name: '', componentId: '', serviceProvider: '', status: undefined, step: undefined, submitTimeRange: [] }
       this.applied = { ...this.filter }
       this.pagination.current = 1
     },
@@ -535,6 +544,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认通过',
         content: '确定要通过该组件的审核吗？',
         okText: '确定',
@@ -552,6 +562,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认驳回',
         content: '确定要驳回该组件的审核吗？',
         okText: '确定',

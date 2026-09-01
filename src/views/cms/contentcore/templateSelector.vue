@@ -1,176 +1,200 @@
 <template>
-  <div class="app-container">
-    <el-dialog 
-      :title="$t('CMS.Template.SelectorTitle')"
-      :visible.sync="visible"
-      width="700px"
-      :close-on-click-modal="false"
-      append-to-body>
-      <el-form 
-        :model="queryParams"
-        ref="queryForm"
-        :inline="true"
-        label-width="68px"
-        class="el-form-search mb12">
-        <el-form-item prop="filename">
-          <el-input v-model="queryParams.filename" :placeholder="$t('CMS.Template.Name')" size="small">
-          </el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button-group>
-            <el-button 
-              type="primary"
-              icon="el-icon-search"
-              size="small"
-              @click="handleQuery">{{ $t("Common.Search") }}</el-button>
-            <el-button 
-              icon="el-icon-refresh"
-              size="small"
-              @click="resetQuery">{{ $t("Common.Reset") }}</el-button>
-          </el-button-group>
-        </el-form-item>
-      </el-form>
-      <el-table 
-        v-loading="loading"
-        :height="435"
-        :data="templateList"
-        highlight-current-row
-        @current-change="handleSelectionChange">
-        <el-table-column 
-          type="index"
-          :label="$t('Common.RowNo')"
-          align="center"
-          width="50" />
-        <el-table-column 
-          :label="$t('CMS.Template.Name')"
-          align="left"
-          prop="path">
-          <template slot-scope="scope">
-            <span v-html="scope.row.displayPath"></span>
-          </template>
-        </el-table-column>
-      </el-table>
-      <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
-      />
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" :disabled="okBtnDisabled" @click="handleOk">{{ $t("Common.Confirm") }}</el-button>
-        <el-button @click="handleCancel">{{ $t("Common.Cancel") }}</el-button>
-      </div>
-    </el-dialog>
-  </div>
+  <a-modal :get-container="getDemoContainer"
+    :title="$t('CMS.Template.SelectorTitle')"
+    :open="visible"
+    width="700px"
+    :mask-closable="false"
+    @cancel="handleCancel"
+  >
+    <a-form
+      :model="queryParams"
+      ref="queryForm"
+      layout="inline"
+      class="mb12"
+      @submit.prevent
+    >
+      <a-form-item name="filename">
+        <a-input
+          v-model:value="queryParams.filename"
+          :placeholder="$t('CMS.Template.Name')"
+          allow-clear
+          @press-enter="handleQuery"
+        />
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" @click="handleQuery">
+          <template #icon><SearchOutlined /></template>
+          {{ $t("Common.Search") }}
+        </a-button>
+      </a-form-item>
+      <a-form-item>
+        <a-button @click="resetQuery">
+          <template #icon><ReloadOutlined /></template>
+          {{ $t("Common.Reset") }}
+        </a-button>
+      </a-form-item>
+    </a-form>
+    <a-table
+      :loading="loading"
+      :columns="columns"
+      :data-source="templateList"
+      size="small"
+      row-key="path"
+      :row-selection="{ type: 'radio', selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
+      :custom-row="customRow"
+      :pagination="false"
+      :scroll="{ x: 'max-content', y: 360 }"
+    >
+      <template #bodyCell="{ column, record }">
+        <span v-if="column.dataIndex === 'path'" v-html="record.displayPath"></span>
+      </template>
+    </a-table>
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      @pagination="getList"
+    />
+    <template #footer>
+      <a-button type="primary" :disabled="okBtnDisabled" @click="handleOk">{{ $t("Common.Confirm") }}</a-button>
+      <a-button class="ml8" @click="handleCancel">{{ $t("Common.Cancel") }}</a-button>
+    </template>
+  </a-modal>
 </template>
-<style scoped>
-</style>
 <script>
+import { SearchOutlined, ReloadOutlined } from "@ant-design/icons-vue";
 import { getTemplateList } from "@/api/contentcore/template";
 
 export default {
   name: "CMSTemplateSelector",
+  components: {
+    SearchOutlined,
+    ReloadOutlined,
+  },
   props: {
     publishPipeCode: {
       type: String,
-      required: true
+      required: true,
     },
     open: {
       type: Boolean,
       default: false,
-      required: true
-    }
+      required: true,
+    },
   },
   watch: {
-    open () {
+    open() {
       this.visible = this.open;
     },
-    visible (newVal) {
+    visible(newVal) {
       if (!newVal) {
         this.handleCancel();
       } else {
         this.getList();
       }
     },
-    publishPipeCode () {
+    publishPipeCode() {
       this.queryParams.publishPipeCode = this.publishPipeCode;
-    }
+    },
   },
   computed: {
     okBtnDisabled() {
       return this.selectedTemplate == undefined;
-    }
+    },
   },
-  data () {
+  data() {
     return {
-      // 遮罩层
       loading: false,
       visible: this.open,
-      // 选中数组
       selectedTemplate: undefined,
-      // 资源表格数据
+      selectedRowKeys: [],
       templateList: [],
       total: 0,
-      // 查询参数
+      columns: [
+        { title: this.$t("CMS.Template.Name"), dataIndex: "path", key: "path", ellipsis: false },
+      ],
       queryParams: {
         publishPipeCode: this.publishPipeCode,
         filename: undefined,
-        pageSize: 8
-      }
+        pageNum: 1,
+        pageSize: 8,
+      },
     };
   },
   methods: {
-    /** 查询资源列表 */
-    getList () {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
+    getList() {
       if (!this.visible) {
         return;
       }
       this.loading = true;
-      getTemplateList(this.queryParams).then(response => {
-        // this.templateList = response.data.rows;
-        this.templateList = response.data.rows.map(item => {
-          let arr = item.path.split("/");
-          if (arr.length > 1) {
-            for(let i = 0; i < arr.length - 1; i++) {
-              item.displayPath = '<span style="color: #1890ff">' + arr[i] + '</span> / ';
+      getTemplateList(this.queryParams)
+        .then((response) => {
+          this.templateList = response.data.rows.map((item) => {
+            const arr = item.path.split("/");
+            if (arr.length > 1) {
+              item.displayPath = "";
+              for (let i = 0; i < arr.length - 1; i++) {
+                item.displayPath += '<span style="color: #1890ff">' + arr[i] + "</span> / ";
+              }
+              item.displayPath += arr[arr.length - 1];
+            } else {
+              item.displayPath = arr[0];
             }
-            item.displayPath += arr[arr.length - 1];
-          } else {
-            item.displayPath = arr[0];
-          }
-          return item;
+            return item;
+          });
+          this.total = parseInt(response.data.total);
+          this.selectedTemplate = undefined;
+          this.selectedRowKeys = [];
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
         });
-        console.log(this.templateList)
-        this.total = parseInt(response.data.total);
-        this.selectedTemplate = undefined;
-        this.loading = false;
-      });
     },
-    handleSelectionChange (selection) {
-      if (selection) {
-        this.selectedTemplate = selection.path;
-      }
+    handleSelectionChange(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys;
+      this.selectedTemplate = selectedRows && selectedRows.length > 0 ? selectedRows[0].path : undefined;
     },
-    handleOk () {
+    customRow(record) {
+      return {
+        onClick: () => {
+          this.handleSelectionChange([record.path], [record]);
+        },
+      };
+    },
+    handleOk() {
       this.$emit("ok", this.selectedTemplate);
     },
-    // 取消按钮
-    handleCancel () {
+    handleCancel() {
       this.$emit("cancel");
       this.queryParams.filename = undefined;
       this.selectedTemplate = undefined;
+      this.selectedRowKeys = [];
       this.templateList = [];
     },
-    /** 搜索按钮操作 */
-    handleQuery () {
+    handleQuery() {
+      this.queryParams.pageNum = 1;
       this.getList();
     },
-    /** 重置按钮操作 */
-    resetQuery () {
+    resetQuery() {
       this.queryParams.filename = undefined;
       this.handleQuery();
-    }
-  }
+    },
+  },
 };
 </script>
+<style scoped>
+.mb12 {
+  margin-bottom: 12px;
+}
+.ml8 {
+  margin-left: 8px;
+}
+</style>

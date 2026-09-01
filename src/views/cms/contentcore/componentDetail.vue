@@ -21,7 +21,9 @@
               <div class="kv-item"><label>组件名称</label><span>{{ compInfo.name || '--' }}</span></div>
               <div class="kv-item"><label>状态</label><span>{{ compInfo.statusView || '--' }}</span></div>
               <div class="kv-item full"><label>组件描述</label><span>{{ compInfo.description || '--' }}</span></div>
+              <div class="kv-item full"><label>付费方式参考</label><span>{{ compInfo.paymentMethodRef || '--' }}</span></div>
               <div class="kv-item"><label>显示顺序</label><span>{{ compInfo.sortOrder || '0' }}</span></div>
+              <div class="kv-item"><label>服务征集得分</label><span>{{ compInfo.recruitScore != null ? compInfo.recruitScore : '--' }}</span></div>
             </div>
           </div>
 
@@ -175,7 +177,9 @@ export default {
         componentId: '',
         name: '',
         description: '',
+        paymentMethodRef: '',
         sortOrder: 0,
+        recruitScore: null,
         status: 20,
         statusView: '已发布',
         serviceProviderName: '',
@@ -229,7 +233,9 @@ export default {
       componentId: q.componentId || 'COMP-2024-001',
       name: q.name || '电子签章服务组件',
       description: q.description || '电子签章服务组件提供数字签名、电子印章、合同签署等能力，支持 PDF、OFD 等格式，符合国家电子签名法要求。',
+      paymentMethodRef: q.paymentMethodRef || '按调用次数计费 0.05 元/次，包年包月 500 元/月',
       sortOrder: parseInt(q.sortOrder) || 1,
+      recruitScore: q.recruitScore != null ? parseFloat(q.recruitScore) : 85,
       status: parseInt(q.status) || 20,
       statusView: parseInt(q.status) === 20 ? '已发布' : parseInt(q.status) === 30 ? '已下线' : '未知',
       serviceProviderName: q.serviceProviderName || '华为技术',

@@ -1,133 +1,136 @@
 <template>
   <div class="site-def-temp-container">
-    <el-row class="mb12">
-      <el-button 
-        plain
-        type="success"
-        icon="el-icon-edit"
-        size="mini"
-        :disabled="!this.siteId"
-        v-hasPermi="[ $p('Site:Edit:{0}', [ siteId ]) ]"
-        @click="handleSave">{{ $t("Common.Save") }}</el-button>
-    </el-row>
-    <el-form 
-      ref="form"
-      :model="form"
-      v-loading="loading"
-      :disabled="!this.siteId"
-      label-width="260px">
-      <el-card shadow="hover">
-        <div slot="header" class="clearfix">
-          <span>{{ $t('CMS.Site.DefaultTemplate.Title') }}</span>
-        </div>
-        <el-tabs v-model="publishPipeActiveName">
-          <el-tab-pane 
-            v-for="pp in this.form.publishPipeProps"
-            :key="pp.pipeCode"
-            :command="pp"
-            :name="pp.pipeCode"
-            :label="pp.pipeName">
-            <el-divider content-position="left">{{ $t('CMS.Site.DefaultTemplate.StaticizePageConfig') }}</el-divider>
-            <el-form-item 
-              :label="$t('CMS.Site.DefaultTemplate.CatalogList')"
-              prop="defaultListTemplate">
-              <el-input class="mr5" v-model="pp.props.defaultListTemplate">
-                <el-button 
-                  slot="append"
-                  type="primary"
-                  @click="handleSelectTemplate('defaultListTemplate')">{{ $t("Common.Select") }}</el-button>
-              </el-input>
-              <el-button 
-                icon="el-icon-finished" 
-                type="primary" 
-                plain 
-                @click="handleApplyToCatalog('defaultListTemplate')">{{ $t('CMS.ContentCore.ApplyToCatalog') }}</el-button>
-            </el-form-item>
-            <el-form-item 
-              v-for="ct of contentTypes" 
-              :key="ct.id" 
-              :command="ct"
-              :label="ct.name + $t('CMS.Site.DefaultTemplate.ContentDetail')"
-              :prop="`defaultDetailTemplate_${ct.id}`">
-              <el-input class="mr5" v-model="pp.props[`defaultDetailTemplate_${ct.id}`]">
-                <el-button 
-                  slot="append"
-                  type="primary"
-                  @click="handleSelectTemplate(`defaultDetailTemplate_${ct.id}`)">{{ $t("Common.Select") }}</el-button>
-              </el-input>
-              <el-button 
-                icon="el-icon-finished" 
-                type="primary" 
-                plain 
-                @click="handleApplyToCatalog(`defaultDetailTemplate_${ct.id}`)">{{ $t('CMS.ContentCore.ApplyToCatalog') }}</el-button>
-            </el-form-item>
-            <el-form-item 
-              :label="$t('CMS.Site.DefaultTemplate.CustomForm')"
-              prop="defaultCustomFormTemplate">
-              <el-input class="mr5" v-model="pp.props.defaultCustomFormTemplate">
-                <el-button 
-                  slot="append"
-                  type="primary"
-                  @click="handleSelectTemplate('defaultCustomFormTemplate')">{{ $t("Common.Select") }}</el-button>
-              </el-input>
-              <el-button 
-                icon="el-icon-finished" 
-                type="primary" 
-                plain 
-                @click="handleApplyToCatalog('defaultCustomFormTemplate')">{{ $t('CMS.ContentCore.ApplyToCatalog') }}</el-button>
-            </el-form-item>
-            <el-divider content-position="left">{{ $t('CMS.Site.DefaultTemplate.DynamicPageConfig') }}</el-divider>
-            <el-form-item 
-              v-for="dpt in dynamicPageTypes"
-              :key="dpt.type"
-              :label="dpt.name"
-              :prop="dpt.publishPipeKey">
-              <el-input v-model="pp.props[dpt.publishPipeKey]">
-                <el-button 
-                  slot="append"
-                  type="primary"
-                  @click="handleSelectTemplate(dpt.publishPipeKey)">{{ $t("Common.Select") }}</el-button>
-              </el-input>
-            </el-form-item>
-          </el-tab-pane>
-        </el-tabs>
-      </el-card>
-    </el-form>
+    <div class="mb12">
+      <a-button
+        type="primary"
+        ghost
+        :disabled="!siteId"
+        v-hasPermi="[$p('Site:Edit:{0}', [siteId])]"
+        @click="handleSave"
+      >
+        <template #icon><EditOutlined /></template>
+        {{ $t("Common.Save") }}
+      </a-button>
+    </div>
+    <a-spin :spinning="loading">
+      <a-form
+        ref="form"
+        :model="form"
+        :disabled="!siteId"
+        :label-col="{ style: { width: '260px' } }"
+      >
+        <a-card class="mb10" :title="$t('CMS.Site.DefaultTemplate.Title')">
+          <a-tabs v-model:activeKey="publishPipeActiveName">
+            <a-tab-pane
+              v-for="pp in form.publishPipeProps"
+              :key="pp.pipeCode"
+              :tab="pp.pipeName"
+            >
+              <a-divider orientation="left" plain>
+                {{ $t("CMS.Site.DefaultTemplate.StaticizePageConfig") }}
+              </a-divider>
+              <a-form-item :label="$t('CMS.Site.DefaultTemplate.CatalogList')" name="defaultListTemplate">
+                <a-input v-model:value="pp.props.defaultListTemplate" style="width: 320px">
+                  <template #append>
+                    <a-button type="primary" @click="handleSelectTemplate('defaultListTemplate')">
+                      {{ $t("Common.Select") }}
+                    </a-button>
+                  </template>
+                </a-input>
+                <a-button class="ml8" @click="handleApplyToCatalog('defaultListTemplate')">
+                  {{ $t("CMS.ContentCore.ApplyToCatalog") }}
+                </a-button>
+              </a-form-item>
+              <a-form-item
+                v-for="ct of contentTypes"
+                :key="ct.id"
+                :label="ct.name + $t('CMS.Site.DefaultTemplate.ContentDetail')"
+                :name="`defaultDetailTemplate_${ct.id}`"
+              >
+                <a-input v-model:value="pp.props[`defaultDetailTemplate_${ct.id}`]" style="width: 320px">
+                  <template #append>
+                    <a-button type="primary" @click="handleSelectTemplate(`defaultDetailTemplate_${ct.id}`)">
+                      {{ $t("Common.Select") }}
+                    </a-button>
+                  </template>
+                </a-input>
+                <a-button class="ml8" @click="handleApplyToCatalog(`defaultDetailTemplate_${ct.id}`)">
+                  {{ $t("CMS.ContentCore.ApplyToCatalog") }}
+                </a-button>
+              </a-form-item>
+              <a-form-item :label="$t('CMS.Site.DefaultTemplate.CustomForm')" name="defaultCustomFormTemplate">
+                <a-input v-model:value="pp.props.defaultCustomFormTemplate" style="width: 320px">
+                  <template #append>
+                    <a-button type="primary" @click="handleSelectTemplate('defaultCustomFormTemplate')">
+                      {{ $t("Common.Select") }}
+                    </a-button>
+                  </template>
+                </a-input>
+                <a-button class="ml8" @click="handleApplyToCatalog('defaultCustomFormTemplate')">
+                  {{ $t("CMS.ContentCore.ApplyToCatalog") }}
+                </a-button>
+              </a-form-item>
+              <a-divider orientation="left" plain>
+                {{ $t("CMS.Site.DefaultTemplate.DynamicPageConfig") }}
+              </a-divider>
+              <a-form-item
+                v-for="dpt in dynamicPageTypes"
+                :key="dpt.type"
+                :label="dpt.name"
+                :name="dpt.publishPipeKey"
+              >
+                <a-input v-model:value="pp.props[dpt.publishPipeKey]" style="width: 320px">
+                  <template #append>
+                    <a-button type="primary" @click="handleSelectTemplate(dpt.publishPipeKey)">
+                      {{ $t("Common.Select") }}
+                    </a-button>
+                  </template>
+                </a-input>
+              </a-form-item>
+            </a-tab-pane>
+          </a-tabs>
+        </a-card>
+      </a-form>
+    </a-spin>
     <!-- 栏目选择组件 -->
     <cms-catalog-selector
-      :open.sync="openCatalogSelector"
+      :open="openCatalogSelector"
       multiple
       @ok="doApplyToCatalog"
-      @close="handleCatalogSelectorClose"></cms-catalog-selector>
+      @close="handleCatalogSelectorClose"
+    ></cms-catalog-selector>
     <!-- 模板选择组件 -->
-    <cms-template-selector 
-      :open="openTemplateSelector" 
+    <cms-template-selector
+      :open="openTemplateSelector"
       :publishPipeCode="publishPipeActiveName"
       @ok="handleTemplateSelected"
-      @cancel="handleTemplateSelectorCancel" />
+      @cancel="handleTemplateSelectorCancel"
+    />
   </div>
 </template>
 <script>
+import { EditOutlined } from "@ant-design/icons-vue";
 import { getDefaultTemplates, saveDefaultTemplates, applyDefaultTemplate, getDynamicPageTypes } from "@/api/contentcore/site";
 import { getContentTypes } from "@/api/contentcore/catalog";
-import CMSTemplateSelector from '@/views/cms/contentcore/templateSelector';
+import CMSTemplateSelector from "@/views/cms/contentcore/templateSelector";
 import CMSCatalogSelector from "@/views/cms/contentcore/catalogSelector";
 
 export default {
   name: "CMSSiteDefaultTemplate",
   components: {
-    'cms-catalog-selector': CMSCatalogSelector,
-    'cms-template-selector': CMSTemplateSelector
+    "cms-catalog-selector": CMSCatalogSelector,
+    "cms-template-selector": CMSTemplateSelector,
+    EditOutlined,
   },
   props: {
     site: {
       type: String,
       default: undefined,
       required: false,
-    }
+    },
   },
   watch: {
-    site(newVal) { 
+    site(newVal) {
       this.siteId = newVal;
     },
     siteId(newVal) {
@@ -136,7 +139,7 @@ export default {
       }
     },
   },
-  data () {
+  data() {
     return {
       loading: false,
       siteId: this.site,
@@ -146,8 +149,7 @@ export default {
       publishPipeActiveName: "",
       openTemplateSelector: false,
       templatePropKey: "",
-      form: {
-      }
+      form: {},
     };
   },
   created() {
@@ -157,33 +159,36 @@ export default {
   },
   methods: {
     loadContentTypes() {
-      getContentTypes().then(response => {
+      getContentTypes().then((response) => {
         this.contentTypes = response.data;
       });
     },
     loadDynamicPageTypes() {
-      getDynamicPageTypes().then(response => {
+      getDynamicPageTypes().then((response) => {
         this.dynamicPageTypes = response.data;
       });
     },
-    loadDefaultTemplates () {
+    loadDefaultTemplates() {
+      if (!this.siteId) {
+        return;
+      }
       this.loading = true;
       const params = { siteId: this.siteId };
-      getDefaultTemplates(params).then(response => {
-        this.form = response.data;
-        if (this.form.publishPipeProps.length > 0) {
-          this.publishPipeActiveName = this.form.publishPipeProps[0].pipeCode;
-        }
-        this.loading = false;
-      });
+      getDefaultTemplates(params)
+        .then((response) => {
+          this.form = response.data;
+          if (this.form.publishPipeProps.length > 0) {
+            this.publishPipeActiveName = this.form.publishPipeProps[0].pipeCode;
+          }
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     },
-    handleSave () {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          saveDefaultTemplates(this.form).then(response => {
-            this.$modal.msgSuccess(this.$t('SaveSuccess'));
-          });
-        }
+    handleSave() {
+      saveDefaultTemplates(this.form).then(() => {
+        this.$modal.msgSuccess(this.$t("Common.SaveSuccess"));
       });
     },
     handleSelectTemplate(propKey) {
@@ -191,7 +196,7 @@ export default {
       this.openTemplateSelector = true;
     },
     handleTemplateSelected(template) {
-      this.form.publishPipeProps.map(item => {
+      this.form.publishPipeProps.map((item) => {
         if (item.pipeCode == this.publishPipeActiveName) {
           item.props[this.templatePropKey] = template;
         }
@@ -205,41 +210,44 @@ export default {
       this.openCatalogSelector = true;
       this.templatePropKey = propKey;
     },
-    doApplyToCatalog (catalogs) {
+    doApplyToCatalog(catalogs) {
       if (catalogs.length == 0) {
         this.$modal.msgWarning(this.$t("CMS.Site.DefaultTemplate.SelectCatalogFirst"));
         return;
       }
-      let data = {
+      const data = {
         siteId: this.siteId,
-        toCatalogIds: catalogs.map(c => c.id)
-      }
-      this.form.publishPipeProps.forEach(item => {
+        toCatalogIds: catalogs.map((c) => c.id),
+      };
+      this.form.publishPipeProps.forEach((item) => {
         if (item.pipeCode == this.publishPipeActiveName) {
           data.publishPipeProps = [{ pipeCode: item.pipeCode, props: {} }];
           data.publishPipeProps[0].props[this.templatePropKey] = "";
         }
       });
-      applyDefaultTemplate(data).then(res => {
+      applyDefaultTemplate(data).then((res) => {
         this.$modal.msgSuccess(res.msg);
         this.openCatalogSelector = false;
       });
     },
     handleCatalogSelectorClose() {
       this.openCatalogSelector = false;
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
-.site-def-temp-container .el-form-item {
+.site-def-temp-container .ant-form-item {
   margin-bottom: 18px;
   width: 800px;
 }
-.site-def-temp-container .el-input, .el-select {
-  width: 320px;
+.mb12 {
+  margin-bottom: 12px;
 }
-.site-def-temp-container .el-card {
+.mb10 {
   margin-bottom: 10px;
+}
+.ml8 {
+  margin-left: 8px;
 }
 </style>

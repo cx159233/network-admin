@@ -122,7 +122,7 @@
       </div>
     </div>
 
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       v-model:open="reviewDialogVisible"
       title="新增满意度评价"
       width="520px"
@@ -207,6 +207,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     goBack() {
       this.$router.push('/workorder/order/myInitiated')
     },
@@ -239,6 +245,7 @@ export default {
     },
     forceCloseOrder() {
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '强制关单',
         content: '确定要强制关单吗？',
         okText: '确定',
@@ -251,6 +258,7 @@ export default {
     },
     cancelOrder() {
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '取消订单',
         content: '确定要取消订单吗？',
         okText: '确定',

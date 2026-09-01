@@ -1,5 +1,5 @@
 <template>
-  <a-modal
+  <a-modal :get-container="getDemoContainer"
     :open="visible"
     title="选择文件"
     :width="1100"
@@ -30,7 +30,7 @@
         @change="handleFilterFile"
       />
     </div>
-    <a-table
+    <a-table :scroll="{ x: 'max-content' }"
       :loading="loading"
       :data-source="fileList"
       row-key="fileName"
@@ -137,6 +137,12 @@ export default {
     };
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     rowClassName(record) {
       return this.selectedRowKeys.indexOf(record.fileName) > -1 ? 'file-row-selected' : '';
     },

@@ -72,9 +72,9 @@
     </CloudCard>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
-      title="服务订阅详情"
+      title="服务开通详情"
       :width="860"
       placement="right"
       :body-style="{ padding: '24px' }"
@@ -87,7 +87,7 @@
               <StatusDot :type="getStatusKey(drawer.record.status)" :text="drawer.record.status" />
             </div>
             <div class="drawer-header-sub">
-              <span>ID：{{ drawer.record.serviceId || drawer.record.orderNo || '--' }}</span>
+              <span class="cell-mono">服务单号：{{ drawer.record.orderNo || '--' }}</span>
             </div>
           </div>
         </div>
@@ -95,18 +95,22 @@
         <div class="overview-section">
           <div class="overview-section__title">基本信息</div>
           <a-descriptions :column="2" bordered size="small">
-            <a-descriptions-item label="服务单号">
-              <span class="cell-mono">{{ drawer.record.orderNo || '--' }}</span>
+            <a-descriptions-item label="服务ID">
+              <span class="cell-mono">{{ drawer.record.serviceId || '--' }}</span>
             </a-descriptions-item>
             <a-descriptions-item label="服务类型">
               <span :class="['service-type-tag', getServiceTypeClass(drawer.record.serviceType)]">{{ drawer.record.serviceType || '--' }}</span>
             </a-descriptions-item>
             <a-descriptions-item label="申请机构">{{ drawer.record.orgName || '--' }}</a-descriptions-item>
+            <a-descriptions-item label="服务商名称">{{ drawer.record.serviceProvider || '--' }}</a-descriptions-item>
             <a-descriptions-item label="创建时间">
               <span class="cell-mono">{{ drawer.record.applyTime || '--' }}</span>
             </a-descriptions-item>
             <a-descriptions-item label="关联工单">
-              <span>{{ drawer.record.workorderId || '--' }}</span>
+              <span class="workorder-link">
+                <span>{{ drawer.record.workorderId || '--' }}</span>
+                <a-button v-if="drawer.record.workorderId" type="link" size="small" @click="goToWorkorder(drawer.record.workorderId)" class="!px-1">跳转工单 →</a-button>
+              </span>
             </a-descriptions-item>
           </a-descriptions>
         </div>
@@ -119,7 +123,10 @@
               :key="idx"
               :color="step.dotColor"
             >
-              <div :class="['tl-title', `tl-title--${step.state}`]">{{ step.title }}</div>
+              <div :class="['tl-title', `tl-title--${step.state}`]">
+                {{ step.title }}
+                <span :class="['tl-state', `tl-state--${step.state}`]">{{ step.stateLabel }}</span>
+              </div>
               <div class="tl-time">{{ step.time }}</div>
             </a-timeline-item>
           </a-timeline>
@@ -128,7 +135,7 @@
     </a-drawer>
 
     <!-- 评价弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       v-model:open="reviewDialogVisible"
       title="服务评价"
       :width="480"
@@ -153,7 +160,7 @@
     </a-modal>
 
     <!-- 查看评价弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       v-model:open="viewEvalVisible"
       title="服务评价"
       :footer="null"
@@ -221,15 +228,6 @@ export default {
           reply: '感谢您的认可与支持，我们将持续优化服务质量！'
         }
       },
-      drawerTimeline: [
-        { title: '提交申请', time: '工单已提交', state: 'done', dotColor: 'green' },
-        { title: '系统派发工单', time: '自动派发', state: 'done', dotColor: 'green' },
-        { title: '工单流转中', time: '工单流转完成', state: 'done', dotColor: 'green' },
-        { title: '服务交付完成', time: '收到工单系统交付完成回执', state: 'done', dotColor: 'green' },
-        { title: '服务评价', time: '可新增满意度评价', state: 'on', dotColor: 'blue' },
-        { title: '订单驳回', time: '工单驳回后记录驳回时间', state: 'wait', dotColor: 'gray' },
-        { title: '订单取消', time: '用户取消订单后记录取消时间', state: 'wait', dotColor: 'gray' }
-      ],
       columns: [
         { title: '服务单号', dataIndex: 'orderNo', key: 'orderNo', width: 150 },
         { title: '服务名称/ID', dataIndex: 'service', key: 'service', width: 220 },
@@ -241,12 +239,12 @@ export default {
         { title: '操作', dataIndex: 'action', key: 'action', width: 220, fixed: 'right' }
       ],
       orderList: [
-        { orderNo: '202608100089', serviceId: 'SVC-0234', serviceName: '智慧园区综合管理平台', serviceSpec: '标准版，含500个设备接入 + 数据看板', orgName: '北京市海淀区数字经济发展局', applicant: '张三', department: '技术部', serviceType: '数字应用', status: '工单流转中', workorderId: 'TK-0234', applyTime: '2026-03-15 14:32' },
-        { orderNo: '202608100090', serviceId: 'SVC-0235', serviceName: '统一身份认证组件', serviceSpec: '支持OAuth2.0/SAML，含SSO单点登录', orgName: '北京市海淀区数字经济发展局', applicant: '张三', department: '技术部', serviceType: '能力组件', status: '已完成', workorderId: 'TK-0235', applyTime: '2026-03-10 09:15' },
-        { orderNo: '202608100091', serviceId: 'SVC-0236', serviceName: '数据可视化分析平台', serviceSpec: '企业版，含20个数据源接入 + 大屏展示', orgName: '北京市海淀区数字经济发展局', applicant: '张三', department: '技术部', serviceType: '数字应用', status: '工单流转中', workorderId: 'TK-0236', applyTime: '2026-03-05 16:45' },
-        { orderNo: '202608100088', serviceId: 'SVC-0230', serviceName: '消息推送中间件', serviceSpec: '支持短信/邮件/站内信多通道，100万条/月', orgName: '北京市海淀区数字经济发展局', applicant: '张三', department: '技术部', serviceType: '能力组件', status: '已完成', workorderId: 'TK-0230', applyTime: '2026-02-20 10:00' },
-        { orderNo: '202608100087', serviceId: 'SVC-0205', serviceName: '政务协同办公平台', serviceSpec: '旗舰版 / 200账号 / 含流程引擎', orgName: '北京市海淀区数字经济发展局', applicant: '赵敏', department: '技术部', serviceType: '数字应用', status: '已评价', workorderId: 'TK-0205', applyTime: '2026-02-15 11:14' },
-        { orderNo: '202608100086', serviceId: 'SVC-0201', serviceName: '数据加密传输组件', serviceSpec: '国密SM2/SM4 / 100万次调用', orgName: '北京市海淀区数字经济发展局', applicant: '林峰', department: '技术部', serviceType: '安全服务', status: '已驳回', workorderId: 'TK-0201', applyTime: '2026-02-10 13:50' }
+        { orderNo: '202608100089', serviceId: 'SVC-0234', serviceName: '智慧园区综合管理平台', serviceProvider: '北京健康科技有限公司', serviceSpec: '标准版，含500个设备接入 + 数据看板', orgName: '北京市海淀区数字经济发展局', applicant: '张三', department: '技术部', serviceType: '数字应用', status: '工单流转中', workorderId: 'TK-0234', applyTime: '2026-03-15 14:32' },
+        { orderNo: '202608100090', serviceId: 'SVC-0235', serviceName: '统一身份认证组件', serviceProvider: '中科软科技', serviceSpec: '支持OAuth2.0/SAML，含SSO单点登录', orgName: '北京市海淀区数字经济发展局', applicant: '张三', department: '技术部', serviceType: '能力组件', status: '已完成', workorderId: 'TK-0235', applyTime: '2026-03-10 09:15' },
+        { orderNo: '202608100091', serviceId: 'SVC-0236', serviceName: '数据可视化分析平台', serviceProvider: '东华软件', serviceSpec: '企业版，含20个数据源接入 + 大屏展示', orgName: '北京市海淀区数字经济发展局', applicant: '张三', department: '技术部', serviceType: '数字应用', status: '工单流转中', workorderId: 'TK-0236', applyTime: '2026-03-05 16:45' },
+        { orderNo: '202608100088', serviceId: 'SVC-0230', serviceName: '消息推送中间件', serviceProvider: '腾讯云', serviceSpec: '支持短信/邮件/站内信多通道，100万条/月', orgName: '北京市海淀区数字经济发展局', applicant: '张三', department: '技术部', serviceType: '能力组件', status: '已完成', workorderId: 'TK-0230', applyTime: '2026-02-20 10:00' },
+        { orderNo: '202608100087', serviceId: 'SVC-0205', serviceName: '政务协同办公平台', serviceProvider: '万达信息', serviceSpec: '旗舰版 / 200账号 / 含流程引擎', orgName: '北京市海淀区数字经济发展局', applicant: '赵敏', department: '技术部', serviceType: '数字应用', status: '已评价', workorderId: 'TK-0205', applyTime: '2026-02-15 11:14' },
+        { orderNo: '202608100086', serviceId: 'SVC-0201', serviceName: '数据加密传输组件', serviceProvider: '上海安全技术有限公司', serviceSpec: '国密SM2/SM4 / 100万次调用', orgName: '北京市海淀区数字经济发展局', applicant: '林峰', department: '技术部', serviceType: '安全服务', status: '已驳回', workorderId: 'TK-0201', applyTime: '2026-02-10 13:50' }
       ]
     }
   },
@@ -278,12 +276,67 @@ export default {
         pageSizeOptions: ['10', '20', '50', '100'],
         showTotal: (t) => `共 ${t} 条`
       }
+    },
+    drawerTimeline() {
+      const rec = this.drawer.record
+      if (!rec) return []
+      const fmt = (minutes) => this.offsetTime(rec.applyTime, minutes)
+      const DONE = { state: 'done', stateLabel: '已完成', dotColor: 'green' }
+      const ON = { state: 'on', stateLabel: '进行中', dotColor: 'blue' }
+      const WAIT = { state: 'wait', stateLabel: '待处理', dotColor: 'gray', time: '--' }
+      const node = (title, time, st) => ({ title, time: time || '--', ...st })
+      switch (rec.status) {
+        case '工单流转中':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('系统派发工单', fmt(2), DONE),
+            node('工单流转中', fmt(2), ON),
+            node('服务交付完成', '', WAIT),
+            node('服务评价', '', WAIT)
+          ]
+        case '已完成':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('系统派发工单', fmt(2), DONE),
+            node('工单流转中', fmt(2), DONE),
+            node('服务交付完成', fmt(24 * 60 + 35), DONE),
+            node('服务评价', '', ON)
+          ]
+        case '已评价':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('系统派发工单', fmt(2), DONE),
+            node('工单流转中', fmt(2), DONE),
+            node('服务交付完成', fmt(24 * 60 + 35), DONE),
+            node('服务评价', fmt(26 * 60 + 10), DONE)
+          ]
+        case '已驳回':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('系统派发工单', fmt(2), DONE),
+            node('工单流转中', fmt(2), DONE),
+            node('订单驳回', fmt(5 * 60 + 20), DONE)
+          ]
+        case '已取消':
+          return [
+            node('提交申请', fmt(0), DONE),
+            node('订单取消', fmt(40), DONE)
+          ]
+        default:
+          return []
+      }
     }
   },
   created() {
     this.loadOrderList()
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleQuery() {
       this.applied = { ...this.filter }
       this.pagination.current = 1
@@ -296,6 +349,19 @@ export default {
     onTableChange(pag) {
       this.pagination.current = pag.current
       this.pagination.pageSize = pag.pageSize
+    },
+    offsetTime(base, minutes) {
+      if (!base) return '--'
+      const t = new Date(String(base).replace(/-/g, '/'))
+      if (isNaN(t.getTime())) return '--'
+      t.setMinutes(t.getMinutes() + minutes)
+      const p = (n) => String(n).padStart(2, '0')
+      return `${t.getFullYear()}-${p(t.getMonth() + 1)}-${p(t.getDate())} ${p(t.getHours())}:${p(t.getMinutes())}:${p(t.getSeconds())}`
+    },
+    goToWorkorder(workorderId) {
+      if (workorderId) {
+        window.open(`https://yunyi-cloud.example.com/workorder/detail?workorderId=${workorderId}`, '_blank')
+      }
     },
     loadOrderList() {
       this.loading = true
@@ -432,7 +498,11 @@ export default {
 }
 
 .overview-section {
-  margin-top: 20px;
+  margin-bottom: 16px;
+}
+
+.overview-section:last-child {
+  margin-bottom: 0;
 }
 
 .overview-section__title {
@@ -441,6 +511,12 @@ export default {
   color: rgba(0, 0, 0, 0.85);
   margin-bottom: 12px;
   line-height: 1.4;
+}
+
+.workorder-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .service-type-tag {
@@ -496,7 +572,7 @@ export default {
 }
 
 .drawer-timeline {
-  padding-top: 8px;
+  padding-top: 4px;
 }
 
 .tl-title {
@@ -508,6 +584,21 @@ export default {
 .tl-title--done { color: #4E5969; }
 .tl-title--on { color: #165DFF; font-weight: 600; }
 .tl-title--wait { color: #C9CDD4; }
+
+.tl-state {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 6px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  vertical-align: 1px;
+}
+
+.tl-state--done { color: #4E5969; background: #F2F3F5; }
+.tl-state--on { color: #165DFF; background: #E8F3FF; }
+.tl-state--wait { color: #C9CDD4; background: #FAFAFA; }
 
 .tl-time {
   font-size: 11px;

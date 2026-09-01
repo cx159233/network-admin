@@ -256,7 +256,7 @@ const allMenus = [
             name: 'OrderMySubscriptions',
             path: 'mySubscriptions',
             component: 'order/mySubscriptions',
-            meta: { title: '服务订阅', icon: 'upload' }
+            meta: { title: '服务开通', icon: 'upload' }
           },
           {
             name: 'OrderMyInitiated',

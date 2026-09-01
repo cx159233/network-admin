@@ -163,7 +163,7 @@
         </a-card>
       </a-form>
     </a-spin>
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="$t('CMS.Catalog.PublishDialogTitle')"
       v-model:open="publishDialogVisible"
       width="500px"
@@ -359,6 +359,12 @@ export default {
     },
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleLogoChange(val) {
       this.form_info.logo = val;
       this.form_info.logoSrc = val;
@@ -405,6 +411,7 @@ export default {
     },
     handleChangeVisible() {
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: this.$t("Common.SystemTip"),
         content: this.catalogVisible
           ? "是否在门户网站上隐藏？"

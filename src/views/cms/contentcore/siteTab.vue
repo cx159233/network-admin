@@ -1,37 +1,31 @@
 <template>
-  <div class="app-container">
-    <el-tabs v-model="activeName" @tab-click="handleTabClick">
-      <el-tab-pane :label="$t('CMS.Site.Tab.Basic')" name="basicInfo">
-        <cms-site-info v-if="this.activeName=='basicInfo'" :site="siteId"></cms-site-info>
-      </el-tab-pane>
-    </el-tabs>
+  <div class="p-[20px]">
+    <a-tabs v-model:activeKey="activeName">
+      <a-tab-pane :tab="$t('CMS.Site.Tab.Basic')" key="basicInfo">
+        <cms-site-info v-if="activeName === 'basicInfo'" :site="siteId"></cms-site-info>
+      </a-tab-pane>
+    </a-tabs>
   </div>
 </template>
-<style scoped>
-</style>
 <script>
-import CMSSiteInfo from '@/views/cms/contentcore/siteInfo';
-import CMSSiteExtend from '@/views/cms/contentcore/siteExtend';
-import CMSSiteProperty from '@/views/cms/contentcore/siteProperty';
-import CMSSiteDefaultTemplate from '@/views/cms/contentcore/siteDefaultTemplate';
+import CMSSiteInfo from "@/views/cms/contentcore/siteInfo";
+import CMSSiteExtend from "@/views/cms/contentcore/siteExtend";
+import CMSSiteProperty from "@/views/cms/contentcore/siteProperty";
+import CMSSiteDefaultTemplate from "@/views/cms/contentcore/siteDefaultTemplate";
 
 export default {
   name: "CMSSiteTab",
   components: {
-    'cms-site-info': CMSSiteInfo,
-    'cms-site-extend': CMSSiteExtend,
+    "cms-site-info": CMSSiteInfo,
+    "cms-site-extend": CMSSiteExtend,
     "cms-site-property": CMSSiteProperty,
-    "cms-site-dtemplate": CMSSiteDefaultTemplate
+    "cms-site-dtemplate": CMSSiteDefaultTemplate,
   },
-  data () {
+  data() {
     return {
-      activeName: 'basicInfo',
+      activeName: "basicInfo",
       siteId: this.$route.query.siteId,
-    }
+    };
   },
-  methods: {
-    handleTabClick (tab, event) {
-    }
-  }
 };
 </script>

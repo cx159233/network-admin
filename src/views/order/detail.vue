@@ -163,6 +163,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     goBack() {
       const currentPath = this.$route.path
       if (currentPath.startsWith('/portal/order')) {
@@ -176,6 +182,7 @@ export default {
     },
     cancelOrder() {
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '取消订单',
         content: '确定要取消该订单吗？取消后无法恢复。',
         okText: '确定',

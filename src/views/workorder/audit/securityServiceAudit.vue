@@ -2,7 +2,7 @@
   <div class="security-audit-page">
     <PageHeader
       title="安全服务审核"
-      description="审核服务商提交的安全服务上架申请，支持按服务名称、云服务商和审核状态筛选"
+      description="审核服务商提交的安全服务上架申请，支持按服务名称、服务ID和审核状态筛选"
     />
 
     <CloudCard class="security-audit-page__table-card">
@@ -22,9 +22,6 @@
         <a-input v-model:value="filter.title" placeholder="安全服务名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceId" placeholder="安全服务ID" allow-clear style="width: 180px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceProvider" placeholder="服务商名称" allow-clear style="width: 160px" @pressEnter="handleQuery" />
-        <a-select v-model:value="filter.cloudProvider" placeholder="部署云服务商" allow-clear style="width: 150px">
-          <a-select-option v-for="item in cloudProviderOptions" :key="item.value" :value="item.value">{{ item.label }}</a-select-option>
-        </a-select>
         <template #suffix>
           <ColumnSettings v-model="hiddenKeys" :columns="columns" />
         </template>
@@ -32,7 +29,7 @@
       <div class="security-audit-page__divider"></div>
 
       <div class="security-audit-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 1450 }"
           :columns="visibleColumns"
           :data-source="filteredData"
           :pagination="paginationConfig"
@@ -64,7 +61,7 @@
     </CloudCard>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="审核详情"
       :width="1100"
@@ -97,11 +94,11 @@
                 <a-descriptions-item label="系统地址">
                   {{ drawer.record.systemUrl || '--' }}
                 </a-descriptions-item>
-                <a-descriptions-item label="显示顺序">
-                  {{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}
-                </a-descriptions-item>
                 <a-descriptions-item label="服务描述">
                   {{ drawer.record.description || '--' }}
+                </a-descriptions-item>
+                <a-descriptions-item label="付费方式参考">
+                  {{ drawer.record.paymentMethodRef || '--' }}
                 </a-descriptions-item>
               </a-descriptions>
             </div>
@@ -215,23 +212,15 @@ export default {
     return {
       loading: false,
       hiddenKeys: [],
-      filter: { title: '', serviceId: '', serviceProvider: '', cloudProvider: undefined, status: undefined, step: undefined, submitTimeRange: [] },
-      applied: { title: '', serviceId: '', serviceProvider: '', cloudProvider: undefined, status: undefined, step: undefined, submitTimeRange: [] },
+      filter: { title: '', serviceId: '', serviceProvider: '', status: undefined, step: undefined, submitTimeRange: [] },
+      applied: { title: '', serviceId: '', serviceProvider: '', status: undefined, step: undefined, submitTimeRange: [] },
       pagination: { current: 1, pageSize: 10 },
-      cloudProviderOptions: [
-        { value: '电信云', label: '电信云' },
-        { value: '移动云', label: '移动云' },
-        { value: '联通云', label: '联通云' },
-        { value: '浪潮云', label: '浪潮云' },
-        { value: '紫光云', label: '紫光云' },
-        { value: '影像云', label: '影像云' }
-      ],
       columns: [
         { title: '提交审核时间', dataIndex: 'submitTime', key: 'submitTime', width: 170 },
         { title: '审核状态', dataIndex: 'auditStatus', key: 'auditStatus', width: 110 },
         { title: '审核阶段', dataIndex: 'currentStep', key: 'currentStep', width: 140 },
         { title: '安全服务名称/ID', dataIndex: 'title', key: 'title', width: 240 },
-        { title: '服务描述', dataIndex: 'description', key: 'description', width: 280, ellipsis: true },
+        { title: '服务描述', dataIndex: 'description', key: 'description', width: 280, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '服务商名称', dataIndex: 'serviceProvider', key: 'serviceProvider', width: 150, ellipsis: true },
         { title: '合作伙伴', dataIndex: 'cooperativeEnterprise', key: 'cooperativeEnterprise', ellipsis: true, width: 150 },
         { title: '部署云服务商', dataIndex: 'cloudProviderStr', key: 'cloudProviderStr', width: 120 },
@@ -261,6 +250,7 @@ export default {
         contact1Phone: '13800138001',
         contact2Name: '钱助理',
         contact2Phone: '13900139001',
+        paymentMethodRef: '按年订阅付费，含安全运维与升级服务，费用根据服务内容协商确定',
         sortOrder: 1,
         appArchitecture: 'B/S、C/S架构',
         targetObjectStr: '公立医院',
@@ -371,12 +361,18 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleQuery() {
       this.applied = { ...this.filter }
       this.pagination.current = 1
     },
     resetQuery() {
-      this.filter = { title: '', serviceId: '', serviceProvider: '', cloudProvider: undefined, status: undefined, step: undefined, submitTimeRange: [] }
+      this.filter = { title: '', serviceId: '', serviceProvider: '', status: undefined, step: undefined, submitTimeRange: [] }
       this.applied = { ...this.filter }
       this.pagination.current = 1
     },
@@ -507,6 +503,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认通过',
         content: '确定要通过该安全服务的审核吗？',
         okText: '确定',
@@ -524,6 +521,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认驳回',
         content: '确定要驳回该安全服务的审核吗？',
         okText: '确定',

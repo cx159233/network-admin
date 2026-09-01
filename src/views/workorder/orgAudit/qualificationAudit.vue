@@ -1,34 +1,26 @@
 <template>
   <div class="qualification-audit-page">
     <PageHeader
-      title="机构资质审核"
-      description="审核机构提交的资质认证申请，支持按机构名称、机构代码、机构类型和审核状态筛选"
+      title="机构入驻审核"
+      description="审核机构提交的资质认证申请，支持按提交审核时间、审核状态和机构信息筛选"
     />
 
     <CloudCard class="qualification-audit-page__table-card">
       <FilterBar @search="handleQuery" @reset="resetQuery">
-        <a-input v-model:value="filter.orgName" placeholder="机构名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
-        <a-input v-model:value="filter.orgCode" placeholder="统一社会信用代码" allow-clear style="width: 210px" @pressEnter="handleQuery" />
-        <a-select v-model:value="filter.orgType" placeholder="机构类型" allow-clear style="width: 140px">
-          <a-select-option value="政府机关">政府机关</a-select-option>
-          <a-select-option value="事业单位">事业单位</a-select-option>
-          <a-select-option value="国有企业">国有企业</a-select-option>
-          <a-select-option value="私营企业">私营企业</a-select-option>
-        </a-select>
+        <a-range-picker v-model:value="filter.submitTimeRange" :placeholder="['提交审核时间', '提交审核时间']" allow-clear style="width: 240px" value-format="YYYY-MM-DD" />
         <a-select v-model:value="filter.status" placeholder="审核状态" allow-clear style="width: 130px">
           <a-select-option value="10">待审核</a-select-option>
           <a-select-option value="20">已通过</a-select-option>
           <a-select-option value="30">已驳回</a-select-option>
         </a-select>
-        <template #suffix>
-          <ColumnSettings v-model="hiddenKeys" :columns="columns" />
-        </template>
+        <a-input v-model:value="filter.orgName" placeholder="机构名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
+        <a-input v-model:value="filter.orgCode" placeholder="统一社会信用代码" allow-clear style="width: 210px" @pressEnter="handleQuery" />
       </FilterBar>
       <div class="qualification-audit-page__divider"></div>
 
       <div class="qualification-audit-page__table-wrap">
-        <a-table
-          :columns="visibleColumns"
+        <a-table :scroll="{ x: 1690 }"
+          :columns="columns"
           :data-source="filteredData"
           :pagination="paginationConfig"
           :loading="loading"
@@ -56,7 +48,7 @@
     </CloudCard>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="审核详情"
       :width="1100"
@@ -191,7 +183,6 @@ import PageHeader from '@/components/cloud/PageHeader.vue'
 import CloudCard from '@/components/cloud/CloudCard.vue'
 import FilterBar from '@/components/cloud/FilterBar.vue'
 import StatusDot from '@/components/cloud/StatusDot.vue'
-import ColumnSettings from '@/components/cloud/ColumnSettings.vue'
 import {
   CheckOutlined, CloseOutlined, DownloadOutlined, FileOutlined
 } from '@ant-design/icons-vue'
@@ -200,15 +191,14 @@ import { Modal, message } from 'ant-design-vue'
 export default {
   name: 'QualificationAudit',
   components: {
-    PageHeader, CloudCard, FilterBar, StatusDot, ColumnSettings,
+    PageHeader, CloudCard, FilterBar, StatusDot,
     CheckOutlined, CloseOutlined, DownloadOutlined, FileOutlined
   },
   data() {
     return {
       loading: false,
-      hiddenKeys: [],
-      filter: { orgName: '', orgCode: '', orgType: undefined, status: undefined },
-      applied: { orgName: '', orgCode: '', orgType: undefined, status: undefined },
+        filter: { orgName: '', orgCode: '', status: undefined, submitTimeRange: [] },
+        applied: { orgName: '', orgCode: '', status: undefined, submitTimeRange: [] },
       pagination: { current: 1, pageSize: 10 },
       columns: [
         { title: '提交审核时间', dataIndex: 'submitTime', key: 'submitTime', width: 170 },
@@ -220,7 +210,7 @@ export default {
         { title: '联系人', dataIndex: 'contactName', key: 'contactName', width: 90 },
         { title: '联系电话', dataIndex: 'contactPhone', key: 'contactPhone', width: 130 },
         { title: 'E-mail/邮箱', dataIndex: 'contactEmail', key: 'contactEmail', width: 180, ellipsis: true },
-        { title: '企业简介', dataIndex: 'companyIntro', key: 'companyIntro', width: 200, ellipsis: true },
+        { title: '企业简介', dataIndex: 'companyIntro', key: 'companyIntro', width: 200, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '操作', dataIndex: 'action', key: 'action', width: 90, fixed: 'right' }
       ],
       orgList: [
@@ -262,9 +252,6 @@ export default {
     }
   },
   computed: {
-    visibleColumns() {
-      return this.columns.filter(c => !this.hiddenKeys.includes(c.key))
-    },
     isAuditing() {
       return this.drawer.record && String(this.drawer.record.auditStatus) === '10'
     },
@@ -273,7 +260,10 @@ export default {
       const list = this.orgList.filter(item => {
         if (f.orgName && !(item.orgName || '').includes(f.orgName)) return false
         if (f.orgCode && !(item.orgCode || '').includes(f.orgCode)) return false
-        if (f.orgType && item.orgType !== f.orgType) return false
+        if (f.submitTimeRange && f.submitTimeRange.length === 2) {
+          const itemDate = (item.submitTime || '').slice(0, 10)
+          if (itemDate < f.submitTimeRange[0] || itemDate > f.submitTimeRange[1]) return false
+        }
         if (f.status && String(item.auditStatus) !== String(f.status)) return false
         return true
       })
@@ -299,6 +289,12 @@ export default {
     this.loadOrgList()
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadOrgList() {
       this.loading = true
       setTimeout(() => { this.loading = false }, 200)
@@ -308,7 +304,7 @@ export default {
       this.pagination.current = 1
     },
     resetQuery() {
-      this.filter = { orgName: '', orgCode: '', orgType: undefined, status: undefined }
+      this.filter = { orgName: '', orgCode: '', status: undefined, submitTimeRange: [] }
       this.applied = { ...this.filter }
       this.pagination.current = 1
     },
@@ -373,6 +369,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认通过',
         content: '确定要通过该机构的资质审核吗？',
         okText: '确定',
@@ -396,6 +393,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认驳回',
         content: '确定要驳回该机构的资质审核吗？',
         okText: '确定',

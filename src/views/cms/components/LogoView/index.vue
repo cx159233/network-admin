@@ -27,7 +27,7 @@
     >
       <svg-icon icon-class="upload" @click="handleEdit"></svg-icon>
     </div>
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       v-model:open="showImageViewer"
       :footer="null"
       centered
@@ -140,6 +140,12 @@ export default {
     };
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleResourceDialogOk(results) {
       if (results && results.length > 0) {
         const r = results[0];

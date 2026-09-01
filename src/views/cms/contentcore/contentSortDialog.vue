@@ -1,5 +1,5 @@
 <template>
-  <a-modal
+  <a-modal :get-container="getDemoContainer"
     :title="$t('CMS.Content.SortDialogTitle')"
     :open="visible"
     width="800px"
@@ -34,7 +34,7 @@
         </a-button>
       </a-form-item>
     </a-form>
-    <a-table
+    <a-table :scroll="{ x: 'max-content' }"
       :loading="loading"
       :columns="columns"
       :data-source="contentList"
@@ -133,6 +133,12 @@ export default {
     };
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     statusFormat(value) {
       const dict = (this.dict.type.CMSContentStatus || []).find((d) => d.value === String(value));
       return dict ? dict.label : value;

@@ -163,6 +163,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     goBack() {
       this.$router.push('/workorder/order/myTodo')
     },
@@ -184,6 +190,7 @@ export default {
         transfer: '转交'
       }[this.processForm.result]
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认提交',
         content: `确定要${resultText}该订单吗？`,
         okText: '确定',

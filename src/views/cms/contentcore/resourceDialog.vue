@@ -1,113 +1,86 @@
 <template>
-  <div class="app-container" style="padding: 0">
-    <el-dialog
-      class="resource-dialog"
-      :title="$t('CMS.Resource.SelectorTitle')"
-      :visible.sync="visible"
-      width="1010px"
-      :close-on-click-modal="false"
-      append-to-body
-    >
-      <el-tabs v-model="activeName" @tab-click="handleTabClick">
-        <el-tab-pane :label="$t('CMS.Resource.LocalUpload')" name="local">
-          <el-form
-            ref="formUpload"
-            :model="form_upload"
-            v-loading="upload.isUploading"
-            label-width="130px"
-          >
-            <el-form-item :label="$t('CMS.Resource.Source')" prop="source">
-              <el-radio-group v-model="form_upload.source" size="small">
-                <el-radio-button label="local">{{
-                  $t("CMS.Resource.LocalUpload")
-                }}</el-radio-button>
-                <el-radio-button label="net">{{
-                  $t("CMS.Resource.RemoteLink")
-                }}</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item
-              v-show="showLocal"
-              :label="$t('CMS.Resource.Upload')"
-              prop="path"
-            >
-              <el-upload
+  <a-modal :get-container="getDemoContainer"
+    class="resource-dialog"
+    :title="$t('CMS.Resource.SelectorTitle')"
+    :open="visible"
+    width="1010px"
+    :mask-closable="false"
+    :footer="null"
+    @cancel="handleCancel"
+  >
+    <a-tabs v-model:activeKey="activeName">
+      <a-tab-pane :tab="$t('CMS.Resource.LocalUpload')" key="local">
+        <a-form :model="form_upload" :label-col="{ style: { width: '130px' } }">
+          <a-form-item :label="$t('CMS.Resource.Source')" name="source">
+            <a-radio-group v-model:value="form_upload.source" button-style="solid">
+              <a-radio-button value="local">{{ $t("CMS.Resource.LocalUpload") }}</a-radio-button>
+              <a-radio-button value="net">{{ $t("CMS.Resource.RemoteLink") }}</a-radio-button>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item v-show="showLocal" :label="$t('CMS.Resource.Upload')" name="path">
+            <a-spin :spinning="upload.isUploading">
+              <a-upload
                 ref="upload"
                 list-type="picture-card"
                 :accept="upload.accept"
-                :limit="upload.limit"
+                :max-count="upload.limit"
                 :multiple="upload.limit > 1"
-                :action="upload.url"
                 :headers="upload.headers"
                 :data="upload.data"
-                :file-list="upload.fileList"
+                v-model:file-list="upload.fileList"
                 :before-upload="handleFileBeforeUpload"
-                :on-progress="handleFileUploadProgress"
-                :on-success="handleFileUploadSuccess"
-                :on-error="handleFileUploadError"
-                :on-exceed="handleFileUloadExceed"
-                :on-change="handleFileChange"
               >
-                <i slot="default" class="el-icon-plus"></i>
-                <div slot="file" slot-scope="{ file }">
-                  <img
-                    v-if="isImageResource(file.name)"
-                    class="el-upload-list__item-thumbnail"
-                    :src="file.url"
-                  />
-                  <svg-icon
-                    v-else
-                    :icon-class="getResourceFileIconClass(file.name)"
-                  />
-                  <span class="el-upload-list__item-actions">
-                    <span
-                      class="el-upload-list__item-delete"
-                      @click="handleRemoveFile(file)"
-                    >
-                      <i class="el-icon-delete"></i>
+                <PlusOutlined />
+                <template #itemRender="{ file }">
+                  <div class="resource-upload-item">
+                    <img
+                      v-if="isImageResource(file.name)"
+                      class="resource-upload-thumb"
+                      :src="file.thumbUrl || file.url"
+                    />
+                    <FileImageOutlined v-else class="resource-upload-fileicon" />
+                    <span class="resource-upload-actions">
+                      <DeleteOutlined @click="handleRemoveFile(file)" />
                     </span>
-                  </span>
-                </div>
-                <div slot="tip" class="el-upload__tip">
-                  {{
-                    $t("CMS.Resource.UPloadTip", [upload.accept, fileSizeName])
-                  }}
-                </div>
-              </el-upload>
-            </el-form-item>
-            <el-form-item
-              v-show="showNet"
-              :label="$t('CMS.Resource.RemoteLink')"
-              prop="path"
-            >
-              <el-input
-                v-model="form_upload.path"
-                size="small"
-                placeholder="http(s)://"
-              ></el-input>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-      </el-tabs>
+                  </div>
+                </template>
+              </a-upload>
+              <div class="resource-upload-tip">
+                {{ $t("CMS.Resource.UPloadTip", [upload.accept, fileSizeName]) }}
+              </div>
+            </a-spin>
+          </a-form-item>
+          <a-form-item v-show="showNet" :label="$t('CMS.Resource.RemoteLink')" name="path">
+            <a-input v-model:value="form_upload.path" placeholder="http(s)://" style="width: 360px" />
+          </a-form-item>
+        </a-form>
+      </a-tab-pane>
+    </a-tabs>
 
-      <div>
-        <el-button
-          type="primary"
-          :loading="upload.isUploading"
-          @click="handleOk"
-          >{{ $t("Common.Confirm") }}</el-button
-        >
-        <el-button @click="handleCancel">{{ $t("Common.Cancel") }}</el-button>
-      </div>
-    </el-dialog>
-  </div>
+    <div class="resource-dialog-footer">
+      <a-space>
+        <a-button type="primary" :loading="upload.isUploading" @click="handleOk">
+          {{ $t("Common.Confirm") }}
+        </a-button>
+        <a-button @click="handleCancel">{{ $t("Common.Cancel") }}</a-button>
+      </a-space>
+    </div>
+  </a-modal>
 </template>
 <script>
+import { PlusOutlined, DeleteOutlined, FileImageOutlined } from "@ant-design/icons-vue";
 import { isImage, getFileSvgIconClass } from "@/utils/chestnut";
 import { getResrouceList, getResourceTypes } from "@/api/contentcore/resource";
 import { getConfigKey } from "@/api/system/config";
+
 export default {
   name: "CMSResourceDialog",
+  components: {
+    PlusOutlined,
+    DeleteOutlined,
+    FileImageOutlined,
+  },
+  emits: ["ok", "close", "update:open"],
   props: {
     open: {
       type: Boolean,
@@ -133,25 +106,20 @@ export default {
         source: "local",
         tags: [],
       },
-      tagInputVisible: false,
-      tagInputValue: "",
-      // 上传参数
       upload: {
-        isUploading: false, // 上传按钮loading
-        accept: "", // 文件类型限制
+        isUploading: false,
+        accept: "",
         acceptSize: 0,
-        limit: this.uploadLimit, // 文件数限制
+        limit: this.uploadLimit,
         headers: {
-          // Authorization: "Bearer " + getToken(),
           CurrentSite: this.$cache.local.get("CurrentSite"),
         },
-        url: process.env.VUE_APP_BASE_API + "/cms/resource/upload", // 上传的地址
-        fileList: [], // 上传的文件列表
-        data: {}, // 附带参数
+        url: process.env.VUE_APP_BASE_API + "/cms/resource/upload",
+        fileList: [],
+        data: {},
       },
-      uploadedCount: 0, // 已上传文件数量
-      results: [], // 返回的上传/选择的文件结果
-
+      uploadedCount: 0,
+      results: [],
       loadingList: false,
       resourcesLoaded: false,
       resourceList: [],
@@ -176,9 +144,8 @@ export default {
     fileSizeName() {
       if (this.upload.acceptSize > 0) {
         return this.upload.acceptSize / 1024 / 1024 + " MB";
-      } else {
-        return "∞";
       }
+      return "∞";
     },
   },
   watch: {
@@ -193,7 +160,7 @@ export default {
         this.uploadedCount = 0;
       }
     },
-    rtype(newVal) {
+    rtype() {
       this.loadResourceTypes();
     },
   },
@@ -204,33 +171,17 @@ export default {
     });
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     isImageResource(src) {
       return isImage(src);
     },
     getResourceFileIconClass(path) {
       return getFileSvgIconClass(path);
-    },
-    handleTabClick(tab, event) {
-      if (this.activeName == "resources" && !this.resourcesLoaded) {
-        this.loadResources();
-      }
-    },
-    handleDeleteTag(tag) {
-      this.form_upload.tags.splice(this.form_upload.tags.indexOf(tag), 1);
-    },
-    showTagInput() {
-      this.tagInputVisible = true;
-      this.$nextTick((_) => {
-        this.$refs.tagInput.$refs.input.focus();
-      });
-    },
-    handleTagInputConfirm() {
-      let tagValue = this.tagInputValue;
-      if (tagValue) {
-        this.form_upload.tags.push(tagValue);
-      }
-      this.tagInputVisible = false;
-      this.tagInputValue = "";
     },
     loadResourceTypes() {
       getResourceTypes().then((response) => {
@@ -241,115 +192,75 @@ export default {
         });
       });
     },
-    loadMyResources() {
-      this.filterQuery.owner = true;
-      this.loadResources();
-    },
-    loadResources() {
-      this.loadingList = true;
-      if (this.dateRange && this.dateRange.length == 2) {
-        this.filterQuery.beginTime = this.dateRange[0];
-        this.filterQuery.endTime = this.dateRange[1];
-      }
-      this.filterQuery.resourceType = this.rtype || "";
-      getResrouceList(this.filterQuery).then((response) => {
-        this.resourceList = response.data.rows;
-        this.resourceList.forEach((r) => this.$set(r, "selected", false));
-        this.resourceTotal = parseInt(response.data.total);
-        this.loadingList = false;
-      });
-    },
-    handleResourceChecked(index) {
-      this.$set(
-        this.resourceList[index],
-        "selected",
-        !this.resourceList[index].selected
-      );
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.filterQuery.pageNum = 1;
-      this.loadResources();
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.dateRange = [];
-      this.filterQuery.owner = false;
-      this.handleQuery();
-    },
     handleRemoveFile(file) {
-      for (var i = 0; i < this.upload.fileList.length; i++) {
-        if (this.upload.fileList[i].uid == file.uid) {
-          this.upload.fileList.splice(i, 1);
-          break;
-        }
-      }
-    },
-    handleFileChange(file, fileList) {
-      this.upload.fileList = fileList;
+      const uid = file.uid;
+      this.upload.fileList = this.upload.fileList.filter((f) => f.uid !== uid);
     },
     handleFileBeforeUpload(file) {
       if (this.upload.acceptSize > 0 && file.size > this.upload.acceptSize) {
-        this.$message.error(
-          this.$t("CMS.Resource.UploadFileSizeLimit", [this.fileSizeName])
-        );
+        this.$modal.msgError(this.$t("CMS.Resource.UploadFileSizeLimit", [this.fileSizeName]));
         return false;
       }
-      return true;
+      return false;
     },
-    handleFileUloadExceed(files, fileList) {
-      this.$modal.msgWarning(
-        this.$t("CMS.Resource.UploadLimit", [this.upload.limit])
-      );
-    },
-    handleFileUploadProgress(event, file, fileList) {
-      this.upload.isUploading = true;
-    },
-    handleFileUploadSuccess(response, file, fileList) {
-      this.onFileUploaded(
-        response.code == 200,
-        fileList,
-        response.code == 200 ? response.data : response.msg
-      );
-    },
-    handleFileUploadError(err, file, fileList) {
-      this.onFileUploaded(false, fileList, "Upload failed.");
-    },
-    onFileUploaded(isSuccess, fileList, result) {
-      if (isSuccess) {
-        this.uploadedCount++;
-        this.results.push({
-          path: result.src,
-          name: result.name,
-          src: result.src,
-          width: result.width,
-          height: result.height,
-          fileSize: result.fileSize,
-          fileSizeName: result.fileSizeName,
-          resourceType: result.resourceType,
+    uploadOne(file) {
+      const rawFile = file.originFileBody || file.originFileObj || file;
+      const formData = new FormData();
+      formData.append("file", rawFile);
+      Object.keys(this.form_upload).forEach((key) => {
+        if (key !== "source") {
+          formData.append(key, this.form_upload[key]);
+        }
+      });
+      return fetch(this.upload.url, {
+        method: "POST",
+        headers: this.upload.headers,
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          if (response.code == 200) {
+            this.results.push({
+              path: response.data.src,
+              name: response.data.name,
+              src: response.data.src,
+              width: response.data.width,
+              height: response.data.height,
+              fileSize: response.data.fileSize,
+              fileSizeName: response.data.fileSizeName,
+              resourceType: response.data.resourceType,
+            });
+          } else {
+            this.$modal.msgError(response.msg);
+          }
         });
-      } else {
-        this.$modal.msgError(result);
-      }
-      if (this.uploadedCount == fileList.length) {
-        this.noticeOk();
-        this.upload.isUploading = false;
-      }
     },
     handleOk() {
       if (this.activeName === "local") {
         if (this.form_upload.source === "local") {
-          Object.keys(this.form_upload).forEach(
-            (key) => (this.upload.data[key] = this.form_upload[key])
+          const pending = this.upload.fileList.filter(
+            (f) => f.status !== "removed" && !f.response
           );
-          this.$refs.upload.submit();
+          if (pending.length === 0) {
+            this.$modal.msgError(this.$t("CMS.Resource.RemoteLinkErr"));
+            return;
+          }
+          if (this.upload.limit && this.upload.fileList.length > this.upload.limit) {
+            this.$modal.msgWarning(this.$t("CMS.Resource.UploadLimit", [this.upload.limit]));
+            return;
+          }
+          this.upload.isUploading = true;
+          Promise.all(pending.map((f) => this.uploadOne(f)))
+            .then(() => {
+              this.upload.isUploading = false;
+              this.noticeOk();
+            })
+            .catch(() => {
+              this.upload.isUploading = false;
+            });
         } else {
           const url = this.form_upload.path;
-          if (
-            !url ||
-            (!url.startsWith("http://") && !url.startsWith("https://"))
-          ) {
+          if (!url || (!url.startsWith("http://") && !url.startsWith("https://"))) {
             this.$modal.msgError(this.$t("CMS.Resource.RemoteLinkErr"));
             return;
           }
@@ -368,24 +279,23 @@ export default {
           this.noticeOk();
         }
       } else {
-        this.resourceList.forEach((item) => {
-          if (item.selected) {
-            this.results.push({
-              path: item.src,
-              name: item.name,
-              src: item.src,
-              width: item.width,
-              height: item.height,
-              fileSize: item.fileSize,
-              fileSizeName: item.fileSizeName,
-              resourceType: item.resourceType,
-            });
-          }
-        });
-        if (this.results.length == 0) {
+        const selected = this.resourceList.filter((item) => item.selected);
+        if (selected.length === 0) {
           this.$modal.msgError(this.$t("Common.SelectFirst"));
           return;
         }
+        selected.forEach((item) => {
+          this.results.push({
+            path: item.src,
+            name: item.name,
+            src: item.src,
+            width: item.width,
+            height: item.height,
+            fileSize: item.fileSize,
+            fileSizeName: item.fileSizeName,
+            resourceType: item.resourceType,
+          });
+        });
         this.noticeOk();
       }
     },
@@ -408,9 +318,7 @@ export default {
     reset() {
       this.activeName = "local";
       this.form_upload = { source: "local", tags: [] };
-      (this.tagInputVisible = false),
-        (this.tagInputValue = ""),
-        (this.upload.fileList = []);
+      this.upload.fileList = [];
       this.upload.data = {};
       this.uploadedCount = 0;
       this.results = [];
@@ -425,71 +333,48 @@ export default {
   },
 };
 </script>
-<style>
-.resource-dialog .el-upload-list__item .svg-icon {
-  width: 66px;
-  height: 66px;
-}
-.resource-dialog .el-aside {
-  height: 500px;
-}
-.resource-dialog .el-header {
-  padding: 5px;
-  background-color: #f7f7f7;
-}
-.resource-dialog .el-main {
-  overflow-y: hidden;
-  background-color: #fff;
-  padding: 0 4px;
-}
-.resource-dialog .el-card {
-  width: 148px;
-  text-align: center;
-  float: left;
-  border: none;
-  padding: 0;
-}
-.resource-dialog .el-card__body {
-  padding: 15px;
-}
-.resource-dialog .el-card .r-name {
-  height: 28px;
-  line-height: 28px;
+<style scoped>
+.resource-upload-item {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background-color: #fafafa;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
   overflow: hidden;
 }
-.resource-dialog .el-card .item-img {
-  width: 120px;
-  height: 120px;
-  background-color: #f7f7f7;
+.resource-upload-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.resource-upload-fileicon {
+  font-size: 28px;
+  color: #86909c;
+}
+.resource-upload-actions {
+  position: absolute;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background-color: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 16px;
   cursor: pointer;
 }
-.resource-dialog .el-card .item-svg {
-  width: 120px;
-  height: 120px;
-  background-color: #f7f7f7;
-  cursor: pointer;
-  padding: 20px;
+.resource-upload-item:hover .resource-upload-actions {
+  display: grid;
 }
-.resource-dialog .el-tag {
-  margin-right: 10px;
+.resource-upload-tip {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #86909c;
 }
-.resource-dialog .button-new-tag {
-  height: 32px;
-  line-height: 30px;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.resource-dialog .input-new-tag {
-  width: 120px;
-  vertical-align: bottom;
-}
-.resource-dialog .el-upload-list--picture-card .el-upload-list__item {
-  width: 68px;
-  height: 68px;
-}
-.resource-dialog .el-upload--picture-card {
-  line-height: 78px;
-  width: 68px;
-  height: 68px;
+.resource-dialog-footer {
+  text-align: right;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
 }
 </style>

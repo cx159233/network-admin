@@ -3,6 +3,10 @@ import { message, notification, Modal } from 'ant-design-vue'
 
 let loadingHide = null
 
+function getOverlayContainer() {
+  return document.querySelector('.app-main__content') || document.body
+}
+
 export default {
   msg(content) {
     message.info(content)
@@ -17,16 +21,16 @@ export default {
     message.warning(content)
   },
   alert(content) {
-    Modal.info({ title: i18n.global.t('Common.SystemTip'), content })
+    Modal.info({ title: i18n.global.t('Common.SystemTip'), content, getContainer: getOverlayContainer })
   },
   alertError(content) {
-    Modal.error({ title: i18n.global.t('Common.SystemTip'), content })
+    Modal.error({ title: i18n.global.t('Common.SystemTip'), content, getContainer: getOverlayContainer })
   },
   alertSuccess(content) {
-    Modal.success({ title: i18n.global.t('Common.SystemTip'), content })
+    Modal.success({ title: i18n.global.t('Common.SystemTip'), content, getContainer: getOverlayContainer })
   },
   alertWarning(content) {
-    Modal.warning({ title: i18n.global.t('Common.SystemTip'), content })
+    Modal.warning({ title: i18n.global.t('Common.SystemTip'), content, getContainer: getOverlayContainer })
   },
   notify(content) {
     notification.info({ message: content })
@@ -47,6 +51,7 @@ export default {
         content,
         okText: i18n.global.t('Common.Confirm'),
         cancelText: i18n.global.t('Common.Cancel'),
+        getContainer: getOverlayContainer,
         onOk: () => resolve(true),
         onCancel: () => reject(new Error('cancel'))
       })
@@ -60,6 +65,7 @@ export default {
         content: () => content,
         okText: i18n.global.t('Common.Confirm'),
         cancelText: i18n.global.t('Common.Cancel'),
+        getContainer: getOverlayContainer,
         onOk: () => resolve(inputValue),
         onCancel: () => reject(new Error('cancel'))
       })

@@ -35,7 +35,7 @@
       <div class="all-demands-page__divider"></div>
 
       <div class="all-demands-page__table-wrap">
-        <a-table
+        <a-table :scroll="{ x: 2020 }"
           :columns="visibleColumns"
           :data-source="filteredData"
           :pagination="paginationConfig"
@@ -70,6 +70,9 @@
             <template v-else-if="column.dataIndex === 'status'">
               <StatusDot :type="getStatusKey(record.status)" :text="record.status" />
             </template>
+            <template v-else-if="column.dataIndex === 'responseTime'">
+              <span class="cell-mono">{{ record.responseTime || '--' }}</span>
+            </template>
             <template v-else-if="column.dataIndex === 'action'">
               <a-button type="link" size="small" class="!p-0" @click="viewDetail(record)">详情</a-button>
             </template>
@@ -80,7 +83,7 @@
     </CloudCard>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="需求详情"
       :width="860"
@@ -91,38 +94,38 @@
         <div class="drawer-header-row">
           <div class="drawer-header-info">
             <div class="drawer-header-title-row">
-              <span class="drawer-header-title">{{ drawer.record.demandNo }}</span>
-              <span class="drawer-header-plan-type">{{ drawer.record.planType }}</span>
+              <span class="drawer-header-title">{{ drawer.record.planName || '--' }}</span>
+              <StatusDot :type="getStatusKey(drawer.record.status)" :text="drawer.record.status" />
             </div>
             <div class="drawer-header-sub">
-              <span class="drawer-header-sub__name">{{ drawer.record.planName }}</span>
-              <span class="drawer-header-sub__sep">·</span>
-              <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(drawer.record.serviceType)}`]">{{ drawer.record.serviceType }}</span>
+              <span class="cell-mono">需求编号：{{ drawer.record.demandNo || '--' }}</span>
             </div>
           </div>
         </div>
 
-        <a-tabs v-model:activeKey="drawer.activeTab">
-          <a-tab-pane key="demand" tab="需求信息">
-            <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-              <a-descriptions-item label="需求编号">
-                <span class="cell-mono">{{ drawer.record.demandNo || '--' }}</span>
-              </a-descriptions-item>
-              <a-descriptions-item label="方案类型">{{ drawer.record.planType || '--' }}</a-descriptions-item>
-              <a-descriptions-item label="方案名称" :span="2">{{ drawer.record.planName || '--' }}</a-descriptions-item>
-              <a-descriptions-item label="服务项" :span="2">
-                <span class="cell-text">{{ drawer.record.serviceItems || '--' }}</span>
-              </a-descriptions-item>
-              <a-descriptions-item label="需求说明" :span="2">
-                <span class="muted">{{ drawer.record.demandDescription || '--' }}</span>
-              </a-descriptions-item>
-              <a-descriptions-item label="申请机构">{{ drawer.record.orgName || '--' }}</a-descriptions-item>
-              <a-descriptions-item label="发布时间">
-                <span class="cell-mono">{{ drawer.record.publishTime || '--' }}</span>
-              </a-descriptions-item>
-            </a-descriptions>
-          </a-tab-pane>
-          <a-tab-pane v-if="drawer.record.responseContent" key="response" tab="响应信息">
+        <div class="overview-section">
+          <div class="overview-section__title">需求信息</div>
+          <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+            <a-descriptions-item label="服务类型">
+              <span :class="['service-type-tag', `service-type-tag--${getServiceTypeClass(drawer.record.serviceType)}`]">{{ drawer.record.serviceType || '--' }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="方案类型">{{ drawer.record.planType || '--' }}</a-descriptions-item>
+            <a-descriptions-item label="服务项" :span="2">
+              <span class="cell-text">{{ drawer.record.serviceItems || '--' }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="需求说明" :span="2">
+              <span class="muted">{{ drawer.record.demandDescription || '--' }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="申请机构">{{ drawer.record.orgName || '--' }}</a-descriptions-item>
+            <a-descriptions-item label="发布时间">
+              <span class="cell-mono">{{ drawer.record.publishTime || '--' }}</span>
+            </a-descriptions-item>
+          </a-descriptions>
+        </div>
+
+        <template v-if="drawer.record.responseContent">
+          <div class="overview-section">
+            <div class="overview-section__title">响应信息</div>
             <a-descriptions :column="2" bordered size="small" class="drawer-desc">
               <a-descriptions-item label="响应机构">{{ drawer.record.respondent || '--' }}</a-descriptions-item>
               <a-descriptions-item label="响应时间">
@@ -136,8 +139,8 @@
                 <span class="muted">{{ drawer.record.responseContent || '--' }}</span>
               </a-descriptions-item>
             </a-descriptions>
-          </a-tab-pane>
-        </a-tabs>
+          </div>
+        </template>
       </template>
     </a-drawer>
   </div>
@@ -162,17 +165,19 @@ export default {
       filter: { demandNo: '', orgName: '', planType: undefined, serviceType: undefined, status: undefined },
       applied: { demandNo: '', orgName: '', planType: undefined, serviceType: undefined, status: undefined },
       pagination: { current: 1, pageSize: 10 },
-      drawer: { visible: false, record: null, activeTab: 'demand' },
+      drawer: { visible: false, record: null },
       columns: [
         { title: '需求编号', dataIndex: 'demandNo', key: 'demandNo', width: 150 },
         { title: '方案名称', dataIndex: 'planName', key: 'planName', width: 180, ellipsis: true },
         { title: '方案类型', dataIndex: 'planType', key: 'planType', width: 120 },
         { title: '服务项', dataIndex: 'serviceItems', key: 'serviceItems', width: 280, ellipsis: true },
-        { title: '需求说明', dataIndex: 'demandDescription', key: 'demandDescription', width: 240, ellipsis: true },
+        { title: '需求说明', dataIndex: 'demandDescription', key: 'demandDescription', width: 240, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '申请机构', dataIndex: 'org', key: 'org', width: 220 },
         { title: '服务类型', dataIndex: 'serviceType', key: 'serviceType', width: 130 },
         { title: '状态', dataIndex: 'status', key: 'status', width: 110 },
         { title: '发布时间', dataIndex: 'publishTime', key: 'publishTime', width: 160 },
+        { title: '响应机构', dataIndex: 'respondent', key: 'respondent', width: 180, ellipsis: true },
+        { title: '响应时间', dataIndex: 'responseTime', key: 'responseTime', width: 160 },
         { title: '操作', dataIndex: 'action', key: 'action', width: 90, fixed: 'right' }
       ],
       demandList: [
@@ -218,6 +223,12 @@ export default {
     this.loadDemandList()
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     handleQuery() {
       this.applied = { ...this.filter }
       this.pagination.current = 1
@@ -239,7 +250,6 @@ export default {
     },
     viewDetail(row) {
       this.drawer.record = row
-      this.drawer.activeTab = 'demand'
       this.drawer.visible = true
     },
     getStatusKey(status) {
@@ -336,13 +346,31 @@ export default {
   margin-top: 2px;
 }
 
+/* 服务类型标签（与需求发起列表一致） */
+.service-type-tag {
+  display: inline-block;
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  border-radius: 3px;
+  border: 1px solid;
+  vertical-align: middle;
+}
+
+.service-type-tag--digital { color: #165DFF; background: #E8F3FF; border-color: rgba(22, 93, 255, 0.20); }
+.service-type-tag--security { color: #F53F3F; background: #FFF0ED; border-color: rgba(245, 63, 63, 0.20); }
+.service-type-tag--component { color: #D97000; background: #FFF3E8; border-color: rgba(217, 112, 0, 0.20); }
+.service-type-tag--basic { color: #16A34A; background: rgba(22, 163, 74, 0.10); border-color: rgba(22, 163, 74, 0.20); }
+
 /* Drawer 样式 */
 .drawer-header-row {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 4px 0 8px;
-  margin-bottom: 8px;
+  padding: 4px 0 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #F2F3F5;
 }
 
 .drawer-header-info {
@@ -362,7 +390,6 @@ export default {
   font-weight: 700;
   color: #0f172a;
   line-height: 1.3;
-  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
 }
 
 .drawer-header-plan-type {
@@ -404,7 +431,7 @@ export default {
 }
 
 .muted {
-  color: #4E5969;
+  color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -413,6 +440,22 @@ export default {
   color: #F59E0B;
   font-weight: 600;
   font-size: 14px;
+}
+
+.overview-section {
+  margin-bottom: 16px;
+}
+
+.overview-section:last-child {
+  margin-bottom: 0;
+}
+
+.overview-section__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  margin: 0 0 12px 0;
+  line-height: 1.4;
 }
 
 :deep(.ant-drawer .ant-table-wrapper),

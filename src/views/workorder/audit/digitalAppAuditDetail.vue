@@ -27,7 +27,7 @@
               <span class="cell-mono">{{ appInfo.submitTime }}</span>
             </a-descriptions-item>
             <a-descriptions-item label="应用架构">{{ appInfo.appArchitecture }}</a-descriptions-item>
-            <a-descriptions-item label="面向对象" :span="2">{{ appInfo.targetObjectStr }}</a-descriptions-item>
+            <a-descriptions-item label="服务对象" :span="2">{{ appInfo.targetObjectStr }}</a-descriptions-item>
             <a-descriptions-item label="部署云服务商" :span="2">{{ appInfo.cloudProviderStr }}</a-descriptions-item>
             <a-descriptions-item label="应用覆盖范围" :span="2">{{ appInfo.appScope }}</a-descriptions-item>
             <a-descriptions-item label="应用描述" :span="2">
@@ -87,7 +87,7 @@
           <div class="card-head">
             <span class="card-head__title">审核记录</span>
           </div>
-          <a-table
+          <a-table :scroll="{ x: 'max-content' }"
             :columns="auditColumns"
             :data-source="auditRecords"
             :pagination="false"
@@ -254,6 +254,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadAppDetail() {},
     goBack() {
       this.$router.push('/portal/auditCenter/digitalAppAudit')
@@ -264,6 +270,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认通过',
         content: '确定要通过该应用的审核吗？',
         okText: '确定',
@@ -281,6 +288,7 @@ export default {
         return
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认驳回',
         content: '确定要拒绝该应用的审核吗？',
         okText: '确定',

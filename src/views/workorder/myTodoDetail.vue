@@ -177,6 +177,12 @@ export default {
     }
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     loadTicketDetail() {},
     goBack() {
       this.$router.push('/workorder/myBills/myTodo')
@@ -198,6 +204,7 @@ export default {
       }
       const resultText = { pass: '通过', reject: '驳回', transfer: '转交' }[this.processForm.result]
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: '确认提交',
         content: `确定要${resultText}该工单吗？`,
         okText: '确定',

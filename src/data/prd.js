@@ -14,15 +14,49 @@ export const prdChapters = [
   {
     id: 0,
     title: '',
-    content: `<h3 id="prd-3.1.1">3.1.1 服务管理</h3>
+    content: `<h3 id="prd-3.1.1">3.1.1 工作台</h3>
+<p><strong>入口页面：</strong>服务管理 / 工作台</p>
+<p><strong>页面描述：</strong>机构用户的服务开通申请入口，快速发起常用服务申请，或从全部服务目录中查找所需服务。</p>
+
+<h3 id="prd-3.1.1.1">3.1.1.1 工作台</h3>
+<p><strong>模块描述：</strong>服务管理 / 工作台 / 工作台</p>
+<p><strong>功能描述：</strong>展示常用服务与全部服务，支持按服务名称搜索，点击服务卡片跳转至多云管理系统发起服务开通申请。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>全部服务数据来源于服务目录管理中状态为"已上线使用"的服务，按服务类型分组展示。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、常用服务</p>
+<p>展示常用服务卡片列表，点击服务卡片即可快速发起服务申请。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>常用服务</td><td></td><td>一期固定写死，由上线时确定具体服务ID；点击服务卡片跳转至多云管理系统发起服务开通申请</td></tr>
+<tr><td>服务LOGO</td><td></td><td>展示服务图标</td></tr>
+<tr><td>服务名称</td><td></td><td>完整展示</td></tr>
+</table>
+<p>2、全部服务</p>
+<p>1）数据范围为服务目录管理中状态为"已上线使用"的服务数据，按服务类型分组展示。</p>
+<p>2）支持按服务名称模糊搜索，无匹配结果时显示"未找到匹配的服务"。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务类型</td><td></td><td>按服务类型分组展示，枚举：数字应用、安全服务、能力组件、基础服务，以服务类型标签样式展示</td></tr>
+<tr><td>服务数量</td><td></td><td>展示当前服务类型分组下的服务数量，格式："N 个服务"</td></tr>
+<tr><td>服务LOGO</td><td></td><td>展示服务图标</td></tr>
+<tr><td>服务名称</td><td></td><td>完整展示</td></tr>
+</table>
+<p>3、操作-点击服务</p>
+<p>点击服务卡片，跳转至多云管理系统，判断逻辑如下：</p>
+<p>1）若用户已登录，门户免登（SSO）跳转至多云管理系统并携带serviceId，用户在多云管理系统填写完整服务申请，提交即创建工单</p>
+<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
+<p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
+
+<h3 id="prd-3.1.2">3.1.2 服务管理</h3>
 <p><strong>入口页面：</strong>服务管理</p>
 <p><strong>页面描述：</strong>开发者与机构用户的服务管理核心入口，涵盖服务上架、开通管理、需求管理等核心功能。</p>
 
-<h3 id="prd-3.1.1.1">3.1.1.1 服务上架</h3>
+<h3 id="prd-3.1.2.1">3.1.2.1 服务上架</h3>
 <p><strong>入口页面：</strong>服务管理 / 服务上架</p>
 <p><strong>页面描述：</strong>对本机构提供的服务进行全生命周期管理，支持新增、修改、删除及提交审核。</p>
 
-<h3 id="prd-3.1.1.1.1">3.1.1.1.1 服务列表</h3>
+<h3 id="prd-3.1.2.1.1">3.1.2.1.1 服务列表</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 服务列表</p>
 <p><strong>功能描述：</strong>展示本机构提交的服务列表，支持按服务类型、服务名称、服务ID和状态筛选，可进行新增服务、编辑服务、服务详情、删除服务操作。</p>
 <p><strong>优先级：</strong>P1</p>
@@ -45,7 +79,7 @@ export const prdChapters = [
 <p>4）当前列表数据为空时，显示"暂无数据"。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务名称/ID</td><td></td><td>展示服务名称及服务ID，为空时显示"--"</td></tr>
+<tr><td>服务名称/ID</td><td></td><td>展示服务名称及服务ID，ID系统自动生成，格式：拼音缩写+YYYYMMDD+4位序号（数字应用：SZYY、安全服务：AQFW、能力组件：NLZJ、基础服务：JCFW，如 SZYY202608100001），唯一标识，为空时显示"--"</td></tr>
 <tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务</td></tr>
 <tr><td>服务商名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
@@ -72,41 +106,42 @@ export const prdChapters = [
 </table>
 <p>注：下架操作仅由管理员在服务目录管理中执行。</p>
 
-<h3 id="prd-3.1.1.1.2">3.1.1.1.2 新增服务</h3>
+<h3 id="prd-3.1.2.1.2">3.1.2.1.2 新增服务</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 新增服务</p>
 <p><strong>功能描述：</strong>新增服务统一入口。点击服务列表页【新增服务-按钮】弹出"选择服务类型"弹窗，展示四种服务类型的卡片网格：数字应用、安全服务、能力组件、基础服务。优先选择服务类型，再根据所选服务类型打开对应的新增页面。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>服务列表页点击【新增服务-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【新增服务-按钮】，点击打开选择服务类型弹窗。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、选择服务类型弹窗</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>服务类型卡片</td><td>type</td><td>枚举：数字应用、安全服务、能力组件、基础服务；2×2 卡片网格布局，每张卡片包含图标、服务类型名称、说明文案，鼠标悬停高亮</td></tr>
 <tr><td>操作-确定</td><td></td><td>点击【确定-按钮】，关闭弹窗，跳转至对应服务类型的新增页面</td></tr>
-<tr><td>操作-取消</td><td></td><td>点击【取消-按钮】或遮罩层，关闭弹窗，停留当前页面</td></tr>
+<tr><td>操作-取消</td><td></td><td>点击【取消-按钮】，关闭弹窗，停留当前页面</td></tr>
 </table>
 <p>2、服务类型映射</p>
 <table>
 <tr><th style="white-space:nowrap">服务类型</th><th style="white-space:nowrap">新增页面</th><th>说明</th></tr>
-<tr><td>数字应用</td><td>新增数字应用</td><td>见 3.1.1.1.2.1 新增数字应用</td></tr>
-<tr><td>安全服务</td><td>新增安全服务</td><td>见 3.1.1.1.2.2 新增安全服务</td></tr>
-<tr><td>能力组件</td><td>新增能力组件</td><td>见 3.1.1.1.2.3 新增能力组件</td></tr>
-<tr><td>基础服务</td><td>新增基础服务</td><td>见 3.1.1.1.2.4 新增基础服务</td></tr>
+<tr><td>数字应用</td><td>新增数字应用</td><td>见 3.1.2.1.2.1 新增数字应用</td></tr>
+<tr><td>安全服务</td><td>新增安全服务</td><td>见 3.1.2.1.2.2 新增安全服务</td></tr>
+<tr><td>能力组件</td><td>新增能力组件</td><td>见 3.1.2.1.2.3 新增能力组件</td></tr>
+<tr><td>基础服务</td><td>新增基础服务</td><td>见 3.1.2.1.2.4 新增基础服务</td></tr>
 </table>
 
-<h3 id="prd-3.1.1.1.2.1">3.1.1.1.2.1 新增数字应用</h3>
+<h3 id="prd-3.1.2.1.2.1">3.1.2.1.2.1 新增数字应用</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 新增数字应用</p>
 <p><strong>功能描述：</strong>新增数字应用，可设置基本信息、联系信息和分类标签，支持保存草稿或提交审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【新增】打开弹窗，标题"新增数字应用"，表单为空。</p>
+<p><strong>输入/前置条件：</strong>点击列表上方【新增服务-按钮】，选择服务类型后打开弹窗，标题"新增数字应用"，表单为空。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>应用名称</td><td>name</td><td>必填，限制20汉字，超出不可输入</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，Toast 提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，Toast 提示"你确定要删除这个图片吗？"</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，Toast 提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，Toast 提示"你确定要删除这个图片吗？"</td></tr>
 <tr><td>应用描述</td><td>description</td><td>必填，限制1000汉字，超出不可输入</td></tr>
 <tr><td>系统地址</td><td>address</td><td>非必填，有效URL格式</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>非必填，字符串输入，限制200字，超出不可输入，占位提示"请输入付费方式参考"，右下角显示字数统计</td></tr>
 </table>
 <p>2、联系信息</p>
 <table>
@@ -119,7 +154,7 @@ export const prdChapters = [
 <p>3、分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>面向对象</td><td>数据拉取字典管理 dict表 Client</td><td>必填，支持多选，枚举：基层医疗卫生机构、公立医院、医技护人员</td></tr>
+<tr><td>服务对象</td><td>数据拉取字典管理 dict表 Client</td><td>必填，支持多选，枚举：基层医疗卫生机构、公立医院、医技护人员</td></tr>
 <tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>非必填，支持多选，枚举：B/S、C/S架构、B/S+C/S、单机、其他</td></tr>
 <tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>非必填，支持多选，枚举：B/S、C/S架构、B/S+C/S、单机、其他</td></tr>
 <tr><td>基层应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_PrimaryHospital</td><td>勾选"基层医疗卫生机构"时联动显示，支持多选，枚举：基本公共卫生服务、医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、智慧管理平台（HRP）、心电、家庭医生签约、村卫生室管理、药店应用管理、智能外呼、辅助诊疗、临床专病库、区域综合、基本公共卫生服务绩效评价、妇幼健康</td></tr>
@@ -134,13 +169,15 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">应用描述为空：请输入应用描述</p>
 <p style="font-style:italic; color:#999">服务商名称为空：请输入服务商名称</p>
 <p style="font-style:italic; color:#999">联系方式1为空：请输入联系人姓名和手机号</p>
-<p style="font-style:italic; color:#999">面向对象为空：请选择面向对象</p>
+<p style="font-style:italic; color:#999">服务对象为空：请选择服务对象</p>
 <p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">系统地址格式错误：请输入https://或http://开头的地址形式</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：草稿已保存</p>
+<p>b.系统自动生成ID，格式：SZYY+YYYYMMDD+4位序号（如 SZYY202608100001），唯一标识</p>
 <p>5、操作-提交审核</p>
 <p>点击【提交审核-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填、字符限制等要求，进行表单校验提示</p>
@@ -149,14 +186,16 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">应用描述为空：请输入应用描述</p>
 <p style="font-style:italic; color:#999">服务商名称为空：请输入服务商名称</p>
 <p style="font-style:italic; color:#999">联系方式1为空：请输入联系人姓名和手机号</p>
-<p style="font-style:italic; color:#999">面向对象为空：请选择面向对象</p>
+<p style="font-style:italic; color:#999">服务对象为空：请选择服务对象</p>
 <p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">系统地址格式错误：请输入https://或http://开头的地址形式</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：已提交审核</p>
-<p>同时系统自动生成一条审核记录，字段取值如下：</p>
+<p>b.系统自动生成ID，格式：SZYY+YYYYMMDD+4位序号（如 SZYY202608100001），唯一标识</p>
+<p>c.系统自动生成一条审核记录，字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取当前时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -169,11 +208,11 @@ export const prdChapters = [
 <p>6、操作-关闭</p>
 <p>点击【关闭-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
 
-<h3 id="prd-3.1.1.1.2.2">3.1.1.1.2.2 新增安全服务</h3>
+<h3 id="prd-3.1.2.1.2.2">3.1.2.1.2.2 新增安全服务</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 新增安全服务</p>
 <p><strong>功能描述：</strong>新增安全服务，可设置基本信息、联系信息和分类标签，支持保存草稿或提交审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【新增】打开弹窗，标题"新增安全服务"，表单为空。</p>
+<p><strong>输入/前置条件：</strong>点击列表上方【新增服务-按钮】，选择服务类型后打开弹窗，标题"新增安全服务"，表单为空。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、基本信息</p>
 <table>
@@ -182,7 +221,7 @@ export const prdChapters = [
 <tr><td>系统地址</td><td>systemUrl</td><td>非必填，文本输入，占位提示"请输入系统地址"</td></tr>
 <tr><td>LOGO</td><td>logo</td><td>非必填，支持 PNG、JPG、JPEG、SVG 格式，大小限制 1MB 以内，建议 640×640；上传超过 1MB 时提示"LOGO 文件不能超过 1MB"；点击替换或删除</td></tr>
 <tr><td>服务描述</td><td>description</td><td>必填，限制500字符，超出不可输入，占位提示"请输入服务描述"，右下角显示字数统计</td></tr>
-<tr><td>显示顺序</td><td>sortOrder</td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>非必填，字符串输入，限制200字，超出不可输入，占位提示"请输入付费方式参考"，右下角显示字数统计</td></tr>
 </table>
 <p>2、联系信息</p>
 <table>
@@ -195,8 +234,8 @@ export const prdChapters = [
 <p>3、分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>应用架构</td><td>appArchitecture</td><td>非必填，多选框组，枚举：B/S、C/S架构、B/S+C/S、单机、其他</td></tr>
-<tr><td>部署云服务商</td><td>cloudProvider</td><td>必填，多选框组，枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云</td></tr>
+<tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>非必填，多选框组，枚举：B/S、C/S架构、B/S+C/S、单机、其他</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>必填，多选框组，枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云</td></tr>
 </table>
 <p>4、操作-保存草稿</p>
 <p>点击【保存草稿-按钮】，判断逻辑如下：</p>
@@ -209,8 +248,10 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：草稿已保存</p>
+<p>b.系统自动生成ID，格式：AQFW+YYYYMMDD+4位序号（如 AQFW202608100001），唯一标识</p>
 <p>5、操作-提交审核</p>
 <p>点击【提交审核-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
@@ -222,9 +263,11 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：已提交审核</p>
-<p>同时系统自动生成一条审核记录，字段取值如下：</p>
+<p>b.系统自动生成ID，格式：AQFW+YYYYMMDD+4位序号（如 AQFW202608100001），唯一标识</p>
+<p>c.系统自动生成一条审核记录，字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取当前时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -237,19 +280,19 @@ export const prdChapters = [
 <p>6、操作-关闭</p>
 <p>点击【关闭-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
 
-<h3 id="prd-3.1.1.1.2.3">3.1.1.1.2.3 新增能力组件</h3>
+<h3 id="prd-3.1.2.1.2.3">3.1.2.1.2.3 新增能力组件</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 新增能力组件</p>
 <p><strong>功能描述：</strong>新增能力组件，可设置基本信息、联系信息和分类标签，支持保存草稿或提交审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【新增】打开弹窗，标题"新增能力组件"，表单为空。</p>
+<p><strong>输入/前置条件：</strong>点击列表上方【新增服务-按钮】，选择服务类型后打开弹窗，标题"新增能力组件"，表单为空。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>能力组件名称</td><td>name</td><td>必填，限制20汉字，超出不可输入，占位提示"请输入能力组件名称"，右下角显示字数统计</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
 <tr><td>组件描述</td><td>description</td><td>必填，限制1000汉字，超出不可输入，占位提示"请输入组件描述"，右下角显示字数统计</td></tr>
-<tr><td>显示顺序</td><td></td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>非必填，字符串输入，限制200字，超出不可输入，占位提示"请输入付费方式参考"，右下角显示字数统计</td></tr>
 </table>
 <p>2、联系信息</p>
 <table>
@@ -261,8 +304,8 @@ export const prdChapters = [
 <p>3、分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>必填，枚举：不限、市级、区（县）域</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>必填，枚举：不限、市级、区（县）域</td></tr>
 </table>
 <p>4、操作-保存草稿</p>
 <p>点击【保存草稿-按钮】，判断逻辑如下：</p>
@@ -270,25 +313,29 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">能力组件名称为空：请输入能力组件名称</p>
 <p style="font-style:italic; color:#999">组件描述为空：请输入组件描述</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">开放范围为空：请选择开放范围</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：草稿已保存</p>
+<p>b.系统自动生成ID，格式：NLZJ+YYYYMMDD+4位序号（如 NLZJ202608100001），唯一标识</p>
 <p>5、操作-提交审核</p>
 <p>点击【提交审核-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">能力组件名称为空：请输入能力组件名称</p>
 <p style="font-style:italic; color:#999">组件描述为空：请输入组件描述</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">开放范围为空：请选择开放范围</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：已提交审核</p>
-<p>同时系统自动生成一条审核记录，字段取值如下：</p>
+<p>b.系统自动生成ID，格式：NLZJ+YYYYMMDD+4位序号（如 NLZJ202608100001），唯一标识</p>
+<p>c.系统自动生成一条审核记录，字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取当前时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -301,53 +348,152 @@ export const prdChapters = [
 <p>6、操作-关闭</p>
 <p>点击【关闭-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
 
-<h3 id="prd-3.1.1.1.2.4">3.1.1.1.2.4 新增基础服务</h3>
+<h3 id="prd-3.1.2.1.2.4">3.1.2.1.2.4 新增基础服务</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 新增基础服务</p>
-<p><strong>功能描述：</strong>新增基础服务，可设置基本信息，支持保存草稿或提交审核。</p>
+<p><strong>功能描述：</strong>新增基础服务，可设置基本信息、联系信息和分类标签，支持保存草稿或提交审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【新增】打开弹窗，标题"新增基础服务"，表单为空。</p>
+<p><strong>输入/前置条件：</strong>点击列表上方【新增服务-按钮】，选择服务类型后打开弹窗，标题"新增基础服务"，表单为空。</p>
 <p><strong>详细设计：</strong></p>
-<p>1、表单字段</p>
+<p>1、基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>基础服务名称</td><td></td><td>必填，限制40字符，超出不可输入，占位提示"请输入基础服务名称"，右下角显示字数统计</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
-<tr><td>服务描述</td><td></td><td>必填，限制500字符，超出不可输入，占位提示"请输入服务描述"，右下角显示字数统计</td></tr>
-<tr><td>服务类型</td><td></td><td>必填，枚举：计算服务、存储服务、网络服务、安全服务、大数据服务、数据库服务、备份容灾服务、软件与应用服务、机房托管服务，支持多选</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云，支持多选</td></tr>
-<tr><td>区域</td><td></td><td>必填，枚举：华东、华北、华南、西南，支持多选</td></tr>
-<tr><td>服务商名称</td><td></td><td>非必填，文本输入，占位提示"请输入服务商名称"</td></tr>
-<tr><td>联系方式1</td><td></td><td>非必填，包含联系人姓名和联系电话</td></tr>
-<tr><td>联系方式2</td><td></td><td>非必填，包含联系人姓名和联系电话</td></tr>
-<tr><td>显示顺序</td><td></td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>基础服务名称</td><td>serviceName</td><td>必填，限制40字符，超出不可输入，占位提示"请输入基础服务名称"，右下角显示字数统计</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
+<tr><td>服务描述</td><td>description</td><td>必填，限制500字符，超出不可输入，占位提示"请输入服务描述"，右下角显示字数统计</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>非必填，字符串输入，限制200字，超出不可输入，占位提示"请输入付费方式参考"，右下角显示字数统计</td></tr>
 </table>
-<p>2、操作-保存草稿</p>
+<p>2、联系信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务商名称</td><td>serviceProvider</td><td>非必填，文本输入，占位提示"请输入服务商名称"</td></tr>
+<tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>非必填，包含联系人姓名和联系电话</td></tr>
+<tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>非必填，包含联系人姓名和联系电话</td></tr>
+</table>
+<p>3、分类标签</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务专区</td><td>数据拉取字典管理 dict表 ServiceZone</td><td>必填，单选，枚举：X86专区、信创专区、密码服务专区、超算、智算专区；选择后联动下方"服务分类"选项</td></tr>
+<tr><td>服务分类</td><td>数据拉取字典管理 dict表 ServiceType_X86Zone / ServiceType_XinChuangZone / ServiceType_CipherZone / ServiceType_SuperComputeZone</td><td>必填，支持多选，按所选服务专区联动展示对应字典项：<br>· X86专区（ServiceType_X86Zone）：机房云托管服务、计算服务、存储服务、网络服务、安全服务、大数据服务、备份容灾服务、数据库服务<br>· 信创专区（ServiceType_XinChuangZone）：机房云托管服务、计算服务、存储服务、网络服务、软件服务<br>· 密码服务专区（ServiceType_CipherZone）：密码服务<br>· 超算、智算专区（ServiceType_SuperComputeZone）：超算服务、智算服务</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云，支持多选</td></tr>
+</table>
+<p>4、操作-保存草稿</p>
 <p>点击【保存草稿-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">基础服务名称为空：请输入基础服务名称</p>
 <p style="font-style:italic; color:#999">服务描述为空：请输入服务描述</p>
-<p style="font-style:italic; color:#999">服务类型为空：请选择服务类型</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
-<p style="font-style:italic; color:#999">区域为空：请选择区域</p>
+<p style="font-style:italic; color:#999">服务专区为空：请选择服务专区</p>
+<p style="font-style:italic; color:#999">服务分类为空：请选择服务分类</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：草稿已保存</p>
-<p>3、操作-提交审核</p>
+<p>b.系统自动生成ID，格式：JCFW+YYYYMMDD+4位序号（如 JCFW202608100001），唯一标识</p>
+<p>5、操作-提交审核</p>
 <p>点击【提交审核-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">基础服务名称为空：请输入基础服务名称</p>
 <p style="font-style:italic; color:#999">服务描述为空：请输入服务描述</p>
-<p style="font-style:italic; color:#999">服务类型为空：请选择服务类型</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
-<p style="font-style:italic; color:#999">区域为空：请选择区域</p>
+<p style="font-style:italic; color:#999">服务专区为空：请选择服务专区</p>
+<p style="font-style:italic; color:#999">服务分类为空：请选择服务分类</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：已提交审核</p>
-<p>同时系统自动生成一条审核记录，字段取值如下：</p>
+<p>b.系统自动生成ID，格式：JCFW+YYYYMMDD+4位序号（如 JCFW202608100001），唯一标识</p>
+<p>c.系统自动生成一条审核记录，字段取值如下：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交时间</td><td></td><td>取当前时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>提交人</td><td></td><td>取当前登录用户</td></tr>
+<tr><td>审核状态</td><td></td><td>固定为"待审核"</td></tr>
+<tr><td>审核人</td><td></td><td>待审核阶段暂无，为空</td></tr>
+<tr><td>审核时间</td><td></td><td>待审核阶段暂无，为空</td></tr>
+<tr><td>审核意见</td><td></td><td>待审核阶段暂无，为空</td></tr>
+</table>
+<p>6、操作-关闭</p>
+<p>点击【关闭-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
+
+<h3 id="prd-3.1.2.1.3">3.1.2.1.3 编辑服务</h3>
+<p><strong>模块描述：</strong>服务管理 / 服务上架 / 编辑服务</p>
+<p><strong>功能描述：</strong>编辑服务统一入口。点击服务列表页操作栏【修改-按钮】，根据记录的服务类型打开对应的编辑页面，字段规则与新增一致，并预填当前数据。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>当服务状态为"草稿/已驳回/已上线使用/已下架"时，操作栏显示【修改-按钮】，点击打开编辑服务弹窗。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、服务类型映射</p>
+<table>
+<tr><th style="white-space:nowrap">服务类型</th><th style="white-space:nowrap">子节</th><th>说明</th></tr>
+<tr><td>数字应用</td><td>3.1.2.1.3.1 编辑数字应用</td><td>回显原数字应用数据</td></tr>
+<tr><td>安全服务</td><td>3.1.2.1.3.2 编辑安全服务</td><td>回显原安全服务数据</td></tr>
+<tr><td>能力组件</td><td>3.1.2.1.3.3 编辑能力组件</td><td>回显原能力组件数据</td></tr>
+<tr><td>基础服务</td><td>3.1.2.1.3.4 编辑基础服务</td><td>回显原基础服务数据</td></tr>
+</table>
+
+<h3 id="prd-3.1.2.1.3.1">3.1.2.1.3.1 编辑数字应用</h3>
+<p><strong>模块描述：</strong>服务管理 / 服务上架 / 编辑数字应用</p>
+<p><strong>功能描述：</strong>编辑数字应用，可修改基本信息、联系信息和分类标签，支持保存草稿或提交审核。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>点击操作栏【修改-按钮】后打开弹窗，标题"修改数字应用"，预填当前数据。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、表单字段</p>
+<p>字段与新增表单相同，在新增规则基础上增加回显描述：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>应用名称</td><td>name</td><td>1.必填，限制20汉字，超出不可输入；<br>2.回显原应用名称，可修改</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，Toast 提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，Toast 提示"你确定要删除这个图片吗？"；<br>5.回显原LOGO，可修改</td></tr>
+<tr><td>应用描述</td><td>description</td><td>1.必填，限制1000汉字，超出不可输入；<br>2.回显原应用描述，可修改</td></tr>
+<tr><td>系统地址</td><td>address</td><td>1.非必填，有效URL格式；<br>2.回显原系统地址，可修改</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>1.非必填，字符串输入，限制200字，超出不可输入；<br>2.回显原付费方式参考，可修改</td></tr>
+<tr><td>服务商名称</td><td>serviceProviderName</td><td>1.必填，限制20汉字，超出不可输入；<br>2.回显原服务商名称，可修改</td></tr>
+<tr><td>合作伙伴名称</td><td>partnerName</td><td>1.非必填，多个用;分隔；<br>2.回显原合作伙伴名称，可修改</td></tr>
+<tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>1.必填，联系人姓名 + 手机号，以"-"分隔；<br>2.回显原联系方式1，可修改</td></tr>
+<tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>1.非必填，格式同联系方式1；<br>2.回显原联系方式2，可修改</td></tr>
+<tr><td>服务对象</td><td>数据拉取字典管理 dict表 Client</td><td>1.必填，支持多选，枚举：基层医疗卫生机构、公立医院、医技护人员；<br>2.回显原服务对象，可修改</td></tr>
+<tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>1.非必填，支持多选，枚举：B/S、C/S架构、B/S+C/S、单机、其他；<br>2.回显原应用架构，可修改</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>1.必填，支持多选，枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云；<br>2.回显原部署云服务商，可修改</td></tr>
+<tr><td>基层应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_PrimaryHospital</td><td>1.勾选"基层医疗卫生机构"时联动显示，支持多选；<br>2.回显原基层应用覆盖范围，可修改。枚举：基本公共卫生服务、医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、智慧管理平台（HRP）、心电、家庭医生签约、村卫生室管理、药店应用管理、智能外呼、辅助诊疗、临床专病库、区域综合、基本公共卫生服务绩效评价、妇幼健康</td></tr>
+<tr><td>公立应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_Hospital</td><td>1.勾选"公立医院"时联动显示，支持多选；<br>2.回显原公立应用覆盖范围，可修改。枚举：医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、心电、医养结合一体化、智慧管理平台（HRP）、药店应用管理、智能外呼、临床专病库、医共体信息平台、妇幼健康</td></tr>
+<tr><td>医技应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_MedicalPersonnel</td><td>1.勾选"医技护人员"时联动显示，支持多选；<br>2.回显原医技应用覆盖范围，可修改，暂无可选项</td></tr>
+</table>
+<p>2、操作-保存草稿</p>
+<p>仅状态为草稿时可点击【保存草稿-按钮】，其余状态按钮置灰不可点击。</p>
+<p>点击【保存草稿-按钮】，判断逻辑如下：</p>
+<p>1）若不满足必填、字符限制等要求，进行表单校验提示</p>
+<p style="font-style:italic; color:#999">Tip：</p>
+<p style="font-style:italic; color:#999">应用名称为空：请输入应用名称</p>
+<p style="font-style:italic; color:#999">应用描述为空：请输入应用描述</p>
+<p style="font-style:italic; color:#999">服务商名称为空：请输入服务商名称</p>
+<p style="font-style:italic; color:#999">联系方式1为空：请输入联系人姓名和手机号</p>
+<p style="font-style:italic; color:#999">服务对象为空：请选择服务对象</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
+<p style="font-style:italic; color:#999">系统地址格式错误：请输入https://或http://开头的地址形式</p>
+<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
+<p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p style="font-style:italic; color:#999">Tip：草稿已保存</p>
+<p>3、操作-提交审核</p>
+<p>点击【提交审核-按钮】，判断逻辑如下：</p>
+<p>1）若不满足必填、字符限制等要求，进行表单校验提示</p>
+<p style="font-style:italic; color:#999">Tip：</p>
+<p style="font-style:italic; color:#999">应用名称为空：请输入应用名称</p>
+<p style="font-style:italic; color:#999">应用描述为空：请输入应用描述</p>
+<p style="font-style:italic; color:#999">服务商名称为空：请输入服务商名称</p>
+<p style="font-style:italic; color:#999">联系方式1为空：请输入联系人姓名和手机号</p>
+<p style="font-style:italic; color:#999">服务对象为空：请选择服务对象</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
+<p style="font-style:italic; color:#999">系统地址格式错误：请输入https://或http://开头的地址形式</p>
+<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
+<p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p style="font-style:italic; color:#999">Tip：已提交审核</p>
+<p>b.系统自动生成一条审核记录，字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取当前时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -360,102 +506,11 @@ export const prdChapters = [
 <p>4、操作-关闭</p>
 <p>点击【关闭-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
 
-<h3 id="prd-3.1.1.1.3">3.1.1.1.3 编辑服务</h3>
-<p><strong>模块描述：</strong>服务管理 / 服务上架 / 编辑服务</p>
-<p><strong>功能描述：</strong>编辑服务统一入口。点击服务列表页【编辑服务-按钮】，根据记录的服务类型打开对应的编辑页面，字段规则与新增一致，并预填当前数据。</p>
-<p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>服务列表页点击【编辑服务-按钮】（草稿/已驳回/已上线使用/已下架状态可编辑）。</p>
-<p><strong>详细设计：</strong></p>
-<p>1、服务类型映射</p>
-<table>
-<tr><th style="white-space:nowrap">服务类型</th><th style="white-space:nowrap">子节</th><th>说明</th></tr>
-<tr><td>数字应用</td><td>3.1.1.1.3.1 编辑数字应用</td><td>回显原数字应用数据</td></tr>
-<tr><td>安全服务</td><td>3.1.1.1.3.2 编辑安全服务</td><td>回显原安全服务数据</td></tr>
-<tr><td>能力组件</td><td>3.1.1.1.3.3 编辑能力组件</td><td>回显原能力组件数据</td></tr>
-<tr><td>基础服务</td><td>3.1.1.1.3.4 编辑基础服务</td><td>回显原基础服务数据</td></tr>
-</table>
-
-<h3 id="prd-3.1.1.1.3.1">3.1.1.1.3.1 编辑数字应用</h3>
-<p><strong>模块描述：</strong>服务管理 / 服务上架 / 编辑数字应用</p>
-<p><strong>功能描述：</strong>编辑数字应用，可修改基本信息、联系信息和分类标签，支持保存草稿或提交审核。</p>
-<p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【修改】打开弹窗，标题"修改数字应用"，预填当前数据。</p>
-<p><strong>详细设计：</strong></p>
-<p>1、基本信息</p>
-<table>
-<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>应用名称</td><td>name</td><td>1.必填，限制20汉字，超出不可输入；<br>2.回显原应用名称，可修改</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，Toast 提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，Toast 提示"你确定要删除这个图片吗？"；<br>5.回显原LOGO，可修改</td></tr>
-<tr><td>应用描述</td><td>description</td><td>1.必填，限制1000汉字，超出不可输入；<br>2.回显原应用描述，可修改</td></tr>
-<tr><td>系统地址</td><td>address</td><td>1.非必填，有效URL格式；<br>2.回显原系统地址，可修改</td></tr>
-</table>
-<p>2、联系信息</p>
-<table>
-<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务商名称</td><td>serviceProviderName</td><td>1.必填，限制20汉字，超出不可输入；<br>2.回显原服务商名称，可修改</td></tr>
-<tr><td>合作伙伴名称</td><td>partnerName</td><td>1.非必填，多个用;分隔；<br>2.回显原合作伙伴名称，可修改</td></tr>
-<tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>1.必填，联系人姓名 + 手机号，以"-"分隔；<br>2.回显原联系方式1，可修改</td></tr>
-<tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>1.非必填，格式同联系方式1；<br>2.回显原联系方式2，可修改</td></tr>
-</table>
-<p>3、分类标签</p>
-<table>
-<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>面向对象</td><td>数据拉取字典管理 dict表 Client</td><td>1.必填，支持多选，枚举：基层医疗卫生机构、公立医院、医技护人员；<br>2.回显原面向对象，可修改</td></tr>
-<tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>1.非必填，支持多选，枚举：B/S、C/S架构、B/S+C/S、单机、其他；<br>2.回显原应用架构，可修改</td></tr>
-<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>1.必填，支持多选，枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云；<br>2.回显原部署云服务商，可修改</td></tr>
-<tr><td>基层应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_PrimaryHospital</td><td>1.勾选"基层医疗卫生机构"时联动显示，支持多选；<br>2.回显原基层应用覆盖范围，可修改。枚举：基本公共卫生服务、医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、智慧管理平台（HRP）、心电、家庭医生签约、村卫生室管理、药店应用管理、智能外呼、辅助诊疗、临床专病库、区域综合、基本公共卫生服务绩效评价、妇幼健康</td></tr>
-	<tr><td>公立应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_Hospital</td><td>1.勾选"公立医院"时联动显示，支持多选；<br>2.回显原公立应用覆盖范围，可修改。枚举：医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、心电、医养结合一体化、智慧管理平台（HRP）、药店应用管理、智能外呼、临床专病库、医共体信息平台、妇幼健康</td></tr>
-	<tr><td>医技应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_MedicalPersonnel</td><td>1.勾选"医技护人员"时联动显示，支持多选；<br>2.回显原医技应用覆盖范围，可修改，暂无可选项</td></tr>
-</table>
-<p>4、操作-保存草稿</p>
-<p>仅状态为草稿时可点击【保存草稿-按钮】，其余状态按钮置灰不可点击。</p>
-<p>点击【保存草稿-按钮】，判断逻辑如下：</p>
-<p>1）若不满足必填、字符限制等要求，进行表单校验提示</p>
-<p style="font-style:italic; color:#999">Tip：</p>
-<p style="font-style:italic; color:#999">应用名称为空：请输入应用名称</p>
-<p style="font-style:italic; color:#999">应用描述为空：请输入应用描述</p>
-<p style="font-style:italic; color:#999">服务商名称为空：请输入服务商名称</p>
-<p style="font-style:italic; color:#999">联系方式1为空：请输入联系人姓名和手机号</p>
-<p style="font-style:italic; color:#999">面向对象为空：请选择面向对象</p>
-<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
-<p style="font-style:italic; color:#999">系统地址格式错误：请输入https://或http://开头的地址形式</p>
-<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
-<p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
-<p style="font-style:italic; color:#999">Tip：草稿已保存</p>
-<p>5、操作-提交审核</p>
-<p>点击【提交审核-按钮】，判断逻辑如下：</p>
-<p>1）若不满足必填、字符限制等要求，进行表单校验提示</p>
-<p style="font-style:italic; color:#999">Tip：</p>
-<p style="font-style:italic; color:#999">应用名称为空：请输入应用名称</p>
-<p style="font-style:italic; color:#999">应用描述为空：请输入应用描述</p>
-<p style="font-style:italic; color:#999">服务商名称为空：请输入服务商名称</p>
-<p style="font-style:italic; color:#999">联系方式1为空：请输入联系人姓名和手机号</p>
-<p style="font-style:italic; color:#999">面向对象为空：请选择面向对象</p>
-<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
-<p style="font-style:italic; color:#999">系统地址格式错误：请输入https://或http://开头的地址形式</p>
-<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
-<p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
-<p style="font-style:italic; color:#999">Tip：已提交审核</p>
-<p>同时系统自动生成一条审核记录，字段取值如下：</p>
-<table>
-<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>提交时间</td><td></td><td>取当前时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
-<tr><td>提交人</td><td></td><td>取当前登录用户</td></tr>
-<tr><td>审核状态</td><td></td><td>固定为"待审核"</td></tr>
-<tr><td>审核人</td><td></td><td>待审核阶段暂无，为空</td></tr>
-<tr><td>审核时间</td><td></td><td>待审核阶段暂无，为空</td></tr>
-<tr><td>审核意见</td><td></td><td>待审核阶段暂无，为空</td></tr>
-</table>
-<p>6、操作-关闭</p>
-<p>点击【关闭-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
-
-<h3 id="prd-3.1.1.1.3.2">3.1.1.1.3.2 编辑安全服务</h3>
+<h3 id="prd-3.1.2.1.3.2">3.1.2.1.3.2 编辑安全服务</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 编辑安全服务</p>
 <p><strong>功能描述：</strong>编辑安全服务，可修改基本信息、联系信息和分类标签，支持保存草稿或提交审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【修改】打开弹窗，标题"修改安全服务"，预填当前数据。</p>
+<p><strong>输入/前置条件：</strong>点击操作栏【修改-按钮】后打开弹窗，标题"修改安全服务"，预填当前数据。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <p>字段与新增表单相同，在新增规则基础上增加回显描述：</p>
@@ -465,13 +520,13 @@ export const prdChapters = [
 <tr><td>系统地址</td><td>systemUrl</td><td>1.非必填，文本输入；<br>2.回显原系统地址，可修改</td></tr>
 <tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 PNG、JPG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
 <tr><td>服务描述</td><td>description</td><td>1.必填，限制500字符，超出不可输入；<br>2.回显原服务描述，可修改</td></tr>
-<tr><td>显示顺序</td><td>sortOrder</td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>1.非必填，字符串输入，限制200字，超出不可输入；<br>2.回显原付费方式参考，可修改</td></tr>
 <tr><td>服务商名称</td><td>serviceProvider</td><td>1.必填，文本输入；<br>2.回显原服务商名称，可修改</td></tr>
 <tr><td>合作伙伴名称</td><td>cooperativeEnterprise</td><td>1.非必填，文本输入；<br>2.回显原合作伙伴名称，可修改</td></tr>
 <tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>1.必填，联系人姓名 + 手机号，以"-"分隔；<br>2.回显原联系方式1，可修改</td></tr>
 <tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>1.非必填，格式同联系方式1；<br>2.回显原联系方式2，可修改</td></tr>
-<tr><td>应用架构</td><td>appArchitecture</td><td>1.非必填，多选框组；<br>2.回显原应用架构，可修改</td></tr>
-<tr><td>部署云服务商</td><td>cloudProvider</td><td>1.必填，多选框组；<br>2.回显原部署云服务商，可修改</td></tr>
+<tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>1.非必填，多选框组；<br>2.回显原应用架构，可修改</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>1.必填，多选框组；<br>2.回显原部署云服务商，可修改</td></tr>
 </table>
 <p>2、操作-保存草稿</p>
 <p>仅状态为草稿时可点击【保存草稿-按钮】，其余状态按钮置灰不可点击。</p>
@@ -485,7 +540,8 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：草稿已保存</p>
 <p>3、操作-提交审核</p>
 <p>点击【提交审核-按钮】，判断逻辑如下：</p>
@@ -498,9 +554,10 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：已提交审核</p>
-<p>同时系统自动生成一条审核记录，字段取值如下：</p>
+<p>b.系统自动生成一条审核记录，字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取当前时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -513,25 +570,25 @@ export const prdChapters = [
 <p>4、操作-关闭</p>
 <p>点击【关闭-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
 
-<h3 id="prd-3.1.1.1.3.3">3.1.1.1.3.3 编辑能力组件</h3>
+<h3 id="prd-3.1.2.1.3.3">3.1.2.1.3.3 编辑能力组件</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 编辑能力组件</p>
 <p><strong>功能描述：</strong>编辑能力组件，可修改基本信息、联系信息和分类标签，支持保存草稿或提交审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【修改】打开弹窗，标题"修改能力组件"，预填当前数据。</p>
+<p><strong>输入/前置条件：</strong>点击操作栏【修改-按钮】后打开弹窗，标题"修改能力组件"，预填当前数据。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <p>字段与新增表单相同，在新增规则基础上增加回显描述：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>能力组件名称</td><td>name</td><td>1.必填，限制20汉字，超出不可输入；<br>2.回显原能力组件名称，可修改</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
 <tr><td>组件描述</td><td>description</td><td>1.必填，限制1000汉字，超出不可输入；<br>2.回显原组件描述，可修改</td></tr>
-<tr><td>显示顺序</td><td></td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>1.非必填，字符串输入，限制200字，超出不可输入；<br>2.回显原付费方式参考，可修改</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>非必填；回显原服务商名称，可修改</td></tr>
 <tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>非必填；回显原联系方式1，可修改</td></tr>
 <tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>非必填；回显原联系方式2，可修改</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>必填；回显原云服务商，可修改</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>必填；回显原开放范围，可修改</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>必填；回显原部署云服务商，可修改</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>必填；回显原开放范围，可修改</td></tr>
 </table>
 <p>2、操作-保存草稿</p>
 <p>仅状态为草稿时可点击【保存草稿-按钮】，其余状态按钮置灰不可点击。</p>
@@ -540,11 +597,12 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">能力组件名称为空：请输入能力组件名称</p>
 <p style="font-style:italic; color:#999">组件描述为空：请输入组件描述</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">开放范围为空：请选择开放范围</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：草稿已保存</p>
 <p>3、操作-提交审核</p>
 <p>点击【提交审核-按钮】，判断逻辑如下：</p>
@@ -552,13 +610,14 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">能力组件名称为空：请输入能力组件名称</p>
 <p style="font-style:italic; color:#999">组件描述为空：请输入组件描述</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">开放范围为空：请选择开放范围</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：已提交审核</p>
-<p>同时系统自动生成一条审核记录，字段取值如下：</p>
+<p>b.系统自动生成一条审核记录，字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取当前时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -571,26 +630,26 @@ export const prdChapters = [
 <p>4、操作-关闭</p>
 <p>点击【关闭-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
 
-<h3 id="prd-3.1.1.1.3.4">3.1.1.1.3.4 编辑基础服务</h3>
+<h3 id="prd-3.1.2.1.3.4">3.1.2.1.3.4 编辑基础服务</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 编辑基础服务</p>
-<p><strong>功能描述：</strong>编辑基础服务，可修改基本信息，支持保存草稿或提交审核。</p>
+<p><strong>功能描述：</strong>编辑基础服务，可修改基本信息、联系信息和分类标签，支持保存草稿或提交审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【修改】打开弹窗，标题"修改基础服务"，预填当前数据。</p>
+<p><strong>输入/前置条件：</strong>点击操作栏【修改-按钮】后打开弹窗，标题"修改基础服务"，预填当前数据。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <p>字段与新增表单相同，在新增规则基础上增加回显描述：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>基础服务名称</td><td></td><td>1.必填，限制40字符，超出不可输入；<br>2.回显原基础服务名称，可修改</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
-<tr><td>服务描述</td><td></td><td>1.必填，限制500字符，超出不可输入；<br>2.回显原服务描述，可修改</td></tr>
-<tr><td>服务类型</td><td></td><td>1.必填，支持多选；<br>2.回显原服务类型，可修改</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>1.必填，支持多选；<br>2.回显原云服务商，可修改</td></tr>
-<tr><td>区域</td><td></td><td>1.必填，支持多选；<br>2.回显原区域，可修改</td></tr>
-<tr><td>服务商名称</td><td></td><td>1.非必填，文本输入；<br>2.回显原服务商名称，可修改</td></tr>
-<tr><td>联系方式1</td><td></td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式1，可修改</td></tr>
-<tr><td>联系方式2</td><td></td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式2，可修改</td></tr>
-<tr><td>显示顺序</td><td></td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>基础服务名称</td><td>serviceName</td><td>1.必填，限制40字符，超出不可输入；<br>2.回显原基础服务名称，可修改</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
+<tr><td>服务描述</td><td>description</td><td>1.必填，限制500字符，超出不可输入；<br>2.回显原服务描述，可修改</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>1.非必填，字符串输入，限制200字，超出不可输入；<br>2.回显原付费方式参考，可修改</td></tr>
+<tr><td>服务商名称</td><td>serviceProvider</td><td>1.非必填，文本输入；<br>2.回显原服务商名称，可修改</td></tr>
+<tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式1，可修改</td></tr>
+<tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式2，可修改</td></tr>
+<tr><td>服务专区</td><td>数据拉取字典管理 dict表 ServiceZone</td><td>1.必填，单选，枚举：X86专区、信创专区、密码服务专区、超算、智算专区；<br>2.回显原服务专区，可修改</td></tr>
+<tr><td>服务分类</td><td>数据拉取字典管理 dict表 ServiceType_X86Zone / ServiceType_XinChuangZone / ServiceType_CipherZone / ServiceType_SuperComputeZone</td><td>1.必填，支持多选，按所选服务专区联动展示对应字典项；<br>2.回显原服务分类，可修改</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>1.必填，支持多选；<br>2.回显原部署云服务商，可修改</td></tr>
 </table>
 <p>2、操作-保存草稿</p>
 <p>仅状态为草稿时可点击【保存草稿-按钮】，其余状态按钮置灰不可点击。</p>
@@ -599,12 +658,13 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">基础服务名称为空：请输入基础服务名称</p>
 <p style="font-style:italic; color:#999">服务描述为空：请输入服务描述</p>
-<p style="font-style:italic; color:#999">服务类型为空：请选择服务类型</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
-<p style="font-style:italic; color:#999">区域为空：请选择区域</p>
+<p style="font-style:italic; color:#999">服务专区为空：请选择服务专区</p>
+<p style="font-style:italic; color:#999">服务分类为空：请选择服务分类</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='草稿' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：草稿已保存</p>
 <p>3、操作-提交审核</p>
 <p>点击【提交审核-按钮】，判断逻辑如下：</p>
@@ -612,14 +672,15 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">基础服务名称为空：请输入基础服务名称</p>
 <p style="font-style:italic; color:#999">服务描述为空：请输入服务描述</p>
-<p style="font-style:italic; color:#999">服务类型为空：请选择服务类型</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
-<p style="font-style:italic; color:#999">区域为空：请选择区域</p>
+<p style="font-style:italic; color:#999">服务专区为空：请选择服务专区</p>
+<p style="font-style:italic; color:#999">服务分类为空：请选择服务分类</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
-<p>3）若满足条件，以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
+<p>3）若满足条件：</p>
+<p>a.以 status='待审核' 提交，进行消息提示，关闭弹窗，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：已提交审核</p>
-<p>同时系统自动生成一条审核记录，字段取值如下：</p>
+<p>b.系统自动生成一条审核记录，字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取当前时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -632,21 +693,22 @@ export const prdChapters = [
 <p>4、操作-关闭</p>
 <p>点击【关闭-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
 
-<h3 id="prd-3.1.1.1.4">3.1.1.1.4 服务详情</h3>
+<h3 id="prd-3.1.2.1.4">3.1.2.1.4 服务详情</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 服务详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看服务的完整信息，包括概览、审核信息和评价信息。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>服务列表页点击【详情-按钮】，根据服务类型打开对应详情抽屉；概览字段随服务类型不同而不同，审核信息、评价信息各类型通用。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击根据服务类型打开对应详情抽屉；概览字段随服务类型不同而不同，审核信息、评价信息各类型通用。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、概览-数字应用</p>
 <p>展示数字应用的概览信息，包括基本信息、联系信息、分类标签。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>应用名称</td><td>name</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>应用ID</td><td>applicationId</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>应用ID</td><td>applicationId</td><td>系统自动生成，格式：SZYY+YYYYMMDD+4位序号（如 SZYY202608100001），唯一标识，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>状态</td><td>status</td><td>枚举：草稿、待审核、已上线使用、已驳回、已下架</td></tr>
 <tr><td>系统地址</td><td>address</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>应用LOGO</td><td>logo</td><td>显示LOGO图片，为空时显示"--"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>显示LOGO图片，为空时显示"--"</td></tr>
 <tr><td>应用描述</td><td>description</td><td>超出3行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>合作伙伴</td><td>partnerName</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
@@ -654,7 +716,7 @@ export const prdChapters = [
 <tr><td>联系电话1</td><td>contactPhone1</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系人2</td><td>contactName2</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系电话2</td><td>contactPhone2</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>面向对象</td><td>targetView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务对象</td><td>targetView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>应用架构</td><td>architectureView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>应用覆盖范围</td><td>cover</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
@@ -663,47 +725,47 @@ export const prdChapters = [
 <p>展示安全服务的概览信息，包括基本信息、联系信息、分类标签。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务LOGO</td><td>logo</td><td>展示服务Logo图片，若无则显示默认图标</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>展示服务Logo图片，若无则显示默认图标</td></tr>
 <tr><td>安全服务名称</td><td>title</td><td>加粗大号字体展示</td></tr>
 <tr><td>状态</td><td>status</td><td>使用状态标签展示，枚举：草稿、待审核、已上线使用、已驳回、已下架</td></tr>
-<tr><td>服务ID</td><td></td><td>灰色小字，格式"ID：XXX"</td></tr>
+<tr><td>服务ID</td><td></td><td>灰色小字，格式"ID：XXX"，系统自动生成，格式：AQFW+YYYYMMDD+4位序号（如 AQFW202608100001），唯一标识</td></tr>
 <tr><td>系统地址</td><td>systemUrl</td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>显示顺序</td><td>sortOrder</td><td>完整展示，为空时显示"0"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>服务描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td>serviceProvider</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>合作伙伴</td><td>cooperativeEnterprise</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>展示联系人和联系电话，为空时显示"--"</td></tr>
 <tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>展示联系人和联系电话，为空时显示"--"</td></tr>
-<tr><td>应用架构</td><td>appArchitecture</td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
-<tr><td>部署云服务商</td><td>cloudProvider</td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
+<tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
 </table>
 <p>3、概览-能力组件</p>
 <p>展示能力组件的概览信息，包括基本信息、联系信息、分类标签。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>组件ID</td><td>componentId</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>组件ID</td><td>componentId</td><td>系统自动生成，格式：NLZJ+YYYYMMDD+4位序号（如 NLZJ202608100001），唯一标识，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>组件名称</td><td>name</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>状态</td><td>status</td><td>枚举：草稿、待审核、已上线使用、已驳回、已下架</td></tr>
-<tr><td>显示顺序</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>组件描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系人1</td><td>contactName1</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系电话1</td><td>contactPhone1</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系人2</td><td>contactName2</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系电话2</td><td>contactPhone2</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 </table>
 <p>4、概览-基础服务</p>
 <p>展示基础服务的概览信息，包括基本信息、联系信息、分类标签。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务ID</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务ID</td><td></td><td>系统自动生成，格式：JCFW+YYYYMMDD+4位序号（如 JCFW202608100001），唯一标识，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>区域</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>显示顺序</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务专区</td><td>数据拉取字典管理 dict表 ServiceZone</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务分类</td><td>数据拉取字典管理 dict表 ServiceType_X86Zone / ServiceType_XinChuangZone / ServiceType_CipherZone / ServiceType_SuperComputeZone</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>服务描述</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>附件材料</td><td></td><td>显示附件名称列表，点击下载</td></tr>
 </table>
@@ -725,33 +787,33 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色）、已驳回（红色）、待审核（当前阶段蓝色、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>6、评价信息</p>
 <p>1）评分概览</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>平台评分</td><td></td><td>显示评分数值，由平台管理员在质量评价管理中手动设置，保留1位小数</td></tr>
-<tr><td>用户评分</td><td></td><td>显示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) ÷ 评价人数，其中四维均分 = (准确性＋稳定性＋响应时效＋业务适配性) ÷ 4</td></tr>
+<tr><td>用户评分</td><td></td><td>显示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) ÷ 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4</td></tr>
 </table>
 <p>2）用户评价</p>
 <p>显示"用户评价（共 N 条）"，点击后在下方展开显示所有用户评价，10条分页，滚动加载更多。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>评分</td><td></td><td>展示四维度分值（准确性、稳定性、响应时效、业务适配性）</td></tr>
+<tr><td>评分明细</td><td></td><td>以"准确性、稳定性、响应时效、业务适配性"四个维度横向排列展示各维度分数</td></tr>
 <tr><td>评价机构/服务单号</td><td></td><td>展示评价机构名称和服务单号</td></tr>
 <tr><td>评价内容</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>评价时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
 <tr><td>回复内容</td><td></td><td>当状态为已回复时显示回复内容，完整展示；状态为待回复时不显示</td></tr>
 </table>
 <p>7、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，返回服务上架列表页。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，返回服务上架列表页。</p>
 
-<h3 id="prd-3.1.1.1.5">3.1.1.1.5 删除服务</h3>
+<h3 id="prd-3.1.2.1.5">3.1.2.1.5 删除服务</h3>
 <p><strong>模块描述：</strong>服务管理 / 服务上架 / 删除服务</p>
 <p><strong>功能描述：</strong>删除操作适用于所有服务类型（数字应用、安全服务、能力组件、基础服务），为该功能通用操作，不针对特定服务类型。删除后不可恢复，仅草稿、已驳回、已上线使用、已下架状态可删除。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>服务列表中草稿/已驳回/已上线使用/已下架状态，点击【删除-按钮】。</p>
+<p><strong>输入/前置条件：</strong>当服务状态为"草稿/已驳回/已上线使用/已下架"时，操作栏显示【删除-按钮】，点击弹出删除确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行删除，停留当前页面。</p>
@@ -768,14 +830,14 @@ export const prdChapters = [
   {
     id: 1,
     title: '',
-    content: `<h3 id="prd-3.1.2">3.1.2 开通管理</h3>
+    content: `<h3 id="prd-3.1.3">3.1.3 开通管理</h3>
 
-<h3 id="prd-3.1.2.1">3.1.2.1 服务订阅</h3>
-<p><strong>入口页面：</strong>服务管理 / 开通管理 / 服务订阅</p>
+<h3 id="prd-3.1.3.1">3.1.3.1 服务开通</h3>
+<p><strong>入口页面：</strong>服务管理 / 开通管理 / 服务开通</p>
 <p><strong>页面描述：</strong>查看本机构发起的服务订单，支持查看订单详情并对已完成订单进行评价。</p>
 
-<h3 id="prd-3.1.2.1.1">3.1.2.1.1 服务订阅列表</h3>
-<p><strong>模块描述：</strong>服务管理 / 开通管理 / 服务订阅 / 列表</p>
+<h3 id="prd-3.1.3.1.1">3.1.3.1.1 服务开通列表</h3>
+<p><strong>模块描述：</strong>服务管理 / 开通管理 / 服务开通 / 列表</p>
 <p><strong>功能描述：</strong>展示本机构发起的订单列表，支持按服务单号、服务名称、服务ID、申请机构、服务类型和状态筛选，可按状态执行详情、评价、查看评价等操作。</p>
 <p><strong>优先级：</strong>P1</p>
 <p><strong>输入/前置条件：</strong>列表数据来源于本机构发起的服务订单。</p>
@@ -800,7 +862,7 @@ export const prdChapters = [
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>服务单号</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>服务名称/ID</td><td></td><td>展示服务名称及服务ID，为空时显示"--"</td></tr>
+<tr><td>服务名称/ID</td><td></td><td>展示服务名称及服务ID，ID系统自动生成，格式：拼音缩写+YYYYMMDD+4位序号（数字应用：SZYY、安全服务：AQFW、能力组件：NLZJ、基础服务：JCFW，如 SZYY202608100001），唯一标识，为空时显示"--"</td></tr>
 <tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务</td></tr>
 <tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>状态</td><td></td><td>枚举：工单流转中、已完成、已评价、已驳回、已取消</td></tr>
@@ -823,37 +885,44 @@ export const prdChapters = [
 <tr><td>已驳回</td><td></td><td>详情</td></tr>
 <tr><td>已取消</td><td></td><td>详情</td></tr>
 </table>
-<h3 id="prd-3.1.2.1.2">3.1.2.1.2 服务订阅详情</h3>
-<p><strong>模块描述：</strong>服务管理 / 开通管理 / 服务订阅 / 详情</p>
-<p><strong>功能描述：</strong>以右侧抽屉形式展示订单完整信息，包括基本信息和流程进度。</p>
+<h3 id="prd-3.1.3.1.2">3.1.3.1.2 服务开通详情</h3>
+<p><strong>模块描述：</strong>服务管理 / 开通管理 / 服务开通 / 详情</p>
+<p><strong>功能描述：</strong>以右侧抽屉形式查看订单完整信息，包括基本信息和流程进度，支持跳转关联工单。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击服务订阅列表【详情】打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
-<p>1、基本信息</p>
+<p>1、抽屉头部</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务单号</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务</td></tr>
-<tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>创建时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
-<tr><td>关联工单</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务名称</td><td>serviceName</td><td>加粗大号字体展示</td></tr>
+<tr><td>状态</td><td>status</td><td>使用状态标签展示，枚举：工单流转中、已完成、已评价、已驳回、已取消</td></tr>
+<tr><td>服务单号</td><td>orderNo</td><td>灰色小字，展示于服务名称下方，为空时显示"--"</td></tr>
 </table>
-<p>2、流程进度</p>
-<p>以时间轴形式展示订单处理进度，包含以下节点：</p>
+<p>2、基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>节点名称</td><td></td><td>进度节点名称，枚举：<br>1、提交申请：跳转到多云系统时记录为提交申请时间<br>2、系统派发工单：多云系统创建工单后回传创建时间记录为系统派发工单，同时默认进入工单流转中<br>3、工单流转中：系统派发工单后默认进入工单流转中状态<br>4、服务交付完成：多云系统回传服务交付完成状态及时间<br>5、服务评价：用户完成服务评价后记录评价时间<br>6、订单驳回：工单驳回后记录驳回时间<br>7、订单取消：用户取消订单后记录取消时间</td></tr>
+<tr><td>服务ID</td><td>serviceId</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务</td></tr>
+<tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务商名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>创建时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>关联工单</td><td></td><td>完整展示，为空时显示"--"；点击"跳转工单"按钮，以URL参数形式携带工单ID（workorderId，如 /workorder/detail?workorderId=TK-0245）跳转至多云管理系统工单详情页，用于定位并展示该工单的详细信息</td></tr>
+</table>
+<p>3、流程进度</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>节点名称</td><td></td><td>进度节点名称，枚举：<br>1、提交申请：用户点击服务后经统一认证SSO跳转至多云管理系统填写服务申请，系统创建服务订单（绑定serviceId），以订单创建时间记录为提交申请节点时间<br>2、系统派发工单：多云管理系统创建工单后，调用工单回调接口回传workOrderId及工单创建时间（eventType=CREATED），系统接收回调后记录为系统派发工单节点时间，订单状态默认流转为工单流转中<br>3、工单流转中：接收工单创建回调（eventType=CREATED）后订单进入的默认状态，节点时间取系统派发工单的回调时间<br>4、服务交付完成：多云管理系统回传工单通过事件及时间（eventType=APPROVED），系统接收回调后记录为服务交付完成节点时间<br>5、服务评价：用户提交服务评价后，以评价提交时间记录为服务评价节点时间<br>6、订单驳回：多云管理系统回传工单驳回事件及时间（eventType=REJECTED，备注含驳回原因），系统接收回调后记录为订单驳回节点时间<br>7、订单取消：用户取消订单后，以取消操作时间记录为订单取消节点时间</td></tr>
 <tr><td>节点时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>节点状态</td><td></td><td>枚举：已完成、进行中、待处理。当前所处节点状态为进行中，已通过节点状态为已完成，未到达节点状态为待处理。</td></tr>
 </table>
-<p>3、操作-关闭抽屉</p>
+<p>4、操作-关闭抽屉</p>
 <p>点击抽屉右上角【关闭按钮】，关闭详情抽屉。</p>
 
-<h3 id="prd-3.1.2.1.3">3.1.2.1.3 操作-评价</h3>
-<p><strong>模块描述：</strong>服务管理 / 开通管理 / 服务订阅 / 评价</p>
+<h3 id="prd-3.1.3.1.3">3.1.3.1.3 操作-评价</h3>
+<p><strong>模块描述：</strong>服务管理 / 开通管理 / 服务开通 / 评价</p>
 <p><strong>功能描述：</strong>机构用户对已完成订单进行满意度评价。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>仅当订单状态为"已完成"时，操作栏显示【评价-按钮】，点击打开评价弹窗。</p>
+<p><strong>输入/前置条件：</strong>当订单状态为"已完成"时，操作栏显示【评价-按钮】，点击打开评价弹窗。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <table>
@@ -875,25 +944,25 @@ export const prdChapters = [
 <p>3、操作-取消</p>
 <p>点击【取消-按钮】，关闭弹窗，不保存评价内容，停留当前页面。</p>
 
-<h3 id="prd-3.1.2.1.4">3.1.2.1.4 操作-查看评价</h3>
-<p><strong>模块描述：</strong>服务管理 / 开通管理 / 服务订阅 / 查看评价</p>
+<h3 id="prd-3.1.3.1.4">3.1.3.1.4 操作-查看评价</h3>
+<p><strong>模块描述：</strong>服务管理 / 开通管理 / 服务开通 / 查看评价</p>
 <p><strong>功能描述：</strong>查看已评价订单的评价明细和开发者回复。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>当订单状态为已评价时，操作栏显示【查看评价-按钮】，点击打开评价查看弹窗。</p>
+<p><strong>输入/前置条件：</strong>当订单状态为"已评价"时，操作栏显示【查看评价-按钮】，点击打开评价查看弹窗。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、展示内容</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>评分明细</td><td></td><td>展示准确性评分、稳定性评分、响应时效评分、业务适配性评分四维度5星评分</td></tr>
 <tr><td>评价内容</td><td></td><td>展示用户填写的评价内容，为空时显示"--"</td></tr>
-<tr><td>开发者回复</td><td></td><td>开发者已回复时展示回复内容；未回复时显示"开发者尚未回复，平台将在 3 个工作日内跟进"</td></tr>
+<tr><td>开发者回复</td><td></td><td>开发者已回复时展示回复内容；未回复时不显示开发者回复</td></tr>
 </table>
 
-<h3 id="prd-3.1.2.2">3.1.2.2 开通记录</h3>
+<h3 id="prd-3.1.3.2">3.1.3.2 开通记录</h3>
 <p><strong>入口页面：</strong>服务管理 / 开通管理 / 开通记录</p>
 <p><strong>页面描述：</strong>查看机构订阅本开发者服务的订单记录，支持查看订单详情、评价及回复。</p>
 
-<h3 id="prd-3.1.2.2.1">3.1.2.2.1 开通记录列表</h3>
+<h3 id="prd-3.1.3.2.1">3.1.3.2.1 开通记录列表</h3>
 <p><strong>模块描述：</strong>服务管理 / 开通管理 / 开通记录 / 列表</p>
 <p><strong>功能描述：</strong>展示本开发者收到的订单记录，支持按服务单号、服务名称、服务ID、申请机构、服务类型和状态筛选，可查看订单详情、查看评价和回复评价。</p>
 <p><strong>优先级：</strong>P1</p>
@@ -907,22 +976,22 @@ export const prdChapters = [
 <tr><td>服务ID</td><td></td><td>支持模糊搜索</td></tr>
 <tr><td>申请机构</td><td></td><td>支持模糊搜索</td></tr>
 <tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务，默认不筛选</td></tr>
-<tr><td>状态</td><td></td><td>枚举：处理中、已完成、已评价、已驳回、已取消，默认不筛选</td></tr>
+<tr><td>状态</td><td></td><td>枚举：已完成、已评价，默认不筛选</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
 <tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
 </table>
 <p>2、列表展示</p>
-<p>1）数据范围为其他机构（匹配统一社会信用代码）订阅本开发者服务的所有状态（已完成、已评价）的订单数据。</p>
+<p>1）数据范围为其他机构订阅本开发者服务（匹配服务ID）的所有状态（已完成、已评价）的订单数据。</p>
 <p>2）根据筛选查询条件，刷新列表并根据入参响应对应内容，按创建时间倒序排列。</p>
 <p>3）默认加载10条最新数据，通过分页形式分隔长列表，可调整每页加载条数。</p>
 <p>4）当前列表数据为空时，显示"暂无数据"。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>服务单号</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>服务名称/ID</td><td></td><td>展示服务名称及服务ID，为空时显示"--"</td></tr>
+<tr><td>服务名称/ID</td><td></td><td>展示服务名称及服务ID，ID系统自动生成，格式：拼音缩写+YYYYMMDD+4位序号（数字应用：SZYY、安全服务：AQFW、能力组件：NLZJ、基础服务：JCFW，如 SZYY202608100001），唯一标识，为空时显示"--"</td></tr>
 <tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务</td></tr>
 <tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>状态</td><td></td><td>枚举：处理中、已完成、已评价、已驳回、已取消</td></tr>
+<tr><td>状态</td><td></td><td>枚举：已完成、已评价</td></tr>
 <tr><td>关联工单</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>创建时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 </table>
@@ -932,36 +1001,44 @@ export const prdChapters = [
 <tr><td>已完成</td><td></td><td>详情</td></tr>
 <tr><td>已评价</td><td></td><td>详情、查看评价、回复</td></tr>
 </table>
-<h3 id="prd-3.1.2.2.2">3.1.2.2.2 开通记录详情</h3>
+<h3 id="prd-3.1.3.2.2">3.1.3.2.2 开通记录详情</h3>
 <p><strong>模块描述：</strong>服务管理 / 开通管理 / 开通记录 / 详情</p>
-<p><strong>功能描述：</strong>以右侧抽屉形式展示订单完整信息，包括基本信息和流程进度。</p>
+<p><strong>功能描述：</strong>以右侧抽屉形式查看订单完整信息，包括基本信息和流程进度。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击开通记录列表【详情】打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
-<p>1、基本信息</p>
+<p>1、抽屉头部</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务单号</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务名称</td><td>serviceName</td><td>加粗大号字体展示</td></tr>
+<tr><td>状态</td><td>status</td><td>使用状态标签展示，枚举：已完成、已评价</td></tr>
+<tr><td>服务单号</td><td>orderNo</td><td>灰色小字，展示于服务名称下方，为空时显示"--"</td></tr>
+</table>
+<p>2、基本信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务ID</td><td>serviceId</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务</td></tr>
 <tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务商名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>创建时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>关联工单</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 </table>
-<p>2、流程进度</p>
+<p>3、流程进度</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>节点名称</td><td></td><td>进度节点名称，枚举：<br>1、提交申请：跳转到多云系统时记录为提交申请时间<br>2、系统派发工单：多云系统创建工单后回传创建时间记录为系统派发工单，同时默认进入工单流转中<br>3、工单流转中：系统派发工单后默认进入工单流转中状态<br>4、服务交付完成：多云系统回传服务交付完成状态及时间<br>5、服务评价：用户完成服务评价后记录评价时间<br>6、订单驳回：工单驳回后记录驳回时间<br>7、订单取消：用户取消订单后记录取消时间</td></tr>
+<tr><td>节点名称</td><td></td><td>进度节点名称，枚举：<br>1、提交申请：用户点击服务后经统一认证SSO跳转至多云管理系统填写服务申请，系统创建服务订单（绑定serviceId），以订单创建时间记录为提交申请节点时间<br>2、系统派发工单：多云管理系统创建工单后，调用工单回调接口回传workOrderId及工单创建时间（eventType=CREATED），系统接收回调后记录为系统派发工单节点时间，订单状态默认流转为工单流转中<br>3、工单流转中：接收工单创建回调（eventType=CREATED）后订单进入的默认状态，节点时间取系统派发工单的回调时间<br>4、服务交付完成：多云管理系统回传工单通过事件及时间（eventType=APPROVED），系统接收回调后记录为服务交付完成节点时间<br>5、服务评价：用户提交服务评价后，以评价提交时间记录为服务评价节点时间<br>6、订单驳回：多云管理系统回传工单驳回事件及时间（eventType=REJECTED，备注含驳回原因），系统接收回调后记录为订单驳回节点时间<br>7、订单取消：用户取消订单后，以取消操作时间记录为订单取消节点时间</td></tr>
 <tr><td>节点时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>节点状态</td><td></td><td>枚举：已完成、进行中、待处理。当前所处节点状态为进行中，已通过节点状态为已完成，未到达节点状态为待处理。</td></tr>
 </table>
-<p>3、操作-关闭抽屉</p>
+<p>4、操作-关闭抽屉</p>
 <p>点击抽屉右上角【关闭按钮】，关闭详情抽屉。</p>
 
-<h3 id="prd-3.1.2.2.3">3.1.2.2.3 操作-查看评价</h3>
+<h3 id="prd-3.1.3.2.3">3.1.3.2.3 操作-查看评价</h3>
 <p><strong>模块描述：</strong>服务管理 / 开通管理 / 开通记录 / 查看评价</p>
 <p><strong>功能描述：</strong>查看已评价订单的评价明细和开发者回复。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>当订单状态为已评价时，操作栏显示【查看评价-按钮】，点击打开评价查看弹窗。</p>
+<p><strong>输入/前置条件：</strong>当订单状态为"已评价"时，操作栏显示【查看评价-按钮】，点击打开评价查看弹窗。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、展示内容</p>
 <table>
@@ -971,11 +1048,11 @@ export const prdChapters = [
 <tr><td>开发者回复</td><td></td><td>开发者已回复时展示回复内容；未回复时不显示开发者回复</td></tr>
 </table>
 
-<h3 id="prd-3.1.2.2.4">3.1.2.2.4 操作-回复评价</h3>
+<h3 id="prd-3.1.3.2.4">3.1.3.2.4 操作-回复评价</h3>
 <p><strong>模块描述：</strong>服务管理 / 开通管理 / 开通记录 / 回复评价</p>
 <p><strong>功能描述：</strong>开发者对已评价订单进行回复。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>仅当订单状态为已评价时，操作栏显示【回复-按钮】，点击打开回复弹窗。</p>
+<p><strong>输入/前置条件：</strong>当订单状态为"已评价"时，操作栏显示【回复-按钮】，点击打开回复弹窗。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <table>
@@ -993,13 +1070,13 @@ export const prdChapters = [
 <p>3、操作-取消</p>
 <p>点击【取消-按钮】，关闭弹窗，不保存回复内容，停留当前页面。</p>
 
-<h3 id="prd-3.1.3">3.1.3 需求管理</h3>
+<h3 id="prd-3.1.4">3.1.4 需求管理</h3>
 
-<h3 id="prd-3.1.3.1">3.1.3.1 需求发起</h3>
+<h3 id="prd-3.1.4.1">3.1.4.1 需求发起</h3>
 <p><strong>入口页面：</strong>服务管理 / 需求管理 / 需求发起</p>
 <p><strong>页面描述：</strong>管理本机构发起的需求，支持新增、查看详情、确认响应和关闭操作。</p>
 
-<h3 id="prd-3.1.3.1.1">3.1.3.1.1 需求发起列表</h3>
+<h3 id="prd-3.1.4.1.1">3.1.4.1.1 需求发起列表</h3>
 <p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求发起 / 列表</p>
 <p><strong>功能描述：</strong>展示本机构发起的需求列表，支持按需求编号、申请机构、方案类型、服务类型和状态筛选。</p>
 <p><strong>优先级：</strong>P1</p>
@@ -1027,10 +1104,13 @@ export const prdChapters = [
 <tr><td>方案名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>方案类型</td><td></td><td>枚举：政务信创、金融合规、安全可控、科研提算、通用商用</td></tr>
 <tr><td>服务项</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>需求描述</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务</td></tr>
+<tr><td>需求说明</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务，以标签样式展示</td></tr>
 <tr><td>状态</td><td></td><td>枚举：待响应、已响应、已完成、已关闭</td></tr>
 <tr><td>发布时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>响应机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>响应时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 </table>
 <p>3、操作-状态流转与按钮</p>
 <pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
@@ -1046,19 +1126,53 @@ export const prdChapters = [
 <tr><td>已关闭</td><td></td><td>详情</td></tr>
 </table>
 
-<h3 id="prd-3.1.3.1.2">3.1.3.1.2 新增需求</h3>
+<h3 id="prd-3.1.4.1.4">3.1.4.1.4 需求发起详情</h3>
+<p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求发起 / 需求详情</p>
+<p><strong>功能描述：</strong>以右侧抽屉形式查看本机构发起的需求详细信息，包括需求信息和响应信息（如有）。</p>
+<p><strong>优先级：</strong>P2</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、抽屉头部</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>方案名称</td><td></td><td>大号加粗展示</td></tr>
+<tr><td>需求编号</td><td></td><td>等宽字体展示，前缀"需求编号："，如"需求编号：DM-20260810-0012"</td></tr>
+<tr><td>状态</td><td></td><td>以状态标签（StatusDot组件）展示</td></tr>
+</table>
+<p>2）需求信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务类型</td><td></td><td>以服务类型标签样式展示，枚举：数字应用、能力组件、安全服务、基础服务，为空时显示"--"</td></tr>
+<tr><td>方案类型</td><td></td><td>枚举：政务信创、金融合规、安全可控、科研提算、通用商用</td></tr>
+<tr><td>服务项</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>需求说明</td><td></td><td>完整展示，超出换行，为空时显示"--"</td></tr>
+<tr><td>申请机构</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>发布时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
+</table>
+<p>3）响应信息</p>
+<p>仅当需求存在响应内容时展示响应信息。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>响应机构</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>响应时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>预估报价</td><td></td><td>显示金额，前缀¥，为空时显示"--"</td></tr>
+<tr><td>预计工期</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>响应内容</td><td></td><td>完整展示，超出换行，为空时显示"--"</td></tr>
+</table>
+
+<h3 id="prd-3.1.4.1.2">3.1.4.1.2 新增需求</h3>
 <p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求发起 / 新增需求</p>
 <p><strong>功能描述：</strong>跳转到渝康云门户网站发起需求。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【新增需求-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【新增需求-按钮】，点击打开新增需求弹窗。</p>
 <p><strong>详细设计：</strong></p>
 <p>点击【新增需求-按钮】，跳转至渝康云门户网站发起需求，需求详情见门户网站PRD。</p>
 
-<h3 id="prd-3.1.3.1.3">3.1.3.1.3 关闭需求</h3>
+<h3 id="prd-3.1.4.1.3">3.1.4.1.3 关闭需求</h3>
 <p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求发起 / 关闭需求</p>
 <p><strong>功能描述：</strong>关闭一条待响应状态的需求，关闭后不可恢复。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>仅待响应状态可操作关闭，点击列表操作栏【关闭-按钮】。</p>
+<p><strong>输入/前置条件：</strong>当需求状态为"待响应"时，操作栏显示【关闭-按钮】，点击弹出关闭确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行关闭，停留当前页面。</p>
@@ -1069,50 +1183,15 @@ export const prdChapters = [
 <p>2）若满足条件，状态变更为已关闭，关闭此对话框，进行消息提示，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：需求已关闭</p>
 
-<h3 id="prd-3.1.3.1.4">3.1.3.1.4 需求发起-详情</h3>
-<p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求发起 / 需求详情</p>
-<p><strong>功能描述：</strong>以右侧抽屉形式查看本机构发起的需求详细信息，包括需求信息和响应信息（如有）。</p>
-<p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>在需求发起列表中点击【详情-按钮】打开详情抽屉。</p>
-<p><strong>详细设计：</strong></p>
-<p>1、抽屉头部</p>
-<p>顶部展示方案名称（大号加粗）、需求编号（等宽字体）和状态标签（StatusDot组件）。头部不显示服务类型和方案类型标签。</p>
-<p>2、概览</p>
-<p>以单个"概览"标签页展示，需求信息与响应信息在同一页面内合并展示，不通过 tab 区分。</p>
-<p>1）需求信息</p>
-<table>
-<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>需求编号</td><td></td><td>等宽字体展示，如"DM-20260810-0012"</td></tr>
-<tr><td>方案类型</td><td></td><td>枚举：政务信创、金融合规、安全可控、科研提算、通用商用</td></tr>
-<tr><td>方案名称</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>服务项</td><td></td><td>以列表形式展示每个服务项的详细信息，每项包含：服务项名称（加粗展示）、服务项描述（灰色文字，超出2行显示省略号，鼠标悬停展示全部内容），为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务</td></tr>
-<tr><td>需求描述</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>申请机构</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>申请人</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>状态</td><td></td><td>枚举：待响应、已响应、已完成、已关闭</td></tr>
-<tr><td>发布时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
-</table>
-<p>2）响应信息</p>
-<p>仅当需求状态为已响应、已完成时展示响应信息；待响应、已关闭状态时不展示。</p>
-<table>
-<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>响应机构</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>响应内容</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>预估报价</td><td></td><td>显示金额，前缀¥，为空时显示"--"</td></tr>
-<tr><td>预计工期</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>响应时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
-</table>
-
-<h3 id="prd-3.1.3.2">3.1.3.2 需求响应</h3>
+<h3 id="prd-3.1.4.2">3.1.4.2 需求响应</h3>
 <p><strong>入口页面：</strong>服务管理 / 需求管理 / 需求响应</p>
 <p><strong>页面描述：</strong>查看平台所有待响应需求并对需求进行响应，支持查看需求和响应详情。</p>
 
-<h3 id="prd-3.1.3.2.1">3.1.3.2.1 所有待响应需求</h3>
+<h3 id="prd-3.1.4.2.1">3.1.4.2.1 所有待响应需求</h3>
 <p><strong>入口页面：</strong>服务管理 / 需求管理 / 需求响应 / 所有待响应需求</p>
 <p><strong>页面描述：</strong>查看平台所有待响应需求，支持响应需求、查看详情。</p>
 
-<h3 id="prd-3.1.3.2.1.1">3.1.3.2.1.1 所有待响应需求列表</h3>
+<h3 id="prd-3.1.4.2.1.1">3.1.4.2.1.1 所有待响应需求列表</h3>
 <p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求响应 / 所有待响应需求 / 列表</p>
 <p><strong>功能描述：</strong>展示平台所有待响应需求，支持按需求编号、申请机构、服务类型筛选，可响应需求、查看详情。</p>
 <p><strong>优先级：</strong>P1</p>
@@ -1135,10 +1214,12 @@ export const prdChapters = [
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>需求编号</td><td></td><td>系统自动生成，格式：DM-YYYYMMDD-NNNN（如 DM-20260810-0012），超出1行显示省略号，鼠标悬停展示全部内容（Tooltip）</td></tr>
-<tr><td>需求描述</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>方案名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>方案类型</td><td></td><td>枚举：政务信创、金融合规、安全可控、科研提算、通用商用</td></tr>
+<tr><td>服务项</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>需求说明</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>申请人</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务</td></tr>
+<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务，以标签样式展示</td></tr>
 <tr><td>状态</td><td></td><td>固定为"待响应"</td></tr>
 <tr><td>发布时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 </table>
@@ -1153,51 +1234,44 @@ export const prdChapters = [
 <tr><td>待响应</td><td></td><td>响应、详情</td></tr>
 </table>
 
-<h3 id="prd-3.1.3.2.1.2">3.1.3.2.1.2 所有待响应需求详情</h3>
+<h3 id="prd-3.1.4.2.1.2">3.1.4.2.1.2 所有待响应需求详情</h3>
 <p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求响应 / 所有待响应需求 / 需求详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看需求详细信息，包括需求基本信息。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>在"所有待响应需求"标签页中点击【详情-按钮】打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、抽屉头部</p>
-<p>顶部展示方案名称（大号加粗）、需求编号（等宽字体）和状态标签（StatusDot组件）。头部不显示服务类型和方案类型标签。</p>
-<p>2、概览</p>
-<p>以单个"概览"标签页展示，需求信息与响应信息在同一页面内合并展示，不通过 tab 区分。</p>
-<p>1）需求信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>方案名称</td><td></td><td>大号加粗展示</td></tr>
 <tr><td>需求编号</td><td></td><td>等宽字体展示，如"DM-20260810-0012"</td></tr>
+<tr><td>状态</td><td></td><td>以状态标签（StatusDot组件）展示</td></tr>
+</table>
+<p>2、需求信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务，以标签样式展示</td></tr>
 <tr><td>方案类型</td><td></td><td>枚举：政务信创、金融合规、安全可控、科研提算、通用商用</td></tr>
-<tr><td>方案名称</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>服务项</td><td></td><td>以列表形式展示每个服务项的详细信息，每项包含：服务项名称（加粗展示）、服务项描述（灰色文字，超出2行显示省略号，鼠标悬停展示全部内容），为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务</td></tr>
-<tr><td>需求描述</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>需求说明</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>申请机构</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>申请人</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>状态</td><td></td><td>固定为"待响应"</td></tr>
 <tr><td>发布时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 </table>
 
-<h3 id="prd-3.1.3.2.1.3">3.1.3.2.1.3 操作-响应</h3>
+<h3 id="prd-3.1.4.2.1.3">3.1.4.2.1.3 操作-响应</h3>
 <p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求响应 / 所有待响应需求 / 响应需求</p>
-<p><strong>功能描述：</strong>以右侧抽屉形式对待响应状态的需求提交响应方案，包括响应内容、预估报价和预计工期。</p>
+<p><strong>功能描述：</strong>以弹窗形式对待响应状态的需求提交响应方案，包括响应内容、预估报价和预计工期，不展示需求信息。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>列表中仅待响应状态展示【响应-按钮】，点击打开响应抽屉。</p>
+<p><strong>输入/前置条件：</strong>当需求状态为"待响应"时，操作栏显示【响应-按钮】，点击打开响应弹窗。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>需求编号</td><td></td><td>只读，回显当前需求编号</td></tr>
-<tr><td>服务类型</td><td></td><td>只读，回显当前需求服务类型</td></tr>
-<tr><td>申请机构</td><td></td><td>只读，回显当前需求申请机构</td></tr>
-<tr><td>申请人</td><td></td><td>只读，回显当前需求申请人</td></tr>
-<tr><td>发布时间</td><td></td><td>只读，回显当前需求发布时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
-<tr><td>需求描述</td><td></td><td>只读，回显当前需求描述，多行文本</td></tr>
-<tr><td>响应内容</td><td></td><td>必填，多行文本，描述解决方案、技术方案和交付计划</td></tr>
-<tr><td>预估报价</td><td></td><td>必填，数字输入，单位为元</td></tr>
-<tr><td>预计工期</td><td></td><td>非必填，文本输入</td></tr>
+<tr><td>响应内容</td><td>responseContent</td><td>必填，多行文本，描述解决方案、技术方案和交付计划</td></tr>
+<tr><td>预估报价</td><td>estimatedPrice</td><td>必填，数字输入，单位为元</td></tr>
+<tr><td>预计工期</td><td>estimatedDuration</td><td>非必填，文本输入</td></tr>
 </table>
-<p>2、操作-提交响应</p>
+<p>3、操作-提交响应</p>
 <p>点击【提交响应-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
@@ -1207,14 +1281,14 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件，状态变更为已响应，关闭弹窗，进行消息提示，刷新列表</p>
 <p style="font-style:italic; color:#999">Tip：响应提交成功</p>
-<p>3、操作-取消</p>
+<p>4、操作-取消</p>
 <p>点击【取消-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
 
-<h3 id="prd-3.1.3.2.2">3.1.3.2.2 我的响应</h3>
+<h3 id="prd-3.1.4.2.2">3.1.4.2.2 我的响应</h3>
 <p><strong>入口页面：</strong>服务管理 / 需求管理 / 需求响应 / 我的响应</p>
 <p><strong>页面描述：</strong>查看本机构响应的需求记录，支持查看详情。</p>
 
-<h3 id="prd-3.1.3.2.2.1">3.1.3.2.2.1 我的响应需求列表</h3>
+<h3 id="prd-3.1.4.2.2.1">3.1.4.2.2.1 我的响应需求列表</h3>
 <p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求响应 / 我的响应 / 列表</p>
 <p><strong>功能描述：</strong>展示本机构响应的需求记录，支持按需求编号、申请机构、服务类型筛选，可查看详情。</p>
 <p><strong>优先级：</strong>P1</p>
@@ -1239,10 +1313,10 @@ export const prdChapters = [
 <tr><td>需求编号</td><td></td><td>系统自动生成，格式：DM-YYYYMMDD-NNNN（如 DM-20260810-0012），超出1行显示省略号，鼠标悬停展示全部内容（Tooltip）</td></tr>
 <tr><td>需求描述</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>申请人</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务</td></tr>
+<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务，以标签样式展示</td></tr>
 <tr><td>需求状态</td><td></td><td>枚举：已响应、已完成、已关闭</td></tr>
 <tr><td>预估报价</td><td></td><td>显示金额，前缀¥，为空时显示"--"</td></tr>
+<tr><td>响应机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>响应时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 </table>
 <p>3、操作-状态流转与按钮</p>
@@ -1258,37 +1332,38 @@ export const prdChapters = [
 <tr><td>已关闭</td><td></td><td>详情</td></tr>
 </table>
 
-<h3 id="prd-3.1.3.2.2.2">3.1.3.2.2.2 我的响应需求详情</h3>
+<h3 id="prd-3.1.4.2.2.2">3.1.4.2.2.2 我的响应需求详情</h3>
 <p><strong>模块描述：</strong>服务管理 / 需求管理 / 需求响应 / 我的响应 / 响应详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看本机构对需求的响应详情，包括需求信息和响应信息。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>在"我的响应"标签页中点击【详情-按钮】打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、抽屉头部</p>
-<p>顶部展示方案名称（大号加粗）、需求编号（等宽字体）和状态标签（StatusDot组件）。头部不显示服务类型和方案类型标签。</p>
-<p>2、概览</p>
-<p>以单个"概览"标签页展示，需求信息与响应信息在同一页面内合并展示，不通过 tab 区分。</p>
-<p>1）需求信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>需求编号</td><td></td><td>等宽字体展示，如"DM-20260810-0012"</td></tr>
+<tr><td>方案名称</td><td></td><td>大号加粗展示</td></tr>
+<tr><td>需求编号</td><td></td><td>等宽字体展示，前缀"需求编号："，如"需求编号：DM-20260810-0012"</td></tr>
+<tr><td>状态</td><td></td><td>以状态标签（StatusDot组件）展示</td></tr>
+</table>
+<p>2）需求信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务类型</td><td></td><td>以服务类型标签样式展示，枚举：数字应用、安全服务、能力组件、基础服务，为空时显示"--"</td></tr>
 <tr><td>方案类型</td><td></td><td>枚举：政务信创、金融合规、安全可控、科研提算、通用商用</td></tr>
-<tr><td>方案名称</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>服务项</td><td></td><td>以列表形式展示每个服务项的详细信息，每项包含：服务项名称（加粗展示）、服务项描述（灰色文字，超出2行显示省略号，鼠标悬停展示全部内容），为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>枚举：数字应用、能力组件、安全服务、基础服务</td></tr>
-<tr><td>需求描述</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务项</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>需求说明</td><td></td><td>完整展示，超出换行，为空时显示"--"</td></tr>
 <tr><td>申请机构</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>申请人</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>需求状态</td><td></td><td>枚举：已响应、已完成、已关闭</td></tr>
 <tr><td>发布时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 </table>
-<p>2）响应信息</p>
+<p>3）响应信息</p>
+<p>仅当需求存在响应内容时展示响应信息。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>响应内容</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>响应机构</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>响应时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>预估报价</td><td></td><td>显示金额，前缀¥，为空时显示"--"</td></tr>
 <tr><td>预计工期</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>响应时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>响应内容</td><td></td><td>完整展示，超出换行，为空时显示"--"</td></tr>
 </table>`
   },
   {
@@ -1302,7 +1377,7 @@ export const prdChapters = [
 
 <h3 id="prd-3.2.1.1.1">3.2.1.1.1 数字应用列表</h3>
 <p><strong>模块描述：</strong>运营管理后台 / 服务目录管理 / 数字应用管理</p>
-<p><strong>功能描述：</strong>展示平台数字应用列表，支持按数字应用名称、数字应用ID、服务商名称、应用覆盖范围、面向对象和状态筛选，可进行新增、修改、删除、发布、下线操作。</p>
+<p><strong>功能描述：</strong>展示平台数字应用列表，支持按数字应用名称、数字应用ID、服务商名称、应用覆盖范围、服务对象和状态筛选，可进行新增、修改、删除、发布、下线操作。</p>
 <p><strong>优先级：</strong>P1</p>
 <p><strong>输入/前置条件：</strong>列表数据来源于服务提供方通过"服务上架"上架的数字应用或者管理员代为上架的数字应用。</p>
 <p><strong>详细设计：</strong></p>
@@ -1313,7 +1388,7 @@ export const prdChapters = [
 <tr><td>数字应用ID</td><td>applicationId</td><td>支持模糊搜索</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>支持模糊搜索</td></tr>
 <tr><td>应用覆盖范围</td><td>cover</td><td>枚举：医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、心电、医养结合一体化、智慧管理平台（HRP）、药店应用管理、智能外呼、临床专病库、医共体信息平台、妇幼健康、基本公共卫生服务、家庭医生签约、村卫生室管理、辅助诊疗、区域综合、基本公共卫生服务绩效评价，默认不筛选</td></tr>
-<tr><td>面向对象</td><td>target</td><td>枚举：基层医疗卫生机构、公立医院、医技护人员，默认不筛选</td></tr>
+<tr><td>服务对象</td><td>target</td><td>枚举：基层医疗卫生机构、公立医院、医技护人员，默认不筛选</td></tr>
 <tr><td>状态</td><td>status</td><td>枚举：已上线使用、已下架，默认不筛选</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
 <tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
@@ -1325,15 +1400,15 @@ export const prdChapters = [
 <p>4）当前列表数据为空时，显示"暂无数据"。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>数字应用名称/ID</td><td>name, applicationId</td><td>展示应用名称及ID，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>面向对象</td><td>targetView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>数字应用名称/ID</td><td>name, applicationId</td><td>展示应用名称及ID，ID系统自动生成，格式：SZYY+YYYYMMDD+4位序号（如 SZYY202608100001），唯一标识，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务对象</td><td>targetView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>应用覆盖范围</td><td>cover 数组各value，用;分割</td><td>多值以分号分隔展示，超出换行，为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>合作企业</td><td>partnerName</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>状态</td><td>status</td><td>枚举：已上线使用、已下架</td></tr>
 <tr><td>平台评分</td><td></td><td>显示评分数值，由平台管理员在质量评价管理中手动设置，保留1位小数</td></tr>
-<tr><td>用户评分</td><td></td><td>显示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) ÷ 评价人数，其中四维均分 = (准确性＋稳定性＋响应时效＋业务适配性) ÷ 4</td></tr>
+<tr><td>用户评分</td><td></td><td>显示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) ÷ 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4</td></tr>
 </table>
 <p>3、状态流转与按钮</p>
 <pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
@@ -1353,16 +1428,16 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 数字应用管理 / 新增数字应用</p>
 <p><strong>功能描述：</strong>新增一个数字应用，设置基本信息、联系信息、分类标签后直接发布，管理员默认通过审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【新增-按钮】跳转至新增页面。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【新增-按钮】，点击跳转至新增页面。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>数字应用名称</td><td>name</td><td>必填，限制20汉字，超出不可输入</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，Toast 提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，Toast 提示"你确定要删除这个图片吗？"</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，Toast 提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，Toast 提示"你确定要删除这个图片吗？"</td></tr>
 <tr><td>应用描述</td><td>description</td><td>必填，限制1000汉字，超出不可输入</td></tr>
 <tr><td>系统地址</td><td>address</td><td>非必填，有效URL格式</td></tr>
-<tr><td>显示顺序</td><td></td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>非必填，字符串输入，限制200字，超出不可输入，占位提示"请输入付费方式参考"，右下角显示字数统计</td></tr>
 </table>
 <p>2、联系信息</p>
 <table>
@@ -1375,14 +1450,21 @@ export const prdChapters = [
 <p>3、分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>面向对象</td><td>数据拉取字典管理 dict表 Client</td><td>必填，支持多选，枚举：基层医疗卫生机构、公立医院、医技护人员</td></tr>
+<tr><td>服务对象</td><td>数据拉取字典管理 dict表 Client</td><td>必填，支持多选，枚举：基层医疗卫生机构、公立医院、医技护人员</td></tr>
 <tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>非必填，支持多选，枚举：B/S、C/S架构、B/S+C/S、单机、其他</td></tr>
 <tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>必填，支持多选，枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云</td></tr>
 <tr><td>基层应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_PrimaryHospital</td><td>勾选"基层医疗卫生机构"时联动显示，支持多选，枚举：基本公共卫生服务、医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、智慧管理平台（HRP）、心电、家庭医生签约、村卫生室管理、药店应用管理、智能外呼、辅助诊疗、临床专病库、区域综合、基本公共卫生服务绩效评价、妇幼健康</td></tr>
 <tr><td>公立应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_Hospital</td><td>勾选"公立医院"时联动显示，支持多选，枚举：医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、心电、医养结合一体化、智慧管理平台（HRP）、药店应用管理、智能外呼、临床专病库、医共体信息平台、妇幼健康</td></tr>
 <tr><td>医技应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_MedicalPersonnel</td><td>勾选"医技护人员"时联动显示，支持多选，暂无可选项</td></tr>
 </table>
-<p>4、操作-直接发布</p>
+<p>4、管理信息</p>
+<p>仅管理员在服务目录管理中可见；其中"显示顺序"、"服务征集得分"编辑提交时无需审核，即时生效。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>非必填，数值输入，支持小数点（步进0.1），默认空，占位提示"请输入服务征集得分"</td></tr>
+</table>
+<p>5、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填、字符限制等要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
@@ -1390,7 +1472,7 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">应用描述为空：请输入应用描述</p>
 <p style="font-style:italic; color:#999">服务商名称为空：请输入服务商名称</p>
 <p style="font-style:italic; color:#999">联系方式1为空：请输入联系人姓名和手机号</p>
-<p style="font-style:italic; color:#999">面向对象为空：请选择面向对象</p>
+<p style="font-style:italic; color:#999">服务对象为空：请选择服务对象</p>
 <p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">系统地址格式错误：请输入https://或http://开头的地址形式</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
@@ -1398,7 +1480,8 @@ export const prdChapters = [
 <p>3）若满足条件：</p>
 <p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：新增成功</p>
-<p>b.系统自动生成审核记录：</p>
+<p>b.系统自动生成ID，格式：SZYY+YYYYMMDD+4位序号（如 SZYY202608100001），唯一标识</p>
+<p>c.系统自动生成审核记录：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -1408,43 +1491,46 @@ export const prdChapters = [
 <tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<p>四阶段审核流水均即时通过，各阶段审核意见默认为"管理员直接发布，默认通过审核"，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>5、操作-返回</p>
+<p>6、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回数字应用列表页，不保存修改。</p>
 
 <h3 id="prd-3.2.1.1.3">3.2.1.1.3 编辑数字应用</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 数字应用管理 / 编辑数字应用</p>
 <p><strong>功能描述：</strong>编辑已有数字应用的基本信息、联系信息和分类标签，直接发布后管理员默认通过审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条记录，点击【修改-按钮】跳转至编辑页面，预填当前数据。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【修改-按钮】，选中一条记录后点击跳转至编辑页面，预填当前数据。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <p>字段与新增页面相同，在新增规则基础上增加回显描述：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>数字应用名称</td><td>name</td><td>1.必填，限制20汉字，超出不可输入；<br>2.回显原数字应用名称，可修改</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，Toast 提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，Toast 提示"你确定要删除这个图片吗？"；<br>5.回显原LOGO，可修改</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，Toast 提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，Toast 提示"你确定要删除这个图片吗？"；<br>5.回显原LOGO，可修改</td></tr>
 <tr><td>应用描述</td><td>description</td><td>1.必填，限制1000汉字，超出不可输入；<br>2.回显原应用描述，可修改</td></tr>
 <tr><td>系统地址</td><td>address</td><td>1.非必填，有效URL格式；<br>2.回显原系统地址，可修改</td></tr>
-<tr><td>显示顺序</td><td></td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>1.非必填，字符串输入，限制200字，超出不可输入；<br>2.回显原付费方式参考，可修改</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>1.必填，限制20汉字，超出不可输入；<br>2.回显原服务商名称，可修改</td></tr>
 <tr><td>合作伙伴名称</td><td>partnerName</td><td>1.非必填，多个用;分隔；<br>2.回显原合作伙伴名称，可修改</td></tr>
 <tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>1.必填，联系人姓名 + 手机号，以"-"分隔；<br>2.回显原联系方式1，可修改</td></tr>
 <tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>1.非必填，格式同联系方式1；<br>2.回显原联系方式2，可修改</td></tr>
-<tr><td>面向对象</td><td>数据拉取字典管理 dict表 Client</td><td>1.必填，支持多选，枚举：基层医疗卫生机构、公立医院、医技护人员；<br>2.回显原面向对象，可修改</td></tr>
+<tr><td>服务对象</td><td>数据拉取字典管理 dict表 Client</td><td>1.必填，支持多选，枚举：基层医疗卫生机构、公立医院、医技护人员；<br>2.回显原服务对象，可修改</td></tr>
 <tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>1.非必填，支持多选，枚举：B/S、C/S架构、B/S+C/S、单机、其他；<br>2.回显原应用架构，可修改</td></tr>
 <tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>1.必填，支持多选，枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云；<br>2.回显原部署云服务商，可修改</td></tr>
 <tr><td>基层应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_PrimaryHospital</td><td>1.勾选"基层医疗卫生机构"时联动显示，支持多选；<br>2.回显原基层应用覆盖范围，可修改。枚举：基本公共卫生服务、医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、智慧管理平台（HRP）、心电、家庭医生签约、村卫生室管理、药店应用管理、智能外呼、辅助诊疗、临床专病库、区域综合、基本公共卫生服务绩效评价、妇幼健康</td></tr>
 <tr><td>公立应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_Hospital</td><td>1.勾选"公立医院"时联动显示，支持多选；<br>2.回显原公立应用覆盖范围，可修改。枚举：医院信息系统（HIS）、实验室信息管理系统（LIS）、影像归档和通信系统（PACS）、心电、医养结合一体化、智慧管理平台（HRP）、药店应用管理、智能外呼、临床专病库、医共体信息平台、妇幼健康</td></tr>
 <tr><td>医技应用覆盖范围</td><td>数据拉取字典管理 dict表 AppScope_MedicalPersonnel</td><td>1.勾选"医技护人员"时联动显示，支持多选；<br>2.回显原医技应用覆盖范围，可修改，暂无可选项</td></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>1.非必填，数值输入，支持小数点（步进0.1），默认空，占位提示"请输入服务征集得分"；<br>2.回显原服务征集得分，可修改</td></tr>
 </table>
+<p>注："显示顺序"、"服务征集得分"属于管理信息，仅管理员在服务目录管理中可见，编辑提交时无需审核，即时生效。</p>
 <p>2、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填、字符限制等要求，进行表单校验提示</p>
@@ -1453,7 +1539,7 @@ export const prdChapters = [
 <p style="font-style:italic; color:#999">应用描述为空：请输入应用描述</p>
 <p style="font-style:italic; color:#999">服务商名称为空：请输入服务商名称</p>
 <p style="font-style:italic; color:#999">联系方式1为空：请输入联系人姓名和手机号</p>
-<p style="font-style:italic; color:#999">面向对象为空：请选择面向对象</p>
+<p style="font-style:italic; color:#999">服务对象为空：请选择服务对象</p>
 <p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">系统地址格式错误：请输入https://或http://开头的地址形式</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
@@ -1474,10 +1560,10 @@ export const prdChapters = [
 <p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
 </table>
 <p>3、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回数字应用列表页，不保存修改。</p>
@@ -1486,21 +1572,21 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 数字应用管理 / 数字应用详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看数字应用的完整信息，包括基本信息、审核信息和评价信息，支持查看用户评分详情。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】打开右侧详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开右侧详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、抽屉头部</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>应用LOGO</td><td>logo</td><td>展示应用Logo图片，若无则显示默认图标</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>展示应用Logo图片，若无则显示默认图标</td></tr>
 <tr><td>数字应用名称</td><td>name</td><td>加粗大号字体展示</td></tr>
 <tr><td>状态</td><td>status</td><td>使用状态标签展示，枚举：已上线使用、已下架</td></tr>
-<tr><td>应用ID</td><td>applicationId</td><td>灰色小字，格式"ID：XXX"</td></tr>
+<tr><td>应用ID</td><td>applicationId</td><td>灰色小字，格式"ID：XXX"，系统自动生成，格式：SZYY+YYYYMMDD+4位序号（如 SZYY202608100001），唯一标识</td></tr>
 </table>
 <p>2、概览-基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>显示顺序</td><td>sortOrder</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>系统地址</td><td>address</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>应用描述</td><td>description</td><td>超出3行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 </table>
 <p>3、概览-联系信息</p>
@@ -1516,14 +1602,21 @@ export const prdChapters = [
 <p>4、概览-分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>面向对象</td><td>targetView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务对象</td><td>targetView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>应用架构</td><td>architectureView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>基层应用覆盖范围</td><td></td><td>仅当面向对象含"基层医疗卫生机构"时显示，多值以分号分隔展示</td></tr>
-<tr><td>公立应用覆盖范围</td><td></td><td>仅当面向对象含"公立医院"时显示，多值以分号分隔展示</td></tr>
-<tr><td>医技应用覆盖范围</td><td></td><td>仅当面向对象含"医技护人员"时显示，多值以分号分隔展示</td></tr>
+<tr><td>基层应用覆盖范围</td><td></td><td>仅当服务对象含"基层医疗卫生机构"时显示，多值以分号分隔展示</td></tr>
+<tr><td>公立应用覆盖范围</td><td></td><td>仅当服务对象含"公立医院"时显示，多值以分号分隔展示</td></tr>
+<tr><td>医技应用覆盖范围</td><td></td><td>仅当服务对象含"医技护人员"时显示，多值以分号分隔展示</td></tr>
 </table>
-<p>5、审核信息</p>
+<p>5、概览-管理信息</p>
+<p>仅管理员在服务目录管理中可见。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>数字展示，为空时显示"0"</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>数字展示，为空时显示"--"</td></tr>
+</table>
+<p>6、审核信息</p>
 <p>以可展开表格形式展示审核记录。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
@@ -1541,20 +1634,20 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色）、已驳回（红色）、待审核（当前阶段蓝色、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>6、评价信息</p>
 <p>1）评分概览</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>平台评分</td><td></td><td>显示评分数值，由平台管理员在质量评价管理中手动设置，保留1位小数</td></tr>
-<tr><td>用户评分</td><td></td><td>显示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) ÷ 评价人数，其中四维均分 = (准确性＋稳定性＋响应时效＋业务适配性) ÷ 4</td></tr>
+<tr><td>用户评分</td><td></td><td>显示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) ÷ 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4</td></tr>
 </table>
 <p>2）用户评价</p>
 <p>显示"用户评价（共 N 条）"，点击后在下方展开显示所有用户评价，10条分页，滚动加载更多。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>评分</td><td></td><td>展示四维度分值（准确性、稳定性、响应时效、业务适配性）</td></tr>
+<tr><td>评分明细</td><td></td><td>以"准确性、稳定性、响应时效、业务适配性"四个维度横向排列展示各维度分数</td></tr>
 <tr><td>评价机构/服务单号</td><td></td><td>展示评价机构名称和服务单号</td></tr>
 <tr><td>评价内容</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>评价时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
@@ -1567,7 +1660,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 数字应用管理 / 发布数字应用</p>
 <p><strong>功能描述：</strong>将已下架状态的数字应用发布上线，发布后应用状态变更为已上线使用。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条已下架状态的记录，点击【发布-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【发布-按钮】，勾选一条或多条状态为"已下架"的记录后点击，弹出发布确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行发布，停留当前页面。</p>
@@ -1588,20 +1681,20 @@ export const prdChapters = [
 <tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<p>四阶段审核流水均即时通过，各阶段审核意见默认为"管理员直接发布，默认通过审核"，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
 </table>
 
 <h3 id="prd-3.2.1.1.6">3.2.1.1.6 下线数字应用</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 数字应用管理 / 下线数字应用</p>
 <p><strong>功能描述：</strong>将已上线使用的数字应用下线，下线后应用状态变更为已下架。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条已上线使用状态的记录，点击【下线-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【下线-按钮】，勾选一条或多条状态为"已上线使用"的记录后点击，弹出下线确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行下线，停留当前页面。</p>
@@ -1616,7 +1709,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 数字应用管理 / 删除数字应用</p>
 <p><strong>功能描述：</strong>删除数字应用，删除后不可恢复。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条记录，点击【删除-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【删除-按钮】，勾选一条或多条记录后点击，弹出删除确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行删除，停留当前页面。</p>
@@ -1657,14 +1750,14 @@ export const prdChapters = [
 <p>4）当前列表数据为空时，显示"暂无数据"。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>安全服务名称/ID</td><td></td><td>展示服务名称及ID，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>安全服务名称/ID</td><td></td><td>展示服务名称及ID，ID系统自动生成，格式：AQFW+YYYYMMDD+4位序号（如 AQFW202608100001），唯一标识，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td>serviceProvider</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>合作伙伴</td><td>cooperativeEnterprise</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>部署云服务商</td><td>cloudProvider</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>状态</td><td>status</td><td>枚举：已上线使用、已下架</td></tr>
 <tr><td>平台评分</td><td></td><td>显示评分数值，由平台管理员在质量评价管理中手动设置，保留1位小数</td></tr>
-<tr><td>用户评分</td><td></td><td>显示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) ÷ 评价人数，其中四维均分 = (准确性＋稳定性＋响应时效＋业务适配性) ÷ 4</td></tr>
+<tr><td>用户评分</td><td></td><td>显示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) ÷ 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4</td></tr>
 </table>
 <p>3、状态流转与按钮</p>
 <pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
@@ -1683,7 +1776,8 @@ export const prdChapters = [
 <p>3）若满足条件：</p>
 <p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：新增成功</p>
-<p>b.系统自动生成审核记录：</p>
+<p>b.系统自动生成ID，格式：AQFW+YYYYMMDD+4位序号（如 AQFW202608100001），唯一标识</p>
+<p>c.系统自动生成审核记录：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -1693,22 +1787,22 @@ export const prdChapters = [
 <tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<p>四阶段审核流水均即时通过，各阶段审核意见默认为"管理员直接发布，默认通过审核"，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>5、操作-返回</p>
+<p>6、操作-返回</p>
 <p>点击【返回-按钮】，返回安全服务列表页，不保存修改。</p>
 
 <h3 id="prd-3.2.1.2.2">3.2.1.2.2 新增安全服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 安全服务管理 / 新增安全服务</p>
 <p><strong>功能描述：</strong>新增一个安全服务，设置基本信息、联系信息、分类标签后直接发布，管理员默认通过审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【新增-按钮】跳转至新增安全服务表单页。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【新增-按钮】，点击跳转至新增安全服务表单页。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、基本信息</p>
 <table>
@@ -1717,7 +1811,7 @@ export const prdChapters = [
 <tr><td>系统地址</td><td>systemUrl</td><td>非必填，文本输入，占位提示"请输入系统地址"</td></tr>
 <tr><td>LOGO</td><td>logo</td><td>非必填，支持 PNG、JPG、JPEG、SVG 格式，大小限制 1MB 以内，建议 640×640；上传超过 1MB 时提示"LOGO 文件不能超过 1MB"；点击替换或删除</td></tr>
 <tr><td>服务描述</td><td>description</td><td>必填，限制500字符，超出不可输入，占位提示"请输入服务描述"，右下角显示字数统计</td></tr>
-<tr><td>显示顺序</td><td>sortOrder</td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>非必填，字符串输入，限制200字，超出不可输入，占位提示"请输入付费方式参考"，右下角显示字数统计</td></tr>
 </table>
 <p>2、联系信息</p>
 <table>
@@ -1730,10 +1824,17 @@ export const prdChapters = [
 <p>3、分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>应用架构</td><td>appArchitecture</td><td>非必填，多选框组，枚举：B/S、C/S架构、B/S+C/S、单机、其他</td></tr>
-<tr><td>部署云服务商</td><td>cloudProvider</td><td>必填，多选框组，枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云</td></tr>
+<tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>非必填，多选框组，枚举：B/S、C/S架构、B/S+C/S、单机、其他</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>必填，多选框组，枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云</td></tr>
 </table>
-<p>4、操作-直接发布</p>
+<p>4、管理信息</p>
+<p>仅管理员在服务目录管理中可见；其中"显示顺序"、"服务征集得分"编辑提交时无需审核，即时生效。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>非必填，数值输入，支持小数点（步进0.1），默认空，占位提示"请输入服务征集得分"</td></tr>
+</table>
+<p>5、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
@@ -1747,7 +1848,8 @@ export const prdChapters = [
 <p>3）若满足条件：</p>
 <p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：新增成功</p>
-<p>b.系统自动生成审核记录：</p>
+<p>b.系统自动生成ID，格式：AQFW+YYYYMMDD+4位序号（如 AQFW202608100001），唯一标识</p>
+<p>c.系统自动生成审核记录：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -1757,22 +1859,22 @@ export const prdChapters = [
 <tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<p>四阶段审核流水均即时通过，各阶段审核意见默认为"管理员直接发布，默认通过审核"，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>5、操作-返回</p>
+<p>6、操作-返回</p>
 <p>点击【返回-按钮】，返回安全服务列表页，不保存修改。</p>
 
 <h3 id="prd-3.2.1.2.3">3.2.1.2.3 编辑安全服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 安全服务管理 / 编辑安全服务</p>
 <p><strong>功能描述：</strong>编辑已有安全服务的基本信息、联系信息和分类标签，支持直接发布。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条记录，点击【修改-按钮】跳转至编辑安全服务表单页，标题"编辑安全服务"，预填当前数据。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【修改-按钮】，选中一条记录后点击跳转至编辑安全服务表单页，标题"编辑安全服务"，预填当前数据。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <p>字段与新增表单相同，在新增规则基础上增加回显描述：</p>
@@ -1782,14 +1884,17 @@ export const prdChapters = [
 <tr><td>系统地址</td><td>systemUrl</td><td>1.非必填，文本输入；<br>2.回显原系统地址，可修改</td></tr>
 <tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 PNG、JPG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
 <tr><td>服务描述</td><td>description</td><td>1.必填，限制500字符，超出不可输入；<br>2.回显原服务描述，可修改</td></tr>
-<tr><td>显示顺序</td><td>sortOrder</td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>1.非必填，字符串输入，限制200字，超出不可输入；<br>2.回显原付费方式参考，可修改</td></tr>
 <tr><td>服务商名称</td><td>serviceProvider</td><td>1.必填，文本输入；<br>2.回显原服务商名称，可修改</td></tr>
 <tr><td>合作伙伴名称</td><td>cooperativeEnterprise</td><td>1.非必填，文本输入；<br>2.回显原合作伙伴名称，可修改</td></tr>
 <tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>1.必填，联系人姓名 + 手机号，以"-"分隔；<br>2.回显原联系方式1，可修改</td></tr>
 <tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>1.非必填，格式同联系方式1；<br>2.回显原联系方式2，可修改</td></tr>
-<tr><td>应用架构</td><td>appArchitecture</td><td>1.非必填，多选框组；<br>2.回显原应用架构，可修改</td></tr>
-<tr><td>部署云服务商</td><td>cloudProvider</td><td>1.必填，多选框组；<br>2.回显原部署云服务商，可修改</td></tr>
+<tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>1.非必填，多选框组；<br>2.回显原应用架构，可修改</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>1.必填，多选框组；<br>2.回显原部署云服务商，可修改</td></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>1.非必填，数值输入，支持小数点（步进0.1），默认空，占位提示"请输入服务征集得分"；<br>2.回显原服务征集得分，可修改</td></tr>
 </table>
+<p>注："显示顺序"、"服务征集得分"属于管理信息，仅管理员在服务目录管理中可见，编辑提交时无需审核，即时生效。</p>
 <p>2、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
@@ -1817,10 +1922,10 @@ export const prdChapters = [
 <p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
 </table>
 <p>3、操作-返回</p>
 <p>点击【返回-按钮】，返回安全服务列表页，不保存修改。</p>
@@ -1829,21 +1934,21 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 安全服务管理 / 安全服务详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看安全服务的完整信息，包括概览（基本信息、联系信息、分类标签）、审核信息和评价信息，支持查看用户评分详情。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】打开右侧详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开右侧详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、抽屉头部</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务LOGO</td><td>logo</td><td>展示服务Logo图片，若无则显示默认图标</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>展示服务Logo图片，若无则显示默认图标</td></tr>
 <tr><td>安全服务名称</td><td>title</td><td>加粗大号字体展示</td></tr>
 <tr><td>状态</td><td>status</td><td>使用状态标签展示，枚举：已上线使用、已下架</td></tr>
-<tr><td>服务ID</td><td></td><td>灰色小字，格式"ID：XXX"</td></tr>
+<tr><td>服务ID</td><td></td><td>灰色小字，格式"ID：XXX"，系统自动生成，格式：AQFW+YYYYMMDD+4位序号（如 AQFW202608100001），唯一标识</td></tr>
 </table>
 <p>2、概览-基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>系统地址</td><td>systemUrl</td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>显示顺序</td><td>sortOrder</td><td>完整展示，为空时显示"0"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>服务描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 </table>
 <p>3、概览-联系信息</p>
@@ -1857,10 +1962,17 @@ export const prdChapters = [
 <p>4、概览-分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>应用架构</td><td>appArchitecture</td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
-<tr><td>部署云服务商</td><td>cloudProvider</td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
+<tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
 </table>
-<p>5、审核信息</p>
+<p>5、概览-管理信息</p>
+<p>仅管理员在服务目录管理中可见。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>数字展示，为空时显示"0"</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>数字展示，为空时显示"--"</td></tr>
+</table>
+<p>6、审核信息</p>
 <p>以可展开表格形式展示各版本的审核记录。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
@@ -1878,14 +1990,14 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色）、已驳回（红色）、待审核（当前阶段蓝色、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>6、评价信息</p>
 <p>1）评分概览</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>平台评分</td><td></td><td>显示评分数值，由平台管理员在质量评价管理中手动设置，保留1位小数</td></tr>
-<tr><td>用户评分</td><td></td><td>显示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) ÷ 评价人数，其中四维均分 = (准确性＋稳定性＋响应时效＋业务适配性) ÷ 4</td></tr>
+<tr><td>用户评分</td><td></td><td>显示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) ÷ 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4</td></tr>
 </table>
 <p>2）用户评价</p>
 <p>显示"用户评价（共 N 条）"，点击后在下方展开显示所有用户评价，10条分页，滚动加载更多。</p>
@@ -1896,7 +2008,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 安全服务管理 / 发布安全服务</p>
 <p><strong>功能描述：</strong>将已下架状态的安全服务发布上线。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条已下架状态的记录，点击【发布-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【发布-按钮】，勾选一条或多条状态为"已下架"的记录后点击，弹出发布确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行发布，停留当前页面。</p>
@@ -1917,20 +2029,20 @@ export const prdChapters = [
 <tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<p>四阶段审核流水均即时通过，各阶段审核意见默认为"管理员直接发布，默认通过审核"，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
 </table>
 
 <h3 id="prd-3.2.1.2.6">3.2.1.2.6 下线安全服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 安全服务管理 / 下线安全服务</p>
 <p><strong>功能描述：</strong>将已上线使用的安全服务下线。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条已上线使用状态的记录，点击【下线-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【下线-按钮】，勾选一条或多条状态为"已上线使用"的记录后点击，弹出下线确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行下线，停留当前页面。</p>
@@ -1945,7 +2057,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 安全服务管理 / 删除安全服务</p>
 <p><strong>功能描述：</strong>删除安全服务，删除后不可恢复。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条记录，点击【删除-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【删除-按钮】，勾选一条或多条记录后点击，弹出删除确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行删除，停留当前页面。</p>
@@ -1975,7 +2087,7 @@ export const prdChapters = [
 <tr><td>能力组件ID</td><td>componentId</td><td>支持模糊搜索</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>支持模糊搜索</td></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云，默认不筛选</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>枚举：不限、市级、区（县）域，默认不筛选</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>枚举：不限、市级、区（县）域，默认不筛选</td></tr>
 <tr><td>状态</td><td>status</td><td>枚举：已上线使用、已下架，默认不筛选</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
 <tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
@@ -1987,14 +2099,14 @@ export const prdChapters = [
 <p>4）当前列表数据为空时，显示"暂无数据"。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>能力组件名称/ID</td><td>name, componentId</td><td>展示组件名称及ID，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>能力组件名称/ID</td><td>name, componentId</td><td>展示组件名称及ID，ID系统自动生成，格式：NLZJ+YYYYMMDD+4位序号（如 NLZJ202608100001），唯一标识，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>组件描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>状态</td><td></td><td>枚举：已上线使用、已下架</td></tr>
 <tr><td>平台评分</td><td></td><td>显示评分数值，由平台管理员在质量评价管理中手动设置，保留1位小数</td></tr>
-<tr><td>用户评分</td><td></td><td>显示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) ÷ 评价人数，其中四维均分 = (准确性＋稳定性＋响应时效＋业务适配性) ÷ 4</td></tr>
+<tr><td>用户评分</td><td></td><td>显示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) ÷ 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4</td></tr>
 </table>
 <p>3、状态流转与按钮</p>
 <pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
@@ -2014,15 +2126,15 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 能力组件管理 / 新增能力组件</p>
 <p><strong>功能描述：</strong>新增一个能力组件，设置基本信息、联系信息和分类标签后直接发布，管理员默认通过审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【新增-按钮】跳转至新增页面。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【新增-按钮】，点击跳转至新增页面。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>能力组件名称</td><td>name</td><td>必填，限制20汉字，超出不可输入，占位提示"请输入能力组件名称"，右下角显示字数统计</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
 <tr><td>组件描述</td><td>description</td><td>必填，限制1000汉字，超出不可输入，占位提示"请输入组件描述"，右下角显示字数统计</td></tr>
-<tr><td>显示顺序</td><td></td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>非必填，字符串输入，限制200字，超出不可输入，占位提示"请输入付费方式参考"，右下角显示字数统计</td></tr>
 </table>
 <p>2、联系信息</p>
 <table>
@@ -2034,23 +2146,31 @@ export const prdChapters = [
 <p>3、分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>必填，枚举：不限、市级、区（县）域</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>必填，枚举：不限、市级、区（县）域</td></tr>
 </table>
-<p>4、操作-直接发布</p>
+<p>4、管理信息</p>
+<p>仅管理员在服务目录管理中可见；其中"显示顺序"、"服务征集得分"编辑提交时无需审核，即时生效。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>非必填，数值输入，支持小数点（步进0.1），默认空，占位提示"请输入服务征集得分"</td></tr>
+</table>
+<p>5、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">能力组件名称为空：请输入能力组件名称</p>
 <p style="font-style:italic; color:#999">组件描述为空：请输入组件描述</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">开放范围为空：请选择开放范围</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件：</p>
 <p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：新增成功</p>
-<p>b.系统自动生成审核记录：</p>
+<p>b.系统自动生成ID，格式：NLZJ+YYYYMMDD+4位序号（如 NLZJ202608100001），唯一标识</p>
+<p>c.系统自动生成审核记录：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -2060,44 +2180,47 @@ export const prdChapters = [
 <tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<p>四阶段审核流水均即时通过，各阶段审核意见默认为"管理员直接发布，默认通过审核"，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>5、操作-返回</p>
+<p>6、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回能力组件列表页，不保存修改。</p>
 
 <h3 id="prd-3.2.1.3.3">3.2.1.3.3 编辑能力组件</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 能力组件管理 / 编辑能力组件</p>
 <p><strong>功能描述：</strong>编辑已有能力组件的基本信息、联系信息和分类标签。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条记录，点击【修改-按钮】跳转至编辑页面，预填当前数据。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【修改-按钮】，选中一条记录后点击跳转至编辑页面，预填当前数据。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <p>字段与新增页面相同，在新增规则基础上增加回显描述：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>能力组件名称</td><td>name</td><td>1.必填，限制20汉字，超出不可输入；<br>2.回显原能力组件名称，可修改</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
 <tr><td>组件描述</td><td>description</td><td>1.必填，限制1000汉字，超出不可输入；<br>2.回显原组件描述，可修改</td></tr>
-<tr><td>显示顺序</td><td></td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>1.非必填，字符串输入，限制200字，超出不可输入；<br>2.回显原付费方式参考，可修改</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>非必填；回显原服务商名称，可修改</td></tr>
 <tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>非必填；回显原联系方式1，可修改</td></tr>
 <tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>非必填；回显原联系方式2，可修改</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>必填；回显原云服务商，可修改</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>必填；回显原开放范围，可修改</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>必填；回显原部署云服务商，可修改</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>必填；回显原开放范围，可修改</td></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>1.非必填，数值输入，支持小数点（步进0.1），默认空，占位提示"请输入服务征集得分"；<br>2.回显原服务征集得分，可修改</td></tr>
 </table>
+<p>注："显示顺序"、"服务征集得分"属于管理信息，仅管理员在服务目录管理中可见，编辑提交时无需审核，即时生效。</p>
 <p>2、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">能力组件名称为空：请输入能力组件名称</p>
 <p style="font-style:italic; color:#999">组件描述为空：请输入组件描述</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p style="font-style:italic; color:#999">开放范围为空：请选择开放范围</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
@@ -2117,10 +2240,10 @@ export const prdChapters = [
 <p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
 </table>
 <p>3、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回能力组件列表页，不保存修改。</p>
@@ -2129,25 +2252,45 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 能力组件管理 / 能力组件详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看能力组件的完整信息，包括基本信息、分类标签、审核信息和评价信息，支持查看用户评分详情。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】打开右侧详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开右侧详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
-<p>1、基本信息</p>
+<p>1、抽屉头部</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>组件ID</td><td>componentId</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>组件名称</td><td>name</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>状态</td><td>status</td><td>枚举：已上线使用、已下架</td></tr>
-<tr><td>显示顺序</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>展示组件Logo图片，若无则显示默认图标</td></tr>
+<tr><td>组件名称</td><td>name</td><td>加粗大号字体展示，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>状态</td><td>status</td><td>使用状态标签展示，枚举：已上线使用、已下架</td></tr>
+<tr><td>组件ID</td><td>componentId</td><td>灰色小字，格式"ID：XXX"，系统自动生成，格式：NLZJ+YYYYMMDD+4位序号（如 NLZJ202608100001），唯一标识</td></tr>
+</table>
+<p>2、概览-基本信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>组件描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+</table>
+<p>3、概览-联系信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系人1</td><td>contactName1</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系电话1</td><td>contactPhone1</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系人2</td><td>contactName2</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系电话2</td><td>contactPhone2</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 </table>
-<p>2、审核信息</p>
+<p>4、概览-分类标签</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+</table>
+<p>5、概览-管理信息</p>
+<p>仅管理员在服务目录管理中可见。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>数字展示，为空时显示"0"</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>数字展示，为空时显示"--"</td></tr>
+</table>
+<p>6、审核信息</p>
 <p>以可展开表格形式展示审核记录。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
@@ -2165,33 +2308,33 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色）、已驳回（红色）、待审核（当前阶段蓝色、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
-<p>3、评价信息</p>
+<p>6、评价信息</p>
 <p>1）评分概览</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>平台评分</td><td></td><td>显示评分数值，由平台管理员在质量评价管理中手动设置，保留1位小数</td></tr>
-<tr><td>用户评分</td><td></td><td>显示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) ÷ 评价人数，其中四维均分 = (准确性＋稳定性＋响应时效＋业务适配性) ÷ 4</td></tr>
+<tr><td>用户评分</td><td></td><td>显示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) ÷ 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4</td></tr>
 </table>
 <p>2）用户评价</p>
 <p>显示"用户评价（共 N 条）"，点击后在下方展开显示所有用户评价，10条分页，滚动加载更多。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>评分</td><td></td><td>展示四维度分值（准确性、稳定性、响应时效、业务适配性）</td></tr>
+<tr><td>评分明细</td><td></td><td>以"准确性、稳定性、响应时效、业务适配性"四个维度横向排列展示各维度分数</td></tr>
 <tr><td>评价机构/服务单号</td><td></td><td>展示评价机构名称和服务单号</td></tr>
 <tr><td>评价内容</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>评价时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
 <tr><td>回复内容</td><td></td><td>当状态为已回复时显示回复内容，完整展示；状态为待回复时不显示</td></tr>
 </table>
-<p>4、操作-关闭抽屉</p>
+<p>7、操作-关闭抽屉</p>
 <p>点击抽屉右上角【关闭按钮】，关闭详情抽屉。</p>
 
 <h3 id="prd-3.2.1.3.5">3.2.1.3.5 发布能力组件</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 能力组件管理 / 发布能力组件</p>
 <p><strong>功能描述：</strong>将已下架状态的能力组件发布上线。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条已下架状态的记录，点击【发布-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【发布-按钮】，勾选一条或多条状态为"已下架"的记录后点击，弹出发布确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行发布，停留当前页面。</p>
@@ -2212,20 +2355,20 @@ export const prdChapters = [
 <tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<p>四阶段审核流水均即时通过，各阶段审核意见默认为"管理员直接发布，默认通过审核"，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
 </table>
 
 <h3 id="prd-3.2.1.3.6">3.2.1.3.6 下线能力组件</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 能力组件管理 / 下线能力组件</p>
 <p><strong>功能描述：</strong>将已上线使用的能力组件下线。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条已上线使用状态的记录，点击【下线-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【下线-按钮】，勾选一条或多条状态为"已上线使用"的记录后点击，弹出下线确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行下线，停留当前页面。</p>
@@ -2240,7 +2383,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 能力组件管理 / 删除能力组件</p>
 <p><strong>功能描述：</strong>删除能力组件，删除后不可恢复。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条记录，点击【删除-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【删除-按钮】，勾选一条或多条记录后点击，弹出删除确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行删除，停留当前页面。</p>
@@ -2269,6 +2412,7 @@ export const prdChapters = [
 <tr><td>基础服务名称</td><td></td><td>支持模糊搜索</td></tr>
 <tr><td>基础服务ID</td><td></td><td>支持模糊搜索</td></tr>
 <tr><td>服务商名称</td><td></td><td>支持模糊搜索</td></tr>
+<tr><td>服务专区</td><td></td><td>枚举：X86专区、信创专区、密码服务专区、超算、智算专区，默认不筛选</td></tr>
 <tr><td>部署云服务商</td><td></td><td>枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云，默认不筛选</td></tr>
 <tr><td>状态</td><td></td><td>枚举：已上线使用、已下架，默认不筛选</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
@@ -2281,14 +2425,15 @@ export const prdChapters = [
 <p>4）当前列表数据为空时，显示"暂无数据"。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>基础服务名称/ID</td><td></td><td>展示服务名称及ID，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>服务子类</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>基础服务名称/ID</td><td></td><td>展示服务名称及ID，ID系统自动生成，格式：JCFW+YYYYMMDD+4位序号（如 JCFW202608100001），唯一标识，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务专区</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务分类</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务描述</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>状态</td><td></td><td>枚举：已上线使用、已下架</td></tr>
 <tr><td>平台评分</td><td></td><td>显示评分数值，由平台管理员在质量评价管理中手动设置，保留1位小数</td></tr>
-<tr><td>用户评分</td><td></td><td>显示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) ÷ 评价人数，其中四维均分 = (准确性＋稳定性＋响应时效＋业务适配性) ÷ 4</td></tr>
+<tr><td>用户评分</td><td></td><td>显示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) ÷ 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4</td></tr>
 </table>
 <p>3、状态流转与按钮</p>
 <pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
@@ -2306,39 +2451,55 @@ export const prdChapters = [
 
 <h3 id="prd-3.2.1.4.2">3.2.1.4.2 新增基础服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 基础服务管理 / 新增基础服务</p>
-<p><strong>功能描述：</strong>新增一个基础服务，设置基本信息后直接发布，管理员默认通过审核。</p>
+<p><strong>功能描述：</strong>新增一个基础服务，设置基本信息、联系信息和分类标签后直接发布，管理员默认通过审核。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击【新增-按钮】跳转至新增页面。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【新增-按钮】，点击跳转至新增页面。</p>
 <p><strong>详细设计：</strong></p>
-<p>1、表单字段</p>
+<p>1、基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>基础服务名称</td><td></td><td>必填，限制40字符，超出不可输入，占位提示"请输入基础服务名称"，右下角显示字数统计</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
-<tr><td>服务描述</td><td></td><td>必填，限制500字符，超出不可输入，占位提示"请输入服务描述"，右下角显示字数统计</td></tr>
-<tr><td>服务类型</td><td></td><td>必填，枚举：计算服务、存储服务、网络服务、安全服务、大数据服务、数据库服务、备份容灾服务、软件与应用服务、机房托管服务，支持多选</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云，支持多选</td></tr>
-<tr><td>区域</td><td></td><td>必填，枚举：华东、华北、华南、西南，支持多选</td></tr>
-<tr><td>服务商名称</td><td></td><td>非必填，文本输入，占位提示"请输入服务商名称"</td></tr>
-<tr><td>联系方式1</td><td></td><td>非必填，包含联系人姓名和联系电话</td></tr>
-<tr><td>联系方式2</td><td></td><td>非必填，包含联系人姓名和联系电话</td></tr>
-<tr><td>显示顺序</td><td></td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>基础服务名称</td><td>serviceName</td><td>必填，限制40字符，超出不可输入，占位提示"请输入基础服务名称"，右下角显示字数统计</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.上传图片超过 1MB 时，提示"图片大小已超过1M，建议压缩图片后重新上传"；<br>3.重复上传覆盖之前图片，自动删除前一个图片；<br>4.删除已上传图片时，提示"你确定要删除这个图片吗？"</td></tr>
+<tr><td>服务描述</td><td>description</td><td>必填，限制500字符，超出不可输入，占位提示"请输入服务描述"，右下角显示字数统计</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>非必填，字符串输入，限制200字，超出不可输入，占位提示"请输入付费方式参考"，右下角显示字数统计</td></tr>
 </table>
-<p>2、操作-直接发布</p>
+<p>2、联系信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务商名称</td><td>serviceProvider</td><td>非必填，文本输入，占位提示"请输入服务商名称"</td></tr>
+<tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>非必填，包含联系人姓名和联系电话</td></tr>
+<tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>非必填，包含联系人姓名和联系电话</td></tr>
+</table>
+<p>3、分类标签</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务专区</td><td>数据拉取字典管理 dict表 ServiceZone</td><td>必填，单选，枚举：X86专区、信创专区、密码服务专区、超算、智算专区；选择后联动下方"服务分类"选项</td></tr>
+<tr><td>服务分类</td><td>数据拉取字典管理 dict表 ServiceType_X86Zone / ServiceType_XinChuangZone / ServiceType_CipherZone / ServiceType_SuperComputeZone</td><td>必填，支持多选，按所选服务专区联动展示对应字典项：<br>· X86专区（ServiceType_X86Zone）：机房云托管服务、计算服务、存储服务、网络服务、安全服务、大数据服务、备份容灾服务、数据库服务<br>· 信创专区（ServiceType_XinChuangZone）：机房云托管服务、计算服务、存储服务、网络服务、软件服务<br>· 密码服务专区（ServiceType_CipherZone）：密码服务<br>· 超算、智算专区（ServiceType_SuperComputeZone）：超算服务、智算服务</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>必填，枚举：影像云、电信云、移动云、联通云、浪潮云，支持多选</td></tr>
+</table>
+<p>4、管理信息</p>
+<p>仅管理员在服务目录管理中可见；其中"显示顺序"、"服务征集得分"编辑提交时无需审核，即时生效。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>非必填，数值输入，支持小数点（步进0.1），默认空，占位提示"请输入服务征集得分"</td></tr>
+</table>
+<p>5、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">基础服务名称为空：请输入基础服务名称</p>
 <p style="font-style:italic; color:#999">服务描述为空：请输入服务描述</p>
-<p style="font-style:italic; color:#999">服务类型为空：请选择服务类型</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
-<p style="font-style:italic; color:#999">区域为空：请选择区域</p>
+<p style="font-style:italic; color:#999">服务专区为空：请选择服务专区</p>
+<p style="font-style:italic; color:#999">服务分类为空：请选择服务分类</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件：</p>
 <p>a.管理员提交即视为审核通过，即时生效，状态为"已上线使用"，进行消息提示，返回列表页</p>
 <p style="font-style:italic; color:#999">Tip：新增成功</p>
-<p>b.系统自动生成审核记录：</p>
+<p>b.系统自动生成ID，格式：JCFW+YYYYMMDD+4位序号（如 JCFW202608100001），唯一标识</p>
+<p>c.系统自动生成审核记录：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>提交时间</td><td></td><td>取创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
@@ -2348,47 +2509,59 @@ export const prdChapters = [
 <tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<p>四阶段审核流水均即时通过，各阶段审核意见默认为"管理员直接发布，默认通过审核"，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>3、操作-返回</p>
+<p>6、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回基础服务列表页，不保存修改。</p>
 
 <h3 id="prd-3.2.1.4.3">3.2.1.4.3 编辑基础服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 基础服务管理 / 编辑基础服务</p>
-<p><strong>功能描述：</strong>编辑已有基础服务的基本信息。</p>
+<p><strong>功能描述：</strong>编辑已有基础服务的基本信息、联系信息和分类标签。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条记录，点击【修改-按钮】跳转至编辑页面，预填当前数据。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【修改-按钮】，选中一条记录后点击跳转至编辑页面，预填当前数据。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <p>字段与新增页面相同，在新增规则基础上增加回显描述：</p>
+<p>1、基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>基础服务名称</td><td></td><td>1.必填，限制40字符，超出不可输入；<br>2.回显原基础服务名称，可修改</td></tr>
-<tr><td>上传LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
-<tr><td>服务描述</td><td></td><td>1.必填，限制500字符，超出不可输入；<br>2.回显原服务描述，可修改</td></tr>
-<tr><td>服务类型</td><td></td><td>1.必填，支持多选；<br>2.回显原服务类型，可修改</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>1.必填，支持多选；<br>2.回显原云服务商，可修改</td></tr>
-<tr><td>区域</td><td></td><td>1.必填，支持多选；<br>2.回显原区域，可修改</td></tr>
-<tr><td>服务商名称</td><td></td><td>1.非必填，文本输入；<br>2.回显原服务商名称，可修改</td></tr>
-<tr><td>联系方式1</td><td></td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式1，可修改</td></tr>
-<tr><td>联系方式2</td><td></td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式2，可修改</td></tr>
-<tr><td>显示顺序</td><td></td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>基础服务名称</td><td>serviceName</td><td>1.必填，限制40字符，超出不可输入；<br>2.回显原基础服务名称，可修改</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>1.非必填，支持 JPG、PNG、JPEG、SVG 格式，大小限制 1MB 以内；<br>2.回显原LOGO，可修改或删除</td></tr>
+<tr><td>服务描述</td><td>description</td><td>1.必填，限制500字符，超出不可输入；<br>2.回显原服务描述，可修改</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>1.非必填，字符串输入，限制200字，超出不可输入；<br>2.回显原付费方式参考，可修改</td></tr>
 </table>
-<p>2、操作-直接发布</p>
+<p>2、联系信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务商名称</td><td>serviceProvider</td><td>1.非必填，文本输入；<br>2.回显原服务商名称，可修改</td></tr>
+<tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式1，可修改</td></tr>
+<tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>1.非必填，包含联系人姓名和联系电话；<br>2.回显原联系方式2，可修改</td></tr>
+</table>
+<p>3、分类标签</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务专区</td><td>数据拉取字典管理 dict表 ServiceZone</td><td>1.必填，单选，枚举：X86专区、信创专区、密码服务专区、超算、智算专区；<br>2.回显原服务专区，可修改</td></tr>
+<tr><td>服务分类</td><td>数据拉取字典管理 dict表 ServiceType_X86Zone / ServiceType_XinChuangZone / ServiceType_CipherZone / ServiceType_SuperComputeZone</td><td>1.必填，支持多选，按所选服务专区联动展示对应字典项；<br>2.回显原服务分类，可修改</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>1.必填，支持多选；<br>2.回显原部署云服务商，可修改</td></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>1.非必填，数字输入，默认0，值越小越靠前，支持上下图标点击±1调整；<br>2.回显原显示顺序，可修改；<br>a.删除更新：删除每条应用数据后，系统自动递减后续排序，E.g：删除排序为5的数据后，排序6及之后的数据排序减少1；<br>b.重复排序处理：如果两条记录的"显示排序"值相同，则根据更新时间进行次级排序</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>1.非必填，数值输入，支持小数点（步进0.1），默认空，占位提示"请输入服务征集得分"；<br>2.回显原服务征集得分，可修改</td></tr>
+</table>
+<p>注："显示顺序"、"服务征集得分"属于管理信息，仅管理员在服务目录管理中可见，编辑提交时无需审核，即时生效。</p>
+<p>4、操作-直接发布</p>
 <p>点击【直接发布-按钮】，判断逻辑如下：</p>
 <p>1）若不满足必填要求，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：</p>
 <p style="font-style:italic; color:#999">基础服务名称为空：请输入基础服务名称</p>
 <p style="font-style:italic; color:#999">服务描述为空：请输入服务描述</p>
-<p style="font-style:italic; color:#999">服务类型为空：请选择服务类型</p>
-<p style="font-style:italic; color:#999">云服务商为空：请选择云服务商</p>
-<p style="font-style:italic; color:#999">区域为空：请选择区域</p>
+<p style="font-style:italic; color:#999">服务专区为空：请选择服务专区</p>
+<p style="font-style:italic; color:#999">服务分类为空：请选择服务分类</p>
+<p style="font-style:italic; color:#999">部署云服务商为空：请选择部署云服务商</p>
 <p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>3）若满足条件：</p>
@@ -2407,33 +2580,56 @@ export const prdChapters = [
 <p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员编辑后重新提交，即时生效</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员编辑后重新提交，即时生效"</td></tr>
 </table>
-<p>3、操作-返回</p>
+<p>5、操作-返回</p>
 <p>点击顶部【返回-按钮】，返回基础服务列表页，不保存修改。</p>
 
 <h3 id="prd-3.2.1.4.4">3.2.1.4.4 基础服务详情</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 基础服务管理 / 基础服务详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看基础服务的完整信息，包括基本信息、审核信息和评价信息，支持查看用户评分详情。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】打开右侧详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开右侧详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
-<p>1、基本信息</p>
+<p>1、抽屉头部</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务ID</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>服务名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>云服务商</td><td>deployServiceProviderView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>区域</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>显示顺序</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>服务描述</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>附件材料</td><td></td><td>显示附件名称列表，点击下载</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>展示服务Logo图片，若无则显示默认图标</td></tr>
+<tr><td>基础服务名称</td><td>serviceName</td><td>加粗大号字体展示，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>状态</td><td>status</td><td>使用状态标签展示，枚举：已上线使用、已下架</td></tr>
+<tr><td>服务ID</td><td>serviceId</td><td>灰色小字，格式"ID：XXX"，系统自动生成，格式：JCFW+YYYYMMDD+4位序号（如 JCFW202608100001），唯一标识</td></tr>
 </table>
-<p>2、审核信息</p>
+<p>2、概览-基本信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+</table>
+<p>3、概览-联系信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务商名称</td><td>serviceProvider</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>联系方式1</td><td>contactPhone1</td><td>展示联系电话，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>联系方式2</td><td>contactPhone2</td><td>展示联系电话，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+</table>
+<p>4、概览-分类标签</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务专区</td><td>数据拉取字典管理 dict表 ServiceZone</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务分类</td><td>数据拉取字典管理 dict表 ServiceType_X86Zone / ServiceType_XinChuangZone / ServiceType_CipherZone / ServiceType_SuperComputeZone</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+</table>
+<p>5、概览-管理信息</p>
+<p>仅管理员在服务目录管理中可见。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>显示顺序</td><td>sortOrder</td><td>数字展示，为空时显示"0"</td></tr>
+<tr><td>服务征集得分</td><td>recruitScore</td><td>数字展示，为空时显示"--"</td></tr>
+</table>
+<p>6、审核信息</p>
 <p>以可展开表格形式展示审核记录。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
@@ -2451,33 +2647,33 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色）、已驳回（红色）、待审核（当前阶段蓝色、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
-<p>3、评价信息</p>
+<p>6、评价信息</p>
 <p>1）评分概览</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>平台评分</td><td></td><td>显示评分数值，由平台管理员在质量评价管理中手动设置，保留1位小数</td></tr>
-<tr><td>用户评分</td><td></td><td>显示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) ÷ 评价人数，其中四维均分 = (准确性＋稳定性＋响应时效＋业务适配性) ÷ 4</td></tr>
+<tr><td>用户评分</td><td></td><td>显示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) ÷ 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4</td></tr>
 </table>
 <p>2）用户评价</p>
 <p>显示"用户评价（共 N 条）"，点击后在下方展开显示所有用户评价，10条分页，滚动加载更多。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>评分</td><td></td><td>展示四维度分值（准确性、稳定性、响应时效、业务适配性）</td></tr>
+<tr><td>评分明细</td><td></td><td>以"准确性、稳定性、响应时效、业务适配性"四个维度横向排列展示各维度分数</td></tr>
 <tr><td>评价机构/服务单号</td><td></td><td>展示评价机构名称和服务单号</td></tr>
 <tr><td>评价内容</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>评价时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
 <tr><td>回复内容</td><td></td><td>当状态为已回复时显示回复内容，完整展示；状态为待回复时不显示</td></tr>
 </table>
-<p>4、操作-关闭抽屉</p>
+<p>7、操作-关闭抽屉</p>
 <p>点击抽屉右上角【关闭按钮】，关闭详情抽屉。</p>
 
 <h3 id="prd-3.2.1.4.5">3.2.1.4.5 发布基础服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 基础服务管理 / 发布基础服务</p>
 <p><strong>功能描述：</strong>将已下架状态的基础服务发布上线。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条已下架状态的记录，点击【发布-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【发布-按钮】，勾选一条或多条状态为"已下架"的记录后点击，弹出发布确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行发布，停留当前页面。</p>
@@ -2498,20 +2694,20 @@ export const prdChapters = [
 <tr><td>审核时间</td><td></td><td>取自末尾阶段审核时间，即创建时间，格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，即"管理员直接发布，默认通过审核"</td></tr>
 </table>
-<p>四阶段审核流水均即时通过，各阶段字段取值如下：</p>
+<p>四阶段审核流水均即时通过，各阶段审核意见默认为"管理员直接发布，默认通过审核"，各阶段字段取值如下：</p>
 <table>
 <tr><th style="white-space:nowrap">阶段名称</th><th style="white-space:nowrap">审核状态</th><th style="white-space:nowrap">审核人</th><th style="white-space:nowrap">审核时间</th><th style="white-space:nowrap">审核意见</th></tr>
-<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
-<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>管理员直接发布，默认通过审核</td></tr>
+<tr><td>申报材料评估</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>应用技术测评</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>现场演示答辩</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
+<tr><td>服务目录发布</td><td>已通过</td><td>取当前管理员</td><td>取创建时间</td><td>取"管理员直接发布，默认通过审核"</td></tr>
 </table>
 
 <h3 id="prd-3.2.1.4.6">3.2.1.4.6 下线基础服务</h3>
 <p><strong>模块描述：</strong>服务目录管理 / 基础服务管理 / 下线基础服务</p>
 <p><strong>功能描述：</strong>将已上线使用的基础服务下线。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条已上线使用状态的记录，点击【下线-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【下线-按钮】，勾选一条或多条状态为"已上线使用"的记录后点击，弹出下线确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行下线，停留当前页面。</p>
@@ -2526,7 +2722,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务目录管理 / 基础服务管理 / 删除基础服务</p>
 <p><strong>功能描述：</strong>删除基础服务，删除后不可恢复。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>选中一条或多条记录，点击【删除-按钮】。</p>
+<p><strong>输入/前置条件：</strong>列表上方显示【删除-按钮】，勾选一条或多条记录后点击，弹出删除确认框。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行删除，停留当前页面。</p>
@@ -2541,23 +2737,23 @@ export const prdChapters = [
 
 <h3 id="prd-3.2.2">3.2.2 服务审核管理</h3>
 
-<h3 id="prd-3.2.2.1">3.2.2.1 机构资质审核</h3>
-<p><strong>入口页面：</strong>运营管理后台 / 服务审核管理 / 机构资质审核</p>
+<h3 id="prd-3.2.2.1">3.2.2.1 机构入驻审核</h3>
+<p><strong>入口页面：</strong>运营管理后台 / 服务审核管理 / 机构入驻审核</p>
 <p><strong>页面描述：</strong>审核机构提交的资质认证申请，支持审核通过或驳回操作。</p>
 
 <h3 id="prd-3.2.2.1.1">3.2.2.1.1 审核列表</h3>
-<p><strong>模块描述：</strong>服务审核管理 / 机构资质审核 / 审核列表</p>
-<p><strong>功能描述：</strong>展示机构入驻资质审核列表，支持按机构名称、统一社会信用代码、机构类型和审核状态筛选，可进行审核和查看详情操作。</p>
+<p><strong>模块描述：</strong>服务审核管理 / 机构入驻审核 / 审核列表</p>
+<p><strong>功能描述：</strong>展示机构入驻资质审核列表，支持按提交审核时间、审核状态、机构名称和统一社会信用代码筛选，可进行审核和查看详情操作。</p>
 <p><strong>优先级：</strong>P1</p>
 <p><strong>输入/前置条件：</strong>列表数据来源于机构提交的资质认证申请。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、筛选区域</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>提交审核时间</td><td></td><td>时间区间选择器，选择起止日期后按提交审核时间范围筛选，默认不筛选</td></tr>
+<tr><td>审核状态</td><td></td><td>枚举：待审核、已通过、已驳回，默认不选中</td></tr>
 <tr><td>机构名称</td><td></td><td>支持模糊搜索</td></tr>
 <tr><td>统一社会信用代码</td><td></td><td>支持模糊搜索</td></tr>
-<tr><td>机构类型</td><td></td><td>枚举：政府机关、事业单位、国有企业、私营企业，默认不选中</td></tr>
-<tr><td>审核状态</td><td></td><td>枚举：待审核、已通过、已驳回，默认不选中</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
 <tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
 </table>
@@ -2589,12 +2785,19 @@ export const prdChapters = [
 </table>
 
 <h3 id="prd-3.2.2.1.2">3.2.2.1.2 审核操作</h3>
-<p><strong>模块描述：</strong>服务审核管理 / 机构资质审核 / 审核操作</p>
+<p><strong>模块描述：</strong>服务审核管理 / 机构入驻审核 / 审核操作</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看机构入驻申请的详细资质信息，对待审核状态的申请进行审核通过或驳回操作。左侧展示机构资质详情，右侧展示审核操作区。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【审核-按钮】（待审核状态）打开审核抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"待审核"时，操作栏显示【审核-按钮】，点击打开审核抽屉。</p>
 <p><strong>详细设计：</strong></p>
-<p>1、左侧-企业基本情况</p>
+<p>1、抽屉头部</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>机构名称</td><td>unitName</td><td>加粗大号字体展示，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核状态</td><td>auditStatus</td><td>使用状态标签展示，枚举：待审核、已通过、已驳回</td></tr>
+<tr><td>统一社会信用代码</td><td>creditCode</td><td>灰色小字，等宽字体展示，为空时显示"--"</td></tr>
+</table>
+<p>2、左侧-企业基本情况</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>机构类型</td><td></td><td>以标签样式展示，枚举：政府机关、事业单位、国有企业、私营企业</td></tr>
@@ -2607,53 +2810,56 @@ export const prdChapters = [
 <tr><td>联系电话</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
 <tr><td>E-mail/微信号</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
 </table>
-<p>2、左侧-服务介绍</p>
+<p>3、左侧-服务介绍</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>企业简介</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>主要产品或服务介绍</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>人力情况介绍</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 </table>
-<p>3、左侧-管理员信息</p>
+<p>4、左侧-管理员信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>管理员姓名</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>身份证号</td><td></td><td>等宽字体展示，脱敏处理后显示</td></tr>
 <tr><td>手机号</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
 </table>
-<p>4、左侧-资质材料</p>
-<p>以列表形式展示机构提交的资质文件，每条包含文件图标、材料名称、文件大小，支持点击【下载-按钮】下载文件。</p>
-<p>5、右侧-审核操作</p>
-<p>显示审核意见输入框（多行文本，最多200字，显示字数统计，占位提示"请输入审核意见"）、【审核通过-按钮】和【驳回-按钮】。</p>
-<p>6、操作-审核通过</p>
-<p>点击【审核通过-按钮】，判断逻辑如下：</p>
-<p>1）若审核意见为空，进行表单校验提示</p>
-<p style="font-style:italic; color:#999">Tip：审核意见为空：请填写审核意见</p>
-<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
-<p>3）若满足条件，状态变更为已通过，进行消息提示，刷新列表</p>
-<p style="font-style:italic; color:#999">Tip：审核通过</p>
-<p>7、操作-驳回</p>
-<p>点击【驳回-按钮】，判断逻辑如下：</p>
-<p>1）若审核意见为空，进行表单校验提示</p>
-<p style="font-style:italic; color:#999">Tip：审核意见为空：请填写审核意见</p>
-<p>2）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
-<p>3）若满足条件，状态变更为已驳回，进行消息提示，刷新列表</p>
-<p style="font-style:italic; color:#999">Tip：驳回成功</p>
-<p>8、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>5、左侧-资质材料</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>材料名称</td><td></td><td>以列表形式展示机构提交的资质文件，每条包含文件图标与材料名称，完整展示，为空时显示"--"</td></tr>
+<tr><td>文件大小</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>下载按钮</td><td></td><td>每条材料右侧展示【下载-按钮】，点击下载对应文件</td></tr>
+</table>
+<p>6、右侧-审核操作</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>审核意见</td><td></td><td>多行文本输入框（textarea），最多200字，右下角显示字数统计"0/200"，占位提示"请输入审核意见"</td></tr>
+<tr><td>审核通过按钮</td><td></td><td>点击【审核通过-按钮】，弹出确认框"确定要通过该机构的入驻审核吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写审核意见）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，状态变更为已通过，进行消息提示（Tip：审核通过）并刷新列表。<br><span style="color:red">审核通过后，系统调用多云管理系统的接口进行同步数据。</span></td></tr>
+<tr><td>驳回按钮</td><td></td><td>点击【驳回-按钮】，弹出确认框"确定要驳回该机构的入驻申请吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写驳回原因）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，状态变更为已驳回，进行消息提示（Tip：驳回成功）并刷新列表。</td></tr>
+</table>
+<p>7、操作-关闭抽屉</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.2.1.3">3.2.2.1.3 审核详情</h3>
-<p><strong>模块描述：</strong>服务审核管理 / 机构资质审核 / 审核详情</p>
+<p><strong>模块描述：</strong>服务审核管理 / 机构入驻审核 / 审核详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看机构入驻申请的详细资质信息，只读展示审核结果记录。左侧展示机构资质详情，右侧展示审核结果记录。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】（已通过/已驳回状态）打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"已通过/已驳回"时，操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、左侧字段</p>
 <p>同审核操作，此处不赘述。</p>
 <p>2、右侧-审核结果记录</p>
-<p>展示审核结果记录（审核意见 + 审核人 + 审核时间）。</p>
+<p>展示审核结果记录信息：</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>审核状态</td><td></td><td>枚举：已通过（绿色对勾）、已驳回（红色叉号），使用StatusDot组件展示</td></tr>
+<tr><td>审核人</td><td></td><td>该次审核审核人，完整展示，为空时显示"--"</td></tr>
+<tr><td>审核时间</td><td></td><td>该次审核审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该次审核审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+</table>
 <p>3、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.2.2">3.2.2.2 数字应用审核</h3>
 <p><strong>入口页面：</strong>运营管理后台 / 服务审核管理 / 数字应用审核</p>
@@ -2661,7 +2867,7 @@ export const prdChapters = [
 
 <h3 id="prd-3.2.2.2.1">3.2.2.2.1 审核列表</h3>
 <p><strong>模块描述：</strong>服务审核管理 / 数字应用审核 / 审核列表</p>
-<p><strong>功能描述：</strong>展示数字应用审核列表，支持按提交审核时间、审核状态、审核阶段、应用名称、应用ID、服务商名称、应用覆盖范围和面向对象筛选，可进行审核和查看详情操作。</p>
+<p><strong>功能描述：</strong>展示数字应用审核列表，支持按提交审核时间、审核状态、审核阶段、应用名称、应用ID和服务商名称筛选，可进行审核和查看详情操作。</p>
 <p><strong>优先级：</strong>P1</p>
 <p><strong>输入/前置条件：</strong>列表数据来源于机构提交的数字应用上架申请。</p>
 <p><strong>详细设计：</strong></p>
@@ -2674,8 +2880,6 @@ export const prdChapters = [
 <tr><td>数字应用名称</td><td>name</td><td>支持模糊搜索</td></tr>
 <tr><td>数字应用ID</td><td>applicationId</td><td>支持模糊搜索</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>支持模糊搜索</td></tr>
-<tr><td>应用覆盖范围</td><td>cover</td><td>枚举：基本公共卫生服务、医院信息系统（HIS）、家庭医生签约、实验室信息管理系统（LIS）、影像归档和通信系统（PACS），默认不选中</td></tr>
-<tr><td>面向对象</td><td>target</td><td>枚举：基层医疗卫生机构、公立医院、医技护人员，默认不选中</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
 <tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
 </table>
@@ -2690,8 +2894,8 @@ export const prdChapters = [
 <tr><td>提交审核时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，枚举：已通过、已驳回、待审核</td></tr>
 <tr><td>审核阶段</td><td></td><td>显示当前所处审核阶段名称</td></tr>
-<tr><td>数字应用名称/ID</td><td>name, applicationId</td><td>上方展示应用名称，下方展示应用ID（小号字体），为空时显示"--"</td></tr>
-<tr><td>面向对象</td><td>targetView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>数字应用名称/ID</td><td>name, applicationId</td><td>上方展示应用名称，下方展示应用ID（小号字体），ID系统自动生成，格式：SZYY+YYYYMMDD+4位序号（如 SZYY202608100001），唯一标识，为空时显示"--"</td></tr>
+<tr><td>服务对象</td><td>targetView</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>应用覆盖范围</td><td>cover</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>合作企业</td><td>partnerName</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
@@ -2714,22 +2918,22 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务审核管理 / 数字应用审核 / 审核操作</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看数字应用备案的详细信息，对待审核状态的服务进行四阶段审核操作。左侧展示应用概览信息，右侧展示四阶段审核流程。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【审核-按钮】（待审核状态）打开审核抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"待审核"时，操作栏显示【审核-按钮】，点击打开审核抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、抽屉头部</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>应用LOGO</td><td>logo</td><td>展示应用Logo图片，若无则显示默认图标</td></tr>
+<tr><td>LOGO</td><td>logo</td><td>展示应用Logo图片，若无则显示默认图标</td></tr>
 <tr><td>应用名称</td><td>name</td><td>加粗大号字体展示</td></tr>
 <tr><td>审核状态</td><td></td><td>使用StatusDot组件展示当前审核状态</td></tr>
-<tr><td>应用ID</td><td>applicationId</td><td>灰色小字，格式"ID：XXX"</td></tr>
+<tr><td>应用ID</td><td>applicationId</td><td>灰色小字，格式"ID：XXX"，系统自动生成，格式：SZYY+YYYYMMDD+4位序号（如 SZYY202608100001），唯一标识</td></tr>
 </table>
 <p>2、左侧-基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>系统地址</td><td>address</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>显示顺序</td><td>sortOrder</td><td>数字展示，为空时显示0</td></tr>
 <tr><td>应用描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，超出换行，为空时显示"--"</td></tr>
 </table>
 <p>3、左侧-联系信息</p>
 <table>
@@ -2742,18 +2946,18 @@ export const prdChapters = [
 <p>4、左侧-分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>面向对象</td><td>targetView</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务对象</td><td>targetView</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>应用架构</td><td>architectureView</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>基层应用覆盖范围</td><td></td><td>仅当面向对象含"基层医疗卫生机构"时显示，多值以分号分隔展示</td></tr>
-<tr><td>公立应用覆盖范围</td><td></td><td>仅当面向对象含"公立医院"时显示，多值以分号分隔展示</td></tr>
-<tr><td>医技应用覆盖范围</td><td></td><td>仅当面向对象含"医技护人员"时显示，多值以分号分隔展示</td></tr>
+<tr><td>基层应用覆盖范围</td><td></td><td>仅当服务对象含"基层医疗卫生机构"时显示，多值以分号分隔展示</td></tr>
+<tr><td>公立应用覆盖范围</td><td></td><td>仅当服务对象含"公立医院"时显示，多值以分号分隔展示</td></tr>
+<tr><td>医技应用覆盖范围</td><td></td><td>仅当服务对象含"医技护人员"时显示，多值以分号分隔展示</td></tr>
 </table>
-<p>5、右侧——审核操作（四阶段纵向步骤条）</p>
+<p>5、右侧-审核操作（四阶段纵向步骤条）</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>审核意见</td><td></td><td>多行文本输入框（textarea），最多200字，右下角显示字数统计"0/200"，占位提示"请输入审核意见"</td></tr>
-<tr><td>阶段通过按钮</td><td></td><td>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写审核意见）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已通过，更新步骤条状态并记录审核流水：阶段1/2/3通过后进入下一阶段；阶段4通过后整体审核通过，进行消息提示（Tip：审核通过）并刷新列表。</td></tr>
+<tr><td>阶段通过按钮</td><td></td><td>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写审核意见）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已通过，更新步骤条状态并记录审核流水：阶段1/2/3通过后进入下一阶段；阶段4通过后整体审核通过，进行消息提示（Tip：审核通过）并刷新列表。<br><span style="color:red">整体审核通过后，系统调用多云管理系统的接口进行同步数据。</span></td></tr>
 <tr><td>驳回按钮</td><td></td><td>点击【驳回-按钮】，弹出确认框"确定要驳回该服务的申请吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写驳回原因）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已驳回，审核记录终止，记录审核流水，进行消息提示（Tip：审核已驳回）。</td></tr>
 </table>
 <p>记录各阶段审核流水信息：</p>
@@ -2763,7 +2967,7 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色对勾）、已驳回（红色叉号）、待审核（当前阶段蓝色高亮、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>最终审核记录取末尾阶段审核数据，在审核列表中展示：</p>
 <table>
@@ -2776,17 +2980,17 @@ export const prdChapters = [
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>6、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.2.2.3">3.2.2.2.3 审核详情</h3>
 <p><strong>模块描述：</strong>服务审核管理 / 数字应用审核 / 审核详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看数字应用备案的详细信息，只读展示四阶段审核流水。左侧展示应用概览信息，右侧展示四阶段审核流程。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】（已通过/已驳回状态）打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"已通过/已驳回"时，操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、左侧字段</p>
 <p>同审核操作，此处不赘述。</p>
-<p>2、右侧——审核记录（四阶段纵向步骤条）</p>
+<p>2、右侧-审核记录（四阶段纵向步骤条）</p>
 <p>展示各阶段审核流水信息：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
@@ -2794,10 +2998,10 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色对勾）、已驳回（红色叉号）、待审核（当前阶段蓝色高亮、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>3、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.2.3">3.2.2.3 安全服务审核</h3>
 <p><strong>入口页面：</strong>运营管理后台 / 服务审核管理 / 安全服务审核</p>
@@ -2818,8 +3022,6 @@ export const prdChapters = [
 <tr><td>安全服务名称</td><td></td><td>支持模糊搜索</td></tr>
 <tr><td>安全服务ID</td><td></td><td>支持模糊搜索</td></tr>
 <tr><td>服务商名称</td><td></td><td>支持模糊搜索</td></tr>
-<tr><td>部署云服务商</td><td></td><td>枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云，默认不筛选</td></tr>
-<tr><td>列设置按钮</td><td></td><td>点击可自定义显示/隐藏列表列</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
 <tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
 </table>
@@ -2834,7 +3036,7 @@ export const prdChapters = [
 <tr><td>提交审核时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，枚举：已通过、已驳回、待审核，使用StatusDot组件展示</td></tr>
 <tr><td>审核阶段</td><td></td><td>显示当前所处的审核阶段名称（申报材料评估/应用技术测评/现场演示答辩/服务目录发布）</td></tr>
-<tr><td>安全服务名称/ID</td><td></td><td>上方展示服务名称（加粗），下方展示服务ID（灰色小字），为空时显示"--"</td></tr>
+<tr><td>安全服务名称/ID</td><td></td><td>上方展示服务名称（加粗），下方展示服务ID（灰色小字），ID系统自动生成，格式：AQFW+YYYYMMDD+4位序号（如 AQFW202608100001），唯一标识，为空时显示"--"</td></tr>
 <tr><td>服务描述</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td></td><td>完整展示，为空时显示"--"</td></tr>
@@ -2856,7 +3058,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务审核管理 / 安全服务审核 / 审核操作</p>
 <p><strong>功能描述：</strong>查看安全服务备案的详细信息，对待审核状态的服务进行四阶段审核操作。左侧展示应用概览信息，右侧展示四阶段审核流程。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【审核-按钮】（待审核状态）打开审核抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"待审核"时，操作栏显示【审核-按钮】，点击打开审核抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、抽屉头部</p>
 <table>
@@ -2864,16 +3066,16 @@ export const prdChapters = [
 <tr><td>Logo图标</td><td></td><td>展示服务Logo图片，若无则显示默认图标</td></tr>
 <tr><td>服务名称</td><td></td><td>加粗大号字体展示</td></tr>
 <tr><td>审核状态</td><td></td><td>使用StatusDot组件展示当前审核状态</td></tr>
-<tr><td>服务ID</td><td></td><td>灰色小字，格式"ID：XXX"</td></tr>
+<tr><td>服务ID</td><td></td><td>灰色小字，格式"ID：XXX"，系统自动生成，格式：AQFW+YYYYMMDD+4位序号（如 AQFW202608100001），唯一标识</td></tr>
 </table>
-<p>2、左侧——基本信息</p>
+<p>2、左侧-基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>系统地址</td><td>systemUrl</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>显示顺序</td><td>sortOrder</td><td>数字展示，为空时显示0</td></tr>
 <tr><td>服务描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，超出换行，为空时显示"--"</td></tr>
 </table>
-<p>3、左侧——联系信息</p>
+<p>3、左侧-联系信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>服务商名称</td><td>serviceProvider</td><td>完整展示，为空时显示"--"</td></tr>
@@ -2881,17 +3083,17 @@ export const prdChapters = [
 <tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>展示联系人姓名和电话，为空时显示"--"</td></tr>
 <tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>展示联系人姓名和电话，为空时显示"--"</td></tr>
 </table>
-<p>4、左侧——分类标签</p>
+<p>4、左侧-分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>应用架构</td><td>appArchitecture</td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>部署云服务商</td><td>cloudProvider</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>应用架构</td><td>数据拉取字典管理 dict表 SoftwareArchitecture</td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>部署云服务商</td><td>数据拉取字典管理 dict表 CloudProvider</td><td>完整展示，为空时显示"--"</td></tr>
 </table>
-<p>5、右侧——审核操作（四阶段纵向步骤条）</p>
+<p>5、右侧-审核操作（四阶段纵向步骤条）</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>审核意见</td><td></td><td>多行文本输入框（textarea），最多200字，右下角显示字数统计"0/200"，占位提示"请输入审核意见"</td></tr>
-<tr><td>阶段通过按钮</td><td></td><td>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写审核意见）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已通过，更新步骤条状态并记录审核流水：阶段1/2/3通过后进入下一阶段；阶段4通过后整体审核通过，进行消息提示（Tip：审核通过）并刷新列表。</td></tr>
+<tr><td>阶段通过按钮</td><td></td><td>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写审核意见）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已通过，更新步骤条状态并记录审核流水：阶段1/2/3通过后进入下一阶段；阶段4通过后整体审核通过，进行消息提示（Tip：审核通过）并刷新列表。<br><span style="color:red">整体审核通过后，系统调用多云管理系统的接口进行同步数据。</span></td></tr>
 <tr><td>驳回按钮</td><td></td><td>点击【驳回-按钮】，弹出确认框"确定要驳回该服务的申请吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写驳回原因）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已驳回，审核记录终止，记录审核流水，进行消息提示（Tip：审核已驳回）。</td></tr>
 </table>
 <p>记录各阶段审核流水信息：</p>
@@ -2901,7 +3103,7 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色对勾）、已驳回（红色叉号）、待审核（当前阶段蓝色高亮、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>最终审核记录取末尾阶段审核数据，在审核列表中展示：</p>
 <table>
@@ -2914,17 +3116,17 @@ export const prdChapters = [
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>6、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.2.3.3">3.2.2.3.3 审核详情</h3>
 <p><strong>模块描述：</strong>服务审核管理 / 安全服务审核 / 审核详情</p>
 <p><strong>功能描述：</strong>查看安全服务备案的详细信息，只读展示四阶段审核流水。左侧展示应用概览信息，右侧展示四阶段审核流程。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】（已通过/已驳回状态）打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"已通过/已驳回"时，操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、左侧字段</p>
 <p>同审核操作，此处不赘述。</p>
-<p>2、右侧——审核记录（四阶段纵向步骤条）</p>
+<p>2、右侧-审核记录（四阶段纵向步骤条）</p>
 <p>展示各阶段审核流水信息：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
@@ -2932,10 +3134,10 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色对勾）、已驳回（红色叉号）、待审核（当前阶段蓝色高亮、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>3、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.2.4">3.2.2.4 能力组件审核</h3>
 <p><strong>入口页面：</strong>运营管理后台 / 服务审核管理 / 能力组件审核</p>
@@ -2956,9 +3158,6 @@ export const prdChapters = [
 <tr><td>组件名称</td><td>name</td><td>支持模糊搜索</td></tr>
 <tr><td>组件ID</td><td>componentId</td><td>支持模糊搜索</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>支持模糊搜索</td></tr>
-<tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>枚举：电信云、移动云、联通云、浪潮云、紫光云、影像云，默认不筛选</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>枚举：不限、市级、区（县）域，默认不筛选</td></tr>
-<tr><td>列设置按钮</td><td></td><td>点击可自定义显示/隐藏列表列</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
 <tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
 </table>
@@ -2973,11 +3172,11 @@ export const prdChapters = [
 <tr><td>提交审核时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，枚举：已通过、已驳回、待审核，使用StatusDot组件展示</td></tr>
 <tr><td>审核阶段</td><td></td><td>显示当前所处的审核阶段名称（申报材料评估/应用技术测评/现场演示答辩/服务目录发布）</td></tr>
-<tr><td>能力组件名称/ID</td><td>name, componentId</td><td>上方展示组件名称（加粗），下方展示组件ID（灰色小字），为空时显示"--"</td></tr>
+<tr><td>能力组件名称/ID</td><td>name, componentId</td><td>上方展示组件名称（加粗），下方展示组件ID（灰色小字），ID系统自动生成，格式：NLZJ+YYYYMMDD+4位序号（如 NLZJ202608100001），唯一标识，为空时显示"--"</td></tr>
 <tr><td>组件描述</td><td>description</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>枚举：不限、市级、区（县）域</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>枚举：不限、市级、区（县）域</td></tr>
 </table>
 <p>3、状态流转与按钮</p>
 <pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
@@ -2996,7 +3195,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务审核管理 / 能力组件审核 / 审核操作</p>
 <p><strong>功能描述：</strong>查看能力组件备案的详细信息，对待审核状态的服务进行四阶段审核操作。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【审核-按钮】（待审核状态）打开审核抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"待审核"时，操作栏显示【审核-按钮】，点击打开审核抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、抽屉头部</p>
 <table>
@@ -3004,32 +3203,32 @@ export const prdChapters = [
 <tr><td>Logo图标</td><td></td><td>展示组件Logo图片，若无则显示默认图标</td></tr>
 <tr><td>组件名称</td><td>name</td><td>加粗大号字体展示</td></tr>
 <tr><td>审核状态</td><td></td><td>使用StatusDot组件展示当前审核状态</td></tr>
-<tr><td>组件ID</td><td>componentId</td><td>灰色小字，格式"ID：XXX"</td></tr>
+<tr><td>组件ID</td><td>componentId</td><td>灰色小字，格式"ID：XXX"，系统自动生成，格式：NLZJ+YYYYMMDD+4位序号（如 NLZJ202608100001），唯一标识</td></tr>
 </table>
-<p>2、左侧——基本信息</p>
+<p>2、左侧-基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>显示顺序</td><td></td><td>数字，默认为0</td></tr>
 <tr><td>组件描述</td><td>description</td><td>多行文本展示，为空时显示"--"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，超出换行，为空时显示"--"</td></tr>
 </table>
-<p>3、左侧——联系信息</p>
+<p>3、左侧-联系信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>服务商名称</td><td>serviceProviderName</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>联系方式1</td><td>contactName1, contactPhone1</td><td>展示联系人姓名+电话，格式"姓名 电话"，为空时显示"--"</td></tr>
 <tr><td>联系方式2</td><td>contactName2, contactPhone2</td><td>展示联系人姓名+电话，格式"姓名 电话"，为空时显示"--"</td></tr>
 </table>
-<p>4、左侧——分类标签</p>
+<p>4、左侧-分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>部署云服务商</td><td>deployServiceProviderView</td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>开放范围</td><td>coverView</td><td>枚举：不限、市级、区（县）域</td></tr>
+<tr><td>开放范围</td><td>数据拉取字典管理 dict表 OpenRange</td><td>枚举：不限、市级、区（县）域</td></tr>
 </table>
-<p>5、右侧——审核操作（四阶段纵向步骤条）</p>
+<p>5、右侧-审核操作（四阶段纵向步骤条）</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>审核意见</td><td></td><td>多行文本输入框（textarea），最多200字，右下角显示字数统计"0/200"，占位提示"请输入审核意见"</td></tr>
-<tr><td>阶段通过按钮</td><td></td><td>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写审核意见）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已通过，更新步骤条状态并记录审核流水：阶段1/2/3通过后进入下一阶段；阶段4通过后整体审核通过，进行消息提示（Tip：审核通过）并刷新列表。</td></tr>
+<tr><td>阶段通过按钮</td><td></td><td>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写审核意见）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已通过，更新步骤条状态并记录审核流水：阶段1/2/3通过后进入下一阶段；阶段4通过后整体审核通过，进行消息提示（Tip：审核通过）并刷新列表。<br><span style="color:red">整体审核通过后，系统调用多云管理系统的接口进行同步数据。</span></td></tr>
 <tr><td>驳回按钮</td><td></td><td>点击【驳回-按钮】，弹出确认框"确定要驳回该服务的申请吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写驳回原因）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已驳回，审核记录终止，记录审核流水，进行消息提示（Tip：审核已驳回）。</td></tr>
 </table>
 <p>记录各阶段审核流水信息：</p>
@@ -3039,7 +3238,7 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色对勾）、已驳回（红色叉号）、待审核（当前阶段蓝色高亮、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>最终审核记录取末尾阶段审核数据，在审核列表中展示：</p>
 <table>
@@ -3052,17 +3251,17 @@ export const prdChapters = [
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>6、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.2.4.3">3.2.2.4.3 审核详情</h3>
 <p><strong>模块描述：</strong>服务审核管理 / 能力组件审核 / 审核详情</p>
 <p><strong>功能描述：</strong>查看能力组件备案的详细信息，只读展示四阶段审核流水。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】（已通过/已驳回状态）打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"已通过/已驳回"时，操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、左侧字段</p>
 <p>同审核操作，此处不赘述。</p>
-<p>2、右侧——审核记录（四阶段纵向步骤条）</p>
+<p>2、右侧-审核记录（四阶段纵向步骤条）</p>
 <p>展示各阶段审核流水信息：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
@@ -3070,10 +3269,10 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色对勾）、已驳回（红色叉号）、待审核（当前阶段蓝色高亮、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>3、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.2.5">3.2.2.5 基础服务审核</h3>
 <p><strong>入口页面：</strong>运营管理后台 / 服务审核管理 / 基础服务审核</p>
@@ -3081,7 +3280,7 @@ export const prdChapters = [
 
 <h3 id="prd-3.2.2.5.1">3.2.2.5.1 审核列表</h3>
 <p><strong>模块描述：</strong>服务审核管理 / 基础服务审核 / 审核列表</p>
-<p><strong>功能描述：</strong>展示云服务商提交的基础服务审核列表，展示审核状态和审核阶段，可进行审核和查看详情操作。</p>
+<p><strong>功能描述：</strong>展示云服务商提交的基础服务审核列表，支持按提交审核时间、审核状态、审核阶段、基础服务名称、基础服务ID和服务商名称筛选，可进行审核和查看详情操作。</p>
 <p><strong>优先级：</strong>P1</p>
 <p><strong>输入/前置条件：</strong>列表数据来源于云服务商提交的基础服务上架申请。</p>
 <p><strong>详细设计：</strong></p>
@@ -3094,8 +3293,6 @@ export const prdChapters = [
 <tr><td>基础服务名称</td><td></td><td>支持模糊搜索</td></tr>
 <tr><td>基础服务ID</td><td></td><td>支持模糊搜索</td></tr>
 <tr><td>服务商名称</td><td></td><td>支持模糊搜索</td></tr>
-<tr><td>部署云服务商</td><td></td><td>枚举：影像云、电信云、移动云、联通云、浪潮云，默认不筛选</td></tr>
-<tr><td>列设置按钮</td><td></td><td>点击可自定义显示/隐藏列表列</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
 <tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
 </table>
@@ -3110,8 +3307,9 @@ export const prdChapters = [
 <tr><td>提交审核时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核状态</td><td></td><td>取自末尾阶段审核状态，枚举：已通过、已驳回、待审核，使用StatusDot组件展示</td></tr>
 <tr><td>审核阶段</td><td></td><td>显示当前所处的审核阶段名称（申报材料评估/应用技术测评/现场演示答辩/服务目录发布）</td></tr>
-<tr><td>基础服务名称/ID</td><td></td><td>上方展示服务名称（加粗），下方展示服务ID（灰色小字），为空时显示"--"</td></tr>
-<tr><td>服务子类</td><td></td><td>使用服务类型标签展示（如计算服务、存储服务、数据库、网络服务），不同类别使用不同颜色标签</td></tr>
+<tr><td>基础服务名称/ID</td><td></td><td>上方展示服务名称（加粗），下方展示服务ID（灰色小字），ID系统自动生成，格式：JCFW+YYYYMMDD+4位序号（如 JCFW202608100001），唯一标识，为空时显示"--"</td></tr>
+<tr><td>服务专区</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务分类</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>服务描述</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td></td><td>完整展示，为空时显示"--"</td></tr>
@@ -3133,7 +3331,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>服务审核管理 / 基础服务审核 / 审核操作</p>
 <p><strong>功能描述：</strong>查看基础服务备案的详细信息，对待审核状态的服务进行四阶段审核操作。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【审核-按钮】（待审核状态）打开审核抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"待审核"时，操作栏显示【审核-按钮】，点击打开审核抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、抽屉头部</p>
 <table>
@@ -3141,33 +3339,33 @@ export const prdChapters = [
 <tr><td>Logo图标</td><td></td><td>展示服务Logo图片，若无则显示默认图标</td></tr>
 <tr><td>服务名称</td><td></td><td>加粗大号字体展示</td></tr>
 <tr><td>审核状态</td><td></td><td>使用StatusDot组件展示当前审核状态</td></tr>
-<tr><td>服务ID</td><td></td><td>灰色小字，格式"ID：XXX"</td></tr>
+<tr><td>服务ID</td><td></td><td>灰色小字，格式"ID：XXX"，系统自动生成，格式：JCFW+YYYYMMDD+4位序号（如 JCFW202608100001），唯一标识</td></tr>
 </table>
-<p>2、左侧——基本信息</p>
+<p>2、左侧-基本信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>显示顺序</td><td></td><td>数字，默认为0</td></tr>
 <tr><td>服务描述</td><td></td><td>多行文本展示，为空时显示"--"</td></tr>
+<tr><td>付费方式参考</td><td>paymentMethodRef</td><td>完整展示，超出换行，为空时显示"--"</td></tr>
 </table>
-<p>3、左侧——联系信息</p>
+<p>3、左侧-联系信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>服务商名称</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>联系方式1</td><td></td><td>展示联系电话，为空时显示"--"</td></tr>
 <tr><td>联系方式2</td><td></td><td>展示联系电话，为空时显示"--"</td></tr>
 </table>
-<p>4、左侧——分类标签</p>
+<p>4、左侧-分类标签</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务专区</td><td>数据拉取字典管理 dict表 ServiceZone</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>部署云服务商</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>服务子类</td><td></td><td>使用服务类型标签展示（如计算服务、存储服务、数据库、网络服务）</td></tr>
-<tr><td>区域</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>服务分类</td><td></td><td>使用服务类型标签展示（如计算服务、存储服务、数据库、网络服务）</td></tr>
 </table>
-<p>5、右侧——审核操作（四阶段纵向步骤条）</p>
+<p>5、右侧-审核操作（四阶段纵向步骤条）</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>审核意见</td><td></td><td>多行文本输入框（textarea），最多200字，右下角显示字数统计"0/200"，占位提示"请输入审核意见"</td></tr>
-<tr><td>阶段通过按钮</td><td></td><td>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写审核意见）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已通过，更新步骤条状态并记录审核流水：阶段1/2/3通过后进入下一阶段；阶段4通过后整体审核通过，进行消息提示（Tip：审核通过）并刷新列表。</td></tr>
+<tr><td>阶段通过按钮</td><td></td><td>点击当前阶段【通过-按钮】，弹出确认框"确定要通过该服务的审核吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写审核意见）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已通过，更新步骤条状态并记录审核流水：阶段1/2/3通过后进入下一阶段；阶段4通过后整体审核通过，进行消息提示（Tip：审核通过）并刷新列表。<br><span style="color:red">整体审核通过后，系统调用多云管理系统的接口进行同步数据。</span></td></tr>
 <tr><td>驳回按钮</td><td></td><td>点击【驳回-按钮】，弹出确认框"确定要驳回该服务的申请吗？"。<br>1）若审核意见为空，进行表单校验提示（Tip：请填写驳回原因）；<br>2）若网络异常/超时/宕机，进行消息提示，停留当前页面；<br>3）若满足条件，当前阶段变更为已驳回，审核记录终止，记录审核流水，进行消息提示（Tip：审核已驳回）。</td></tr>
 </table>
 <p>记录各阶段审核流水信息：</p>
@@ -3177,7 +3375,7 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色对勾）、已驳回（红色叉号）、待审核（当前阶段蓝色高亮、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>最终审核记录取末尾阶段审核数据，在审核列表中展示：</p>
 <table>
@@ -3190,17 +3388,17 @@ export const prdChapters = [
 <tr><td>审核意见</td><td></td><td>取自末尾阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>6、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.2.5.3">3.2.2.5.3 审核详情</h3>
 <p><strong>模块描述：</strong>服务审核管理 / 基础服务审核 / 审核详情</p>
 <p><strong>功能描述：</strong>查看基础服务备案的详细信息，只读展示四阶段审核流水。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】（已通过/已驳回状态）打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>当申请状态为"已通过/已驳回"时，操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、左侧字段</p>
 <p>同审核操作，此处不赘述。</p>
-<p>2、右侧——审核记录（四阶段纵向步骤条）</p>
+<p>2、右侧-审核记录（四阶段纵向步骤条）</p>
 <p>展示各阶段审核流水信息：</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
@@ -3208,10 +3406,10 @@ export const prdChapters = [
 <tr><td>审核状态</td><td></td><td>枚举：已通过（绿色对勾）、已驳回（红色叉号）、待审核（当前阶段蓝色高亮、未开始灰色）</td></tr>
 <tr><td>审核人</td><td></td><td>该阶段审核人，完整展示，为空时显示"--"</td></tr>
 <tr><td>审核时间</td><td></td><td>该阶段审核时间，格式：yyyy-MM-dd hh:mm:ss，为空时显示"--"</td></tr>
-<tr><td>审核意见</td><td></td><td>该阶段审核意见，超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>审核意见</td><td></td><td>该阶段审核意见，完整展示，为空时显示"--"</td></tr>
 </table>
 <p>3、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，停留当前页面。</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
 
 <h3 id="prd-3.2.3">3.2.3 服务开通管理</h3>
 
@@ -3219,7 +3417,7 @@ export const prdChapters = [
 <p><strong>入口页面：</strong>运营管理后台 / 服务开通管理 / 服务开通列表</p>
 <p><strong>页面描述：</strong>管理平台所有服务订单，支持查看订单详情、取消订单、查看评价。</p>
 
-<h3 id="prd-3.2.3.1.1">3.2.3.1.1 服务开通列表</h3>
+<h3 id="prd-3.2.3.1.2">3.2.3.1.2 服务开通列表</h3>
 <p><strong>模块描述：</strong>服务开通管理 / 服务开通列表</p>
 <p><strong>功能描述：</strong>展示平台全部订单列表，支持按服务单号、服务名称、服务ID、服务商名称、申请机构、服务类型和状态筛选，可按状态执行详情、取消、查看评价等操作。</p>
 <p><strong>优先级：</strong>P1</p>
@@ -3270,38 +3468,46 @@ export const prdChapters = [
 <tr><td>已取消</td><td></td><td>详情</td></tr>
 </table>
 
-<h3 id="prd-3.2.3.1.2">3.2.3.1.2 服务开通详情</h3>
+<h3 id="prd-3.2.3.1.3">3.2.3.1.3 服务开通详情</h3>
 <p><strong>模块描述：</strong>服务开通管理 / 服务开通列表 / 服务开通详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看订单完整信息，包括基本信息和流程进度，支持跳转关联工单。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>点击列表【详情-按钮】打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
-<p>1、基本信息</p>
+<p>1、抽屉头部</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>服务单号</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务名称</td><td>serviceName</td><td>加粗大号字体展示</td></tr>
+<tr><td>状态</td><td>status</td><td>使用状态标签展示，枚举：工单流转中、已完成、已评价、已驳回、已取消</td></tr>
+<tr><td>服务单号</td><td>orderNo</td><td>灰色小字，展示于服务名称下方，为空时显示"--"</td></tr>
+</table>
+<p>2、基本信息</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>服务ID</td><td>serviceId</td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务</td></tr>
 <tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>服务商名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>创建时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
-<tr><td>关联工单</td><td></td><td>完整展示，可点击跳转至多云管理系统工单详情页</td></tr>
+<tr><td>关联工单</td><td></td><td>完整展示，为空时显示"--"；点击"跳转工单"按钮，以URL参数形式携带工单ID（workorderId，如 /workorder/detail?workorderId=TK-0245）跳转至多云管理系统工单详情页，用于定位并展示该工单的详细信息</td></tr>
 </table>
-<p>2、流程进度</p>
+<p>3、流程进度</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>节点名称</td><td></td><td>进度节点名称，枚举：<br>1、提交申请：跳转到多云系统时记录为提交申请时间<br>2、系统派发工单：多云系统创建工单后回传创建时间记录为系统派发工单，同时默认进入工单流转中<br>3、工单流转中：系统派发工单后默认进入工单流转中状态<br>4、服务交付完成：多云系统回传服务交付完成状态及时间<br>5、服务评价：用户完成服务评价后记录评价时间<br>6、订单驳回：工单驳回后记录驳回时间<br>7、订单取消：用户取消订单后记录取消时间</td></tr>
+<tr><td>节点名称</td><td></td><td>进度节点名称，枚举：<br>1、提交申请：用户点击服务后经统一认证SSO跳转至多云管理系统填写服务申请，系统创建服务订单（绑定serviceId），以订单创建时间记录为提交申请节点时间<br>2、系统派发工单：多云管理系统创建工单后，调用工单回调接口回传workOrderId及工单创建时间（eventType=CREATED），系统接收回调后记录为系统派发工单节点时间，订单状态默认流转为工单流转中<br>3、工单流转中：接收工单创建回调（eventType=CREATED）后订单进入的默认状态，节点时间取系统派发工单的回调时间<br>4、服务交付完成：多云管理系统回传工单通过事件及时间（eventType=APPROVED），系统接收回调后记录为服务交付完成节点时间<br>5、服务评价：用户提交服务评价后，以评价提交时间记录为服务评价节点时间<br>6、订单驳回：多云管理系统回传工单驳回事件及时间（eventType=REJECTED，备注含驳回原因），系统接收回调后记录为订单驳回节点时间<br>7、订单取消：用户取消订单后，以取消操作时间记录为订单取消节点时间</td></tr>
 <tr><td>节点时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>节点状态</td><td></td><td>枚举：已完成、进行中、待处理。当前所处节点状态为进行中，已通过节点状态为已完成，未到达节点状态为待处理。</td></tr>
 </table>
-<p>3、操作-关闭抽屉</p>
-<p>点击抽屉右上角【关闭按钮】或遮罩层，关闭详情抽屉，返回服务开通列表页。</p>
+<p>4、操作-关闭抽屉</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，返回服务开通列表页。</p>
 
-<h3 id="prd-3.2.3.1.3">3.2.3.1.3 取消订单</h3>
+<h3 id="prd-3.2.3.1.4">3.2.3.1.4 取消订单</h3>
 <p><strong>模块描述：</strong>服务开通管理 / 服务开通列表 / 取消订单</p>
 <p><strong>功能描述：</strong>取消处于"工单流转中"状态的服务订单，取消后订单状态变更为"已取消"。</p>
 <p><strong>优先级：</strong>P1</p>
-<p><strong>输入/前置条件：</strong>在服务开通列表中，对"工单流转中"状态的订单点击【取消-按钮】弹出确认框。</p>
+<p><strong>输入/前置条件：</strong>当订单状态为"工单流转中"时，操作栏显示【取消-按钮】，点击弹出取消确认框。</p>
 <p><strong>详细设计：</strong></p>
+<p>点击【取消-按钮】，弹出二次确认框，标题"取消服务单"，提示内容："确定要取消服务单{服务单号}吗？取消后无法恢复。"（如：确定要取消服务单202608100095吗？取消后无法恢复。）</p>
 <p>1、操作-取消</p>
 <p>点击【取消-按钮】，关闭确认弹窗，不执行取消操作，停留当前页面。</p>
 <p>2、操作-确定</p>
@@ -3309,7 +3515,24 @@ export const prdChapters = [
 <p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
 <p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
 <p>2）若满足条件，订单状态变更为"已取消"，关闭此对话框，进行消息提示，刷新列表</p>
-<p style="font-style:italic; color:#999">Tip：订单已取消</p>
+<p style="font-style:italic; color:#999">Tip：取消成功</p>
+
+<h3 id="prd-3.2.3.1.4">3.2.3.1.4 操作-查看评价</h3>
+<p><strong>模块描述：</strong>服务开通管理 / 服务开通列表 / 查看评价</p>
+<p><strong>功能描述：</strong>查看已评价订单的用户评价明细。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>当订单状态为"已评价"时，操作栏显示【查看评价-按钮】，点击打开评价查看弹窗。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、展示内容</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>评分明细</td><td>ratings</td><td>展示准确性评分、稳定性评分、响应时效评分、业务适配性评分四维度5星评分（只读）</td></tr>
+<tr><td>综合评分</td><td></td><td>四维度评分的算术平均值，保留1位小数</td></tr>
+<tr><td>评价内容</td><td>content</td><td>展示用户填写的评价内容，为空时显示"--"</td></tr>
+<tr><td>评价信息</td><td>orgName, time</td><td>展示评价机构名称和评价时间，以"·"分隔，为空时显示"--"</td></tr>
+</table>
+<p>2、操作-关闭弹窗</p>
+<p>点击右上角【关闭按钮】，关闭评价查看弹窗，停留当前页面。</p>
 
 <h3 id="prd-3.2.3.3">3.2.3.3 质量评价管理</h3>
 <p><strong>入口页面：</strong>服务开通管理 / 质量评价管理</p>
@@ -3338,25 +3561,32 @@ export const prdChapters = [
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>服务名称/ID</td><td></td><td>上方展示服务名称（加粗），下方展示服务ID（小号等宽字体），为空时显示"--"</td></tr>
+<tr><td>服务类型</td><td></td><td>使用服务类型标签展示，枚举：数字应用、能力组件、安全服务、基础服务，不同类别使用不同颜色标签；取自服务目录中该服务的类型分类，为空时显示"--"</td></tr>
 <tr><td>平均准确性</td><td></td><td>展示数值（保留1位小数）= Σ(所有用户准确性评分) / 评价人数，大于等于4.5显示绿色，大于等于阈值显示橙色，低于阈值显示红色，为空时显示"--"</td></tr>
 <tr><td>平均稳定性</td><td></td><td>展示数值（保留1位小数）= Σ(所有用户稳定性评分) / 评价人数，大于等于4.0显示绿色，低于阈值显示红色，为空时显示"--"</td></tr>
 <tr><td>平均响应时效</td><td></td><td>展示数值（保留1位小数）= Σ(所有用户响应时效评分) / 评价人数，大于等于4.5显示绿色，大于等于阈值显示橙色，低于阈值显示红色，为空时显示"--"</td></tr>
 <tr><td>平均业务适配性</td><td></td><td>展示数值（保留1位小数）= Σ(所有用户业务适配性评分) / 评价人数，大于等于4.0显示绿色，低于阈值显示红色，为空时显示"--"</td></tr>
-<tr><td>用户评分</td><td></td><td>以环形进度条展示所有用户四维均分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户四维均分) / 评价人数，其中四维均分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4<br>鼠标悬停提示"所有用户的平均分值"，为空时显示"--"</td></tr>
+<tr><td>用户评分</td><td></td><td>以环形进度条展示所有用户综合评分的算数平均值（保留1位小数）。<br>计算公式：用户评分 = Σ(每位用户综合评分) / 评价人数，其中综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4<br>鼠标悬停提示"所有用户的平均分值"，为空时显示"--"</td></tr>
 <tr><td>平台评分</td><td></td><td>以环形进度条展示平台管理员在质量评价管理中手动设置的评分（保留1位小数），鼠标悬停提示"平台管理员赋分"，为空时显示"--"</td></tr>
 </table>
 <h3 id="prd-3.2.3.3.2">3.2.3.3.2 查看明细操作</h3>
 <p><strong>模块描述：</strong>质量评价管理 / 查看明细操作</p>
 <p><strong>功能描述：</strong>查看某个服务下的用户评分明细列表，支持按评分和状态筛选，可对评价进行回复。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>在质量评价列表中点击【查看明细-按钮】进入，顶部显示当前服务名称和ID。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【查看明细-按钮】，点击进入评价明细页面，顶部显示当前服务名称和ID。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、页面头部</p>
-<p>显示【返回-按钮】，点击返回质量评价列表；右侧显示当前服务名称和服务ID。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>返回按钮</td><td></td><td>显示【返回-按钮】，点击返回质量评价列表</td></tr>
+<tr><td>页面标题</td><td></td><td>显示"评价明细"，加粗展示</td></tr>
+<tr><td>服务名称</td><td>serviceName</td><td>显示"服务名称：XXX"，取自当前选中服务，完整展示</td></tr>
+<tr><td>服务ID</td><td>serviceId</td><td>显示"ID：XXX"，取自当前选中服务，等宽字体展示</td></tr>
+</table>
 <p>2、筛选区域</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>四维均分</td><td></td><td>枚举：5星、4星、3星及以下，默认不选中</td></tr>
+<tr><td>综合评分</td><td></td><td>枚举：5星、4星、3星及以下，默认不选中</td></tr>
 <tr><td>状态</td><td></td><td>枚举：待回复、已回复，默认不选中</td></tr>
 <tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
 <tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
@@ -3368,8 +3598,8 @@ export const prdChapters = [
 <p>4）当前列表数据为空时，显示"暂无数据"。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>评分维度</td><td></td><td>以"准确性、稳定性、响应时效、业务适配性"四个维度横向排列展示各维度分数</td></tr>
-<tr><td>四维均分</td><td></td><td>展示该用户四个维度的算数平均分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4（保留1位小数），鼠标悬停提示"准确性、稳定性、响应时效、业务适配性的平均分值"</td></tr>
+<tr><td>评分明细</td><td></td><td>以"准确性、稳定性、响应时效、业务适配性"四个维度横向排列展示各维度分数</td></tr>
+<tr><td>综合评分</td><td></td><td>展示该用户四个维度的算数平均分，综合评分 = (准确性 + 稳定性 + 响应时效 + 业务适配性) / 4（保留1位小数），鼠标悬停提示"准确性、稳定性、响应时效、业务适配性的平均分值"</td></tr>
 <tr><td>服务单号</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
 <tr><td>评价机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>评价内容</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
@@ -3390,7 +3620,7 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>质量评价管理 / 回复评价弹窗</p>
 <p><strong>功能描述：</strong>对用户评分进行回复。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>在查看明细列表中，仅状态为"待回复"的评价展示【回复-按钮】，点击打开回复弹窗。</p>
+<p><strong>输入/前置条件：</strong>当评价状态为"待回复"时，操作栏显示【回复-按钮】，点击打开回复弹窗。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <table>
@@ -3409,15 +3639,15 @@ export const prdChapters = [
 
 <h3 id="prd-3.2.3.3.3">3.2.3.3.3 平台评分操作</h3>
 <p><strong>模块描述：</strong>质量评价管理 / 平台评分操作</p>
-<p><strong>功能描述：</strong>平台管理员对服务进行综合评分和评价。</p>
+<p><strong>功能描述：</strong>平台管理员对服务进行综合评分和评价；已评分的服务再次打开时回显已有评分数据，支持编辑后重新提交，提交后覆盖原评分。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>在质量评价列表中，点击【平台评分-按钮】打开弹窗。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【平台评分-按钮】，点击打开平台评分弹窗；若该服务已有平台评分，弹窗回显已有评分星级和评价内容。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、表单字段</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>平台评分</td><td></td><td>星级评分组件，点击选择1-5星，右侧同步显示当前选中星数</td></tr>
-<tr><td>评价内容</td><td></td><td>多行文本，必填，占位提示"请输入平台评分内容..."，最多500字</td></tr>
+<tr><td>平台评分</td><td></td><td>星级评分组件，点击选择1-5星，右侧同步显示当前选中星数；已评分时默认选中已有评分星级，可修改</td></tr>
+<tr><td>评价内容</td><td></td><td>多行文本，必填，占位提示"请输入平台评分内容..."，最多500字；已评分时回显已有评价内容，可修改</td></tr>
 </table>
 <p>2、操作-提交评价</p>
 <p>点击【提交评价-按钮】，判断逻辑如下：</p>
@@ -3426,7 +3656,7 @@ export const prdChapters = [
 <p>2）若评价内容为空，进行表单校验提示</p>
 <p style="font-style:italic; color:#999">Tip：请输入平台评分内容</p>
 <p>3）若网络异常/超时/宕机，进行消息提示，停留当前页面</p>
-<p>4）若满足条件，提交平台评分，关闭弹窗，进行消息提示，刷新汇总列表</p>
+<p>4）若满足条件，提交平台评分（已评分服务覆盖原评分及评价内容），关闭弹窗，进行消息提示，刷新汇总列表</p>
 <p style="font-style:italic; color:#999">Tip：平台评分提交成功</p>
 <p>3、操作-取消</p>
 <p>点击【取消-按钮】，关闭弹窗，不保存修改，停留当前页面。</p>
@@ -3465,11 +3695,13 @@ export const prdChapters = [
 <tr><td>方案名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>方案类型</td><td></td><td>枚举：政务信创、金融合规、安全可控、科研提算、通用商用</td></tr>
 <tr><td>服务项</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>需求描述</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>需求说明</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>申请机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务</td></tr>
+<tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务，以标签样式展示</td></tr>
 <tr><td>状态</td><td></td><td>枚举：待响应、已响应、已完成、已关闭</td></tr>
 <tr><td>发布时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>响应机构</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>响应时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 </table>
 <p>3、操作-状态流转与按钮</p>
 <pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
@@ -3489,32 +3721,26 @@ export const prdChapters = [
 <p><strong>模块描述：</strong>需求管理 / 所有需求 / 需求详情</p>
 <p><strong>功能描述：</strong>以右侧抽屉形式查看需求详细信息，包括需求信息和响应信息（如有）。展示全量需求数据，供管理员查看所有机构提交的需求。</p>
 <p><strong>优先级：</strong>P2</p>
-<p><strong>输入/前置条件：</strong>在需求列表中点击【详情-按钮】打开详情抽屉。</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开详情抽屉。</p>
 <p><strong>详细设计：</strong></p>
 <p>1、抽屉头部</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
 <tr><td>方案名称</td><td></td><td>大号加粗展示</td></tr>
-<tr><td>需求编号</td><td></td><td>等宽字体展示，如"DM-20260810-0012"</td></tr>
+<tr><td>需求编号</td><td></td><td>等宽字体展示，前缀"需求编号："，如"需求编号：DM-20260810-0012"</td></tr>
 <tr><td>状态</td><td></td><td>以状态标签（StatusDot组件）展示</td></tr>
 </table>
-<p>2、概览</p>
-<p>以单个"概览"标签页展示，需求信息与响应信息在同一页面内合并展示，不通过 tab 区分。</p>
-<p>1）需求信息</p>
+<p>2）需求信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>需求编号</td><td></td><td>等宽字体展示，如"DM-20260810-0012"</td></tr>
+<tr><td>服务类型</td><td></td><td>以服务类型标签样式展示，枚举：数字应用、安全服务、能力组件、基础服务，为空时显示"--"</td></tr>
 <tr><td>方案类型</td><td></td><td>枚举：政务信创、金融合规、安全可控、科研提算、通用商用</td></tr>
-<tr><td>方案名称</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>服务项</td><td></td><td>以列表形式展示每个服务项的详细信息，每项包含：服务项名称（加粗展示）、服务项描述（灰色文字，超出2行显示省略号，鼠标悬停展示全部内容），为空时显示"--"</td></tr>
-<tr><td>服务类型</td><td></td><td>枚举：数字应用、安全服务、能力组件、基础服务</td></tr>
-<tr><td>需求描述</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>服务项</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>需求说明</td><td></td><td>完整展示，超出换行，为空时显示"--"</td></tr>
 <tr><td>申请机构</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>申请人</td><td></td><td>完整展示，为空时显示"--"</td></tr>
 <tr><td>发布时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
-<tr><td>需求状态</td><td></td><td>枚举：待响应、已响应、已完成、已关闭</td></tr>
 </table>
-<p>2）响应信息</p>
+<p>3）响应信息</p>
 <p>仅当需求有响应内容时展示响应信息；无响应时不展示。</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
@@ -3522,7 +3748,7 @@ export const prdChapters = [
 <tr><td>响应时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>预估报价</td><td></td><td>显示金额，前缀¥，为空时显示"--"</td></tr>
 <tr><td>预计工期</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>响应内容</td><td></td><td>超出2行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>响应内容</td><td></td><td>完整展示，超出换行，为空时显示"--"</td></tr>
 </table>
 `
   }
@@ -3531,24 +3757,24 @@ export const prdChapters = [
 // ── 路由映射 ──────────────────────────────────────────────
 
 const routePrdMap = {
-  // 3.1.1 服务管理 - 服务上架
-  '/workorder/myApps':                  { anchor: 'prd-3.1.1.1', pageName: '服务上架' },
-  '/workorder/myAppsDetail':            { anchor: 'prd-3.1.1.1.4', pageName: '数字应用详情' },
-
-  // 3.1.1 服务管理 - 开通管理
-  '/workorder/order/mySubscriptions':       { anchor: 'prd-3.1.2', pageName: '服务订阅' },
-  '/workorder/order/myInitiated':       { anchor: 'prd-3.1.2.2', pageName: '开通记录' },
-  '/workorder/order/myInitiatedDetail': { anchor: 'prd-3.1.2.1.2', pageName: '订单详情' },
-
-  // 工作台
+  // 3.1.1 工作台
   '/workorder/serviceDesk': { anchor: 'prd-3.1.1', pageName: '工作台' },
 
-  // 3.1.1 服务管理 - 需求管理
-  '/workorder/myDemand/initiate':       { anchor: 'prd-3.1.3', pageName: '我发起的需求' },
-  '/workorder/myDemand/initiateDetail': { anchor: 'prd-3.1.3.1.4', pageName: '需求详情' },
-  '/workorder/myDemand/response':       { anchor: 'prd-3.1.3.2', pageName: '我响应的需求' },
-  '/workorder/myDemand/allDetail':      { anchor: 'prd-3.1.3.2.1.2', pageName: '需求详情' },
-  '/workorder/myDemand/responseDetail': { anchor: 'prd-3.1.3.2.2.2', pageName: '响应详情' },
+  // 3.1.2 服务管理 - 服务上架
+  '/workorder/myApps':                  { anchor: 'prd-3.1.2.1', pageName: '服务上架' },
+  '/workorder/myAppsDetail':            { anchor: 'prd-3.1.2.1.4', pageName: '数字应用详情' },
+
+  // 3.1.3 开通管理 - 服务开通 / 开通记录
+  '/workorder/order/mySubscriptions':       { anchor: 'prd-3.1.3', pageName: '服务开通' },
+  '/workorder/order/myInitiated':       { anchor: 'prd-3.1.3.2', pageName: '开通记录' },
+  '/workorder/order/myInitiatedDetail': { anchor: 'prd-3.1.3.1.2', pageName: '订单详情' },
+
+  // 3.1.4 需求管理 - 需求发起 / 需求响应
+  '/workorder/myDemand/initiate':       { anchor: 'prd-3.1.4', pageName: '我发起的需求' },
+  '/workorder/myDemand/initiateDetail': { anchor: 'prd-3.1.4.1.4', pageName: '需求详情' },
+  '/workorder/myDemand/response':       { anchor: 'prd-3.1.4.2', pageName: '我响应的需求' },
+  '/workorder/myDemand/allDetail':      { anchor: 'prd-3.1.4.2.1.2', pageName: '需求详情' },
+  '/workorder/myDemand/responseDetail': { anchor: 'prd-3.1.4.2.2.2', pageName: '响应详情' },
 
   // 3.2.1 服务目录管理
   '/portal/service/digitalApp':          { anchor: 'prd-3.2.1', pageName: '数字应用管理' },
@@ -3565,7 +3791,7 @@ const routePrdMap = {
   '/portal/service/serviceCatalogForm':        { anchor: 'prd-3.2.1.4.2', pageName: '新增基础服务' },
 
   // 3.2.2 服务审核管理
-  '/portal/auditCenter/qualificationAudit':       { anchor: 'prd-3.2.2.1', pageName: '机构资质审核' },
+  '/portal/auditCenter/qualificationAudit':       { anchor: 'prd-3.2.2', pageName: '机构入驻审核' },
   '/portal/auditCenter/qualificationDetail':      { anchor: 'prd-3.2.2.1.3', pageName: '审核详情' },
   '/portal/auditCenter/digitalAppAudit':          { anchor: 'prd-3.2.2.2', pageName: '数字应用审核' },
   '/portal/auditCenter/digitalAppAuditDetail':    { anchor: 'prd-3.2.2.2.3', pageName: '审核详情' },
@@ -3578,10 +3804,10 @@ const routePrdMap = {
 
   // 3.2.3 服务开通管理
   '/portal/order/list':        { anchor: 'prd-3.2.3',   pageName: '服务开通管理' },
-  '/portal/order/detail':      { anchor: 'prd-3.2.3.1.2',   pageName: '订单详情' },
+  '/portal/order/detail':      { anchor: 'prd-3.2.3.1.3',   pageName: '订单详情' },
   '/portal/order/review':      { anchor: 'prd-3.2.3.3',   pageName: '质量评价管理' },
   '/workorder/order/list':     { anchor: 'prd-3.2.3',   pageName: '服务管理' },
-  '/workorder/order/detail':   { anchor: 'prd-3.2.3.1.2',   pageName: '订单详情' },
+  '/workorder/order/detail':   { anchor: 'prd-3.2.3.1.3',   pageName: '订单详情' },
   '/workorder/order/review':   { anchor: 'prd-3.2.3.3',   pageName: '质量评价管理' },
 
   // 3.2.4 需求管理

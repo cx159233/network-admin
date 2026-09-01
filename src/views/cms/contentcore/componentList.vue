@@ -110,7 +110,7 @@
           :pagination="paginationConfig"
           :row-key="(record) => record.componentId"
           :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
-          :scroll="{ y: tableHeight }"
+          :scroll="{ x: 1300, y: tableHeight }"
           :custom-row="(record) => ({ onDblclick: () => handleEdit(record) })"
           @change="onTableChange"
         >
@@ -120,8 +120,8 @@
               <span class="cell-name__id">{{ record.componentId || '--' }}</span>
             </span>
             <a-badge v-else-if="column.dataIndex === 'status'" :status="record.status === 20 ? 'success' : record.status === 30 ? 'error' : 'default'" :text="record.status === 20 ? '已上线使用' : record.status === 30 ? '已下架' : '未知'" />
-            <span v-else-if="column.dataIndex === 'platformRating'" @click="goToReview(record)" class="rating-star">{{ record.platformRating || 0 }}</span>
-            <span v-else-if="column.dataIndex === 'usageRating'" @click="goToReview(record)" class="rating-star">{{ record.usageRating || 0 }}</span>
+            <span v-else-if="column.dataIndex === 'platformRating'">{{ record.platformRating || 0 }}</span>
+            <span v-else-if="column.dataIndex === 'usageRating'">{{ record.usageRating || 0 }}</span>
             <template v-else-if="column.dataIndex === 'action'">
               <a-space size="small">
                 <a-button type="link" size="small" class="!p-0" @click.stop="handleDetail(record)">详情</a-button>
@@ -138,7 +138,7 @@
     </CloudCard>
 
     <!-- 详情弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       title="详情"
       width="800px"
       v-model:open="detailDialogVisible"
@@ -202,7 +202,7 @@
     </a-modal>
 
     <!-- 评价弹窗 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       title="组件评价"
       width="920px"
       v-model:open="ratingDialogVisible"
@@ -224,7 +224,7 @@
             </a-form>
           </a-tab-pane>
           <a-tab-pane key="user" tab="用户评分">
-            <a-table
+            <a-table :scroll="{ x: 'max-content' }"
               :columns="ratingColumns"
               :data-source="usageRatings"
               :pagination="false"
@@ -281,7 +281,7 @@
     </a-modal>
 
     <!-- 详情抽屉 -->
-    <a-drawer
+    <a-drawer :get-container="getDrawerContainer"
       v-model:open="drawer.visible"
       title="能力组件详情"
       :width="860"
@@ -310,8 +310,8 @@
             <div class="overview-section">
               <div class="overview-section__title">基本信息</div>
               <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-                <a-descriptions-item label="显示顺序" :span="2">
-                  <span class="cell-mono">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</span>
+                <a-descriptions-item label="付费方式参考" :span="2">
+                  <span class="muted">{{ drawer.record.paymentMethodRef || '--' }}</span>
                 </a-descriptions-item>
                 <a-descriptions-item label="组件描述" :span="2">
                   <span class="muted">{{ drawer.record.description || '--' }}</span>
@@ -337,10 +337,17 @@
                 <a-descriptions-item label="开放范围">{{ drawer.record.coverView || '--' }}</a-descriptions-item>
               </a-descriptions>
             </div>
+            <div class="overview-section">
+              <div class="overview-section__title">管理信息</div>
+              <a-descriptions :column="2" bordered size="small" class="drawer-desc">
+                <a-descriptions-item label="显示顺序" :span="2">{{ drawer.record.sortOrder != null ? drawer.record.sortOrder : 0 }}</a-descriptions-item>
+                <a-descriptions-item label="服务征集得分" :span="2">{{ drawer.record.recruitScore != null ? drawer.record.recruitScore : '--' }}</a-descriptions-item>
+              </a-descriptions>
+            </div>
           </a-tab-pane>
           <a-tab-pane key="audit" tab="审核信息">
             <div class="overview-section__title">审核记录</div>
-            <a-table
+            <a-table :scroll="{ x: 'max-content' }"
               :columns="auditVersionColumns"
               :data-source="auditVersionRows"
               :pagination="false"
@@ -414,15 +421,16 @@
             </div>
             <div class="overview-section">
               <div class="overview-section__head">
-                <span class="overview-section__title">用户评分</span>
+                <span class="overview-section__title">用户评价</span>
                 <span class="overview-section__count">共 {{ drawerUsageRatings.length }} 条</span>
               </div>
               <div class="rating-list">
                 <div v-for="(item, idx) in drawerUsageRatings" :key="idx" class="rating-card">
-                  <div class="rating-card__avatar">{{ (item.userName || '匿').charAt(0) }}</div>
                   <div class="rating-card__body">
                     <div class="rating-card__row">
-                      <span class="rating-card__name">{{ item.userName || '匿名用户' }}</span>
+                      <span class="rating-card__org">{{ item.orgName || '--' }}</span>
+                      <span class="rating-card__sep">·</span>
+                      <span class="rating-card__order">{{ item.orderNo }}</span>
                     </div>
                     <div class="rating-card__dims">
                       <span v-for="d in dimLabels" :key="d" class="rating-card__dim">
@@ -432,11 +440,6 @@
                         </span>
                         <span class="rating-card__dim-num">{{ item.ratings[d] }}</span>
                       </span>
-                    </div>
-                    <div class="rating-card__meta">
-                      <span>{{ item.orgName || '--' }}</span>
-                      <span class="rating-card__sep">·</span>
-                      <span class="rating-card__order">{{ item.orderNo }}</span>
                     </div>
                     <div class="rating-card__content">{{ item.content }}</div>
                     <div class="rating-card__time">{{ formatTime(item.time) }}</div>
@@ -471,6 +474,7 @@ import {
 } from '@ant-design/icons-vue';
 import { message, Modal } from 'ant-design-vue';
 import { getComponentList, delComponent, publishComponent, offlineComponent } from "@/api/contentcore/component";
+import { getDicts } from "@/api/system/dict/data";
 import PageHeader from "@/components/cloud/PageHeader.vue";
 import CloudCard from "@/components/cloud/CloudCard.vue";
 import FilterBar from "@/components/cloud/FilterBar.vue";
@@ -554,11 +558,7 @@ export default {
           4: { statusKey: 'pending', statusText: '未开始' }
         }
       },
-      coverOptions: [
-        { value: '不限', label: '不限' },
-        { value: '市级', label: '市级' },
-        { value: '区（县）域', label: '区（县）域' }
-      ],
+      coverOptions: [],
       cloudProviderOptions: [
         { value: '电信云', label: '电信云' },
         { value: '移动云', label: '移动云' },
@@ -588,7 +588,7 @@ export default {
       columns: [
         { title: '能力组件名称/ID', dataIndex: 'name', key: 'name', ellipsis: true, width: 180 },
 
-        { title: '组件描述', dataIndex: 'description', key: 'description', ellipsis: true, width: 250 },
+        { title: '组件描述', dataIndex: 'description', key: 'description', width: 250, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '服务商名称', dataIndex: 'serviceProviderName', key: 'serviceProviderName', ellipsis: true, width: 150 },
         { title: '部署云服务商', dataIndex: 'deployServiceProviderView', key: 'deployServiceProviderView', ellipsis: true, width: 120 },
         { title: '开放范围', dataIndex: 'coverView', key: 'coverView', width: 120 },
@@ -663,9 +663,24 @@ export default {
   },
   created() {
     this.changeTableHeight();
+    this.loadCoverOptions();
     this.loadComponentList();
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
+    loadCoverOptions() {
+      getDicts('OpenRange').then((response) => {
+        this.coverOptions = (response.data || []).map((item) => ({
+          value: String(item.dictCode),
+          label: item.dictLabel
+        }));
+      });
+    },
     loadComponentList() {
       this.loading = true;
       getComponentList(this.queryParams).then((response) => {
@@ -715,9 +730,6 @@ export default {
       if (val >= 3) return 'score-mid';
       return 'score-low';
     },
-    goToReview(row) {
-      this.$router.push({ path: '/portal/order/review', query: { serviceId: row.componentId } });
-    },
     getStatusKey(status) {
       const map = {
         20: 'done',
@@ -766,6 +778,7 @@ export default {
         return;
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: "是否确认删除？",
         onOk: () => {
           return delComponent(componentIds).then(() => {
@@ -786,6 +799,7 @@ export default {
         return;
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: "发布后将在门户网站上显示，是否确认发布？",
         onOk: () => {
           return publishComponent(componentIds).then(() => {
@@ -805,6 +819,7 @@ export default {
         return;
       }
       Modal.confirm({
+        getContainer: this.getDemoContainer,
         title: "下线后将在门户网站上隐藏，是否确认下线？",
         onOk: () => {
           return offlineComponent(componentIds).then(() => {
@@ -1013,15 +1028,7 @@ export default {
   border-radius: 4px;
 }
 
-.rating-star {
-  color: #165DFF;
-  cursor: pointer;
-  font-weight: 400;
-}
 
-.rating-star:hover {
-  text-decoration: underline;
-}
 
 /* 列表状态列文字统一 0.65（色点不变） */
 :deep(.ant-badge-status-text) {
@@ -1295,19 +1302,6 @@ export default {
   border-radius: 8px;
 }
 
-.rating-card__avatar {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #165DFF, #4096FF);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  display: grid;
-  place-items: center;
-}
-
 .rating-card__body {
   flex: 1;
   min-width: 0;
@@ -1320,10 +1314,10 @@ export default {
   margin-bottom: 6px;
 }
 
-.rating-card__name {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.85);
+.rating-card__org {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .rating-card__dims {
@@ -1376,21 +1370,12 @@ export default {
   margin-right: 4px;
 }
 
-.rating-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #86909C;
-  margin-bottom: 6px;
-}
-
 .rating-card__sep {
   color: #C9CDD4;
 }
 
 .rating-card__order {
+  font-size: 13px;
   color: #86909C;
 }
 

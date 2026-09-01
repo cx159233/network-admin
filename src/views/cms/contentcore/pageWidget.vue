@@ -28,7 +28,7 @@
       size="small"
       :columns="columns"
       :data-source="pageWidgetList"
-      :scroll="{ y: tableHeight }"
+      :scroll="{ x: 'max-content', y: tableHeight }"
       row-key="pageWidgetId"
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
       :custom-row="customRow"
@@ -80,7 +80,7 @@
       @pagination="loadPageWidgetList"
     />
     <!-- 添加对话框 -->
-    <a-modal
+    <a-modal :get-container="getDemoContainer"
       :title="$t('CMS.PageWidget.AddTitle')"
       :open="dialogVisible"
       :mask-closable="false"
@@ -204,6 +204,12 @@ export default {
     this.loadPublishPipes();
   },
   methods: {
+    getDemoContainer() {
+      return document.querySelector('.app-main__content') || document.body;
+    },
+    getDrawerContainer() {
+      return document.querySelector('.app-overlay') || document.body;
+    },
     changeTableHeight() {
       const height = document.body.offsetHeight;
       this.tableHeight = height - 330;
