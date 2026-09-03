@@ -72,46 +72,46 @@
           <!-- 左侧：概览信息 -->
           <div class="drawer-split__left">
             <div class="split-section">
-              <div class="split-section__title">企业基本情况</div>
+              <div class="split-section__title">机构基本情况</div>
               <a-descriptions :column="1" bordered size="small">
-                <a-descriptions-item label="机构类型">
+                <a-descriptions-item label="机构角色">
                   <span :class="['org-role-tag', `org-role-tag--${drawer.record.orgRole}`]">{{ getOrgRoleText(drawer.record.orgRole) || '--' }}</span>
                 </a-descriptions-item>
                 <a-descriptions-item label="法定代表人">{{ drawer.record.legalPerson || '--' }}</a-descriptions-item>
-                <a-descriptions-item label="单位性质">{{ drawer.record.unitNature ? drawer.record.unitNature.join('、') : '--' }}</a-descriptions-item>
+                <a-descriptions-item label="机构性质">{{ drawer.record.unitNature ? drawer.record.unitNature.join('、') : '--' }}</a-descriptions-item>
                 <a-descriptions-item label="成立时间">
                   <span class="cell-mono">{{ drawer.record.establishDate || '--' }}</span>
                 </a-descriptions-item>
-                <a-descriptions-item label="单位注册地">{{ drawer.record.registerProvince }}{{ drawer.record.registerCity }}{{ drawer.record.registerDistrict }}{{ drawer.record.registerDetail }}</a-descriptions-item>
-                <a-descriptions-item label="单位地址">{{ drawer.record.addressProvince }}{{ drawer.record.addressCity }}{{ drawer.record.addressDistrict }}{{ drawer.record.addressDetail }}</a-descriptions-item>
-                <a-descriptions-item label="联系人">{{ drawer.record.contactName }}<template v-if="drawer.record.contactDuty"> / {{ drawer.record.contactDuty }}</template></a-descriptions-item>
-                <a-descriptions-item label="联系电话">
-                  <span class="cell-mono">{{ drawer.record.contactPhone || '--' }}</span>
-                </a-descriptions-item>
-                <a-descriptions-item label="E-mail/微信号">
-                  <span class="cell-mono">{{ drawer.record.contactEmail || '--' }}</span>
-                </a-descriptions-item>
+                <a-descriptions-item label="机构注册地">{{ drawer.record.registerProvince }}{{ drawer.record.registerCity }}{{ drawer.record.registerDistrict }}{{ drawer.record.registerDetail }}</a-descriptions-item>
+                <a-descriptions-item label="机构居住地">{{ drawer.record.addressProvince }}{{ drawer.record.addressCity }}{{ drawer.record.addressDistrict }}{{ drawer.record.addressDetail }}</a-descriptions-item>
               </a-descriptions>
             </div>
 
             <div class="split-section">
               <div class="split-section__title">服务介绍</div>
               <a-descriptions :column="1" bordered size="small">
-                <a-descriptions-item label="企业简介">{{ drawer.record.companyIntro || '--' }}</a-descriptions-item>
+                <a-descriptions-item label="机构简介">{{ drawer.record.companyIntro || '--' }}</a-descriptions-item>
                 <a-descriptions-item label="主要产品或服务介绍">{{ drawer.record.productIntro || '--' }}</a-descriptions-item>
                 <a-descriptions-item label="人力情况介绍">{{ drawer.record.hrIntro || '--' }}</a-descriptions-item>
               </a-descriptions>
             </div>
 
             <div class="split-section">
-              <div class="split-section__title">管理员信息</div>
+              <div class="split-section__title">联系信息</div>
               <a-descriptions :column="1" bordered size="small">
-                <a-descriptions-item label="管理员姓名">{{ drawer.record.adminName || '--' }}</a-descriptions-item>
+                <a-descriptions-item label="真实姓名">{{ drawer.record.contactName || '--' }}</a-descriptions-item>
+                <a-descriptions-item label="登录账号">
+                  <span class="cell-mono">{{ drawer.record.account || '--' }}</span>
+                </a-descriptions-item>
                 <a-descriptions-item label="身份证号">
                   <span class="cell-mono">{{ maskIdCard(drawer.record.idCard) }}</span>
                 </a-descriptions-item>
-                <a-descriptions-item label="手机号">
-                  <span class="cell-mono">{{ drawer.record.phone || '--' }}</span>
+                <a-descriptions-item label="联系方式">
+                  <span class="cell-mono">{{ drawer.record.contactPhone || '--' }}</span>
+                </a-descriptions-item>
+                <a-descriptions-item label="职务">{{ drawer.record.contactDuty || '--' }}</a-descriptions-item>
+                <a-descriptions-item label="E-mail/微信号">
+                  <span class="cell-mono">{{ drawer.record.contactEmail || '--' }}</span>
                 </a-descriptions-item>
               </a-descriptions>
             </div>
@@ -204,13 +204,13 @@ export default {
         { title: '提交审核时间', dataIndex: 'submitTime', key: 'submitTime', width: 170 },
         { title: '审核状态', dataIndex: 'auditStatus', key: 'auditStatus', width: 100 },
         { title: '机构名称', dataIndex: 'orgName', key: 'orgName', width: 220 },
-        { title: '机构类型', dataIndex: 'orgRole', key: 'orgRole', width: 110 },
+        { title: '机构角色', dataIndex: 'orgRole', key: 'orgRole', width: 110 },
         { title: '统一社会信用代码', dataIndex: 'orgCode', key: 'orgCode', width: 200 },
-        { title: '单位注册地', dataIndex: 'registerAddr', key: 'registerAddr', width: 200, ellipsis: true },
+        { title: '机构注册地', dataIndex: 'registerAddr', key: 'registerAddr', width: 200, ellipsis: true },
         { title: '联系人', dataIndex: 'contactName', key: 'contactName', width: 90 },
         { title: '联系电话', dataIndex: 'contactPhone', key: 'contactPhone', width: 130 },
         { title: 'E-mail/邮箱', dataIndex: 'contactEmail', key: 'contactEmail', width: 180, ellipsis: true },
-        { title: '企业简介', dataIndex: 'companyIntro', key: 'companyIntro', width: 200, customCell: () => ({ class: 'cell-wrap' }) },
+        { title: '机构简介', dataIndex: 'companyIntro', key: 'companyIntro', width: 200, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '操作', dataIndex: 'action', key: 'action', width: 90, fixed: 'right' }
       ],
       orgList: [
@@ -239,12 +239,11 @@ export default {
         contactPhone: '13812345678',
         contactDuty: '技术总监',
         contactEmail: 'liming@example.com',
+        account: 'liming2026',
         companyIntro: '该机构专注于智慧政务系统建设，为区域数字化转型提供技术支撑与服务保障。',
         productIntro: '1. 智慧政务协同平台：支撑跨部门业务协同\n2. 数据共享交换系统：实现多源数据融合\n3. 城市运行管理平台：提供全域态势感知',
         hrIntro: '现有员工200人，其中技术团队120人（硕士以上40人），管理团队30人，运营团队50人。',
-        adminName: '李明',
         idCard: '110108199001011234',
-        phone: '13812345678',
         materials: [
           { name: '真实性承诺书.pdf', size: '1.2 MB' }
         ]

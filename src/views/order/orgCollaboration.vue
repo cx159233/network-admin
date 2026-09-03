@@ -23,7 +23,7 @@
         />
         <a-select
           v-model:value="filter.role"
-          placeholder="机构类型"
+          placeholder="机构角色"
           allow-clear
           style="width: 140px"
         >
@@ -42,7 +42,7 @@
       </FilterBar>
       <div class="org-collab-page__divider"></div>
       <div class="org-collab-page__table-wrap">
-        <a-table :scroll="{ x: 1710 }"
+        <a-table :scroll="{ x: 1330 }"
           :columns="columns"
           :data-source="filteredData"
           :loading="loading"
@@ -103,37 +103,28 @@
         <a-tabs v-model:activeKey="drawer.activeTab" class="mvp-detail-tabs">
           <a-tab-pane key="overview" tab="概览">
             <div class="overview-section">
-              <div class="overview-section__title">企业基本情况</div>
+              <div class="overview-section__title">机构基本情况</div>
               <a-descriptions :column="2" bordered size="small" class="drawer-desc">
-                <a-descriptions-item label="机构类型">
+                <a-descriptions-item label="机构角色">
                   <span style="white-space: nowrap">
                     <span v-for="r in drawer.record.roles" :key="r" :class="['org-role-tag', `org-role-tag--${r}`]" style="margin-right:4px">{{ getOrgRoleText([r]) }}</span>
                   </span>
                   <span v-if="!drawer.record.roles || !drawer.record.roles.length" class="cell-default">--</span>
                 </a-descriptions-item>
                 <a-descriptions-item label="法定代表人">{{ drawer.record.legalPerson || '--' }}</a-descriptions-item>
-                <a-descriptions-item label="单位性质">{{ drawer.record.unitNature ? drawer.record.unitNature.join('、') : '--' }}</a-descriptions-item>
+                <a-descriptions-item label="机构性质">{{ drawer.record.unitNature ? drawer.record.unitNature.join('、') : '--' }}</a-descriptions-item>
                 <a-descriptions-item label="成立时间">
                   <span class="cell-mono">{{ drawer.record.establishDate || '--' }}</span>
                 </a-descriptions-item>
-                <a-descriptions-item label="单位注册地" :span="2">{{ formatAddress(drawer.record, 'register') }}</a-descriptions-item>
-                <a-descriptions-item label="单位地址" :span="2">{{ formatAddress(drawer.record, 'address') }}</a-descriptions-item>
-                <a-descriptions-item label="联系人">
-                  {{ drawer.record.contactName || '--' }}<template v-if="drawer.record.contactDuty"> / {{ drawer.record.contactDuty }}</template>
-                </a-descriptions-item>
-                <a-descriptions-item label="联系电话">
-                  <span class="cell-mono">{{ drawer.record.contactPhone || '--' }}</span>
-                </a-descriptions-item>
-                <a-descriptions-item label="E-mail/微信" :span="2">
-                  <span class="cell-mono">{{ drawer.record.contactEmail || '--' }}</span>
-                </a-descriptions-item>
+                <a-descriptions-item label="机构注册地" :span="2">{{ formatAddress(drawer.record, 'register') }}</a-descriptions-item>
+                <a-descriptions-item label="机构居住地" :span="2">{{ formatAddress(drawer.record, 'address') }}</a-descriptions-item>
               </a-descriptions>
             </div>
 
             <div class="overview-section">
               <div class="overview-section__title">服务介绍</div>
               <a-descriptions :column="1" bordered size="small" class="drawer-desc">
-                <a-descriptions-item label="企业简介">
+                <a-descriptions-item label="机构简介">
                   <span class="desc-text">{{ drawer.record.companyIntro || '--' }}</span>
                 </a-descriptions-item>
                 <a-descriptions-item label="主要产品或服务介绍">
@@ -183,7 +174,7 @@ import PageHeader from '@/components/cloud/PageHeader.vue'
 import CloudCard from '@/components/cloud/CloudCard.vue'
 import FilterBar from '@/components/cloud/FilterBar.vue'
 import { FileOutlined, DownloadOutlined } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import { message, Modal } from 'ant-design-vue'
 
 export default {
   name: 'OrgCollaboration',
@@ -203,13 +194,10 @@ export default {
       columns: [
         { title: '序号', key: 'index', width: 50 },
         { title: '机构名称', dataIndex: 'unitName', key: 'unitName', width: 200 },
-        { title: '机构类型', dataIndex: 'orgRole', key: 'orgRole', width: 110 },
+        { title: '机构角色', dataIndex: 'orgRole', key: 'orgRole', width: 110 },
         { title: '统一社会信用代码', dataIndex: 'creditCode', key: 'creditCode', width: 200 },
-        { title: '单位注册地', dataIndex: 'registerAddr', key: 'registerAddr', width: 180, ellipsis: true },
-        { title: '联系人', dataIndex: 'contactName', key: 'contactName', width: 80 },
-        { title: '联系电话', dataIndex: 'contactPhone', key: 'contactPhone', width: 130 },
-        { title: 'E-mail/邮箱', dataIndex: 'contactEmail', key: 'contactEmail', width: 170, ellipsis: true },
-        { title: '企业简介', dataIndex: 'companyIntro', key: 'companyIntro', width: 180, customCell: () => ({ class: 'cell-wrap' }) },
+        { title: '机构注册地', dataIndex: 'registerAddr', key: 'registerAddr', width: 180, ellipsis: true },
+        { title: '机构简介', dataIndex: 'companyIntro', key: 'companyIntro', width: 180, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '注册时间', dataIndex: 'registerTime', key: 'registerTime', width: 150 },
         { title: '状态', dataIndex: 'status', key: 'status', width: 70 },
         { title: '操作', dataIndex: 'action', key: 'action', width: 190, fixed: 'right' }
@@ -224,10 +212,6 @@ export default {
           establishDate: '2018-05-12',
           registerProvince: '北京市', registerCity: '北京市', registerDistrict: '海淀区', registerDetail: '中关村大街27号院16号楼',
           addressProvince: '北京市', addressCity: '北京市', addressDistrict: '海淀区', addressDetail: '中关村大街27号院16号楼',
-          contactName: '李雪',
-          contactPhone: '13800138001',
-          contactDuty: '商务经理',
-          contactEmail: 'li.xue@yingxiangyun.com',
           companyIntro: '影像云科技专注于医学影像云服务，为医疗机构提供完整的影像存储、传输与智能诊断辅助解决方案，已服务国内300+医院。',
           productIntro: '主要产品包括医学影像云平台、智能影像诊断辅助系统、影像数据治理工具集等，服务对象为各级医疗机构。',
           hrIntro: '员工总数 120 人，研发人员 65 人，运维人员 12 人，技术人员持证比例 80%。',
@@ -254,10 +238,6 @@ export default {
           establishDate: '2015-09-01',
           registerProvince: '北京市', registerCity: '北京市', registerDistrict: '朝阳区', registerDetail: '建国路88号',
           addressProvince: '北京市', addressCity: '北京市', addressDistrict: '朝阳区', addressDetail: '建国路88号',
-          contactName: '赵主管',
-          contactPhone: '13900139002',
-          contactDuty: '项目经理',
-          contactEmail: 'zhao.zg@huaneng.com',
           companyIntro: '华能数智科技集团隶属于华能集团，专注于数字化转型与智慧能源解决方案，致力于为政企客户提供端到端的数字化服务。',
           productIntro: '主要产品涵盖智慧能源管理平台、政务协同办公系统、企业级数据中台等。',
           hrIntro: '员工总数 280 人，研发人员 150 人，运维人员 30 人。',
@@ -283,10 +263,6 @@ export default {
           establishDate: '2001-03-15',
           registerProvince: '北京市', registerCity: '北京市', registerDistrict: '朝阳区', registerDetail: '日坛北街33号',
           addressProvince: '北京市', addressCity: '北京市', addressDistrict: '朝阳区', addressDetail: '日坛北街33号',
-          contactName: '刘科长',
-          contactPhone: '13700137003',
-          contactDuty: '科长',
-          contactEmail: 'liu.kz@chywj.bj.gov.cn',
           companyIntro: '朝阳区卫生健康委员会是负责朝阳区卫生健康工作的政府职能部门，统筹辖区医疗机构、公共卫生和健康促进等事务。',
           productIntro: '',
           hrIntro: '',
@@ -311,10 +287,6 @@ export default {
           establishDate: '2017-11-20',
           registerProvince: '上海市', registerCity: '上海市', registerDistrict: '浦东新区', registerDetail: '世纪大道100号',
           addressProvince: '上海市', addressCity: '上海市', addressDistrict: '浦东新区', addressDetail: '世纪大道100号',
-          contactName: '王经理',
-          contactPhone: '13600136004',
-          contactDuty: '销售总监',
-          contactEmail: 'wang.jl@zhongyuan.com',
           companyIntro: '中远云科技专注于云计算与企业数字化服务，提供云基础设施、SaaS 应用以及行业解决方案。',
           productIntro: '主要产品包括企业云平台、智能分析系统等。',
           hrIntro: '员工总数 95 人，研发人员 50 人。',
@@ -341,10 +313,6 @@ export default {
           establishDate: '1985-06-30',
           registerProvince: '北京市', registerCity: '北京市', registerDistrict: '海淀区', registerDetail: '学院路22号',
           addressProvince: '北京市', addressCity: '北京市', addressDistrict: '海淀区', addressDetail: '学院路22号',
-          contactName: '孙主任',
-          contactPhone: '13500135005',
-          contactDuty: '信息科主任',
-          contactEmail: 'sun.zr@haidianyy.com',
           companyIntro: '海淀区医院是一所集医疗、教学、科研为一体的综合性三级医院。',
           productIntro: '',
           hrIntro: '',
@@ -441,10 +409,19 @@ export default {
       })
     },
     handleToggleStatus(record) {
-      const newStatus = record.status === 'enabled' ? 'disabled' : 'enabled'
-      const label = newStatus === 'enabled' ? '启用' : '停用'
-      message.success(`已${label}机构：${record.unitName}`)
-      record.status = newStatus
+      const action = record.status === 'enabled' ? '停用' : '启用'
+      Modal.confirm({
+        getContainer: this.getDemoContainer,
+        title: `确认${action}`,
+        content: `确定要${action}该机构吗？`,
+        okText: '确定',
+        cancelText: '取消',
+        okType: record.status === 'enabled' ? 'danger' : 'primary',
+        onOk: () => {
+          message.success(`机构已${action}`)
+          record.status = record.status === 'enabled' ? 'disabled' : 'enabled'
+        }
+      })
     },
     getStatusBadge(status) {
       const map = { enabled: 'success', disabled: 'error' }

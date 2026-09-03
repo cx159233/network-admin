@@ -2768,13 +2768,13 @@ export const prdChapters = [
 <tr><td>提交审核时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
 <tr><td>审核状态</td><td></td><td>枚举：待审核、已通过、已驳回</td></tr>
 <tr><td>机构名称</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>机构类型</td><td></td><td>以标签样式展示，枚举：政府机关、事业单位、国有企业、私营企业，为空时显示"--"</td></tr>
+<tr><td>机构角色</td><td></td><td>以标签样式展示，枚举：服务提供方、服务使用方，为空时显示"--"</td></tr>
 <tr><td>统一社会信用代码</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>单位注册地</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>机构注册地</td><td></td><td>机构注册地编码+机构注册地详细地址拼装展示，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系人</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>联系电话</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>E-mail/邮箱</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
-<tr><td>企业简介</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>机构简介</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 </table>
 <p>3、状态流转与按钮</p>
 <table>
@@ -2797,32 +2797,32 @@ export const prdChapters = [
 <tr><td>审核状态</td><td>auditStatus</td><td>使用状态标签展示，枚举：待审核、已通过、已驳回</td></tr>
 <tr><td>统一社会信用代码</td><td>creditCode</td><td>灰色小字，等宽字体展示，为空时显示"--"</td></tr>
 </table>
-<p>2、左侧-企业基本情况</p>
+<p>2、左侧-机构基本情况</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>机构类型</td><td></td><td>以标签样式展示，枚举：政府机关、事业单位、国有企业、私营企业</td></tr>
+<tr><td>机构角色</td><td></td><td>以标签样式展示，枚举：服务提供方、服务使用方</td></tr>
 <tr><td>法定代表人</td><td></td><td>完整展示，为空时显示"--"</td></tr>
-<tr><td>单位性质</td><td></td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
+<tr><td>机构性质</td><td></td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
 <tr><td>成立时间</td><td></td><td>格式：yyyy-MM-dd，等宽字体展示</td></tr>
-<tr><td>单位注册地</td><td></td><td>省/市/区/详细地址拼接展示</td></tr>
-<tr><td>单位地址</td><td></td><td>省/市/区/详细地址拼接展示</td></tr>
-<tr><td>联系人</td><td></td><td>展示姓名，若有职务以"/"分隔展示（如：张三 / 经理）</td></tr>
-<tr><td>联系电话</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
-<tr><td>E-mail/微信号</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
+<tr><td>机构注册地</td><td></td><td>机构注册地编码+机构注册地详细地址拼装展示</td></tr>
+<tr><td>机构居住地</td><td></td><td>机构居住地编码+机构居住地详细地址拼装展示</td></tr>
 </table>
 <p>3、左侧-服务介绍</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>企业简介</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>机构简介</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>主要产品或服务介绍</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 <tr><td>人力情况介绍</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
 </table>
-<p>4、左侧-管理员信息</p>
+<p>4、左侧-联系信息</p>
 <table>
 <tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
-<tr><td>管理员姓名</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>真实姓名</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>登录账号</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
 <tr><td>身份证号</td><td></td><td>等宽字体展示，脱敏处理后显示</td></tr>
-<tr><td>手机号</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
+<tr><td>联系方式</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
+<tr><td>职务</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>E-mail/微信号</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
 </table>
 <p>5、左侧-资质材料</p>
 <table>
@@ -3751,6 +3751,179 @@ export const prdChapters = [
 <tr><td>响应内容</td><td></td><td>完整展示，超出换行，为空时显示"--"</td></tr>
 </table>
 `
+  },
+  {
+    id: 6,
+    title: '',
+    content: `<h3 id="prd-3.2.5">3.2.5 机构协同管理</h3>
+
+<h3 id="prd-3.2.5.1">3.2.5.1 机构列表</h3>
+<p><strong>入口页面：</strong>运营管理后台 / 机构协同管理 / 机构列表</p>
+<p><strong>页面描述：</strong>管理注册的服务使用方与服务提供方机构，支持按机构信息筛选，可查看机构详情、进入账户列表及启用停用机构。</p>
+
+<h3 id="prd-3.2.5.1.1">3.2.5.1.1 机构列表</h3>
+<p><strong>模块描述：</strong>机构协同管理 / 机构列表 / 机构列表</p>
+<p><strong>功能描述：</strong>展示已注册的机构列表，支持按机构名称、统一社会信用代码、机构角色和状态筛选，可进行查看详情、进入账户列表、启用停用操作。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>列表数据来源于通过"机构入驻审核"审核通过的注册机构。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、筛选区域</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>机构名称</td><td></td><td>支持模糊搜索</td></tr>
+<tr><td>统一社会信用代码</td><td></td><td>支持模糊搜索</td></tr>
+<tr><td>机构角色</td><td></td><td>枚举：服务提供方、服务使用方，默认不选中</td></tr>
+<tr><td>状态</td><td></td><td>枚举：启用、停用，默认不选中</td></tr>
+<tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
+<tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
+</table>
+<p>2、列表展示</p>
+<p>1）数据范围为所有机构（不区分机构）的所有状态（启用、停用）的注册机构数据。</p>
+<p>2）根据筛选查询条件，刷新列表并根据入参响应对应内容，按注册时间倒序排列。</p>
+<p>3）默认加载10条最新数据，通过分页形式分隔长列表，可调整每页加载条数。</p>
+<p>4）当前列表数据为空时，显示"暂无数据"。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>序号</td><td></td><td>显示当前页的行号，每页从1开始</td></tr>
+<tr><td>机构名称</td><td></td><td>加粗展示，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>机构角色</td><td></td><td>以标签样式展示，一个机构可同时具有多个角色（如：服务提供方、服务使用方），为空时显示"--"</td></tr>
+<tr><td>统一社会信用代码</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>机构注册地</td><td></td><td>机构注册地编码+机构注册地详细地址拼装展示，超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>机构简介</td><td></td><td>超出限宽显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>注册时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>状态</td><td></td><td>枚举：启用、停用，以徽标样式展示</td></tr>
+</table>
+<p>3、状态流转与按钮</p>
+<pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
+启用 --(停用)---→ 停用
+停用 --(启用)---→ 启用
+</pre>
+<table>
+<tr><th style="white-space:nowrap">状态名称</th><th style="white-space:nowrap">状态代码</th><th>状态对应操作</th></tr>
+<tr><td>启用</td><td></td><td>详情、账户列表、停用</td></tr>
+<tr><td>停用</td><td></td><td>详情、账户列表、启用</td></tr>
+</table>
+
+<h3 id="prd-3.2.5.1.2">3.2.5.1.2 机构详情</h3>
+<p><strong>模块描述：</strong>机构协同管理 / 机构列表 / 机构详情</p>
+<p><strong>功能描述：</strong>以右侧抽屉形式查看机构的详细信息，包括机构基本情况、服务介绍和资质材料。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>操作栏显示【详情-按钮】，点击打开机构详情抽屉。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、抽屉头部</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>机构名称</td><td>unitName</td><td>加粗大号字体展示</td></tr>
+<tr><td>状态</td><td></td><td>以徽标样式展示，枚举：启用、停用</td></tr>
+<tr><td>统一社会信用代码</td><td>creditCode</td><td>灰色小字展示，前缀"ID："</td></tr>
+</table>
+<p>2、概览-机构基本情况</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>机构角色</td><td></td><td>以标签样式展示，一个机构可同时具有多个角色（如：服务提供方、服务使用方），为空时显示"--"</td></tr>
+<tr><td>法定代表人</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>机构性质</td><td></td><td>多值以顿号分隔展示，为空时显示"--"</td></tr>
+<tr><td>成立时间</td><td></td><td>格式：yyyy-MM-dd，等宽字体展示</td></tr>
+<tr><td>机构注册地</td><td></td><td>机构注册地编码+机构注册地详细地址拼装展示</td></tr>
+<tr><td>机构居住地</td><td></td><td>机构居住地编码+机构居住地详细地址拼装展示</td></tr>
+</table>
+<p>3、概览-服务介绍</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>机构简介</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>主要产品或服务介绍</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>人力情况介绍</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+</table>
+<p>4、概览-资质材料</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>材料名称</td><td></td><td>以列表形式展示机构提交的资质文件，每条包含文件图标与材料名称，完整展示，为空时显示"--"</td></tr>
+<tr><td>文件大小</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>下载按钮</td><td></td><td>每条材料右侧展示【下载-按钮】，点击下载对应文件</td></tr>
+</table>
+<p>5、操作-关闭抽屉</p>
+<p>点击抽屉右上角【关闭按钮】，关闭详情抽屉，停留当前页面。</p>
+
+<h3 id="prd-3.2.5.1.3">3.2.5.1.3 操作-停用/启用</h3>
+<p><strong>模块描述：</strong>机构协同管理 / 机构列表 / 操作-停用/启用</p>
+<p><strong>功能描述：</strong>对机构进行启用或停用操作，停用后该机构下所有账户无法登录。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>当机构状态为"启用"时，操作栏显示【停用-按钮】；当机构状态为"停用"时，操作栏显示【启用-按钮】。</p>
+<p><strong>详细设计：</strong></p>
+<p>点击【停用-按钮】，弹出确认框"确定要停用该机构吗？"；点击【启用-按钮】，弹出确认框"确定要启用该机构吗？"，判断逻辑如下：</p>
+<p>1、操作-取消</p>
+<p>点击【取消-按钮】，关闭确认弹窗，不执行操作，停留当前页面。</p>
+<p>2、操作-确定</p>
+<p>点击【确定-按钮】，判断逻辑如下：</p>
+<p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
+<p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
+<p>2）若满足条件，状态变更为对应状态，关闭此对话框，进行消息提示，刷新列表。机构停用后，该机构下所有账户无法登录。</p>
+<p style="font-style:italic; color:#999">Tip：机构已停用 / 机构已启用</p>
+
+<h3 id="prd-3.2.5.2">3.2.5.2 账户列表</h3>
+<p><strong>入口页面：</strong>运营管理后台 / 机构协同管理 / 账户列表（从机构列表进入）</p>
+<p><strong>页面描述：</strong>查看指定机构下的账户信息，展示账户的联系信息，支持按真实姓名和状态筛选，可进行启用停用操作。</p>
+
+<h3 id="prd-3.2.5.2.1">3.2.5.2.1 账户列表</h3>
+<p><strong>模块描述：</strong>机构协同管理 / 账户列表 / 账户列表</p>
+<p><strong>功能描述：</strong>展示指定机构的账户列表，支持按真实姓名和状态筛选，可进行启用停用操作。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>在机构列表点击【账户列表-按钮】，跳转至账户列表页面，页面顶部显示所属机构名称，支持返回机构列表。</p>
+<p><strong>详细设计：</strong></p>
+<p>1、筛选区域</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>真实姓名</td><td></td><td>支持模糊搜索</td></tr>
+<tr><td>状态</td><td></td><td>枚举：启用、停用，默认不选中</td></tr>
+<tr><td>查询按钮</td><td></td><td>点击后以筛选条件为入参，刷新列表，响应对应内容</td></tr>
+<tr><td>重置按钮</td><td></td><td>点击后清空搜索框，重置列表为全部数据</td></tr>
+</table>
+<p>2、列表展示</p>
+<p>1）数据范围为当前机构（从机构列表进入，匹配所选机构）的所有状态（启用、停用）的账户数据。</p>
+<p>2）根据筛选查询条件，刷新列表并根据入参响应对应内容，按创建时间倒序排列。</p>
+<p>3）默认加载10条最新数据，通过分页形式分隔长列表，可调整每页加载条数。</p>
+<p>4）当前列表数据为空时，显示"暂无数据"。</p>
+<table>
+<tr><th style="white-space:nowrap">字段名称</th><th style="white-space:nowrap">字段代码</th><th>字段逻辑与交互说明</th></tr>
+<tr><td>序号</td><td></td><td>显示当前页的行号，每页从1开始</td></tr>
+<tr><td>真实姓名</td><td></td><td>加粗展示，为空时显示"--"</td></tr>
+<tr><td>登录账号</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
+<tr><td>身份证号</td><td></td><td>等宽字体展示，脱敏处理后显示</td></tr>
+<tr><td>联系方式</td><td></td><td>等宽字体展示，为空时显示"--"</td></tr>
+<tr><td>职务</td><td></td><td>完整展示，为空时显示"--"</td></tr>
+<tr><td>E-mail/微信号</td><td></td><td>超出1行显示省略号，鼠标悬停展示全部内容（Tooltip），为空时显示"--"</td></tr>
+<tr><td>创建时间</td><td></td><td>格式：yyyy-MM-dd hh:mm:ss</td></tr>
+<tr><td>启停状态</td><td></td><td>枚举：启用、停用，以徽标样式展示</td></tr>
+</table>
+<p>3、状态流转与按钮</p>
+<pre style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;line-height:1.8;overflow-x:auto">
+启用 --(停用)---→ 停用
+停用 --(启用)---→ 启用
+</pre>
+<table>
+<tr><th style="white-space:nowrap">状态名称</th><th style="white-space:nowrap">状态代码</th><th>状态对应操作</th></tr>
+<tr><td>启用</td><td></td><td>停用</td></tr>
+<tr><td>停用</td><td></td><td>启用</td></tr>
+</table>
+<p>4、操作-返回</p>
+<p>点击页面顶部【返回-按钮】，返回机构列表页面。</p>
+
+<h3 id="prd-3.2.5.2.2">3.2.5.2.2 操作-停用/启用</h3>
+<p><strong>模块描述：</strong>机构协同管理 / 账户列表 / 操作-停用/启用</p>
+<p><strong>功能描述：</strong>对账户进行启用或停用操作，停用后该账户无法登录。</p>
+<p><strong>优先级：</strong>P1</p>
+<p><strong>输入/前置条件：</strong>当账户状态为"启用"时，操作栏显示【停用-按钮】；当账户状态为"停用"时，操作栏显示【启用-按钮】。</p>
+<p><strong>详细设计：</strong></p>
+<p>点击【停用-按钮】，弹出确认框"确定要停用该账户吗？"；点击【启用-按钮】，弹出确认框"确定要启用该账户吗？"，判断逻辑如下：</p>
+<p>1、操作-取消</p>
+<p>点击【取消-按钮】，关闭确认弹窗，不执行操作，停留当前页面。</p>
+<p>2、操作-确定</p>
+<p>点击【确定-按钮】，判断逻辑如下：</p>
+<p>1）若网络异常/超时/宕机，关闭此对话框，停留当前页面，进行消息提示</p>
+<p style="font-style:italic; color:#999">Tip：异常处理提示文案开发人员自行定义</p>
+<p>2）若满足条件，状态变更为对应状态，关闭此对话框，进行消息提示，刷新列表。账户停用后，该账户无法登录。</p>
+<p style="font-style:italic; color:#999">Tip：账户已停用 / 账户已启用</p>
+`
   }
 ]
 
@@ -3813,6 +3986,10 @@ const routePrdMap = {
   // 3.2.4 需求管理
   '/portal/demand/all':      { anchor: 'prd-3.2.4',     pageName: '需求管理' },
   '/portal/demand/detail':   { anchor: 'prd-3.2.4.1.2', pageName: '需求详情' },
+
+  // 3.2.5 机构协同管理
+  '/portal/orgCollaboration/list':      { anchor: 'prd-3.2.5',   pageName: '机构列表' },
+  '/portal/orgCollaboration/accounts':  { anchor: 'prd-3.2.5.2', pageName: '账户列表' },
 }
 
 // ── 导出函数 ──────────────────────────────────────────────

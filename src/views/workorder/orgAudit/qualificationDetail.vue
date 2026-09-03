@@ -16,30 +16,21 @@
       <div class="qualification-detail-page__main">
         <CloudCard class="qualification-detail-page__card">
           <div class="card-head">
-            <span class="card-head__title">企业基本情况</span>
+            <span class="card-head__title">机构基本情况</span>
           </div>
           <a-descriptions :column="2" size="small" class="info-desc">
             <a-descriptions-item label="法定代表人">{{ orgInfo.legalPerson }}</a-descriptions-item>
-            <a-descriptions-item label="单位性质">
+            <a-descriptions-item label="机构性质">
               <span>{{ orgInfo.unitNature.join('、') }}</span>
             </a-descriptions-item>
             <a-descriptions-item label="成立时间">
               <span class="cell-mono">{{ orgInfo.establishDate || '--' }}</span>
             </a-descriptions-item>
-            <a-descriptions-item label="单位注册地" :span="2">
+            <a-descriptions-item label="机构注册地" :span="2">
               {{ orgInfo.registerProvince }}{{ orgInfo.registerCity }}{{ orgInfo.registerDistrict }}{{ orgInfo.registerDetail }}
             </a-descriptions-item>
-            <a-descriptions-item label="单位地址" :span="2">
+            <a-descriptions-item label="机构居住地" :span="2">
               {{ orgInfo.addressProvince }}{{ orgInfo.addressCity }}{{ orgInfo.addressDistrict }}{{ orgInfo.addressDetail }}
-            </a-descriptions-item>
-            <a-descriptions-item label="联系人">
-              {{ orgInfo.contactName }}<template v-if="orgInfo.contactDuty"> / {{ orgInfo.contactDuty }}</template>
-            </a-descriptions-item>
-            <a-descriptions-item label="联系电话">
-              <span class="cell-mono">{{ orgInfo.contactPhone }}</span>
-            </a-descriptions-item>
-            <a-descriptions-item label="E-mail/微信号" :span="2">
-              <span class="cell-mono">{{ orgInfo.contactEmail || '--' }}</span>
             </a-descriptions-item>
           </a-descriptions>
         </CloudCard>
@@ -49,7 +40,7 @@
             <span class="card-head__title">服务介绍</span>
           </div>
           <a-descriptions :column="1" size="small" class="info-desc">
-            <a-descriptions-item label="企业简介">
+            <a-descriptions-item label="机构简介">
               <span class="desc-text">{{ orgInfo.companyIntro }}</span>
             </a-descriptions-item>
             <a-descriptions-item label="主要产品或服务介绍">
@@ -63,14 +54,22 @@
 
         <CloudCard class="qualification-detail-page__card">
           <div class="card-head">
-            <span class="card-head__title">管理员信息</span>
+            <span class="card-head__title">联系信息</span>
           </div>
           <a-descriptions :column="2" size="small" class="info-desc">
+            <a-descriptions-item label="真实姓名">{{ orgInfo.contactName }}</a-descriptions-item>
+            <a-descriptions-item label="登录账号">
+              <span class="cell-mono">{{ orgInfo.account }}</span>
+            </a-descriptions-item>
             <a-descriptions-item label="身份证号">
               <span class="cell-mono">{{ maskIdCard(orgInfo.idCard) }}</span>
             </a-descriptions-item>
-            <a-descriptions-item label="手机号">
-              <span class="cell-mono">{{ orgInfo.phone }}</span>
+            <a-descriptions-item label="联系方式">
+              <span class="cell-mono">{{ orgInfo.contactPhone }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="职务">{{ orgInfo.contactDuty || '--' }}</a-descriptions-item>
+            <a-descriptions-item label="E-mail/微信号">
+              <span class="cell-mono">{{ orgInfo.contactEmail || '--' }}</span>
             </a-descriptions-item>
           </a-descriptions>
         </CloudCard>
@@ -189,6 +188,7 @@ export default {
         contactPhone: '13812345678',
         contactDuty: '技术总监',
         contactEmail: 'liming@example.com',
+        account: 'liming2026',
         // 服务介绍
         companyIntro: '影像云科技成立于2018年，专注于医疗影像AI云服务，为全国200余家医疗机构提供智能影像分析、远程诊断及云端存储解决方案。公司拥有自主知识产权的深度学习算法引擎，已获NMPA三类医疗器械注册证及多项专利。',
         productIntro: '1. 医学影像智能分析平台：基于深度学习的CT/MRI/DR影像辅助诊断\n2. 远程影像协同诊断系统：支持多院区实时会诊与报告互认\n3. 云端影像档案管理：DICOM标准存储，支持PB级数据归档与快速检索',
@@ -202,9 +202,8 @@ export default {
           { name: '信用信息报告.pdf', size: '3.2 MB' },
           { name: '服务商Logo.png', size: '420 KB' }
         ],
-        // 管理员信息
-        idCard: '110108199001011234',
-        phone: '13812345678'
+        // 联系信息
+        idCard: '110108199001011234'
       },
       auditForm: { opinion: '' },
       auditRecords: [

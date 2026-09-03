@@ -16,7 +16,7 @@
       <FilterBar @search="handleQuery" @reset="resetQuery">
         <a-input
           v-model:value="filter.username"
-          placeholder="账户姓名"
+          placeholder="真实姓名"
           allow-clear
           style="width: 180px"
           @pressEnter="handleQuery"
@@ -50,8 +50,6 @@
             </template>
             <template v-else-if="column.dataIndex === 'action'">
               <a-space size="small">
-                <a-button type="link" size="small" class="!p-0" @click="handleEdit(record)">编辑</a-button>
-                <a-divider type="vertical" class="!mx-[2px]" />
                 <a-button
                   type="link"
                   size="small"
@@ -93,17 +91,20 @@ export default {
       pagination: { current: 1, pageSize: 10 },
       columns: [
         { title: '序号', dataIndex: 'index', key: 'index', width: 60 },
-        { title: '账户姓名', dataIndex: 'username', key: 'username', width: 120 },
+        { title: '真实姓名', dataIndex: 'username', key: 'username', width: 110 },
+        { title: '登录账号', dataIndex: 'account', key: 'account', width: 150 },
         { title: '身份证号', dataIndex: 'idCard', key: 'idCard', width: 170 },
-        { title: '手机号', dataIndex: 'phone', key: 'phone', width: 140 },
+        { title: '联系方式', dataIndex: 'phone', key: 'phone', width: 130 },
+        { title: '职务', dataIndex: 'duty', key: 'duty', width: 110 },
+        { title: 'E-mail/微信号', dataIndex: 'email', key: 'email', width: 180, ellipsis: true },
         { title: '创建时间', dataIndex: 'createTime', key: 'createTime', width: 160 },
         { title: '启停状态', dataIndex: 'status', key: 'status', width: 90 },
-        { title: '操作', dataIndex: 'action', key: 'action', width: 140, fixed: 'right' }
+        { title: '操作', dataIndex: 'action', key: 'action', width: 90, fixed: 'right' }
       ],
       accountList: [
-        { id: 1, username: '张明', idCard: '110108199001011234', phone: '13800138001', createTime: '2026-03-15 10:30', status: 'enabled' },
-        { id: 2, username: '李雪', idCard: '320102198805152345', phone: '13800138002', createTime: '2026-03-16 09:15', status: 'enabled' },
-        { id: 3, username: '王刚', idCard: '440106199210203456', phone: '13800138003', createTime: '2026-03-17 14:20', status: 'disabled' }
+        { id: 1, username: '李雪', account: 'lixue2026', idCard: '110108199001011234', phone: '13800138001', duty: '商务经理', email: 'li.xue@yingxiangyun.com', createTime: '2026-03-15 10:30:00', status: 'enabled' },
+        { id: 2, username: '张明', account: 'zhangming01', idCard: '320102198805152345', phone: '13800138002', duty: '项目经理', email: 'zhang.m@yingxiangyun.com', createTime: '2026-03-16 09:15:00', status: 'enabled' },
+        { id: 3, username: '王刚', account: 'wanggang02', idCard: '440106199210203456', phone: '13800138003', duty: '运维工程师', email: 'wang.g@yingxiangyun.com', createTime: '2026-03-17 14:20:00', status: 'disabled' }
       ]
     }
   },
@@ -159,9 +160,6 @@ export default {
       this.pagination.current = pag.current
       this.pagination.pageSize = pag.pageSize
     },
-    handleEdit(record) {
-      message.info('编辑账户：' + record.username)
-    },
     maskIdCard(val) {
       if (!val) return '--'
       const s = String(val)
@@ -173,7 +171,7 @@ export default {
       Modal.confirm({
         getContainer: this.getDemoContainer,
         title: `确认${action}`,
-        content: `确定要${action}账户「${record.username}」吗？`,
+        content: `确定要${action}该账户吗？`,
         okText: '确定',
         cancelText: '取消',
         okType: record.status === 'enabled' ? 'danger' : 'primary',
