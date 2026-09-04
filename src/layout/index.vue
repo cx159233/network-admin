@@ -122,6 +122,18 @@
         </div>
       </transition>
     </aside>
+
+    <transition name="prd-image-modal">
+      <div v-if="prdImageVisible" class="prd-image-modal" @click="closePrdImage">
+        <div class="prd-image-modal__mask"></div>
+        <div class="prd-image-modal__content" @click.stop>
+          <img :src="prdImageSrc" class="prd-image-modal__img" />
+          <button class="prd-image-modal__close" @click="closePrdImage">
+            <CloseOutlined />
+          </button>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -166,7 +178,9 @@ export default {
       prdVisible: true,
       currentPath: '',
       dialogAnchor: '',
-      renderError: null
+      renderError: null,
+      prdImageVisible: false,
+      prdImageSrc: ''
     }
   },
   errorCaptured(err, vm, info) {
@@ -232,12 +246,17 @@ export default {
     prdVisible() {
       if (this.prdVisible) {
         setTimeout(() => this.scrollToAnchor(), 350)
+        this.bindPrdImageClick()
       }
     },
     currentPath() {
       if (this.prdVisible) {
         setTimeout(() => this.scrollToAnchor(), 350)
+        this.bindPrdImageClick()
       }
+    },
+    prdContent() {
+      this.bindPrdImageClick()
     },
     '$route'(to) {
       this.currentPath = to.path
@@ -336,6 +355,24 @@ ${processedHtml}
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
       message.success('导出成功')
+    },
+    openPrdImage(src) {
+      this.prdImageSrc = src
+      this.prdImageVisible = true
+    },
+    closePrdImage() {
+      this.prdImageVisible = false
+      this.prdImageSrc = ''
+    },
+    bindPrdImageClick() {
+      this.$nextTick(() => {
+        const doc = document.querySelector('.prd-doc')
+        if (!doc) return
+        doc.querySelectorAll('img').forEach(img => {
+          img.style.cursor = 'zoom-in'
+          img.onclick = () => this.openPrdImage(img.src)
+        })
+      })
     },
     scrollToTocItem(anchor) {
       this.dialogAnchor = anchor
@@ -1057,5 +1094,73 @@ ${processedHtml}
 .prd-panel-leave-to {
   opacity: 0;
   transform: translateX(40px);
+}
+
+.prd-image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prd-image-modal__mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.prd-image-modal__content {
+  position: relative;
+  max-width: 92vw;
+  max-height: 92vh;
+  z-index: 1;
+}
+
+.prd-image-modal__img {
+  max-width: 92vw;
+  max-height: 92vh;
+  object-fit: contain;
+  display: block;
+}
+
+.prd-image-modal__close {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #e8ecf0;
+  color: rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s;
+}
+
+.prd-image-modal__close:hover {
+  color: #165DFF;
+}
+
+.prd-image-modal-enter-active,
+.prd-image-modal-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.prd-image-modal-enter-from,
+.prd-image-modal-leave-to {
+  opacity: 0;
 }
 </style>
