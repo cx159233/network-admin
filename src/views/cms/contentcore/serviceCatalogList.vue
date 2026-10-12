@@ -19,11 +19,11 @@
             <template #icon><DeleteOutlined /></template>
             {{ $t("Common.Delete") }}
           </a-button>
-          <a-button type="primary" :disabled="multiple" @click="handlePublish">
+          <a-button type="primary" :disabled="multiple" @click="handleBatchPublish">
             <template #icon><SendOutlined /></template>
             发布
           </a-button>
-          <a-button type="primary" :disabled="multiple" @click="handleOffline">
+          <a-button type="primary" :disabled="multiple" @click="handleBatchOffline">
             <template #icon><DownloadOutlined /></template>
             下线
           </a-button>
@@ -79,7 +79,8 @@
           allow-clear
           style="width: 110px"
         >
-          <a-select-option value="20">已上线使用</a-select-option>
+          <a-select-option value="10">已申报</a-select-option>
+          <a-select-option value="20">已发布使用</a-select-option>
           <a-select-option value="30">已下架</a-select-option>
         </a-select>
       </FilterBar>
@@ -93,7 +94,7 @@
           :pagination="paginationConfig"
           :row-key="(record) => record.serviceId"
           :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: handleSelectionChange }"
-          :scroll="{ x: 1360, y: tableHeight }"
+          :scroll="{ x: 1490, y: tableHeight }"
           @change="onTableChange"
         >
           <template #bodyCell="{ column, record }">
@@ -101,7 +102,14 @@
               <span class="cell-name__title">{{ record.serviceName }}</span>
               <span class="cell-name__id">{{ record.serviceId || '--' }}</span>
             </span>
-            <a-badge v-else-if="column.dataIndex === 'status'" :status="record.status === 20 ? 'success' : record.status === 30 ? 'error' : 'default'" :text="record.status === 20 ? '已上线使用' : record.status === 30 ? '已下架' : '未知'" />
+            <a-badge v-else-if="column.dataIndex === 'status'" :status="record.status === 20 ? 'success' : record.status === 30 ? 'error' : 'default'" :text="getStatusText(record.status)" />
+            <template v-else-if="column.dataIndex === 'syncStatus'">
+              <a-spin v-if="record.syncStatus === 'syncing'" size="small" style="vertical-align: middle" />
+              <span v-if="record.syncStatus === 'syncing'" style="margin-left: 6px; color: #165DFF; font-size: 13px">同步中</span>
+              <span v-else-if="record.syncStatus === 'synced'" style="color: #16A34A; font-size: 13px">✓ 已同步</span>
+              <span v-else-if="record.syncStatus === 'syncFailed'" style="color: #EF4444; font-size: 13px">✗ 同步失败</span>
+              <span v-else style="color: #86909C; font-size: 13px">待同步</span>
+            </template>
             <span v-else-if="column.dataIndex === 'platformRating'">{{ record.platformRating || 0 }}</span>
             <span v-else-if="column.dataIndex === 'usageRating'">{{ record.usageRating || 0 }}</span>
             <span v-else-if="column.dataIndex === 'serviceZone'">{{ getServiceZoneLabel(record.serviceZone) }}</span>
@@ -111,6 +119,14 @@
                 <a-button type="link" size="small" class="!p-0" @click.stop="handleDetail(record)">详情</a-button>
                 <a-divider type="vertical" class="!mx-[2px]" />
                 <a-button type="link" size="small" class="!p-0" @click="handleEdit(record)">修改</a-button>
+                <template v-if="(record.status === 10 || record.status === 30) && record.syncStatus !== 'syncing'">
+                  <a-divider type="vertical" class="!mx-[2px]" />
+                  <a-button type="link" size="small" class="!p-0 !text-[#165DFF]" @click="handlePublish(record)">{{ record.syncStatus === 'syncFailed' ? '重新发布' : '发布' }}</a-button>
+                </template>
+                <template v-if="record.status === 20 && record.syncStatus !== 'syncing'">
+                  <a-divider type="vertical" class="!mx-[2px]" />
+                  <a-button type="link" size="small" class="!p-0 !text-[#faad14]" @click="handleOffline(record)">{{ record.syncStatus === 'syncFailed' ? '重新下线' : '下线' }}</a-button>
+                </template>
                 <a-divider type="vertical" class="!mx-[2px]" />
                 <a-button type="link" size="small" danger class="!p-0" @click="handleDelete(record)">删除</a-button>
               </a-space>
@@ -579,10 +595,11 @@ export default {
         { title: '服务描述', dataIndex: 'description', key: 'description', width: 250, customCell: () => ({ class: 'cell-wrap' }) },
         { title: '服务商名称', dataIndex: 'vendor', key: 'vendor', width: 180 },
         { title: '部署云服务商', dataIndex: 'cloudProvider', key: 'cloudProvider', ellipsis: true, width: 150 },
-        { title: '状态', dataIndex: 'status', key: 'status', width: 80 },
+        { title: '状态', dataIndex: 'status', key: 'status', width: 100 },
+        { title: '同步情况', dataIndex: 'syncStatus', key: 'syncStatus', width: 130 },
         { title: '平台评分', dataIndex: 'platformRating', key: 'platformRating', width: 90 },
         { title: '用户评分', dataIndex: 'usageRating', key: 'usageRating', width: 90 },
-        { title: '操作', dataIndex: 'action', key: 'action', width: 200, fixed: 'right' },
+        { title: '操作', dataIndex: 'action', key: 'action', width: 240, fixed: 'right' },
       ],
       ratingColumns: [
         { title: '评分', dataIndex: 'score', key: 'score', width: 200 },
@@ -700,6 +717,7 @@ export default {
             serviceType: '计算服务',
             cloudProvider: '电信云',
             status: 20,
+            syncStatus: 'synced',
             sortOrder: 1
           },
           {
@@ -712,7 +730,8 @@ export default {
             serviceZone: 'X86Zone',
             serviceType: '存储服务',
             cloudProvider: '移动云',
-            status: 20,
+            status: 10,
+            syncStatus: 'syncFailed',
             sortOrder: 2
           },
           {
@@ -726,6 +745,7 @@ export default {
             serviceType: '数据库服务',
             cloudProvider: '联通云',
             status: 10,
+            syncStatus: null,
             sortOrder: 3
           },
           {
@@ -738,7 +758,8 @@ export default {
             serviceZone: 'XinChuangZone',
             serviceType: '网络服务',
             cloudProvider: '浪潮云',
-            status: 20,
+            status: 30,
+            syncStatus: 'synced',
             sortOrder: 4
           }
         ];
@@ -797,17 +818,16 @@ export default {
       return map[status] || 'default';
     },
     drawerStatusBadge(status) {
-      const text = this.getStatusText(status);
-      if (text === '已上线使用') return 'success';
-      if (text === '已下架') return 'warning';
-      if (text === '待审核') return 'processing';
+      if (status === 20) return 'success';
+      if (status === 30) return 'warning';
+      if (status === 10) return 'processing';
       return 'default';
     },
     getStatusText(status) {
       const map = {
-        20: '已上线使用',
-        30: '已下架',
-        10: '待审核'
+        10: '已申报',
+        20: '已发布使用',
+        30: '已下架'
       };
       return map[status] || '未知';
     },
@@ -863,43 +883,127 @@ export default {
         },
       });
     },
+    /** 单行发布 / 重新发布 */
     handlePublish(row) {
-      const safeRow = row || {};
-      const serviceIds = safeRow.serviceId
-        ? [safeRow.serviceId]
-        : this.selectedRows.map((r) => r.serviceId);
-      if (serviceIds.length == 0) {
-        message.warning('请选择要发布的记录');
-        return;
-      }
+      const isRepublish = row.syncStatus === 'syncFailed';
       Modal.confirm({
         getContainer: this.getDemoContainer,
-        title: '系统提示',
-        content: '发布后将在门户网站上显示，是否确认发布？',
+        title: isRepublish ? '重新发布' : '发布确认',
+        content: isRepublish
+          ? '将重新同步数据到三方系统，同步成功后在门户网站展示，是否继续？'
+          : '发布后将同步数据到三方系统，同步成功后在门户网站展示，是否确认发布？',
         onOk: () => {
-          message.success('发布成功');
-          this.loadServiceCatalogList();
+          this.doSyncPublish([row]);
         },
       });
     },
-    handleOffline(row) {
-      const safeRow = row || {};
-      const serviceIds = safeRow.serviceId
-        ? [safeRow.serviceId]
-        : this.selectedRows.map((r) => r.serviceId);
-      if (serviceIds.length == 0) {
-        message.warning('请选择要下线的记录');
+    /** 批量发布（顶部按钮） */
+    handleBatchPublish() {
+      const rows = this.selectedRows.filter((r) => (r.status === 10 || r.status === 30) && r.syncStatus !== 'syncing');
+      if (rows.length === 0) {
+        message.warning('所选记录均为已发布使用或同步中，无需发布');
         return;
       }
       Modal.confirm({
         getContainer: this.getDemoContainer,
         title: '系统提示',
-        content: '下线后将在门户网站上隐藏，是否确认下线？',
+        content: `将对 ${rows.length} 条记录同步数据到三方系统，同步成功后在门户网站展示，是否确认发布？`,
         onOk: () => {
-          message.success('下线成功');
-          this.loadServiceCatalogList();
+          this.doSyncPublish(rows);
         },
       });
+    },
+    /** 执行发布 + 三方系统同步 */
+    doSyncPublish(rows) {
+      // 1. 标记为同步中
+      rows.forEach((row) => {
+        row.syncStatus = 'syncing';
+      });
+
+      // 2. 模拟调用三方系统同步接口
+      const hide = message.loading('正在同步到三方系统...', 0);
+      setTimeout(() => {
+        hide();
+        // 模拟：约 70% 成功 / 30% 失败
+        let successCount = 0;
+        rows.forEach((row) => {
+          const ok = Math.random() > 0.3;
+          if (ok) {
+            // 同步成功 → 变为已发布使用 + 已同步
+            row.status = 20;
+            row.syncStatus = 'synced';
+            successCount++;
+          } else {
+            // 同步失败 → 状态保持不变，仅标记同步失败
+            row.syncStatus = 'syncFailed';
+          }
+        });
+
+        if (successCount === rows.length) {
+          message.success(`同步成功 ${successCount} 条，已在门户网站展示`);
+        } else if (successCount > 0) {
+          message.warning(`同步成功 ${successCount} 条，失败 ${rows.length - successCount} 条，失败记录可重新发布`);
+        } else {
+          message.error('同步失败，所有记录均未同步成功，请重新发布');
+        }
+      }, 1800);
+    },
+    handleOffline(row) {
+      Modal.confirm({
+        getContainer: this.getDemoContainer,
+        title: '下线确认',
+        content: '下线后将同步三方系统，同步成功后在门户网站隐藏，是否确认下线？',
+        onOk: () => {
+          this.doSyncOffline([row]);
+        },
+      });
+    },
+    handleBatchOffline() {
+      const rows = this.selectedRows.filter((r) => r.status === 20 && r.syncStatus !== 'syncing');
+      if (rows.length === 0) {
+        message.warning('所选记录均非已发布使用或同步中，无需下线');
+        return;
+      }
+      Modal.confirm({
+        getContainer: this.getDemoContainer,
+        title: '系统提示',
+        content: `将对 ${rows.length} 条记录同步三方系统执行下线，同步成功后在门户网站隐藏，是否确认下线？`,
+        onOk: () => {
+          this.doSyncOffline(rows);
+        },
+      });
+    },
+    /** 执行下线 + 三方系统同步 */
+    doSyncOffline(rows) {
+      rows.forEach((row) => {
+        row.syncStatus = 'syncing';
+      });
+
+      const hide = message.loading('正在同步到三方系统...', 0);
+      setTimeout(() => {
+        hide();
+        let successCount = 0;
+        rows.forEach((row) => {
+          const ok = Math.random() > 0.3;
+          if (ok) {
+            // 同步成功 → 变为已下架 + 已同步
+            row.status = 30;
+            row.syncStatus = 'synced';
+            successCount++;
+          } else {
+            // 同步失败 → 状态保持不变
+            row.syncStatus = 'syncFailed';
+          }
+        });
+
+        if (successCount === rows.length) {
+          message.success(`下线同步成功 ${successCount} 条，已在门户网站隐藏`);
+        } else if (successCount > 0) {
+          message.warning(`下线同步成功 ${successCount} 条，失败 ${rows.length - successCount} 条`);
+        } else {
+          message.error('下线同步失败，所有记录均未变更状态');
+        }
+      }, 1800);
     },
     openRatingDialog(row) {
       this.currentService = row;
