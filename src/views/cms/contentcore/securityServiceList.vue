@@ -676,7 +676,7 @@ export default {
         { key: 1, title: '申报材料评估' },
         { key: 2, title: '应用技术测评' },
         { key: 3, title: '现场演示答辩' },
-        { key: 4, title: '服务目录发布' }
+        { key: 4, title: '评估结果公示' }
       ],
       versionAuditMock: {
         V1: {

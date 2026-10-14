@@ -17,7 +17,7 @@
           <a-select-option :value="1">申报材料评估</a-select-option>
           <a-select-option :value="2">应用技术测评</a-select-option>
           <a-select-option :value="3">现场演示答辩</a-select-option>
-          <a-select-option :value="4">服务目录发布</a-select-option>
+          <a-select-option :value="4">评估结果公示</a-select-option>
         </a-select>
         <a-input v-model:value="filter.title" placeholder="安全服务名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceId" placeholder="安全服务ID" allow-clear style="width: 180px" @pressEnter="handleQuery" />
@@ -261,62 +261,62 @@ export default {
           1: { id: 's1', stage: '申报材料评估', stageIdx: 0, status: 'pending', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-22 10:20:04', auditTime: '2026-10-22 10:20:04', remark: '服务商提交申报材料', auditor: '', opinion: '' }] },
           2: { id: 's2', stage: '应用技术测评', stageIdx: 1, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] },
           3: { id: 's3', stage: '现场演示答辩', stageIdx: 2, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] },
-          4: { id: 's4', stage: '服务目录发布', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
         },
         'AQFW202410220001-V2': {
           1: { id: 's1', stage: '申报材料评估', stageIdx: 0, status: 'pending', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-22 14:30:00', auditTime: '2026-10-22 14:30:00', remark: '服务商提交V2版本申报材料（含AI审计模块）', auditor: '', opinion: '' }] },
           2: { id: 's2', stage: '应用技术测评', stageIdx: 1, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] },
           3: { id: 's3', stage: '现场演示答辩', stageIdx: 2, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] },
-          4: { id: 's4', stage: '服务目录发布', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
         },
         'AQFW202410230001-V1': {
           1: { id: 's1', stage: '申报材料评估', stageIdx: 0, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-10-25 15:30', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-23 09:15:32', auditTime: '2026-10-23 09:15:32', remark: '服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-23 09:15:32', auditTime: '2026-10-25 15:30', auditor: '李主管', opinion: '材料完整、资质齐全，本阶段通过' }] },
           2: { id: 's2', stage: '应用技术测评', stageIdx: 1, status: 'pending', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-26 10:00', auditTime: '2026-10-26 10:00', remark: '材料评估通过，进入技术测评', auditor: '', opinion: '' }] },
           3: { id: 's3', stage: '现场演示答辩', stageIdx: 2, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] },
-          4: { id: 's4', stage: '服务目录发布', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
         },
         'AQFW202410240001': {
           1: { id: 's1', stage: '申报材料评估', stageIdx: 0, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-10-27 10:00', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 14:59:25', auditTime: '2026-10-24 14:59:25', remark: '服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 14:59:25', auditTime: '2026-10-27 10:00', auditor: '李主管', opinion: '材料完整，通过' }] },
           2: { id: 's2', stage: '应用技术测评', stageIdx: 1, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-10-29 14:00', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-28 09:00', auditTime: '2026-10-28 09:00', remark: '进入技术测评', auditor: '', opinion: '' }, { id: 4, nodeType: 'audit', status: 'approved', submitTime: '2026-10-28 09:00', auditTime: '2026-10-29 14:00', auditor: '王工程师', opinion: '安全能力与性能指标均达标' }] },
           3: { id: 's3', stage: '现场演示答辩', stageIdx: 2, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主任', auditTime: '2026-11-01 16:00', _records: [{ id: 5, nodeType: 'submit', status: 'pending', submitTime: '2026-10-30 10:00', auditTime: '2026-10-30 10:00', remark: '预约现场演示', auditor: '', opinion: '' }, { id: 6, nodeType: 'audit', status: 'approved', submitTime: '2026-10-30 10:00', auditTime: '2026-11-01 16:00', auditor: '张主任', opinion: '功能演示完整，答辩通过' }] },
-          4: { id: 's4', stage: '服务目录发布', stageIdx: 3, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘总监', auditTime: '2026-11-03 10:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-11-02 09:00', auditTime: '2026-11-02 09:00', remark: '答辩通过，提交发布申请', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-11-02 09:00', auditTime: '2026-11-03 10:00', auditor: '刘总监', opinion: '符合发布标准，发布至服务目录' }] }
+          4: { id: 's4', stage: '评估结果公示', stageIdx: 3, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘总监', auditTime: '2026-11-03 10:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-11-02 09:00', auditTime: '2026-11-02 09:00', remark: '答辩通过，提交发布申请', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-11-02 09:00', auditTime: '2026-11-03 10:00', auditor: '刘总监', opinion: '符合发布标准，发布至服务目录' }] }
         },
         'AQFW202410240002': {
           1: { id: 's1', stage: '申报材料评估', stageIdx: 0, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-10-27 11:00', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:00:03', auditTime: '2026-10-24 15:00:03', remark: '服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:00:03', auditTime: '2026-10-27 11:00', auditor: '李主管', opinion: '材料齐全，审核通过' }] },
           2: { id: 's2', stage: '应用技术测评', stageIdx: 1, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-10-29 15:00', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-28 09:30', auditTime: '2026-10-28 09:30', remark: '进入技术测评', auditor: '', opinion: '' }, { id: 4, nodeType: 'audit', status: 'approved', submitTime: '2026-10-28 09:30', auditTime: '2026-10-29 15:00', auditor: '王工程师', opinion: '审计能力覆盖全面，性能优秀' }] },
           3: { id: 's3', stage: '现场演示答辩', stageIdx: 2, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主任', auditTime: '2026-11-01 17:00', _records: [{ id: 5, nodeType: 'submit', status: 'pending', submitTime: '2026-10-30 14:00', auditTime: '2026-10-30 14:00', remark: '预约现场演示', auditor: '', opinion: '' }, { id: 6, nodeType: 'audit', status: 'approved', submitTime: '2026-10-30 14:00', auditTime: '2026-11-01 17:00', auditor: '张主任', opinion: '数据溯源与告警联动演示完整' }] },
-          4: { id: 's4', stage: '服务目录发布', stageIdx: 3, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘总监', auditTime: '2026-11-03 14:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-11-02 10:00', auditTime: '2026-11-02 10:00', remark: '提交发布申请', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-11-02 10:00', auditTime: '2026-11-03 14:00', auditor: '刘总监', opinion: '发布至服务目录' }] }
+          4: { id: 's4', stage: '评估结果公示', stageIdx: 3, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘总监', auditTime: '2026-11-03 14:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-11-02 10:00', auditTime: '2026-11-02 10:00', remark: '提交发布申请', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-11-02 10:00', auditTime: '2026-11-03 14:00', auditor: '刘总监', opinion: '发布至服务目录' }] }
         },
         'AQFW202410240003': {
           1: { id: 's1', stage: '申报材料评估', stageIdx: 0, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-10-27 15:00', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:00:21', auditTime: '2026-10-24 15:00:21', remark: '服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:00:21', auditTime: '2026-10-27 15:00', auditor: '李主管', opinion: '材料完整，通过' }] },
           2: { id: 's2', stage: '应用技术测评', stageIdx: 1, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-10-30 10:00', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-28 10:00', auditTime: '2026-10-28 10:00', remark: '进入技术测评', auditor: '', opinion: '' }, { id: 4, nodeType: 'audit', status: 'approved', submitTime: '2026-10-28 10:00', auditTime: '2026-10-30 10:00', auditor: '王工程师', opinion: '防护能力与清洗效率达标' }] },
           3: { id: 's3', stage: '现场演示答辩', stageIdx: 2, status: 'rejected', statusKey: 'rejected', statusText: '已驳回', auditor: '张主任', auditTime: '2026-11-04 11:00', _records: [{ id: 5, nodeType: 'submit', status: 'pending', submitTime: '2026-10-31 09:00', auditTime: '2026-10-31 09:00', remark: '预约现场演示', auditor: '', opinion: '' }, { id: 6, nodeType: 'audit', status: 'rejected', submitTime: '2026-10-31 09:00', auditTime: '2026-11-04 11:00', auditor: '张主任', opinion: '攻击流量模拟场景不足，缺少多协议混合攻击演示，请补充后重新答辩' }] },
-          4: { id: 's4', stage: '服务目录发布', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
         },
         'AQFW202410240004': {
           1: { id: 's1', stage: '申报材料评估', stageIdx: 0, status: 'pending', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:00:40', auditTime: '2026-10-24 15:00:40', remark: '服务商提交申报材料', auditor: '', opinion: '' }] },
           2: { id: 's2', stage: '应用技术测评', stageIdx: 1, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] },
           3: { id: 's3', stage: '现场演示答辩', stageIdx: 2, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] },
-          4: { id: 's4', stage: '服务目录发布', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
         },
         'AQFW202410240005': {
           1: { id: 's1', stage: '申报材料评估', stageIdx: 0, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-10-28 09:00', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:01:13', auditTime: '2026-10-24 15:01:13', remark: '服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:01:13', auditTime: '2026-10-28 09:00', auditor: '李主管', opinion: '材料完整，通过' }] },
           2: { id: 's2', stage: '应用技术测评', stageIdx: 1, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '王工程师', auditTime: '2026-10-30 16:00', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-29 09:00', auditTime: '2026-10-29 09:00', remark: '进入技术测评', auditor: '', opinion: '' }, { id: 4, nodeType: 'audit', status: 'approved', submitTime: '2026-10-29 09:00', auditTime: '2026-10-30 16:00', auditor: '王工程师', opinion: '漏洞检测准确率高，扫描效率优秀' }] },
           3: { id: 's3', stage: '现场演示答辩', stageIdx: 2, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '张主任', auditTime: '2026-11-02 15:00', _records: [{ id: 5, nodeType: 'submit', status: 'pending', submitTime: '2026-10-31 10:00', auditTime: '2026-10-31 10:00', remark: '预约现场演示', auditor: '', opinion: '' }, { id: 6, nodeType: 'audit', status: 'approved', submitTime: '2026-10-31 10:00', auditTime: '2026-11-02 15:00', auditor: '张主任', opinion: '报告生成与修复建议演示清晰' }] },
-          4: { id: 's4', stage: '服务目录发布', stageIdx: 3, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘总监', auditTime: '2026-11-04 09:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-11-03 09:00', auditTime: '2026-11-03 09:00', remark: '提交发布申请', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-11-03 09:00', auditTime: '2026-11-04 09:00', auditor: '刘总监', opinion: '发布至服务目录' }] }
+          4: { id: 's4', stage: '评估结果公示', stageIdx: 3, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '刘总监', auditTime: '2026-11-04 09:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-11-03 09:00', auditTime: '2026-11-03 09:00', remark: '提交发布申请', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-11-03 09:00', auditTime: '2026-11-04 09:00', auditor: '刘总监', opinion: '发布至服务目录' }] }
         },
         'AQFW202410240006': {
           1: { id: 's1', stage: '申报材料评估', stageIdx: 0, status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '李主管', auditTime: '2026-10-28 14:00', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 15:01:28', auditTime: '2026-10-24 15:01:28', remark: '服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 15:01:28', auditTime: '2026-10-28 14:00', auditor: '李主管', opinion: '材料完整，通过' }] },
           2: { id: 's2', stage: '应用技术测评', stageIdx: 1, status: 'rejected', statusKey: 'rejected', statusText: '已驳回', auditor: '王工程师', auditTime: '2026-11-05 10:00', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-29 10:00', auditTime: '2026-10-29 10:00', remark: '进入技术测评', auditor: '', opinion: '' }, { id: 4, nodeType: 'audit', status: 'rejected', submitTime: '2026-10-29 10:00', auditTime: '2026-11-05 10:00', auditor: '王工程师', opinion: 'AI威胁检测准确率低于95%标准，误报率偏高，请优化模型后重新提交' }] },
           3: { id: 's3', stage: '现场演示答辩', stageIdx: 2, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] },
-          4: { id: 's4', stage: '服务目录发布', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', stageIdx: 3, status: 'pending', statusKey: 'default', statusText: '待审核', auditor: '', auditTime: '', _records: [] }
         }
       },
       auditSteps: [
         { key: 1, title: '申报材料评估' },
         { key: 2, title: '应用技术测评' },
         { key: 3, title: '现场演示答辩' },
-        { key: 4, title: '服务目录发布' }
+        { key: 4, title: '评估结果公示' }
       ]
     }
   },
@@ -389,7 +389,7 @@ export default {
       return map[String(status)] || ''
     },
     getStepName(step) {
-      const names = { 1: '申报材料评估', 2: '应用技术测评', 3: '现场演示答辩', 4: '服务目录发布' }
+      const names = { 1: '申报材料评估', 2: '应用技术测评', 3: '现场演示答辩', 4: '评估结果公示' }
       return names[step] || '--'
     },
     isStepApproved(idx) {

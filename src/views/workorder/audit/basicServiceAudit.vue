@@ -17,7 +17,7 @@
           <a-select-option :value="1">申报材料评估</a-select-option>
           <a-select-option :value="2">应用技术测评</a-select-option>
           <a-select-option :value="3">现场演示答辩</a-select-option>
-          <a-select-option :value="4">服务目录发布</a-select-option>
+          <a-select-option :value="4">评估结果公示</a-select-option>
         </a-select>
         <a-input v-model:value="filter.serviceName" placeholder="基础服务名称" allow-clear style="width: 180px" @pressEnter="handleQuery" />
         <a-input v-model:value="filter.serviceId" placeholder="基础服务ID" allow-clear style="width: 160px" @pressEnter="handleQuery" />
@@ -266,44 +266,44 @@ export default {
           1: { id: 's1', stage: '申报材料评估', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '平台管理员', auditTime: '2026-10-19 09:30', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-18 11:21', auditTime: '2026-10-18 11:21', remark: '云服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-18 11:21', auditTime: '2026-10-19 09:30', auditor: '平台管理员', opinion: '服务符合上架标准，审核通过。' }] },
           2: { id: 's2', stage: '应用技术测评', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '技术评审员', auditTime: '2026-10-21 14:00', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-19 10:00', auditTime: '2026-10-19 10:00', remark: '材料评估通过后自动进入技术测评', auditor: '', opinion: '' }, { id: 4, nodeType: 'audit', status: 'approved', submitTime: '2026-10-19 10:00', auditTime: '2026-10-21 14:00', auditor: '技术评审员', opinion: '技术指标达标，性能测试通过。' }] },
           3: { id: 's3', stage: '现场演示答辩', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '答辩委员会', auditTime: '2026-10-22 16:30', _records: [{ id: 5, nodeType: 'submit', status: 'pending', submitTime: '2026-10-21 15:00', auditTime: '2026-10-21 15:00', remark: '技术测评通过后安排答辩', auditor: '', opinion: '' }, { id: 6, nodeType: 'audit', status: 'approved', submitTime: '2026-10-21 15:00', auditTime: '2026-10-22 16:30', auditor: '答辩委员会', opinion: '演示效果良好，答辩通过。' }] },
-          4: { id: 's4', stage: '服务目录发布', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '平台管理员', auditTime: '2026-10-23 10:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-10-22 17:00', auditTime: '2026-10-22 17:00', remark: '进入发布环节', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-10-22 17:00', auditTime: '2026-10-23 10:00', auditor: '平台管理员', opinion: '已发布至服务目录。' }] }
+          4: { id: 's4', stage: '评估结果公示', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '平台管理员', auditTime: '2026-10-23 10:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-10-22 17:00', auditTime: '2026-10-22 17:00', remark: '进入发布环节', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-10-22 17:00', auditTime: '2026-10-23 10:00', auditor: '平台管理员', opinion: '已发布至服务目录。' }] }
         },
         'SVC002-V1': {
           1: { id: 's1', stage: '申报材料评估', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '平台管理员', auditTime: '2026-10-22 10:00', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-21 14:45', auditTime: '2026-10-21 14:45', remark: '云服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-21 14:45', auditTime: '2026-10-22 10:00', auditor: '平台管理员', opinion: '材料齐全，审核通过。' }] },
           2: { id: 's2', stage: '应用技术测评', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '技术评审员', auditTime: '2026-10-23 15:30', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-22 11:00', auditTime: '2026-10-22 11:00', remark: '进入技术测评阶段', auditor: '', opinion: '' }, { id: 4, nodeType: 'audit', status: 'approved', submitTime: '2026-10-22 11:00', auditTime: '2026-10-23 15:30', auditor: '技术评审员', opinion: '存储性能符合要求。' }] },
           3: { id: 's3', stage: '现场演示答辩', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '答辩委员会', auditTime: '2026-10-24 09:00', _records: [{ id: 5, nodeType: 'submit', status: 'pending', submitTime: '2026-10-23 16:00', auditTime: '2026-10-23 16:00', remark: '安排现场答辩', auditor: '', opinion: '' }, { id: 6, nodeType: 'audit', status: 'approved', submitTime: '2026-10-23 16:00', auditTime: '2026-10-24 09:00', auditor: '答辩委员会', opinion: '答辩通过。' }] },
-          4: { id: 's4', stage: '服务目录发布', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '平台管理员', auditTime: '2026-10-24 16:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 10:00', auditTime: '2026-10-24 10:00', remark: '进入发布环节', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 10:00', auditTime: '2026-10-24 16:00', auditor: '平台管理员', opinion: '已发布至服务目录。' }] }
+          4: { id: 's4', stage: '评估结果公示', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '平台管理员', auditTime: '2026-10-24 16:00', _records: [{ id: 7, nodeType: 'submit', status: 'pending', submitTime: '2026-10-24 10:00', auditTime: '2026-10-24 10:00', remark: '进入发布环节', auditor: '', opinion: '' }, { id: 8, nodeType: 'audit', status: 'approved', submitTime: '2026-10-24 10:00', auditTime: '2026-10-24 16:00', auditor: '平台管理员', opinion: '已发布至服务目录。' }] }
         },
         'SVC002-V2': {
           1: { id: 's1', stage: '申报材料评估', status: 'pending', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-22 10:00', auditTime: '2026-10-22 10:00', remark: '云服务商提交V2版本更新申报材料', auditor: '', opinion: '' }] },
           2: { id: 's2', stage: '应用技术测评', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           3: { id: 's3', stage: '现场演示答辩', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
-          4: { id: 's4', stage: '服务目录发布', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         'SVC003-V1': {
           1: { id: 's1', stage: '申报材料评估', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '平台管理员', auditTime: '2026-10-22 11:00', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-21 15:38', auditTime: '2026-10-21 15:38', remark: '云服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-21 15:38', auditTime: '2026-10-22 11:00', auditor: '平台管理员', opinion: 'RDS服务材料审核通过。' }] },
           2: { id: 's2', stage: '应用技术测评', status: 'pending', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-22 12:00', auditTime: '2026-10-22 12:00', remark: '进入技术测评阶段', auditor: '', opinion: '' }] },
           3: { id: 's3', stage: '现场演示答辩', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
-          4: { id: 's4', stage: '服务目录发布', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         'SVC004-V1': {
           1: { id: 's1', stage: '申报材料评估', status: 'pending', statusKey: 'processing', statusText: '进行中', auditor: '', auditTime: '', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-22 09:15', auditTime: '2026-10-22 09:15', remark: '云服务商提交申报材料', auditor: '', opinion: '' }] },
           2: { id: 's2', stage: '应用技术测评', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
           3: { id: 's3', stage: '现场演示答辩', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] },
-          4: { id: 's4', stage: '服务目录发布', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         },
         'SVC005-V1': {
           1: { id: 's1', stage: '申报材料评估', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '平台管理员', auditTime: '2026-10-20 09:00', _records: [{ id: 1, nodeType: 'submit', status: 'pending', submitTime: '2026-10-19 13:20', auditTime: '2026-10-19 13:20', remark: '云服务商提交申报材料', auditor: '', opinion: '' }, { id: 2, nodeType: 'audit', status: 'approved', submitTime: '2026-10-19 13:20', auditTime: '2026-10-20 09:00', auditor: '平台管理员', opinion: 'CDN服务材料齐全，审核通过。' }] },
           2: { id: 's2', stage: '应用技术测评', status: 'approved', statusKey: 'done', statusText: '已通过', auditor: '技术评审员', auditTime: '2026-10-21 10:30', _records: [{ id: 3, nodeType: 'submit', status: 'pending', submitTime: '2026-10-20 10:00', auditTime: '2026-10-20 10:00', remark: '进入技术测评', auditor: '', opinion: '' }, { id: 4, nodeType: 'audit', status: 'approved', submitTime: '2026-10-20 10:00', auditTime: '2026-10-21 10:30', auditor: '技术评审员', opinion: 'CDN节点覆盖达标。' }] },
           3: { id: 's3', stage: '现场演示答辩', status: 'rejected', statusKey: 'rejected', statusText: '已驳回', auditor: '答辩委员会', auditTime: '2026-10-22 09:00', _records: [{ id: 5, nodeType: 'submit', status: 'pending', submitTime: '2026-10-21 14:00', auditTime: '2026-10-21 14:00', remark: '安排现场答辩', auditor: '', opinion: '' }, { id: 6, nodeType: 'audit', status: 'rejected', submitTime: '2026-10-21 14:00', auditTime: '2026-10-22 09:00', auditor: '答辩委员会', opinion: '答辩效果不理想，部分指标未达预期。' }] },
-          4: { id: 's4', stage: '服务目录发布', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
+          4: { id: 's4', stage: '评估结果公示', status: 'pending', statusKey: 'processing', statusText: '未开始', auditor: '', auditTime: '', _records: [] }
         }
       },
       auditSteps: [
         { key: 1, title: '申报材料评估' },
         { key: 2, title: '应用技术测评' },
         { key: 3, title: '现场演示答辩' },
-        { key: 4, title: '服务目录发布' }
+        { key: 4, title: '评估结果公示' }
       ]
     }
   },
@@ -391,7 +391,7 @@ export default {
       return map[String(status)] || ''
     },
     getStepName(step) {
-      const names = { 1: '申报材料评估', 2: '应用技术测评', 3: '现场演示答辩', 4: '服务目录发布' }
+      const names = { 1: '申报材料评估', 2: '应用技术测评', 3: '现场演示答辩', 4: '评估结果公示' }
       return names[step] || '--'
     },
     // ===== 步骤条相关方法（基于record.currentStep判断） =====
